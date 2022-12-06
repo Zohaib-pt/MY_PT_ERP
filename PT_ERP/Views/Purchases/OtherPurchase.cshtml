@@ -1,0 +1,1780 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OPurchases
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+@{ ViewData["Title"] = "OtherPurchase";
+    Layout = "~/Views/Shared/_LayoutTablePages.cshtml"; }
+@{ 
+
+    string req = "";
+    req = Configuration.GetSection("AppSettings").GetSection("IsRequired").Value;
+    string Form_PurchaseMaster_ActionMethod = "";
+    int? PurchaseMaster_ID = ViewBag.PurchaseMaster_ID;
+
+
+    if (Model.purchaseMasterObj != null && Model.purchaseMasterObj.PurchaseMaster_ID > 0)
+    {
+
+        Form_PurchaseMaster_ActionMethod = "UpdateOtherPurchaseMaster";
+
+
+    }
+    else
+    {
+        Form_PurchaseMaster_ActionMethod = "InsertOtherPurchaseMaster";
+
+
+    } }
+
+
+
+<header class="page-header">
+    <h2> @ViewBag.SectionHeaderTitle</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+            <li><a asp-area="" asp-controller="Purchases" asp-action="PurchaseList"><span> @ViewBag.SectionSub_HeaderMainTitle</span></a></li>
+            <li><a asp-area="" asp-controller="@ViewBag.BreadCumController" asp-action="@ViewBag.BreadCumAction"><span>@ViewBag.SectionSub_HeaderTitle</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+
+
+
+
+
+<div class="row" id="SuccessErrorSection">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+<div class="col-lg-12">
+    @if (TempData["Success"] != null)
+    {
+<div class="alert alert-info">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+    <strong>Success!</strong> @TempData["Success"] <a href="" class="alert-link"></a>
+</div>}
+
+    @if (TempData["Error"] != null)
+    {
+<div class="alert alert-danger">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+    <strong>Error!</strong> @TempData["Error"] <a href="" class="alert-link"></a>
+</div>}
+</div>}
+
+
+</div>
+
+<!-- start: page -->
+<section class="card">
+    <div class="card-body">
+        <div class="invoice">
+            <header class="clearfix">
+                <div class="row">
+                    <div class="col-sm-6 mt-0">
+                        <h2 class="h4 mt-0 mb-2 text-dark font-weight-bold">Purchase</h2>
+
+                    </div>
+
+                    <div class="col-sm-6 mt-0 text-right">
+                        @if (String.IsNullOrEmpty(Model.purchaseMasterObj.PurchaseStatus))
+                        {
+            <h4 class=" mt-0 mb-2 text-dark"><b>Status:</b> <label>Pending</label></h4> }
+        else
+        {
+<h4 class=" mt-0 mb-2 text-dark"><b>Status:</b> <label>@Model.purchaseMasterObj.PurchaseStatus</label></h4>}
+
+
+                    </div>
+
+
+
+                </div>
+            </header>
+
+            <div class="row">
+                <div class="col-lg-8">
+                    @if (Model.purchaseMasterObj.PurchaseMaster_ID != null)
+                    {
+                        if (Model.purchaseMasterObj.PurchaseMaster_ID > 0)
+                        {
+
+        <button type="button" id="ButtonSaveMaster" class="btn-sm btn btn btn-success">Update &nbsp;<i class="fas fa-save"></i></button>
+
+                            <button type="button" class="btn btn-sm btn-primary">Edit  &nbsp;<i class="fas fa-edit"></i></button>
+
+
+                                                <button type="button" class="btn-sm btn btn-warning" data-toggle="modal" data-target="#ChangeStatusPurchaseModal" onclick="ChangeStatusPurchaseMaster('@Model.purchaseMasterObj.PurchaseMaster_ID', '5');">Cancel &nbsp;<i class="fas fa-cross"></i></button>
+
+
+                                                                    <button type="button" class="btn-sm btn btn-danger" data-toggle="modal" data-target="#DeletePurchaseMasterNew" onclick="DeletePurchaseMaster('@Model.purchaseMasterObj.PurchaseMaster_ID');">Delete &nbsp;<i class="fas fa-trash-alt"></i></button>
+
+                                                                                        <button type="button" id="print-btn" class="btn-sm btn btn-info">Print &nbsp;<i class="fas fa-print"></i></button>
+                                                                                                            <button type="button" class="btn-sm btn btn btn-success" data-toggle="modal" @ViewBag.ApprovalVisibility data-target="#ChangeStatusPurchaseModal" onclick="ChangeStatusPurchaseMaster('@Model.purchaseMasterObj.PurchaseMaster_ID', '2');">Approve &nbsp;<i class="fa fa-check"></i></button>
+                                                                                                                                <button type="button" class="btn-sm btn btn btn-info" data-toggle="modal" data-target="#ChangeStatusPurchaseModal" onclick="ChangeStatusPurchaseMaster('@Model.purchaseMasterObj.PurchaseMaster_ID','4');">Complete &nbsp;<i class="fa fa-check"></i></button>
+                                                                                                                                                    <button type="button" class="btn-sm btn btn btn-default" @ViewBag.AttachmentVisibility style="background-color: #68889E; color:white; border-color:#2F3E48" onclick="ShowAttachmentMaster('@Model.purchaseMasterObj.PurchaseMaster_ID');">Attachment &nbsp;<i class="fa fa-paperclip"></i></button>
+                                                                                                                                                                        <a asp-controller="Purchases" asp-action="OtherPurchaseList" class="btn-sm btn btn-default">List &nbsp;<i class="fas fa-list"></i></a> }
+
+                                                                                                                                                                }
+                                                                                                                                                                else
+                                                                                                                                                                {
+                                                                                                                                                    <button type="button" id="ButtonIssue" class="btn-sm btn btn-success">Issue &nbsp;<i class="fas fa-save"></i></button>
+
+                                                                                                                                                                    <button type="button" class="btn-sm btn btn-primary" disabled="disabled">Edit  &nbsp;<i class="fas fa-edit"></i></button>
+
+
+                                                                                                                                                                                    <button type="button" class="btn-sm btn btn-warning" disabled="disabled">Cancel &nbsp;<i class="fas fa-cross"></i></button>
+                                                                                                                                                                                                    <button type="button" class="btn-sm btn btn-danger" disabled="disabled">Delete &nbsp;<i class="fas fa-trash-alt"></i></button>
+                                                                                                                                                                                                                    <button type="button" class="btn-sm btn btn-info" disabled="disabled">Print &nbsp;<i class="fas fa-print"></i></button>
+
+                                                                                                                                                                                                                                    <button type="button" class="btn-sm btn btn btn-success" @ViewBag.ApprovalVisibility disabled="disabled">Approve &nbsp;<i class="fa fa-check"></i></button>
+                                                                                                                                                                                                                                                    <button type="button" class="btn-sm btn btn btn-info" disabled="disabled">Complete &nbsp;<i class="fa fa-check"></i></button>
+
+                                                                                                                                                                                                                                                                    <a asp-controller="Purchases" asp-action="OtherPurchaseList" class="btn-sm btn btn-default">List &nbsp;<i class="fas fa-list"></i></a>}
+
+
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div class="col">
+
+
+
+                    <form method="post" asp-area="" asp-controller="Purchases" asp-action="@Form_PurchaseMaster_ActionMethod" id="formPurchaseMaster">
+                        @Html.AntiForgeryToken()
+
+                        <section class="card">
+
+                            <div class="card-body">
+
+
+
+                                <div class="row form-group">
+                                    <div class="col-lg-4">
+
+                                        <div class="row MasterForm">
+                                            <label for="Vendor_ID" class="col-sm-3 col-form-label">Vendor</label>
+                                            <div class="col-sm-9">
+                                                <select class="form-control select2" id="Vendor_ID" name="Vendor_ID" onchange="AddNewVendor(this)" asp-items="@(new SelectList( ViewBag.VendorMaster,"Partner_ID","PartnerName", Model.purchaseMasterObj.Vendor_ID))" required>
+                                                    <option>Select Vendor</option>
+                                                    <option value="NewVendor">New Vendor A/C</option>
+                                                </select>
+
+                                                <input type="hidden" id="PurchaseMaster_ID" name="PurchaseMaster_ID" value="@PurchaseMaster_ID" />
+                                            </div>
+                                        </div>
+                                        <div class="row MasterForm">
+                                            <label for="To" class="col-sm-3 col-form-label">To</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" id="Vendor_PruchaseTo" name="Vendor_PruchaseTo" value="@Model.purchaseMasterObj.Vendor_PruchaseTo">
+                                            </div>
+                                        </div>
+                                        <div class="row MasterForm">
+                                            <label for="Address" class="col-sm-3 col-form-label">Address</label>
+                                            <div class="col-sm-9">
+                                                <textarea class="form-control" rows="2" id="Vendor_Address" name="Vendor_Address" placeholder="">@Model.purchaseMasterObj.Vendor_Address</textarea>
+                                            </div>
+                                        </div>
+
+
+
+                                    </div>
+                                    <div class="col-lg-4">
+
+                                    </div>
+
+                                    <div class="col-lg-4 ">
+
+                                        <div class="row MasterForm">
+                                            <label for="PurchaseRef" class="col-sm-3 col-form-label">Ref No</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" id="PurchaseRef" name="PurchaseRef" value="@Model.purchaseMasterObj.PurchaseRef" readonly>
+                                            </div>
+                                        </div>
+
+
+                                        <div class="row MasterForm">
+                                            <label for="PurchaseDate" class="col-sm-3 col-form-label">Date</label>
+                                            <div class="col-sm-9">
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                        </span>
+                                                    </span>
+                                                    @if (Model.purchaseMasterObj.PurchaseDate != null)
+                                                    {
+                                        <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="PurchaseDate" name="PurchaseDate" value="@Model.purchaseMasterObj.PurchaseDate" required> }
+                                    else
+                                    {
+                        <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="PurchaseDate" name="PurchaseDate" value="@DateTime.Now.ToString("dd-MMM-yyyy")" required>}
+
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+
+
+
+
+                                    </div>
+
+
+                                </div>
+
+                            </div>
+
+
+
+                        </section>
+                    </form>
+                </div>
+
+            </div>
+
+            <div class="row m-2">
+                <div class="col-lg-6">
+                    <h2 class="card-title" style="line-height:normal;">Purchase Detail </h2>
+                </div>
+                <div class="col-lg-6 text-right">
+                    <button class="btn-sm btn btn-primary" data-toggle="modal" data-target="#AddNewPurchaseModal">Add New &nbsp;<i class="fas fa-plus"></i></button>
+
+
+                </div>
+            </div>
+
+            <div id="PurchaseDetailSection">
+
+
+                <table class="table table-responsive-md table-bordered mb-0">
+                    <thead>
+                        <tr>
+                            <th>Edit/Delete</th>
+                            <th>Item</th>
+                            <th>Description</th>
+
+                            <th>Quantity</th>
+                            <th>Price</th>
+                            <th>VAT</th>
+                            <th>Discount</th>
+                            <th>Total Amount</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.purchaseDetailList != null)
+                        {
+                            ViewBag.SubTotal = 0;
+
+                            foreach (Pa_PurchaseDetails_DAL item in Model.purchaseDetailList)
+                            {
+
+                                ViewBag.SubTotal = item.SubTotal;
+                                ViewBag.Vat_ExpTotal = item.Vat_ExpTotal;
+                                ViewBag.DiscountTotal = item.DiscountTotal;
+                                ViewBag.Grand_Total = item.Grand_Total;
+
+
+            <tr>
+
+
+                <td>
+                    <a onclick="UpdatePurchaseDetail('@item.PurchaseDetails_ID', '@item.item_ID', '@item.item_Description', '@item.Quantity', '@item.UOM','@item.Unit_Price', '@item.Currency_ID', '@item.Currency_Rate', '@item.Discount', '@item.VAT_Rate', '@item.VAT_Exp', '@item.Amount', '@item.TtlAmount', '@item.Amount_Others', '@item.location_ID', '@item.Serial', '@item.Barcode');" data-toggle="modal" data-target="#UdpateNewPurchaseModal"><img style="width: 20px;" src="~/Img/Icons/edit.png" /></a>
+                    <a onclick="DeletePurchaseDetail('@item.PurchaseDetails_ID');" data-toggle="modal" data-target="#DeletePurchaseDetailModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ItemName)
+                    <br />
+                    <span class="small"> @Html.DisplayFor(modelItem => item.ItemCode)</span>
+                    <br />
+                    <span class="small">Serial: @Html.DisplayFor(modelItem => item.Serial) / Barcode: @Html.DisplayFor(modelItem => item.Barcode)</span>
+                </td>
+                <td>@Html.DisplayFor(modelItem => item.item_Description)</td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Quantity)
+                    x
+                    @Html.DisplayFor(modelItem => item.UOM)
+                    <br />
+                    @Html.DisplayFor(modelItem => item.LocationName)
+                </td>
+
+                <td>@Html.DisplayFor(modelItem => item.Unit_Price)</td>
+                <td>@Html.DisplayFor(modelItem => item.VAT_Exp)</td>
+                <td>@Html.DisplayFor(modelItem => item.Discount)</td>
+                <td>@Html.DisplayFor(modelItem => item.Amount)</td>
+
+            </tr>
+}
+    }
+                    </tbody>
+
+                </table>
+
+                <div class="invoice-summary">
+
+                    <div class="row">
+
+                        <div class="col-lg-9 col-md-9">
+
+                        </div>
+
+                        <div class="col-lg-3 col-md-3 justify-content-end text-right">
+                            <table class="table h6 text-dark">
+                                <tbody>
+
+
+
+                                    <tr class="b-top-0">
+                                        <td colspan="2"> Sub Total:</td>
+                                        <td class="text-right" id="SubTotal">@ViewBag.SubTotal</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2">VAT Charge:</td>
+                                        <td class="text-right" id="VAT_ChargeTotal">@ViewBag.Vat_ExpTotal</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td colspan="2">Discount:</td>
+                                        <td class="text-right" id="DiscountTotal">@ViewBag.DiscountTotal</td>
+                                    </tr>
+                                    <tr class="h5">
+                                        <td colspan="2">Total Payable:</td>
+                                        <td class="text-right" id="Total_Payable">@ViewBag.Grand_Total</td>
+                                    </tr>
+
+
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+            <hr />
+            <div class="row">
+                <div class="col-sm-3"><span class="show-grid-block">Created at : <b>@Model.purchaseMasterObj.Created_at </b></span></div>
+                <div class="col-sm-3"><span class="show-grid-block">Created by :</span><b>@Model.purchaseMasterObj.Created_by</b></div>
+                <div class="col-sm-3"><span class="show-grid-block">Modified at :<b>@Model.purchaseMasterObj.Modified_at </b></span></div>
+                <div class="col-sm-3"><span class="show-grid-block">Modified by : <b>@Model.purchaseMasterObj.Modified_by </b></span></div>
+            </div>
+
+
+
+
+
+
+        </div>
+
+
+    </div>
+</section>
+
+
+
+
+<!-- Modal Insert task -->
+<div class="modal fade bs-modal-lg" id="AddNewPurchaseModal" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Stock Details</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" data-ajax="true" data-ajax-success="mySuccessInsert" data-ajax-failure="myFailureInsert"
+                  asp-area="" asp-controller="Purchases" asp-action="InsertOtherPurchaseDetail" data-ajax-loading="" id="FormInsertPurchaseDetail">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body">
+
+
+
+                            <div class="row form-group">
+                                @if (Model.purchaseMasterObj.PurchaseMaster_ID != null)
+                                {
+                    <input id="hdPurchaseMaster_ID" name="hdPurchaseMaster_ID" type="hidden" value="@Model.purchaseMasterObj.PurchaseMaster_ID" /> }
+                else
+
+                {
+
+    <input id="hdPurchaseMaster_ID" name="hdPurchaseMaster_ID" type="hidden" value="0" />}
+                                <div class="col-lg-4 col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="item_ID">Item</label>
+
+                                        <select class="form-control select2" id="item_ID" name="item_ID" onchange="GetItemDetail(this)" asp-items="@(new SelectList( ViewBag.ItemMaster,"Item_ID","ItemCode"))">
+                                            <option>Select Item</option>
+
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+
+
+                                        <label class="col-form-label" for="Serial">@ViewBag.PO_SerialLabel</label>
+                                        <input type="text" class="form-control" id="Serial" name="Serial">
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+
+
+                                        <label class="col-form-label" for="Project_ID">Barcode</label>
+                                        <input type="text" class="form-control" id="Barcode" name="Barcode">
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 col-md-12">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="tt">Item Description</label>
+
+                                        <textarea id="item_Description" name="item_Description" rows="2" class="form-control" placeholder="Specification"></textarea>
+
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+
+                            <div class="row form-group">
+
+
+
+                                <div class="col-lg-4 col-md-4">
+                                    <div class="form-group" style="margin-top:2px;">
+                                        <label class="control-label">Quantity* </label>
+                                        <div class="row">
+                                            <div class="col-md-5 col-sm-5" style="padding:0; padding-left:15px;">
+                                                <input type="number" id="Quantity" name="Quantity" class="form-control" onblur="CalculateSumAmount()" placeholder="Quantity" required />
+                                            </div>
+                                            @*<div class="col-md-7 col-sm-7" style="padding:0;">
+
+                                                <select class="form-control" id="UOM" name="UOM" asp-items="@(new SelectList( ViewBag.UOMList,"UOM","UOM"))">
+                                                    <option>SELECT</option>
+                                                </select>
+                                            </div>*@
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+                                <div class="col-lg-4 col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Unit Price">Unit Price*</label>
+
+                                        <input type="number" id="Unit_Price" name="Unit_Price" class="form-control" step="any" onblur="CalculateSumAmount()" placeholder="Unit Price" required />
+                                    </div>
+                                </div>
+
+
+                                <div class="col-lg-4 col-md-4">
+                                    <div class="form-group" style="margin-top:2px;">
+                                        <label class="control-label">Currency </label>
+                                        <div class="row">
+                                            <div class="col-md-5 col-sm-5" style="padding:0;">
+
+                                                <select class="form-control" id="Currency_ID" name="Currency_ID" asp-items="@(new SelectList( ViewBag.CurrencyList,"Currency_ID","Currency_ShortName"))">
+                                                    @*<option>SELECT</option>*@
+                                                </select>
+                                            </div>
+                                            <div class="col-md-7 col-sm-7" style="padding:0;">
+                                                <input type="number" id="Currency_Rate" name="Currency_Rate" step="any" onblur="CalculateSumAmount()" value="1" class="form-control" placeholder="Rate">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+
+                            </div>
+
+                            <div class="row form-group">
+                                <div class="col-lg-4 col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Location_ID">Location</label>
+
+                                        <select class="form-control" name="Location_ID" id="Location_ID" @req>
+                                            <option value="">Select Location</option>
+                                            @foreach (var item in ViewBag.ItemLocation)
+                                            {
+                                                <option value="@item.ItemLocation_ID">@item.ItemLocationName</option>
+                                            }
+                                        </select>
+
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Amount">Discount</label>
+                                        <input type="number" class="form-control" id="Discount" name="Discount" step="any" onblur="CalculateSumAmount()">
+                                    </div>
+                                </div>
+
+
+                                <div class="col-lg-4 col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Amount">VAT Rate</label>
+                                        <select class="form-control" id="VAT_Rate" name="VAT_Rate" step="any" onchange="CalculateSumAmount()">
+                                            <option value="0">0%</option>
+                                            <option value="5">5%</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+
+
+
+                                <div class="col-lg-4 col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Amount">VAT Charges</label>
+                                        <input type="number" id="VAT_Exp" name="VAT_Exp" class="form-control" step="any" placeholder="VAT Charges" readonly />
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-4 col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Amount">Amount*</label>
+
+                                        <input type="number" id="Amount" name="Amount" class="form-control" step="any" placeholder="Amount" readonly required />
+                                    </div>
+                                </div>
+
+
+                                <div class="col-lg-4 col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Amount_Others">Total Amount</label>
+                                        <input type="number" id="TtlAmount" name="TtlAmount" class="form-control" step="any" readonly placeholder="Total Amount" />
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                            <div class="row form-group">
+
+
+
+
+
+
+                                <div class="col-lg-4 col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Amount_Others">Total Amount (Others)</label>
+                                        <input type="number" id="Amount_Others" name="Amount_Others" class="form-control" step="any" readonly placeholder="Amt (Others)" />
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Add</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modal Update Purchase -->
+<div class="modal fade bs-modal-lg" id="UdpateNewPurchaseModal" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Stock Details</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" data-ajax="true" data-ajax-success="mySuccessUpate" data-ajax-failure="myFailureUpdate"
+                  asp-area="" asp-controller="Purchases" asp-action="UpdateOtherPurchaseDetail" data-ajax-loading="" id="FormUpdatePurchaseDetail">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body">
+
+
+
+                            <div class="row form-group">
+                                @if (Model.purchaseMasterObj.PurchaseMaster_ID != null)
+                                {
+                    <input id="hdPurchaseMaster_ID" name="hdPurchaseMaster_ID" type="hidden" value="@Model.purchaseMasterObj.PurchaseMaster_ID" /> }
+                else
+
+                {
+
+    <input id="hdPurchaseMaster_ID" name="hdPurchaseMaster_ID" type="hidden" value="0" />}
+                                <div class="col-lg-4 col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="item_ID">Item</label>
+                                        <select class="form-control select2" id="item_IDUpdate" name="item_ID" asp-items="@(new SelectList( ViewBag.ItemMaster,"Item_ID","ItemCode"))">
+                                            <option>Select Item</option>
+
+                                        </select>
+
+                                        <input type="hidden" id="PurchaseDetails_IDUpate" name="PurchaseDetails_ID" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+
+
+                                        <label class="col-form-label" for="Project_ID">@ViewBag.PO_SerialLabel</label>
+                                        <input type="text" class="form-control" id="SerialUpate" name="Serial">
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+
+
+                                        <label class="col-form-label" for="Project_ID">Barcode</label>
+                                        <input type="text" class="form-control" id="BarcodeUpdate" name="Barcode">
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 col-md-12">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="item_Description">Item Description</label>
+
+                                        <textarea id="item_DescriptionUpdate" name="item_Description" rows="2" class="form-control" placeholder="Specification"></textarea>
+
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+
+                            <div class="row form-group">
+
+
+
+                                <div class="col-lg-4 col-md-4">
+                                    <div class="form-group" style="margin-top:2px;">
+                                        <label class="control-label">Quantity* </label>
+                                        <div class="row">
+                                            <div class="col-md-5 col-sm-5" style="padding:0; padding-left:15px;">
+                                                <input type="number" id="QuantityUpdate" name="Quantity" onblur="CalculateSumAmountUpdate()" class="form-control" placeholder="Quantity" required />
+                                            </div>
+                                            @*<div class="col-md-7 col-sm-7" style="padding:0;">
+
+                                                <select class="form-control" id="UOMUpdate" name="UOM" asp-items="@(new SelectList( ViewBag.UOMList,"UOM","UOM"))">
+                                                    <option>SELECT</option>
+                                                </select>
+                                            </div>*@
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+                                <div class="col-lg-4 col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Unit Price">Unit Price*</label>
+
+                                        <input type="number" id="Unit_PriceUpdate" name="Unit_Price" step="any" class="form-control" placeholder="Unit Price" required />
+                                    </div>
+                                </div>
+
+
+                                <div class="col-lg-4 col-md-4">
+                                    <div class="form-group" style="margin-top:2px;">
+                                        <label class="control-label">Currency </label>
+                                        <div class="row">
+                                            <div class="col-md-5 col-sm-5" style="padding:0;">
+
+                                                <select class="form-control" id="Currency_IDUpdate" name="Currency_ID" asp-items="@(new SelectList( ViewBag.CurrencyList,"Currency_ID","Currency_ShortName"))">
+                                                    @*<option>SELECT</option>*@
+                                                </select>
+                                            </div>
+                                            <div class="col-md-7 col-sm-7" style="padding:0;">
+                                                <input type="number" id="Currency_RateUpdate" name="Currency_Rate" step="any" onblur="CalculateSumAmountUpdate()" value="1" class="form-control" placeholder="Rate">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+
+                            </div>
+
+                            <div class="row form-group">
+                                <div class="col-lg-4 col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Location_ID">Location</label>
+
+                                        <select class="form-control" name="Location_ID" id="Location_IDUpdate"
+                                                asp-items="@(new SelectList(ViewBag.ItemLocation,"ItemLocation_ID","ItemLocationName"))">
+                                            <option value="0">Select Location</option>
+                                        </select>
+
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Amount">Discount</label>
+                                        <input type="number" class="form-control" id="DiscountUpdate" name="Discount" step="any" onblur="CalculateSumAmountUpdate()">
+                                    </div>
+                                </div>
+
+
+                                <div class="col-lg-4 col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Amount">VAT Rate</label>
+                                        <select class="form-control" id="VAT_RateUpate" name="VAT_Rate" onchange="CalculateSumAmountUpdate()">
+                                            <option value="0">0%</option>
+                                            <option value="5">5%</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+
+
+
+                                <div class="col-lg-4 col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Amount">VAT Charges</label>
+                                        <input type="number" id="VAT_ExpUpdate" name="VAT_Exp" step="any" class="form-control" placeholder="VAT Charges" readonly required />
+                                    </div>
+                                </div>
+
+
+                                <div class="col-lg-4 col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Amount">Amount*</label>
+
+                                        <input type="number" id="AmountUpate" name="Amount" step="any" class="form-control" placeholder="Amount" readonly />
+                                    </div>
+                                </div>
+
+
+                                <div class="col-lg-4 col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Amount_Others">Total Amount</label>
+                                        <input type="number" id="TtlAmountUpdate" name="TtlAmount" step="any" class="form-control" readonly placeholder="Total Amount" required />
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+                            <div class="row form-group">
+
+
+
+
+
+
+                                <div class="col-lg-4 col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Amount_Others">Total Amount (Others)</label>
+                                        <input type="number" id="Amount_OthersUpdate" name="Amount_Others" step="any" class="form-control" readonly placeholder="Amt (Others)" required />
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Update</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- Modal Delete PurchaseDetail -->
+<div class="modal fade bs-modal-lg" id="DeletePurchaseDetailModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Delete Purchase</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" data-ajax="true" data-ajax-success="SuccessDelete" data-ajax-failure="FailureDelete"
+                  asp-area="" asp-controller="Purchases" asp-action="DeletePurchaseDetailOther" data-ajax-loading="">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <h3>Do you want to delete this record?</h3>
+
+                                        <input type="hidden" id="PurchaseDetails_ID_Delete" name="PurchaseDetails_ID" />
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- Modal Delete PurchaseMaster Other -->
+<div class="modal fade bs-modal-lg" id="DeletePurchaseMasterNew" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Delete Purchase Master</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="Purchases" asp-action="DeletePurchaseMaster_Other">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <h3>Do you want to delete this record?</h3>
+
+                                        <input type="hidden" id="PurchaseMaster_ID_Delete" name="PurchaseMaster_ID" />
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal Change Purchase Master Other Status -->
+<div class="modal fade bs-modal-lg" id="ChangeStatusPurchaseModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Change Purchase Master Status</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="Purchases" asp-action="ChangePurchaseMasterStatus_Other">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <h3>Do you want to change status of this record?</h3>
+
+                                        <input type="hidden" id="PurchaseMaster_ID_Status" name="PurchaseMaster_ID" />
+                                        <input type="hidden" id="Purchase_Status_ID" name="Status_ID" />
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modal Insert Partner -->
+<div class="modal fade bs-modal-lg" id="AddPartnerModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Add Vendor</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="BasicData" asp-action="AddPartnersVendor" enctype="multipart/form-data">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body">
+
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Vendor Ref</label>
+
+                                        <input type="text" class="form-control" id="Partner_Ref" disabled="disabled" name="Partner_Ref">
+
+
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Vendor Name<span style="color: red; font-size: 15px; margin-left: 4px;">*</span></label>
+
+                                        <input type="text" class="form-control" id="PartnerName" name="PartnerName" required>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Contact Number</label>
+
+                                        <input type="text" class="form-control" id="ContactNumber" name="ContactNumber">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Mobile No</label>
+
+                                        <input type="text" class="form-control" id="MobileNo" name="MobileNo">
+                                    </div>
+                                </div>
+
+
+
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Contact Name</label>
+
+                                        <input type="text" class="form-control" id="ContactName" name="ContactName">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Contact Address</label>
+
+                                        <input type="text" class="form-control" id="ContactAddress" name="ContactAddress">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Email </label>
+
+                                        <input type="email" class="form-control" id="Email" name="Email">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Fax </label>
+
+                                        <input type="text" class="form-control" id="Fax" name="Fax">
+                                    </div>
+                                </div>
+
+
+
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">EmiratesID</label>
+
+                                        <input type="text" class="form-control" id="EmiratesID" name="EmiratesID">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">TradeLicenseNo</label>
+
+                                        <input type="text" class="form-control" id="TradeLicenseNo" name="TradeLicenseNo">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">TRN </label>
+
+                                        <input type="text" class="form-control" id="TRN" name="TRN">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Vendor Category</label>
+
+                                        <select class="form-control" id="VendorCat_ID" name="VendorCat_ID" asp-items="@(new SelectList( ViewBag.VendorCategoryList,"VendorCat_ID","VendorCatName"))">
+                                        </select>
+                                    </div>
+                                </div>
+
+
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Remarks</label>
+
+                                        <textarea type="text" class="form-control" id="Remarks" name="Remarks"></textarea>
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+<!-- Modal show attachment -->
+<div class="modal fade bs-modal-lg" id="ShowAttachmentMasterModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <!-- Following fields is for making a central purchase master id for attachments -->
+        <input type="hidden" id="PurchaseMasterMain" name="PurchaseMasterMain" />
+
+        <div class="modal-content" id="AttachmentsPurchaseMaster">
+
+
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+
+
+    @*Please never removed following scripts bcz these scripts are used in all ajax calls*@
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
+    <script src="~/js/Swal/swal.js"></script>
+    <link href="~/css/Swal/Swal.css" rel="stylesheet" />
+
+    <script>
+
+        $(function () {
+            $(".select2").select2({
+                theme: "bootstrap",
+
+            });
+        });
+
+
+    </script>
+
+
+    <script>
+
+        function DeleteAttachment(Attachment_ID, Master_ID, Type, File_Name) {
+
+            swal({
+                title: "Delete Purchase Attachment",
+
+                text: " Are you sure do you want to delete this Attachment? \n",
+
+                showCancelButton: true,
+                confirmButtonColor: "#0088CC",
+                confirmButtonText: "Confirm",
+
+                closeOnConfirm: true
+            },
+                function (isConfirm) {
+                    if (isConfirm) {
+                        var TeamDetailPostBackURL = '/Purchases/DeleteAttachmentPurchaseNew';
+
+                        //--in this function , the 'Type' is for the field in attachment table for specifying different voucher documents
+
+                        var PurchaseMaster_ID = Master_ID;
+                        if (!PurchaseMaster_ID) {
+                            alert("Attachment ID is null. Please try again!");
+                        } else {
+                            $.ajax({
+                                type: "GET",
+                                url: TeamDetailPostBackURL,
+                                contentType: "application/json; charset=utf-8",
+                                data: { "PurchaseMaster_ID": PurchaseMaster_ID, "Attachment_ID": Attachment_ID, "Type": Type, "File_Name": File_Name },
+                                datatype: "json",
+                                success: function (data) {
+
+
+                                    if (data.message == undefined) {
+                                        $('#AttachmentsPurchaseMaster').html(data);
+
+
+                                        //--assign value to PurchaseMaster_ID hidden field. this field is in partial view '_SalesInvoiceAttachment'
+                                        $("#PurchaseMaster_ID_Attachment").val(PurchaseMaster_ID);
+
+
+
+                                    } else {
+                                        alert(data.message);
+                                        //$('#ShowAttachmentMasterModal').modal('hide');
+                                    }
+
+                                },
+                                error: function () {
+                                    alert("Dynamic content load failed.");
+                                }
+                            });
+                        }
+                    }
+                });
+        }
+
+
+
+        //---show attachment popup
+        function ShowAttachmentMaster(PurchaseMaster_ID) {
+            debugger
+            var TeamDetailPostBackURL = '/Purchases/GetPurchaseMasterOther_Attachments';
+
+            //--assign value to PurchaseMaster_ID hidden field in the main. Dont remove this fields
+            $("#PurchaseMasterMain").val(PurchaseMaster_ID);
+
+
+            if (!PurchaseMaster_ID) {
+                alert("ID is null. Please try again!");
+            } else {
+                $.ajax({
+                    type: "GET",
+                    url: TeamDetailPostBackURL,
+                    contentType: "application/json; charset=utf-8",
+                    data: { "PurchaseMaster_ID": PurchaseMaster_ID },
+                    datatype: "json",
+                    success: function (data) {
+
+
+                        if (data.message == undefined) {
+                            $('#AttachmentsPurchaseMaster').html(data);
+
+
+                            //--assign value to PurchaseMaster_ID hidden field. this field is in partial view '_PurchaseListAttachment'
+                            $("#PurchaseMaster_ID_Attachment").val(PurchaseMaster_ID);
+
+                            $('#ShowAttachmentMasterModal').modal('show');
+
+                        } else {
+                            alert(data.message);
+                            $('#ShowAttachmentMasterModal').modal('hide');
+                        }
+
+                    },
+                    error: function () {
+                        alert("Dynamic content load failed.");
+                    }
+                });
+            }
+
+
+
+        }
+
+        ////---Delete Attachment
+        //function DeleteAttachment(Attachment_ID, Master_ID, Type, File_Name) {
+        //    debugger
+        //    var TeamDetailPostBackURL = '/Purchases/DeleteAttachmentPurchaseOther';
+
+        //    //--in this function , the 'Type' is for the field in attachment table for specifying different voucher documents
+
+        //    var PurchaseMaster_ID = Master_ID;
+        //    if (!PurchaseMaster_ID) {
+        //        alert("Attachment ID is null. Please try again!");
+        //    } else {
+        //        $.ajax({
+        //            type: "GET",
+        //            url: TeamDetailPostBackURL,
+        //            contentType: "application/json; charset=utf-8",
+        //            data: { "PurchaseMaster_ID": PurchaseMaster_ID, "Attachment_ID": Attachment_ID, "Type": Type, "File_Name": File_Name },
+        //            datatype: "json",
+        //            success: function (data) {
+
+
+        //                if (data.message == undefined) {
+        //                    $('#AttachmentsPurchaseMaster').html(data);
+
+
+        //                    //--assign value to PurchaseMaster_ID hidden field. this field is in partial view '_SalesInvoiceAttachment'
+        //                    $("#PurchaseMaster_ID_Attachment").val(PurchaseMaster_ID);
+
+
+
+        //                } else {
+        //                    alert(data.message);
+        //                    //$('#ShowAttachmentMasterModal').modal('hide');
+        //                }
+
+        //            },
+        //            error: function () {
+        //                alert("Dynamic content load failed.");
+        //            }
+        //        });
+        //    }
+
+
+
+        //}
+
+
+
+
+        //---after successfull submission of attachment
+        function mySuccessAttachment(data) {
+
+            debugger
+            if (data.message == undefined) {
+
+
+                $('#AttachmentsPurchaseMaster').html(data);
+
+                //---assign id of purchase master to the hidden field PurchaseMaster_ID_Attachment after partial view refresh
+                var PurchaseMaster_ID = document.getElementById("PurchaseMasterMain").value;
+                $("#PurchaseMaster_ID_Attachment").val(PurchaseMaster_ID);
+
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        //---if error occured in insertion of attachment
+        function myFailureAttachment() {
+
+            alert("Failured occured. Please try again!");
+
+        }
+        //---this function will hit after success submission of insert purchase detail form
+        function mySuccessInsert(data) {
+
+            var SuccessDiv = "<div class='col-lg-12'><div class='alert alert-info'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button><strong>Success!</strong> Saved Successfully! <a href ='' class='alert-link'></a></div></div>";
+            debugger
+            if (data.message == undefined) {
+
+                //$('#AddNewPurchaseModal').modal('hide');
+            
+                $('#PurchaseDetailSection').html(data);
+                $('#SuccessErrorSection').html(SuccessDiv).show();
+
+                //reset form after success
+               
+                $('#FormInsertPurchaseDetail').trigger("reset");
+                $("#item_ID").val(null).trigger("change");
+
+                $("#item_IDUpdate").val(null).trigger("change");
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        function myFailureInsert() {
+
+            alert("Failured occured. Please try again!");
+        }
+
+
+        //---this function will hit after success submission of update purchase detail form
+        function mySuccessUpate(data) {
+
+            var SuccessDiv = "<div class='col-lg-12'><div class='alert alert-info'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button><strong>Success!</strong> Updated Successfully! <a href ='' class='alert-link'></a></div></div>";
+            debugger
+            if (data.message == undefined) {
+
+                //$('#AddNewPurchaseModal').modal('hide');
+         
+                $('#PurchaseDetailSection').html(data);
+                $('#SuccessErrorSection').html(SuccessDiv).show();
+
+                //reset form after success
+                
+                $('#FormUpdatePurchaseDetail').trigger("reset");
+                $("#item_ID").val(null).trigger("change");
+
+                $("#item_IDUpdate").val(null).trigger("change");
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        function myFailureUpdate() {
+
+            alert("Failured occured. Please try again!");
+        }
+
+
+
+    </script>
+
+
+
+    <script>
+        //---submit new master purchase voucher
+        $(document).ready(function () {
+            $("#ButtonIssue").click(function () {
+
+                $("#formPurchaseMaster").submit();
+            });
+        });
+        //---Update master purchase voucher
+        $(document).ready(function () {
+            $("#ButtonSaveMaster").click(function () {
+                $("#formPurchaseMaster").submit();
+            });
+        });
+
+
+    </script>
+
+    <script type="text/javascript">
+
+
+
+        //---after successfull deleting of purchase detail
+        function SuccessDelete(data) {
+
+            var SuccessDiv = " <div class='col-lg-12'><div class='alert alert-info'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button><strong>Success!</strong> Deleted Successfully! <a href='' class='alert-link'></a></div></div>";
+            debugger
+            if (data.message == undefined) {
+                //alert("Saved Successfully!");
+                $('#DeletePurchaseDetailModal').modal('hide');
+           
+                $('#PurchaseDetailSection').html(data);
+                $('#SuccessErrorSection').html(SuccessDiv).show();
+         
+
+
+
+
+            } else {
+                alert(data.message);
+                $('#DeletePurchaseDetailModal').modal('hide');
+            }
+
+
+        }
+
+        //---after failure deleting of purchase detail
+        function FailureDelete() {
+
+            alert("Failured occured. Please try again!");
+            $('#DeletePurchaseDetailModal').modal('hide');
+        }
+
+
+
+    </script>
+
+    <script>
+
+        //---Delete purchase detail
+        function DeletePurchaseDetail(PurchaseDetails_ID) {
+            debugger
+            $("#PurchaseDetails_ID_Delete").val(PurchaseDetails_ID);
+
+        }
+
+        //---delete purchase master other
+        function DeletePurchaseMaster(PurchaseMaster_ID) {
+            debugger
+            $("#PurchaseMaster_ID_Delete").val(PurchaseMaster_ID);
+
+        }
+
+        //----Assigning values to Update purchase detail form
+        function UpdatePurchaseDetail(PurchaseDetails_ID, item_ID, item_DescriptionUpdate, QuantityUpdate, UOMUpdate, Unit_PriceUpdate, Currency_IDUpdate, Currency_RateUpdate, DiscountUpdate,
+            VAT_RateUpate, VAT_ExpUpdate, AmountUpate, TtlAmountUpdate, Amount_OthersUpdate, location_ID, Serial,Barcode) {
+
+            debugger
+
+            $("#PurchaseDetails_IDUpate").val(PurchaseDetails_ID);
+
+            $("#item_IDUpdate").select2('val', item_ID);
+            $("#item_DescriptionUpdate").val(item_DescriptionUpdate);
+            $("#SerialUpate").val(Serial);
+            $("#BarcodeUpdate").val(Barcode);
+            $("#QuantityUpdate").val(QuantityUpdate);
+            $("#UOMUpdate").val(UOMUpdate);
+            $("#Unit_PriceUpdate").val(Unit_PriceUpdate);
+            $("#Currency_IDUpdate").val(Currency_IDUpdate);
+            $("#Currency_RateUpdate").val(Currency_RateUpdate);
+            $("#DiscountUpdate").val(DiscountUpdate);
+            $("#VAT_RateUpate").val(VAT_RateUpate);
+            $("#VAT_ExpUpdate").val(VAT_ExpUpdate);
+            $("#AmountUpate").val(AmountUpate);
+            $("#TtlAmountUpdate").val(TtlAmountUpdate);
+            $("#Amount_OthersUpdate").val(Amount_OthersUpdate);
+            $("#Location_IDUpdate").val(location_ID);
+
+
+
+        }
+
+
+
+        //---function for calculating amounts in the puchase detail pop up form insert
+
+        function CalculateSumAmount() {
+            debugger
+            var Quanity = 0;
+            var Unit_Price = 0;
+            var Currency_Rate = 1;
+            var Discount = 0;
+            var VAT_Rate = 5;
+
+            var VAT_Exp = 0;
+            var Amount = 0;
+            var TtlAmount = 0;
+            var Amount_Others = 0;
+
+
+            Quanity = document.getElementById("Quantity").value;
+            Unit_Price = document.getElementById("Unit_Price").value;
+            Currency_Rate = document.getElementById("Currency_Rate").value;
+            Discount = document.getElementById("Discount").value;
+            VAT_Rate = document.getElementById("VAT_Rate").value;
+
+            VAT_Exp = document.getElementById("VAT_Exp").value;
+            Amount = document.getElementById("Amount").value;
+            TtlAmount = document.getElementById("TtlAmount").value;
+            Amount_Others = document.getElementById("Amount_Others").value;
+
+
+
+            if (!Quanity) {
+                Quanity = 0;
+            }
+            if (!Unit_Price) {
+                Unit_Price = 0;
+            }
+            if (!Discount) {
+                Discount = 0;
+            }
+            if (!VAT_Rate) {
+                VAT_Rate = 5;
+
+            }
+            if (!VAT_Exp) {
+                VAT_Exp = 0;
+            }
+            if (!TtlAmount) {
+                TtlAmount = 1;
+            }
+            if (!Amount_Others) {
+                Amount_Others = 1;
+            }
+
+            //---calculate Amount
+            Amount = Quanity * Unit_Price;
+            $("#Amount").val(Amount);
+
+            //---calculate sum vat exp
+            VAT_Exp = VAT_Rate * Amount / 100;
+            $("#VAT_Exp").val(VAT_Exp);
+
+            TtlAmount = (Number(Amount) + Number(VAT_Exp)) - Number(Discount);
+            $("#TtlAmount").val(TtlAmount);
+
+            //--Calculate Other Amount
+
+            Amount_Others = TtlAmount * Currency_Rate;
+            $("#Amount_Others").val(Amount_Others);
+
+
+        }
+
+
+        //---function for calculating amounts in the puchase detail pop up form update
+
+        function CalculateSumAmountUpdate() {
+            debugger
+            var Quanity = 0;
+            var Unit_Price = 0;
+            var Currency_Rate = 1;
+            var Discount = 0;
+            var VAT_Rate = 5;
+
+            var VAT_Exp = 0;
+            var Amount = 0;
+            var TtlAmount = 0;
+            var Amount_Others = 0;
+
+
+
+            Quanity = document.getElementById("QuantityUpdate").value;
+            Unit_Price = document.getElementById("Unit_PriceUpdate").value;
+            Currency_Rate = document.getElementById("Currency_RateUpdate").value;
+            Discount = document.getElementById("DiscountUpdate").value;
+            VAT_Rate = document.getElementById("VAT_RateUpate").value;
+
+            VAT_Exp = document.getElementById("VAT_ExpUpdate").value;
+            Amount = document.getElementById("AmountUpate").value;
+            TtlAmount = document.getElementById("TtlAmountUpdate").value;
+            Amount_Others = document.getElementById("Amount_OthersUpdate").value;
+
+
+
+            if (!Quanity) {
+                Quanity = 0;
+            }
+            if (!Unit_Price) {
+                Unit_Price = 0;
+            }
+            if (!Discount) {
+                Discount = 0;
+            }
+            if (!VAT_Rate) {
+                VAT_Rate = 5;
+
+            }
+            if (!VAT_Exp) {
+                VAT_Exp = 0;
+            }
+            if (!TtlAmount) {
+                TtlAmount = 1;
+            }
+            if (!Amount_Others) {
+                Amount_Others = 1;
+            }
+
+            //---calculate Amount
+            Amount = Quanity * Unit_Price;
+            $("#AmountUpate").val(Amount);
+
+            //---calculate sum vat exp
+            VAT_Exp = VAT_Rate * Amount / 100;
+            $("#VAT_ExpUpdate").val(VAT_Exp);
+
+            TtlAmount = (Number(Amount) + Number(VAT_Exp)) - Number(Discount);
+            $("#TtlAmountUpdate").val(TtlAmount);
+
+            //--Calculate Other Amount
+            Amount_Others = TtlAmount * Currency_Rate;
+            $("#Amount_OthersUpdate").val(Amount_Others);
+
+        }
+
+        //---change purchase master status
+        function ChangeStatusPurchaseMaster(PurchaseMaster_ID, Status) {
+            debugger
+            $("#PurchaseMaster_ID_Status").val(PurchaseMaster_ID);
+            $("#Purchase_Status_ID").val(Status);
+
+        }
+
+        //----method for opening vendor popup
+        function AddNewVendor(Vendor) {
+            vendorValue = Vendor.value;
+            if (vendorValue == 'NewVendor') {
+                $('#AddPartnerModal').modal('show');
+            }
+        }
+        function GetItemDetail(sel) {
+
+            debugger
+
+
+            var Item = sel.options[sel.selectedIndex].text;
+
+            if (Item == -1) {
+
+            }
+            else {
+                $.ajax({
+
+                    type: "Get",
+                    url: "/Inventory/GetItemDetail",
+                    data: { //Passing data
+                        Item: Item
+                    },
+                    datatype: "json",
+                    success: function (response) {
+                        debugger
+
+
+                        $("#item_Description").val(response.itemDescription);
+                        $("#Unit_Price").val(response.unitPrice);
+                        $("#SalePrice").val(response.salePrice);
+                        $("#UOM").val(response.uom);
+
+
+
+
+
+                    }
+                })
+            }
+
+        }
+
+        $(document).ready(function () {
+            debugger
+            $("#VendorCat_ID").val("2");
+        });
+                $(document).ready(function(){
+            $("#print-btn").click(function(event){
+                event.preventDefault();
+
+                var win = window.open("@Url.Action("PurchaseInvoicePrint_trd", "Report")" + "?PurchaseMaster_ID=" + $("#PurchaseMaster_ID").val() , "_blank");
+                win.focus();
+            });
+        })
+    </script>
+}
+

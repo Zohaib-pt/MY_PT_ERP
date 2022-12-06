@@ -1,0 +1,739 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OSales
+
+@{
+    //ViewData["Title"] = "salescancelreturn";
+    Layout = "~/Views/Shared/_LayoutTablePages.cshtml";
+}
+
+
+@{
+
+
+
+    string Form_SalesMaster_ActionMethod = "";
+    int? SaleMaster_ID = ViewBag.SaleMaster_ID;
+
+
+    if (Model.SaleMasterObj != null && Model.SaleMasterObj.SaleMaster_ID > 0)
+    {
+
+        Form_SalesMaster_ActionMethod = "UpdateSalesMaster__CancelReturn";
+
+
+    }
+    else
+    {
+        Form_SalesMaster_ActionMethod = "InsertSalesMaster_CancelReturn";
+
+
+    }
+
+}
+
+
+
+
+
+
+<header class="page-header">
+    <h2>Sales</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="index.html">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+            <li><a asp-area="" asp-controller="Sales" asp-action="SalesList"><span>Sales</span></a></li>
+            <li><a asp-area="" asp-controller="@ViewBag.BreadCumController" asp-action="@ViewBag.BreadCumAction"><span>Sales Cancel/Return</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+
+
+
+
+
+<div class="row" id="SuccessErrorSection">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+        <div class="col-lg-12">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-info">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Success!</strong> @TempData["Success"] <a href="" class="alert-link"></a>
+                </div>
+            }
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Error!</strong> @TempData["Error"] <a href="" class="alert-link"></a>
+                </div>
+            }
+        </div>
+    }
+
+
+</div>
+
+<!-- start: page -->
+<section class="card">
+    <div class="card-body">
+        <div class="invoice">
+            <header class="clearfix">
+                <div class="row">
+                    <div class="col-sm-6 mt-0">
+                        <h2 class="h4 mt-0 mb-2 text-dark font-weight-bold">Sales Cancel/Return</h2>
+
+                    </div>
+
+                    <div class="col-sm-6 mt-0 text-right">
+
+                        @if (String.IsNullOrEmpty(Model.SaleMasterObj.SaleStatus))
+                        {
+                            <h4 class=" mt-0 mb-2 text-dark"><b>Status:</b> <label>Pending</label></h4>
+                        }
+                        else
+                        {
+                            <h4 class=" mt-0 mb-2 text-dark"><b>Status:</b> <label>@Model.SaleMasterObj.SaleStatus</label></h4>
+                        }
+
+
+                    </div>
+
+
+                </div>
+            </header>
+
+            <div class="row">
+                <div class="col-lg-8">
+                    @if (Model.SaleMasterObj.SaleMaster_ID != null)
+                    {
+                        if (Model.SaleMasterObj.SaleMaster_ID > 0)
+                        {
+
+                            <button type="button" id="ButtonSaleMasterUpdate" class="btn-sm btn btn-success">Update &nbsp;<i class="fas fa-save"></i></button>
+
+                            <button type="button" class="btn-sm btn btn-primary">Edit  &nbsp;<i class="fas fa-edit"></i></button>
+
+
+                            <button type="button" class="btn-sm btn btn-warning" data-toggle="modal" data-target="#ChangeStatusSalesModal" onclick="ChangeStatusSalesMaster('@Model.SaleMasterObj.SaleMaster_ID', '5');">Cancel &nbsp;<i class="fas fa-cross"></i></button>
+
+                            <button type="button" class="btn-sm btn btn-danger" data-toggle="modal" data-target="#DeleteSalesMasterModal" onclick="DeleteSalesMaster('@Model.SaleMasterObj.SaleMaster_ID');">Delete &nbsp;<i class="fas fa-trash-alt"></i></button>
+
+                            <button type="button" class="btn-sm btn btn-info">Print &nbsp;<i class="fas fa-print"></i></button>
+
+                            <a asp-controller="Sales" asp-action="SalesCancelReturnList" class="btn-sm btn btn-default">List &nbsp;<i class="fas fa-list"></i></a>
+
+
+                        }
+                    }
+                    else
+                    {
+                        <button type="button" id="ButtonSaleMasterIssue" class="btn-sm btn btn-success">Issue &nbsp;<i class="fas fa-save"></i></button>
+
+                        <button type="button" class="btn-sm btn btn-primary" disabled="disabled">Edit  &nbsp;<i class="fas fa-edit"></i></button>
+
+
+                        <button type="button" class="btn-sm btn btn-warning" disabled="disabled">Cancel &nbsp;<i class="fas fa-cross"></i></button>
+                        <button type="button" class="btn-sm btn btn-danger" disabled="disabled">Delete &nbsp;<i class="fas fa-trash-alt"></i></button>
+                        <button type="button" class="btn-sm btn btn-info" disabled="disabled">Print &nbsp;<i class="fas fa-print"></i></button>
+
+                        <a asp-controller="Sales" asp-action="SalesCancelReturnList" class="btn-sm btn btn-default">List &nbsp;<i class="fas fa-list"></i></a>
+
+                    }
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div class="col">
+
+
+
+                    <form method="post" asp-area="" asp-controller="Sales" asp-action="@Form_SalesMaster_ActionMethod" id="formSalesMaster">
+                        @Html.AntiForgeryToken()
+
+                        <section class="card">
+
+                            <div class="card-body">
+
+
+
+                                <div class="row form-group">
+                                    <div class="col-lg-4">
+
+                                        <div class="row MasterForm">
+                                            <label for="To" class="col-sm-3 col-form-label">Customer</label>
+                                            <div class="col-sm-9">
+
+                                                <select class="form-control" id="Customer_ID" name="Customer_ID" onchange="GetCustomerDetail()"  asp-items="@(new SelectList( ViewBag.CustomerMaster,"Customer_ID","CustomerName", Model.SaleMasterObj.Customer_ID))" required>
+                                                    <option>Select Customer</option>
+
+                                                </select>
+                                                <input type="hidden" id="SaleMaster_ID" name="SaleMaster_ID" value="@SaleMaster_ID" />
+                                            </div>
+                                        </div>
+                                        <div class="row MasterForm">
+                                            <label for="To" class="col-sm-3 col-form-label">Contact</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" id="Customer_Contact" name="Customer_Contact" value="@Model.SaleMasterObj.Customer_Contact" placeholder="Contact Number">
+                                            </div>
+                                        </div>
+
+                                        <div class="row MasterForm">
+                                            <label for="Address" class="col-sm-3 col-form-label">Address</label>
+                                            <div class="col-sm-9">
+                                                <textarea class="form-control" rows="2" id="Invoice_address" name="Invoice_address" placeholder="">@Model.SaleMasterObj.Invoice_address</textarea>
+                                            </div>
+                                        </div>
+
+
+
+                                    </div>
+                                    <div class="col-lg-4">
+
+                                    </div>
+
+                                    <div class="col-lg-4 ">
+
+                                        <div class="row MasterForm">
+                                            <label for="PurchaseRef" class="col-sm-3 col-form-label">Ref No</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" id="SaleRef" name="SaleRef" value="@Model.SaleMasterObj.Trans_Ref_Other" readonly>
+                                            </div>
+                                        </div>
+
+                                        <div class="row MasterForm">
+                                            <label for="PurchaseDate" class="col-sm-3 col-form-label">Date</label>
+                                            <div class="col-sm-9">
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                        </span>
+                                                    </span>
+
+                                                    @if (!String.IsNullOrEmpty(Model.SaleMasterObj.SaleDate))
+                                                    {
+                                                        <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="SaleDate" name="SaleDate" value="@Model.SaleMasterObj.SaleDate" required>
+
+                                                    }
+                                                    else
+                                                    {
+                                                        <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="SaleDate" name="SaleDate" value="@DateTime.Now.ToString("dd-MMM-yyyy")" required>
+
+                                                    }
+
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+
+                                        <div class="row MasterForm">
+                                            <label for="PurchaseRef" class="col-sm-3 col-form-label">SR Ref</label>
+                                            <div class="col-sm-5" style="padding-right:1px;">
+                                                <input type="text" class="form-control" id="SaleRef_Number" name="SaleRef_Number">
+                                            </div>
+                                            <div class="col-sm-4" style="padding-left:1px; ">
+                                                <button type="button" onclick="GetSalesDetailListByRef()" class=" btn btn-primary" style="width:100%;">Get &nbsp; <i class="fa fa-search"></i></button>
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+
+
+                                </div>
+
+                            </div>
+
+
+
+                        </section>
+                    </form>
+
+                </div>
+
+            </div>
+
+            <div class="row m-2">
+                <div class="col-lg-6">
+                    <h2 class="card-title" style="line-height:normal;">Sale Details </h2>
+                </div>
+
+            </div>
+
+            <div id="SalesDetailSection">
+
+                <table class="table table-responsive-md table-bordered mb-0">
+                    <thead>
+                        <tr>
+                            <th>Delete</th>
+                            <th>Chassis</th>
+                            <th>Make</th>
+                            <th>Model</th>
+
+                            <th>Color</th>
+                            <th>Price</th>
+
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @if (Model.SalesDetailList != null)
+                        {
+
+                            ViewBag.Grand_Amount = 0;
+                            ViewBag.Grand_VATExp = 0;
+                            ViewBag.Grand_TotalAmount = 0;
+
+
+
+                            foreach (pa_SalesDetails item in Model.SalesDetailList.Where(m => m.SaleInvoiceType == "ByChassis" || String.IsNullOrEmpty(m.SaleInvoiceType)))
+                            {
+
+                                ViewBag.Grand_Amount = item.Grand_Amount;
+                                ViewBag.Grand_VATExp = item.Grand_VATExp;
+                                ViewBag.Grand_TotalAmount = item.Grand_TotalAmount;
+
+                                <tr>
+
+
+                                    <td>
+
+
+                                        <a onclick="DeleteSalesDetail('@item.SalesDetails_ID');" data-toggle="modal" data-target="#DeleteSalesDetailModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+                                    </td>
+                                    <td>@Html.DisplayFor(modelItem => item.Chassis_No)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Make)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.ModelDesciption)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Color)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Unit_Price)</td>
+
+
+
+                                </tr>
+
+
+                            }
+                        }
+
+
+                    </tbody>
+
+                </table>
+
+
+                <table class="table table-responsive-md table-bordered mb-0 mt-3">
+                    <thead>
+                        <tr>
+                            <th>Delete</th>
+                            <th>Service Description</th>
+
+                            <th>Price</th>
+
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @if (Model.SalesDetailList != null)
+                        {
+
+
+                            foreach (pa_SalesDetails item in Model.SalesDetailList.Where(m => m.SaleInvoiceType == "ByService"))
+                            {
+
+                                <tr>
+                                    <td>
+
+                                        <a onclick="DeleteSalesDetail('@item.SalesDetails_ID');" data-toggle="modal" data-target="#DeleteSalesDetailModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+                                    </td>
+                                    <td>@Html.DisplayFor(modelItem => item.ItemDesc)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Unit_Price)</td>
+
+
+                                </tr>
+
+
+                            }
+                        }
+
+                    </tbody>
+
+                </table>
+
+
+
+                <div class="invoice-summary">
+
+                    <div class="row">
+
+                        <div class="col-lg-9 col-md-9">
+
+                        </div>
+
+                        <div class="col-lg-3 col-md-3 justify-content-end text-right">
+                            <table class="table h6 text-dark">
+                                <tbody>
+
+                                    <tr class="b-top-0">
+                                        <td colspan="2"> Sub Total:</td>
+                                        <td class="text-right" id="SubTotal">@ViewBag.Grand_Amount</td>
+                                    </tr>
+
+                                    <tr class="b-top-0">
+                                        <td colspan="2"> VAT Charges:</td>
+                                        <td class="text-right" id="Grand_VATExp">@ViewBag.Grand_VATExp</td>
+                                    </tr>
+
+                                    <tr class="h5">
+                                        <td colspan="2">Total Payable:</td>
+                                        <td class="text-right" id="Total_Payable">@ViewBag.Grand_TotalAmount</td>
+                                    </tr>
+
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <hr />
+            <div class="row">
+
+                <div class="col-sm-3"><span class="show-grid-block">Created at : <b>@Model.SaleMasterObj.Created_at </b></span></div>
+                <div class="col-sm-3"><span class="show-grid-block">Created by :</span><b>@Model.SaleMasterObj.Created_by</b></div>
+                <div class="col-sm-3"><span class="show-grid-block">Modified at :<b>@Model.SaleMasterObj.Modified_at </b></span></div>
+                <div class="col-sm-3"><span class="show-grid-block">Modified by : <b>@Model.SaleMasterObj.Modified_by </b></span></div>
+            </div>
+
+
+
+        </div>
+
+
+    </div>
+</section>
+
+
+
+
+<!-- Modal Delete sales master invoice -->
+<div class="modal fade bs-modal-lg" id="DeleteSalesMasterModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Delete Sale Master</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="Sales" asp-action="DeleteSalesMaster_CancelReturn">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <h3>Do you want to delete this record?</h3>
+
+                                        <input type="hidden" id="SaleMaster_ID_Delete" name="SaleMaster_ID" />
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- Modal Delete sales Detail -->
+<div class="modal fade bs-modal-lg" id="DeleteSalesDetailModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Delete Sales Detail</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="Sales" asp-action="DeleteSalesDetail_CancelReturn">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <h3>Do you want to delete this record?</h3>
+
+                                        <input type="hidden" id="SalesDetails_ID_Delete" name="SalesDetails_ID" />
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modal Change sales Master Status -->
+<div class="modal fade bs-modal-lg" id="ChangeStatusSalesModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Change Sales Master Status</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="Sales" asp-action="ChangeSalesMaster_CancelReturnStatus" data-ajax-loading="">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <h3>Do you want to change status of this record?</h3>
+
+                                        <input type="hidden" id="SaleMaster_IDStatus" name="SaleMaster_ID" />
+                                        <input type="hidden" id="Sales_Status_ID" name="Status_ID" />
+                                        <input type="hidden" id="Trans_Type" name="Trans_Type" value="Sales_CancelReturn" />
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+
+
+
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
+
+
+
+    <script>
+
+        //---delete sales invoice master
+        function DeleteSalesMaster(SaleMaster_ID) {
+            debugger
+            $("#SaleMaster_ID_Delete").val(SaleMaster_ID);
+
+        }
+
+
+        //---Delete sales detail
+        function DeleteSalesDetail(SalesDetails_ID) {
+            debugger
+            $("#SalesDetails_ID_Delete").val(SalesDetails_ID);
+
+        }
+
+        //---change sales master status
+        function ChangeStatusSalesMaster(SaleMaster_ID, Status) {
+            debugger
+            $("#SaleMaster_IDStatus").val(SaleMaster_ID);
+            $("#Sales_Status_ID").val(Status);
+
+        }
+
+
+        $(document).ready(function () {
+            $("#ButtonSaleMasterIssue").click(function () {
+                $("#formSalesMaster").submit();
+            });
+        });
+
+        $(document).ready(function () {
+            $("#ButtonSaleMasterUpdate").click(function () {
+                $("#formSalesMaster").submit();
+            });
+        });
+
+
+        function GetCustomerDetail() {
+
+            //debugger
+
+
+            var Customer = document.getElementById("Customer_ID").value.toString();
+
+            $.ajax({
+
+                type: "Get",
+                url: "/Sales/GetCustomerDetail",
+                data: { //Passing data
+                    Customer_ID: Customer
+                },
+                datatype: "json",
+                success: function (response) {
+                    debugger
+
+
+                    $("#Customer_Contact").val(response.contactNumber);
+                    $("#Invoice_address").val(response.contactAddress);
+                 
+                 
+
+
+
+
+
+                }
+            })
+        }
+
+        //This function is inserting sale detail record against ref and then picking record on the basis of this
+        function GetSalesDetailListByRef() {
+            debugger
+            var SaleRef = document.getElementById("SaleRef_Number").value.toString();
+
+            $.ajax({
+
+                type: "Get",
+                url: "/Sales/Insert_And_GetSalesReturnDetail",
+                data: { //Passing data
+                    SaleRef: SaleRef
+
+
+                },
+                datatype: "json",
+                success: function (data) {
+
+                    debugger
+                    if (data.message == undefined) {
+                        //alert("Saved Successfully!");
+
+                        $('#SalesDetailSection').html(data);
+
+
+                    } else {
+                        alert(data.message);
+
+                    }
+
+
+                }, error: function (jqXHR, status, err) {
+                    alert("An error occured. Please try again!");
+                }
+
+            })
+        }
+
+
+
+
+
+    </script>
+
+
+}

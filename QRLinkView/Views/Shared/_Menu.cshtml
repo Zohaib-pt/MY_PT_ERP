@@ -1,0 +1,159 @@
+﻿@using DAL
+@using DAL.Models
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+
+
+@{
+    //--Note: All these variables are used  in the menu below
+
+    string navParent = "";  //---It is class name
+    string View = Configuration.GetSection("AppSettings").GetSection("IsDashboard").Value;
+}
+ 
+<div class="header-nav collapse">
+    <div class="header-nav-main header-nav-main-effect-1 header-nav-main-sub-effect-1 header-nav-main-square">
+        <nav>
+
+            <ul class="nav nav-pills" id="mainNav">
+                <li>
+                    <a class="nav-link" asp-area="" asp-controller="Home" asp-action="@View">
+                        <i class="fas fa-home" aria-hidden="true"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+
+
+
+                @if (ViewBag.MainMenuList != null)
+                {
+                    //--Rendering main menu
+                    foreach (Pa_MainMenu_DAL MainMenu in ViewBag.MainMenuList)
+                    {
+                        @if (MainMenu.IsVisible == "True") { 
+                        @if (MainMenu.IsExpandable == "True")
+                        {
+                            navParent = "dropdown";
+                        }
+                        else
+                        {
+                            navParent = "";
+                        }
+                        <li class="@navParent">
+                            <a class="nav-link dropdown-toggle" href="#">
+                                <i class="fas fa-@MainMenu.Icon" aria-hidden="true"></i>
+                                &nbsp;
+                                <span>@MainMenu.MainMenuName</span>
+
+
+                            </a>
+                            <ul class="dropdown-menu">
+
+                                <!-- Rendering menu level 1-->
+                                @foreach (Pa_MenuLevel1_DAL MenuLevel1 in (ViewBag.MenuLevel1List as List<Pa_MenuLevel1_DAL>).Where(i => i.MainMenu_ID == MainMenu.MainMenu_ID))
+                                {
+                                    @if (MenuLevel1.IsVisible == "True")
+                                    {
+                                        //----Following code is for making class for a menu extendable or non extendable
+                                        @if (MenuLevel1.IsExpandable == "True")
+                                        {
+                                            navParent = "dropdown-submenu";
+                                        }
+                                        else
+                                        {
+                                            navParent = "";
+                                        }
+
+
+
+                                <li class="@navParent">
+
+                                    @*@if (MenuLevel1.MenuLevel1_ID == 1 || MenuLevel1.MenuLevel1_ID == 2 || MenuLevel1.MenuLevel1_ID == 10 || MenuLevel1.MenuLevel1_ID == 11)
+        {*@
+                                    @*if (MenuLevel1.MenuLevel1_ID == 1)
+            {
+                <a class="nav-link" asp-controller="@Configuration.GetSection("AppSettings").GetSection("NewPurchase").GetSection("Controller").Value" asp-action="@Configuration.GetSection("AppSettings").GetSection("NewPurchase").GetSection("Action").Value">
+                    @MenuLevel1.MenuLevel1Name
+                </a>
+            }
+            else if (MenuLevel1.MenuLevel1_ID == 2)
+            {
+                <a class="nav-link" asp-controller="@Configuration.GetSection("AppSettings").GetSection("PurchaseList").GetSection("Controller").Value" asp-action="@Configuration.GetSection("AppSettings").GetSection("PurchaseList").GetSection("Action").Value">
+                    @MenuLevel1.MenuLevel1Name
+                </a>
+
+            }
+            else if (MenuLevel1.MenuLevel1_ID == 10)
+            {
+                <a class="nav-link" asp-controller="@Configuration.GetSection("AppSettings").GetSection("NewSales").GetSection("Controller").Value" asp-action="@Configuration.GetSection("AppSettings").GetSection("NewSales").GetSection("Action").Value">
+                    @MenuLevel1.MenuLevel1Name
+                </a>
+            }
+            else if (MenuLevel1.MenuLevel1_ID == 11)
+            {
+                <a class="nav-link" asp-controller="@Configuration.GetSection("AppSettings").GetSection("SalesList").GetSection("Controller").Value" asp-action="@Configuration.GetSection("AppSettings").GetSection("SalesList").GetSection("Action").Value">
+                    @MenuLevel1.MenuLevel1Name
+                </a>
+            }
+
+
+
+
+
+        }
+        else
+        {
+            
+            }*@
+
+
+                                    <a class="nav-link" asp-controller="@MenuLevel1.Controller" asp-action="@MenuLevel1.Action">
+                                        @MenuLevel1.MenuLevel1Name
+                                    </a>
+
+                                    <ul class="dropdown-menu">
+                                        <!-- Rendering menu level 2-->
+                                        @foreach (Pa_MenuLevel2_DAL MenuLevel2 in (ViewBag.MenuLevel2List as List<Pa_MenuLevel2_DAL>).Where(i => i.MenuLevel1_ID == MenuLevel1.MenuLevel1_ID))
+                                        {
+                                            @if (MenuLevel2.IsVisible == "True")
+                                            {
+                                                <li>
+
+                                                    <a class="nav-link" asp-area="" asp-controller="@MenuLevel2.Controller" asp-action="@MenuLevel2.Action">
+                                                        @MenuLevel2.MenuLevel2Name
+                                                    </a>
+
+                                                </li>
+                                            }
+                                        }
+
+
+
+                                    </ul>
+
+                                </li>
+
+                                    }
+                                }
+
+
+                                </ul>
+                        </li>
+                        }
+
+
+                    }
+                }
+
+
+
+
+            </ul>
+        </nav>
+
+
+
+
+    </div>
+     
+</div>

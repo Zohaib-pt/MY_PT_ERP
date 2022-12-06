@@ -1,0 +1,118 @@
+﻿@using DAL
+@using DAL.Models
+@using X.PagedList.Mvc.Core; @*//import this so we get our HTML Helper*@
+@using X.PagedList;  @*//import this so we can cast our list to IPagedList *@
+@model DAL.oClasses.OStock
+
+
+<table class="table table-bordered table-striped mb-0 mt-1" @*id="datatable-default"*@>
+    <thead>
+        <tr>
+
+
+
+
+            <th> Ref </th>
+            <th> Date </th>
+            <th> Vendor Name </th>
+            <th> Comments </th>
+            <th>Total Amount</th>
+
+            <th>Paid</th>
+            <th>Balance</th>
+            <th>Status</th>
+            <th>View</th>
+
+
+
+
+        </tr>
+    </thead>
+    <tbody>
+
+        @if (Model.VanningListPagedObject != null)
+        {
+            foreach (pa_Vanning_Master item in Model.VanningListPagedObject)
+            {
+
+                double vTotalAmount = Convert.ToDouble(item.Total_Amount);
+                ViewBag.VTotalAmount = vTotalAmount;
+
+                double vBalance = Convert.ToDouble(item.Balance);
+                ViewBag.VBalance = vBalance;
+
+                double vpaid = Convert.ToDouble(item.Paid);
+                ViewBag.VPaid = vpaid;
+<tr>
+
+
+    <td> <a asp-controller="Stock" asp-action="NewVanning" asp-route-vanning_Master_ID="@item.vanning_Master_ID"> @Html.DisplayFor(modelItem => item.vanning_ref)</a></td>
+
+    <td>@Html.DisplayFor(modelItem => item.Date)</td>
+    <td>@Html.DisplayFor(modelItem => item.Vendor_Name)</td>
+    <td>@Html.DisplayFor(modelItem => item.Comments)</td>
+    <td>@Html.DisplayFor(modelItem => item.Total_Amount)</td>
+    <td>@Html.DisplayFor(modelItem => item.Paid)</td>
+    <td>@Html.DisplayFor(modelItem => item.Balance)</td>
+
+    <td>@Html.DisplayFor(modelItem => item.Purchased_Status)</td>
+    <td> <a asp-controller="Stock" asp-action="NewVanning" asp-route-vanning_Master_ID="@item.vanning_Master_ID">View</a></td>
+
+
+
+</tr>}
+            }
+
+
+
+
+    </tbody>
+
+    <tfoot>
+        <tr role="row">
+
+            <th> Total</th>
+            <th></th>
+            <th> </th>
+            <th> </th>
+            <th>@ViewBag.VTotalAmount </th>
+            <th>@ViewBag.VPaid</th>
+            <th>@ViewBag.VBalance</th>
+
+            <th> </th>
+
+            <th> </th>
+
+        </tr>
+    </tfoot>
+
+
+</table>
+
+
+<div class="invoice-summary">
+
+    <div class="row">
+
+        <div class="col-lg-6 col-md-6">
+
+        </div>
+
+        <div class="col-lg-6 col-md-6 justify-content-end text-right">
+
+            @if (Model.VanningListPagedObject.Count() != 0)
+            {
+
+@Html.PagedListPager(Model.VanningListPagedObject, page => Url.Action("VanningList_SearchFilter", "Stock", new { txtVanningRef = ViewBag.txtVanningRef_VanningList, StartDate= ViewBag.StartDate_VanningList, EndDate = ViewBag.EndDate_VanningList, Party_ID_Name= ViewBag.Party_ID_Name_VanningList, page })
+, X.PagedList.Mvc.Core.Common.PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new AjaxOptions()
+{
+    HttpMethod = "get",
+    UpdateTargetId = "TableVanningListSearch"
+})
+            )
+
+}
+        </div>
+    </div>
+
+</div>

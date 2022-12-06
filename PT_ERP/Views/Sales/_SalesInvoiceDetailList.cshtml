@@ -1,0 +1,179 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OSales
+
+@{ 
+    //----total values
+    ViewBag.Grand_Amount = "0";
+    ViewBag.Grand_VATExp = "0";
+    ViewBag.Grand_TotalAmount = "0";
+    ViewBag.Total_Amt_inWords = "";
+}
+
+<table class="table table-responsive-md table-bordered mb-0">
+    <thead>
+        <tr>
+            <th>Edit/Delete</th>
+            <th>Chassis</th>
+            <th>Make</th>
+            <th>Model</th>
+
+            <th>Color</th>
+            <th>Price</th>
+
+
+
+        </tr>
+    </thead>
+    <tbody>
+
+        @if (Model.SalesDetailList != null)
+        {
+
+
+            foreach (pa_SalesDetails item in Model.SalesDetailList.Where(m => m.SaleInvoiceType == "ByChassis"))
+            {
+
+                ViewBag.Grand_Amount = item.Grand_Amount;
+                ViewBag.Grand_VATExp = item.Grand_VATExp;
+                ViewBag.Grand_TotalAmount = item.Grand_TotalAmount;
+                ViewBag.Total_Amt_inWords = item.Total_Amt_inWords;
+                ViewBag.Discount = item.Discount;
+
+        <tr>
+
+
+            <td>
+
+                <a onclick="UpdateSalesDetailByChassis('@item.SalesDetails_ID', '@item.Chassis_No', '@item.Unit_Price','@item.VATRate', '@item.VATExp', '@item.Total_Amount' , '@item.Make', '@item.ModelDesciption','@item.Discount');" data-toggle="modal" data-target="#UdpateSaleDetailByChassisModal"><img style="width: 20px;" src="~/Img/Icons/edit.png" /></a>
+                <a onclick="DeleteSalesDetail('@item.SalesDetails_ID');" data-toggle="modal" data-target="#DeleteSalesDetailModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+            </td>
+            <td>@Html.DisplayFor(modelItem => item.Chassis_No)</td>
+            <td>@Html.DisplayFor(modelItem => item.Make)</td>
+            <td>@Html.DisplayFor(modelItem => item.ModelDesciption)</td>
+            <td>@Html.DisplayFor(modelItem => item.Color)</td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Total_Amount)
+               
+            </td>
+
+        </tr>
+
+
+            }
+        }
+
+
+    </tbody>
+
+</table>
+
+
+<table class="table table-responsive-md table-bordered mb-0 mt-3">
+    <thead>
+        <tr>
+            <th>Edit/Delete</th>
+            <th>Service Description</th>
+
+            <th>Price</th>
+
+
+
+        </tr>
+    </thead>
+    <tbody>
+
+        @if (Model.SalesDetailList != null)
+        {
+
+
+            foreach (pa_SalesDetails item in Model.SalesDetailList.Where(m => m.SaleInvoiceType == "ByService"))
+            {
+
+                ViewBag.Grand_Amount = item.Grand_Amount;
+                ViewBag.Grand_VATExp = item.Grand_VATExp;
+                ViewBag.Grand_TotalAmount = item.Grand_TotalAmount;
+                ViewBag.Total_Amt_inWords = item.Total_Amt_inWords;
+                ViewBag.Discount = item.Discount;
+                <tr>
+                    <td>
+                        <a onclick="UpdateSalesDetailByServices('@item.SalesDetails_ID','@item.ItemDesc' ,'@item.Unit_Price', '@item.VATRate', '@item.VATExp', '@item.Total_Amount');" data-toggle="modal" data-target="#UdpateSaleDetailByServicesModal"><img style="width: 20px;" src="~/Img/Icons/edit.png" /></a>
+                        <a onclick="DeleteSalesDetail('@item.SalesDetails_ID');" data-toggle="modal" data-target="#DeleteSalesDetailModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+                    </td>
+                    <td>@Html.DisplayFor(modelItem => item.ItemDesc)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Unit_Price)</td>
+
+
+                </tr>
+
+
+            }
+        }
+
+    </tbody>
+
+</table>
+
+
+
+<div class="invoice-summary">
+
+    <div class="row">
+
+        <div class="col-lg-7 col-md-7">
+            <div class="form-group">
+                <br />
+                <label class="col-form-label" for="uu">Amounts</label>
+
+                <input type="text" id="uu" name="uuu" class="form-control" value="@ViewBag.Total_Amt_inWords" readonly />
+
+
+            </div>
+        </div>
+
+        <div class="col-lg-2 col-md-2">
+
+        </div>
+
+        <div class="col-lg-3 col-md-3 justify-content-end text-right">
+            <table class="table h6 text-dark">
+                <tbody>
+
+                    <tr class="b-top-0">
+                        <td colspan="2"> Sub Total:</td>
+                        <td class="text-right" id="SubTotal">@ViewBag.Grand_Amount</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">Discount:</td>
+                        <td class="text-right" id="Discount_ch">@ViewBag.Discount</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">VAT Charge:</td>
+                        <td class="text-right" id="VAT_ChargeTotal">@ViewBag.Grand_VATExp</td>
+                    </tr>
+
+
+                    <tr class="h5">
+                        <td colspan="2">Total Payable:</td>
+                        <td class="text-right" id="Total_Payable">@ViewBag.Grand_TotalAmount</td>
+                    </tr>
+                    @if (Model.SaleMasterObj != null)
+                    {
+                        <tr class="h5">
+                            <td colspan="2">Paid:</td>
+                            <td class="text-right" id="Paid_amt">@Model.SaleMasterBalanceObj.Paid_amt</td>
+                        </tr>
+                        <tr class="h5">
+                            <td colspan="2">Balance Due:</td>
+                            <td class="text-right" id="Bal_due">@Model.SaleMasterBalanceObj.Bal_due</td>
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>

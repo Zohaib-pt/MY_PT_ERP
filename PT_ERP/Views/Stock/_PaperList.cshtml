@@ -1,0 +1,109 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+@using DAL
+@using DAL.Models
+@using X.PagedList.Mvc.Core; @*//import this so we get our HTML Helper*@
+@using X.PagedList;  @*//import this so we can cast our list to IPagedList *@
+@model DAL.oClasses.OStock
+
+
+
+
+<div class="invoice-summary mb-1">
+
+    <div class="row mb-1">
+
+        <div class="col-lg-6 col-md-6 mb-1">
+
+        </div>
+
+        <div class="col-lg-6 col-md-6 mb-1 justify-content-end text-right">
+
+        </div>
+    </div>
+
+</div>
+
+
+<table class="table table-bordered table-striped mb-0 mt-1">
+    <thead>
+        <tr>
+
+
+            <th> Chassis</th>
+            <th> Recieved Date </th>
+            <th> Purchase Ref </th>
+            <th> Status </th>
+            <th>View</th>
+
+
+
+
+        </tr>
+    </thead>
+    <tbody id="TableStockListSearch">
+
+        @if (Model.PapersListObject_search != null)
+        {
+            foreach (var item in Model.PapersListObject_search)
+            {
+
+
+<tr>
+
+
+
+
+    <td>@item.Chassis</td>
+    <td>@item.Recieved_Date</td>
+    <td>@item.Purchase_Ref</td>
+    <td>@item.Status</td>
+    <td><a href="/Stock/PaperManager?id=@item.paper_ID">View </a></td>
+
+
+
+</tr>}
+            }
+
+
+
+
+    </tbody>
+
+
+
+
+</table>
+
+<div class="invoice-summary">
+
+    <div class="row">
+
+        <div class="col-lg-6 col-md-6">
+
+        </div>
+
+        <div class="col-lg-6 col-md-6 justify-content-end text-right">
+
+            @if (Model.PapersListObject_search.Count() != 0)
+            {
+
+@Html.PagedListPager(Model.PapersListObject_search, page => Url.Action("PaperList_SearchFilter", "Stock", new { chassis_No = ViewBag.chassis_No_paperlist, StartDate = ViewBag.StartDate_paperlist, EndDate = ViewBag.EndDate_paperlist, page })
+          , X.PagedList.Mvc.Core.Common.PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new AjaxOptions()
+          {
+              HttpMethod = "get",
+              UpdateTargetId = "Table_PaperListSearch"
+          })
+                      )}
+        </div>
+    </div>
+
+</div>
+
+
+
+
+
+<!-- Modal show attachment -->

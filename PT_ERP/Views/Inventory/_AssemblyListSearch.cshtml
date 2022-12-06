@@ -1,0 +1,90 @@
+﻿@using DAL
+@using DAL.Models
+@using X.PagedList.Mvc.Core; @*//import this so we get our HTML Helper*@
+@using X.PagedList;  @*//import this so we can cast our list to IPagedList *@
+@model DAL.oClasses.OInventory
+<div class="invoice-summary mb-1">
+
+    <div class="row mb-1">
+
+        <div class="col-lg-6 col-md-6 mb-1">
+            <b>@ViewBag.RecordsPerPage</b> records per page
+        </div>
+
+        <div class="col-lg-6 col-md-6 mb-1 justify-content-end text-right">
+
+        </div>
+    </div>
+
+</div>
+
+<table class="table table-bordered table-striped mb-0 mt-1" @*id="datatable-default"*@>
+    <thead>
+        <tr>
+
+
+
+
+            <th>Ref</th>
+
+            <th>P_Date</th>
+            <th>Customer Ref</th>
+
+            <th>Supervisor</th>
+
+            <th>View</th>
+
+
+
+
+
+        </tr>
+    </thead>
+    <tbody>
+
+        @if (Model.AssemblyMasterList != null)
+        {
+            foreach (Pa_Assembly_Master item in Model.AssemblyMasterList)
+            {
+
+<tr>
+
+
+
+    <td> <a asp-controller="Inventory" asp-action="NewAssembly" asp-route-Assembly_ID="@item.Assembly_ID">@Html.DisplayFor(modelItem => item.Ref)</a></td>
+    <td>@Html.DisplayFor(modelItem => item.P_Date)</td>
+
+    <td>@Html.DisplayFor(modelItem => item.CustomerRef)</td>
+
+    <td>@Html.DisplayFor(modelItem => item.Supervisor)</td>
+
+    <td> <a asp-controller="Inventory" asp-action="NewAssembly" asp-route-Assembly_ID="@item.Assembly_ID">View</a></td>
+    @*<td>@Html.DisplayFor(modelItem => item.Modified_at)</td>*@
+
+</tr>}
+            }
+
+    </tbody>
+
+</table>
+
+<div class="invoice-summary">
+
+    <div class="row">
+
+        <div class="col-lg-12 col-md-12 justify-content-end text-right">
+            @if (Model.AssemblyMasterList.Count() != 0)
+            {
+
+@Html.PagedListPager(Model.AssemblyMasterList, page => Url.Action("GetAssemblyListBySearchFilers", "Inventory", new { Ref = ViewBag.Ref, StartDate = ViewBag.StartDate, EndDate = ViewBag.EndDate, c_ID = ViewBag.c_ID })
+          , X.PagedList.Mvc.Core.Common.PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new AjaxOptions()
+          {
+              HttpMethod = "get",
+              UpdateTargetId = "AssemblyMasterList"
+          })
+       )}
+        </div>
+
+
+    </div>
+</div>

@@ -1,0 +1,554 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OBasicData
+
+
+
+@{ Layout = "~/Views/Shared/_LayoutTablePages.cshtml"; }
+
+
+
+
+<header class="page-header">
+    <h2>@ViewBag.SectionHeaderTitle</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+            <li><a asp-area="" asp-controller="BasicData" asp-action="Model"><span>@ViewBag.SectionSub_HeaderTitle</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+
+<div class="row">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+<div class="col-lg-12">
+    @if (TempData["Success"] != null)
+    {
+<div class="alert alert-info">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+    <strong>Success!</strong> @TempData["Success"] <a href="" class="alert-link"></a>
+</div>}
+
+    @if (TempData["Error"] != null)
+    {
+<div class="alert alert-danger">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+    <strong>Error!</strong> @TempData["Error"] <a href="" class="alert-link"></a>
+</div>}
+</div>}
+
+
+</div>
+
+<div class="row">
+    <div class="col">
+        <section class="card">
+            <header class="card-header">
+
+                <div class="row">
+                    <div class="col-lg-6">
+                        <h2 class="card-title" style="line-height:normal;">Model Description List </h2>
+                    </div>
+                    <div class="col-lg-6" style="text-align:right;">
+                        <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#AddMakeModal">Add Model Desc &nbsp;<i class="fas fa-plus"></i></button>
+
+                        <button type="button" class="mb-1 mt-1 mr-1 btn btn-sm btn-info">Print &nbsp;<i class="fas fa-print"></i></button>
+                    </div>
+                </div>
+
+            </header>
+            <div class="card-body">
+
+
+
+                <table class="table table-bordered table-striped mb-0" id="datatable-default">
+                    <thead>
+                        <tr>
+
+
+                            <th>Edit/Delete</th>
+                            <th>Make</th>
+                            <th>Model</th>
+                            <th>Make Code</th>
+
+                            <th>Make Category</th>
+                            <th>Make Country</th>
+
+                            <th>Create At</th>
+                            <th>Create By</th>
+                            <th>Updated At</th>
+                            <th>Updated By</th>
+                   
+
+
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @if (Model.ModelDescList != null)
+                        {
+                            foreach (Pa_ModelDesc_DAL item in Model.ModelDescList)
+                            {
+
+            <tr>
+
+                <td>
+                    <a onclick="UpdateModeldesc('@item.ModelDesc_ID', '@item.Make_ID', '@item.ModelDesciption', '@item.VehCategory_ID', '@item.MakeCountry_ID', '@item.Makecode','@item.Drive','@item.Door','@item.EngineType','@item.FuelType','@item.Hs_Code')" data-toggle="modal"
+                       data-target="#UpdateMakeModal"><img style="width: 20px;" src="~/Img/Icons/edit.png" /></a>
+                    <a onclick="DeleteModelDesc('@item.ModelDesc_ID')" data-toggle="modal" data-target="#DeleteMakeModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+
+
+                    <script>
+
+                        function UpdateModeldesc(Model_ID, MakeID, Model_Desciption, Veh_Category_ID, MakeCountry_ID, Makecode, Drive, Door, EngineType, FuelType, Hs_Code) {
+
+
+                            debugger;
+
+
+                            $("#ModelDesc_ID_Udpate").val(Model_ID);
+                            $("#Make_ID_Update").val(MakeID);
+                            $("#ModelDesciption_Upate").val(Model_Desciption);
+                            $("#VehCategory_ID_Update").val(Veh_Category_ID);
+                            $("#MakeCountry_ID_Update").val(MakeCountry_ID);
+                            $("#Makecode_Upate").val(Makecode);
+
+
+                            $("#Drive_Update").val(Drive);
+                            $("#Door_Update").val(Door);
+                            $("#EngineType_Update").val(EngineType);
+                            $("#FUEL_TYPE_Update").val(FuelType);
+                            $("#HS_CODE_Update").val(Hs_Code);
+
+                        }
+
+
+                    </script>
+                </td>
+
+                <td>@Html.DisplayFor(modelItem => item.Make)</td>
+                <td> @Html.DisplayFor(modelItem => item.ModelDesciption)</td>
+                <td> @Html.DisplayFor(modelItem => item.Makecode)</td>
+                <td> @Html.DisplayFor(modelItem => item.VehCategoryName)</td>
+                <td> @Html.DisplayFor(modelItem => item.CountryName)</td>
+                <td> @Html.DisplayFor(modelItem => item.Created_at)</td>
+                <td> @Html.DisplayFor(modelItem => item.Created_by)</td>
+                <td> @Html.DisplayFor(modelItem => item.Modified_at)</td>
+                <td> @Html.DisplayFor(modelItem => item.Modified_by)</td>
+   
+
+
+            </tr>}
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</div>
+
+
+<!-- Model Insert Make Desc -->
+<div class="modal fade bs-modal-sm" id="AddMakeModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Add Model Description</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="BasicData" asp-action="InsertModelDescription">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body">
+
+                            <div class="row form-group">
+                                <div class="col-lg-6">
+
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Makecode">Make Code</label>
+                                        <input type="text" class="form-control" id="Makecode" name="Makecode">
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Make_ID">Make*</label>
+                                        <select class="form-control" id="Make_ID" name="Make_ID" asp-items="@(new SelectList( ViewBag.MakeList,"Make_ID","Make"))" onchange="GetSubModel(this);" required>
+                                            <option value="">SELECT</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12">
+
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="ModelDesciption">Model Description*</label>
+                                        <input type="text" class="form-control" id="ModelDesciption" name="ModelDesciption" required>
+
+                                    </div>
+                                </div>
+
+
+
+
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="VehCategory_ID">Category</label>
+
+                                        <select class="form-control" id="VehCategory_ID" name="VehCategory_ID" asp-items="@(new SelectList( ViewBag.MakeCategoryList,"VehCategory_ID","VehCategoryName"))">
+                                            <option>SELECT</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Priority">Make Country</label>
+
+
+                                        <select class="form-control" id="MakeCountry_ID" name="MakeCountry_ID" asp-items="@(new SelectList( ViewBag.MakeCountryList,"MakeCountry_ID","CountryName"))">
+                                            <option>SELECT</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Drive">Drive</label>
+
+                                        <select class="form-control" name="Drive" id="Drive">
+                                            <option value="">Select</option>
+                                            <option value="Right">Right</option>
+                                            <option value="Left">Left</option>
+                                        </select>
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Door">Door</label>
+
+                                        <select class="form-control" name="Door" id="Door">
+                                            <option value="">Select</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                            <option value="4">4</option>
+                                            <option value="5">5</option>
+                                            <option value="6">6</option>
+                                        </select>
+                                    </div>
+
+                                </div>
+
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="EngineType">Engine Type</label>
+                                        <select class="form-control" name="EngineType" id="EngineType"
+                                                asp-items="@(new SelectList(ViewBag.EngineType, "EngineType_ID", "Engine_Power"))">
+                                            <option value="">Select</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="FUEL_TYPE">Fuel</label>
+
+                                        <select class="form-control" name="FUEL_TYPE" id="FUEL_TYPE">
+                                            <option value="">Select</option>
+                                            <option value="PETROL">PETROL</option>
+                                            <option value="DEISEL">DEISEL</option>
+
+                                        </select>
+                                    </div>
+                                </div>
+
+
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="HS_CODE"> HS Code</label>
+
+                                        <input type="text" class="form-control" id="HS_CODE" name="HS_CODE" >
+                                    </div>
+                                </div>
+
+
+
+
+                            </div>
+
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-sm btn-primary">Save</button>
+                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Model Update Model Desc -->
+<div class="modal fade bs-modal-sm" id="UpdateMakeModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Update Model Description</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="BasicData" asp-action="UpdateModelDescription">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body">
+
+
+
+                            <div class="row form-group">
+                                <div class="col-lg-6">
+
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Makecode">Make Code</label>
+                                        <input type="text" class="form-control" id="Makecode_Upate" name="Makecode">
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Make*</label>
+
+
+
+                                        <select class="form-control" id="Make_ID_Update" name="Make_ID" asp-items="@(new SelectList( ViewBag.MakeList,"Make_ID","Make"))" onchange="GetSubModel(this);" required>
+                                            <option>SELECT</option>
+                                        </select>
+                                        <input type="hidden" id="ModelDesc_ID_Udpate" name="ModelDesc_ID" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-12">
+
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="ModelDesciption">Model Description*</label>
+                                        <input type="text" class="form-control" id="ModelDesciption_Upate" name="ModelDesciption" required>
+
+                                    </div>
+                                </div>
+
+
+
+
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="VehCategory_ID">Category</label>
+
+                                        <select class="form-control" id="VehCategory_ID_Update" name="VehCategory_ID" asp-items="@(new SelectList( ViewBag.MakeCategoryList,"VehCategory_ID","VehCategoryName"))">
+                                            <option>SELECT</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Priority">Make Country</label>
+
+
+                                        <select class="form-control" id="MakeCountry_ID_Update" name="MakeCountry_ID" asp-items="@(new SelectList( ViewBag.MakeCountryList,"MakeCountry_ID","CountryName"))">
+                                            <option>SELECT</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Drive">Drive</label>
+
+                                        <select class="form-control" name="Drive" id="Drive_Update">
+                                            <option value="">Select</option>
+                                            <option value="Right">Right</option>
+                                            <option value="Left">Left</option>
+                                        </select>
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Door">Door</label>
+
+                                        <select class="form-control" name="Door" id="Door_Update">
+                                            <option value="">Select</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                            <option value="4">4</option>
+                                            <option value="5">5</option>
+                                            <option value="6">6</option>
+                                        </select>
+                                    </div>
+
+                                </div>
+
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="EngineType">Engine Type</label>
+                                        <select class="form-control" name="EngineType" id="EngineType_Update"
+                                                asp-items="@(new SelectList(ViewBag.EngineType, "EngineType_ID", "Engine_Power"))">
+                                            <option value="">Select</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="FUEL_TYPE">Fuel</label>
+
+                                        <select class="form-control" name="FUEL_TYPE" id="FUEL_TYPE_Update">
+                                            <option value="">Select</option>
+                                            <option value="PETROL">PETROL</option>
+                                            <option value="DEISEL">DEISEL</option>
+
+                                        </select>
+                                    </div>
+                                </div>
+
+
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="HS_CODE"> HS Code</label>
+
+                                        <input type="text" class="form-control" id="HS_CODE_Update" name="HS_CODE" >
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- Modal Delete Make -->
+<div class="modal fade bs-modal-lg" id="DeleteMakeModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Delete Model Description</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="BasicData" asp-action="DeleteModelDescription">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <h3>Do you want to delete this record?</h3>
+
+                                        <input type="hidden" id="ModelDesc_ID_Delete" name="ModelDesc_ID" />
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+
+@section Scripts {
+    <script type="text/javascript">
+
+        function DeleteModelDesc(ModelDesc_ID) {
+            debugger
+            $("#ModelDesc_ID_Delete").val(ModelDesc_ID);
+
+        }
+
+        
+
+    </script>
+}

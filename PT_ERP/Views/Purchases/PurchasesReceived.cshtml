@@ -1,0 +1,1163 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OPurchases
+@{ ViewData["Title"] = "PurchaseReceived";
+    Layout = "~/Views/Shared/_Layout.cshtml"; }
+@{ string Form_PurchasesMaster_ActionMethod = "";
+    int? GRVMaster_ID = ViewBag.GRVMaster_ID;
+
+
+    if (Model.GRVMasterObj != null && Model.GRVMasterObj.GRVMaster_ID > 0)
+    {
+
+        Form_PurchasesMaster_ActionMethod = "UpdatePurchasesReceivedMaster";
+
+
+    }
+    else
+    {
+        Form_PurchasesMaster_ActionMethod = "InsertPurchasesReceivedMaster";
+    } }
+<header class="page-header">
+    <h2>Purchases</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+            <li><a asp-area="" asp-controller="Purchases" asp-action="PurchasesReceivedList"><span>Purchase</span></a></li>
+            <li><a asp-area="" asp-controller="@ViewBag.BreadCumController" asp-action="@ViewBag.BreadCumAction"><span>New Purchases Received</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+
+
+
+
+
+<div class="row" id="SuccessErrorSection">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+<div class="col-lg-12">
+    @if (TempData["Success"] != null)
+    {
+<div class="alert alert-info">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+    <strong>Success!</strong> @TempData["Success"] <a href="" class="alert-link"></a>
+</div>}
+
+    @if (TempData["Error"] != null)
+    {
+<div class="alert alert-danger">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+    <strong>Error!</strong> @TempData["Error"] <a href="" class="alert-link"></a>
+</div>}
+</div>}
+
+
+</div>
+
+<!-- start: page -->
+<section class="card">
+    <div class="card-body">
+        <div class="invoice">
+            <header class="clearfix">
+                <div class="row">
+                    <div class="col-sm-6 mt-0">
+                        <h2 class="h4 mt-0 mb-2 text-dark font-weight-bold">PurchaseReceived</h2>
+
+                    </div>
+
+                    <div class="col-sm-6 mt-0 text-right">
+
+
+
+                    </div>
+
+
+                </div>
+            </header>
+
+            <div class="row">
+                <div class="col-lg-8">
+
+                    @if (Model.GRVMasterObj.GRVMaster_ID != null)
+                    {
+                        if (Model.GRVMasterObj.GRVMaster_ID > 0)
+                        {
+
+                <button type="button" id="ButtonSaleMasterUpdate" class="btn-sm btn btn-success">Update &nbsp;<i class="fas fa-save"></i></button>
+
+
+
+
+
+                                    <button type="button" id="print-btn" class="btn-sm btn btn-info">Print &nbsp;<i class="fas fa-print"></i></button>
+
+
+
+                                                        <a asp-controller="Purchases" asp-action="PurchasesReceivedList" class="btn-sm btn btn-default">List &nbsp;<i class="fas fa-list"></i></a> }
+                                                }
+                                                else
+                                                {
+                                    <button type="button" id="ButtonSaleMasterIssue" class="btn-sm btn btn-success">Issue &nbsp;<i class="fas fa-save"></i></button>
+
+
+                                                    <button type="button" id="print-btn" class="btn-sm btn btn-info" disabled="disabled">Print &nbsp;<i class="fas fa-print"></i></button>
+
+
+
+                                                                    <a asp-controller="Purchases" asp-action="PurchasesReceivedList" class="btn-sm btn btn-default">List &nbsp;<i class="fas fa-list"></i></a>}
+
+
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div class="col">
+
+
+
+                    <form method="post" asp-area="" asp-controller="Purchases" asp-action="@Form_PurchasesMaster_ActionMethod" id="formPurchaseMaster">
+                        @Html.AntiForgeryToken()
+
+                        <section class="card">
+
+                            <div class="card-body">
+
+
+
+                                <div class="row form-group">
+                                    <div class="col-lg-4">
+
+                                        <div class="row MasterForm">
+                                            <label for="Vendor_ID" class="col-sm-3 col-form-label">Vendor</label>
+                                            <div class="col-sm-9">
+                                                <select class="form-control" id="Vendor_ID" name="Vendor_ID" readonly  asp-items="@(new SelectList( ViewBag.VendorMaster,"Partner_ID","PartnerName", Model.GRVMasterObj.Vendor_ID))">
+                                                    <option>Select Vendor</option>
+                                                    <option value="NewVendor">New Vendor A/C</option>
+                                                </select>
+
+                                                <input type="hidden" id="GRVMaster_ID" name="GRVMaster_ID" value="@GRVMaster_ID" />
+                                            </div>
+                                        </div>
+                                        <div class="row MasterForm">
+                                            <label for="To" class="col-sm-3 col-form-label">To</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" id="Vendor_PruchaseTo" name="Vendor_PruchaseTo" value="@Model.GRVMasterObj.Vendor_PruchaseTo" readonly>
+                                            </div>
+                                        </div>
+                                        <div class="row MasterForm">
+                                            <label for="Address" class="col-sm-3 col-form-label">Address</label>
+                                            <div class="col-sm-9">
+                                                <textarea class="form-control" rows="2" id="Vendor_Address" name="Vendor_Address" placeholder="">@Model.GRVMasterObj.Vendor_Address</textarea>
+                                            </div>
+                                        </div>
+
+
+
+                                    </div>
+                                    <div class="col-lg-4">
+
+                                    </div>
+
+                                    <div class="col-lg-4 ">
+
+                                        <div class="row MasterForm">
+                                            <label for="GRVRef" class="col-sm-3 col-form-label">Ref No</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" id="GRVRef" name="GRVRef" value="@Model.GRVMasterObj.GRVRef" readonly>
+                                            </div>
+                                        </div>
+
+
+                                        <div class="row MasterForm">
+                                            <label for="GRVDate" class="col-sm-3 col-form-label">Date</label>
+                                            <div class="col-sm-9">
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                        </span>
+                                                    </span>
+                                                    @if (Model.GRVMasterObj.GRVDate != null)
+                                                    {
+                                        <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="GRVDate" name="GRVDate" value="@Model.GRVMasterObj.GRVDate" required> }
+                                    else
+                                    {
+                        <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="GRVDate" name="GRVDate" value="@DateTime.Now.ToString("dd-MMM-yyyy")" required>}
+
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+
+                                        <div class="row MasterForm">
+                                            <label class="col-sm-3 col-form-label" for="Chassis">Purchase Ref</label>
+
+                                            @*<div class="col-sm-9">
+                                                <select class="form-control" id="PurchaseMaster_ID" name="PurchaseMaster_ID" onchange="GetPurchaseRefDetail()" asp-items="@(new SelectList( ViewBag.PurchaseRef,"PurchaseMaster_ID","PurchaseRef", Model.GRVMasterObj.PurchaseMaster_ID))" required>
+                                                    <option value="0">Select Ref</option>
+
+                                                </select>
+                                            </div>
+                                            <label for="PurchaseRef" class="col-sm-3 col-form-label">Purchase Ref</label>*@
+                                            <div class="col-sm-5" style="padding-right:1px;">
+                                                <input type="text" class="form-control" id="PurchaseRef" name="PurchaseRef">
+                                                <input type="hidden" class="form-control" id="PurchaseMaster_ID" name="PurchaseMaster_ID" value="@Model.GRVMasterObj.PurchaseMaster_ID">
+                                            </div>
+                                            <div class="col-sm-4" style="padding-left:1px; ">
+                                                <button type="button" onclick="GetPurchaseRefDetail()" class=" btn btn-primary" style="width:100%;">Get &nbsp; <i class="fa fa-search"></i></button>
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+
+
+                                </div>
+
+                            </div>
+
+
+
+                        </section>
+                    </form>
+
+                </div>
+
+            </div>
+
+            <div class="row m-2">
+                <div class="col-lg-3">
+                    <h2 class="card-title" style="line-height:normal;">Details </h2>
+                </div>
+                <div class="col-lg-6">
+                    &nbsp;
+                </div>
+                <div class="col-lg-3 text-right">
+                    @*<button class="btn btn-sm btn-primary"> Add Details &nbsp;<i class="fas fa-plus"></i></button>*@
+
+
+                </div>
+            </div>
+
+            <div id="PurchasesDetailSection">
+
+                <table class="table table-responsive-md table-bordered mb-0">
+                    <thead>
+                        <tr>
+                            <th>Delete</th>
+                            <th>Item</th>
+                            <th>Description</th>
+                            <th>Purchase Qty</th>
+
+                            <th>Received Qty</th>
+                            <th>Price</th>
+                  
+                            <th>Total Amount</th>
+
+
+
+
+
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.GRVDetailList != null)
+                        {
+
+                            ViewBag.SubTotal = 0;
+                            foreach (Pa_GoodsReceived_Dtl item in Model.GRVDetailList)
+                            {
+
+                                ViewBag.SubTotal = item.SubTotal;
+                                ViewBag.Vat_ExpTotal = item.Vat_ExpTotal;
+                                ViewBag.DiscountTotal = item.DiscountTotal;
+                                ViewBag.Grand_Total = item.Grand_Total;
+
+                        <tr>
+
+
+                            <td>
+
+                                <a onclick="DeletePurchasesDetail('@item.GRVDetails_ID');" data-toggle="modal" data-target="#DeletePurchasesDetailModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.ItemName)
+                                <br />
+                                <span class="small"> @Html.DisplayFor(modelItem => item.ItemCode)</span>
+
+                            </td>
+                            <td>@Html.DisplayFor(modelItem => item.item_Description)</td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.PurchaseQTY)
+                                x
+                                @Html.DisplayFor(modelItem => item.UOM)
+                                <br />
+                                @Html.DisplayFor(modelItem => item.LocationName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Quantity)
+                                x
+                                @Html.DisplayFor(modelItem => item.UOM)
+                            </td>
+                            <td>@Html.DisplayFor(modelItem => item.Unit_Price)</td>
+
+                            <td>@Html.DisplayFor(modelItem => item.Amount)</td>
+
+
+
+
+
+                        </tr>}
+                        }
+                    </tbody>
+
+                </table>
+
+                <div class="invoice-summary">
+
+                    <div class="row">
+
+                        <div class="col-lg-9 col-md-9">
+
+                        </div>
+
+                        <div class="col-lg-3 col-md-3 justify-content-end text-right">
+                            <table class="table h6 text-dark">
+                                <tbody>
+
+
+
+                                    <tr class="b-top-0">
+                                        <td colspan="2"> Sub Total:</td>
+                                        <td class="text-right" id="SubTotal">@ViewBag.SubTotal</td>
+                                    </tr>
+                             
+                                    <tr class="h5">
+                                        <td colspan="2">Total:</td>
+                                        <td class="text-right" id="Total_Payable">@ViewBag.Grand_Total</td>
+                                    </tr>
+
+
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+
+
+
+
+
+            </div>
+
+
+
+
+
+            <hr />
+
+
+
+            <div class="row">
+
+                <div class="col-sm-3"><span class="show-grid-block">Created at : <b>@Model.GRVMasterObj.Created_at </b></span></div>
+                <div class="col-sm-3"><span class="show-grid-block">Created by :</span><b>@Model.GRVMasterObj.Created_by</b></div>
+                <div class="col-sm-3"><span class="show-grid-block">Modified at :<b>@Model.GRVMasterObj.Modified_at </b></span></div>
+                <div class="col-sm-3"><span class="show-grid-block">Modified by : <b>@Model.GRVMasterObj.Modified_by </b></span></div>
+            </div>
+
+
+
+        </div>
+
+
+    </div>
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Modal Delete PurchaseDetail -->
+<div class="modal fade bs-modal-lg" id="DeletePurchasesDetailModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Delete PurchaseReceived Detail</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" data-ajax="true" data-ajax-success="mySuccessAuctionDetail" data-ajax-failure="myFailureAuctionDetail" asp-controller="Purchases" asp-action="DeleteGRVDetailOther">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <h3>Do you want to delete this record?</h3>
+
+                                        <input type="hidden" id="Material_OUT_ID_Delete" name="GRVDetails_ID" />
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modal Change Purchases Master Status -->
+<div class="modal fade bs-modal-lg" id="ChangeStatusPurchasesModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Change Purchases Master Status</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="Purchases" asp-action="#" data-ajax-loading="">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <h3>Do you want to change status of this record?</h3>
+
+                                        <input type="hidden" id="GRVMaster_IDStatus" name="GRVMaster_ID" />
+                                        <input type="hidden" id="Purchases_Status_ID" name="Status_ID" />
+                                        <input type="hidden" id="Trans_Type" name="Trans_Type" value="Purchases_Invoice" />
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade bs-modal-lg" id="ShowDetailsModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <!-- Following fields is for making a central Stock master id for attachments -->
+
+
+        <div class="modal-content" id="LocDetailMaster">
+
+
+        </div>
+
+    </div>
+</div>
+
+
+
+@section Scripts {
+
+
+
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
+
+
+
+    <script>
+    //---this function will hit after success submission of insert Purchases detail form
+        function mySuccessPurchasesDetail(data) {
+
+            var SuccessDiv = " <div class='col-lg-12'><div class='alert alert-info'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button><strong>Success!</strong> Saved Successfully! <a href ='' class='alert-link'></a></div></div>";
+            debugger
+            if (data.message == undefined) {
+
+                //$('#AddNewPurchaseModal').modal('hide');
+                $('#PurchasesDetailSection').html(data);
+                $('#SuccessErrorSection').html(SuccessDiv).show();
+
+                //reset form after success
+                $('#FormInsertPurchasesDetail').trigger("reset");
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        //---this function will hit when error occured in submission of Purchases detail
+        function myFailurePurchasesDetail() {
+
+            alert("Failured occured. Please try again!");
+        }
+
+        //---this function will hit after success submission of update purchase detail form
+        function mySuccessPurchaseReceivedUpate(data) {
+
+            var SuccessDiv = "<div class='col-lg-12'><div class='alert alert-info'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button><strong>Success!</strong> Updated Successfully! <a href ='' class='alert-link'></a></div></div>";
+            debugger
+            if (data.message == undefined) {
+
+                $('#UdpateSaleDetailByChassisModal').modal('hide');
+                $('#UdpateSaleDetailByServicesModal').modal('hide');
+                $('#PurchasesDetailSection').html(data);
+                $('#SuccessErrorSection').html(SuccessDiv).show();
+
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        function myFailurePurchaseReceivedUpdate() {
+
+            alert("Failured occured. Please try again!");
+        }
+
+
+        //---delete Purchases invoice master
+        function DeletePurchasesMaster(GRVMaster_ID) {
+            debugger
+            $("#GRVMaster_ID_Delete").val(GRVMaster_ID);
+
+        }
+
+
+        //---Delete Purchases detail
+        function DeletePurchasesDetail(GRVDetails_ID) {
+            debugger
+            $("#Material_OUT_ID_Delete").val(GRVDetails_ID);
+
+        }
+
+
+
+        $(document).ready(function () {
+            $("#ButtonSaleMasterIssue").click(function () {
+                $("#formPurchaseMaster").submit();
+            });
+        });
+
+        $(document).ready(function () {
+            $("#ButtonSaleMasterUpdate").click(function () {
+                $("#formPurchaseMaster").submit();
+            });
+        });</script>
+
+    <script>
+        function DisplayDescription(SelectBy) {
+            debugger
+            var SelectedValue = SelectBy.value;
+            if (SelectedValue == 'ByService') {
+                $(".ServiceDescription").show();
+                $(".ByChassisClass").hide();
+                $("#Chassis").prop('required', false);
+                $("#ItemDesc").prop('required', true);
+            } else {
+                $(".ServiceDescription").hide();
+                $(".ByChassisClass").show();
+                $("#Chassis").prop('required', true);
+                $("#ItemDesc").prop('required', false);
+            }
+
+        }
+
+
+
+
+        //This function is for validation of chassis no
+        function ValidateChassis() {
+
+            //debugger
+
+
+            var Chassis = document.getElementById("Chassis").value.toString();
+
+            $.ajax({
+
+                type: "Get",
+                url: "/Accounts/ValidateChassisNo_UNSOLD",
+                data: { //Passing data
+                    ChassisNo: Chassis
+
+
+                },
+                datatype: "json",
+                success: function (response) {
+                    debugger
+                    if (response.message == 'Chassis is valid') {
+                        //debugger
+                        $("#ChassisValidationMessage").text(response.message);
+                        $("#ChassisValidationMessage").css("color", "green");
+                        $("#Chassis").val(response.ItemId);
+                        $("#Make").val(response.make);
+                        $("#ModelDesc").val(response.modelDesciption);
+                        $("#ModelYear").val(response.modelYear);
+                        $("#Color").val(response.color);
+                    } else {
+                        $("#ChassisValidationMessage").text(response.message);
+                        $("#ChassisValidationMessage").css("color", "red");
+                        $("#Chassis").val("");
+                        $("#Make").val("");
+                        $("#ModelDesc").val("");
+                        $("#ModelYear").val("");
+                        $("#Color").val("");
+                    }
+
+                }
+            })
+        }
+        function GetCustomerDetail() {
+
+            //debugger
+
+
+            var Customer = document.getElementById("Customer_ID").value.toString();
+
+            if (Customer == -1) {
+                $('#AddCustomerModal').modal('show');
+            }
+            else {
+                $.ajax({
+
+                    type: "Get",
+                    url: "/Purchases/GetCustomerDetail",
+                    data: { //Passing data
+                        Customer_ID: Customer
+                    },
+                    datatype: "json",
+                    success: function (response) {
+                        debugger
+
+
+                        $("#Customer_Contact").val(response.contactNumber);
+                        $("#Invoice_address").val(response.contactAddress);
+                        $("#CustomerTRN").val(response.trn);
+
+
+
+
+
+                    }
+                })
+            }
+
+        }
+
+        //---change Purchases master status
+        function ChangeStatusPurchasesMaster(GRVMaster_ID, Status) {
+            debugger
+            $("#GRVMaster_IDStatus").val(GRVMaster_ID);
+            $("#Purchases_Status_ID").val(Status);
+
+        }
+
+
+
+
+        function DeleteReceiptsDetail(ReceiptDetail_ID) {
+
+            $("#ReceiptDetail_IDDelete").val(ReceiptDetail_ID);
+
+        }
+
+
+
+
+
+
+
+        //----method for opening customer popup
+        function AddNewCustomer(Customer) {
+
+
+
+            CustomerValue = Customer.value;
+            if (CustomerValue == 'NewCustomer') {
+                $('#AddCustomerModal').modal('show');
+            }
+        }
+
+
+
+
+
+
+
+    </script>
+    <script>
+        function CalculateSumAmount_Check() {
+            
+            var form = document.getElementById("FormInsertPaymentDetail"),
+                inputs = form.getElementsByTagName("input");
+            var Quanity = 0;
+            var Unit_Price = 0;
+            var Currency_Rate = 1;
+            var Discount = 0;
+            var VAT_Rate = 5;
+
+            var VAT_Exp = 0;
+            var Amount = 0;
+            var TtlAmount = 0;
+            var Amount_Others = 0;
+            var BALQuanity = 0;
+
+            for (var i = 0, len = inputs.length; i < len; i++) {
+                if (inputs[i].type === "checkbox" && inputs[i].checked == true) {
+                    debugger
+        
+                    if (document.getElementById("txtReceivedQty" + inputs[i].name).value  == 0) {
+                        BALQuanity = document.getElementById("txtBalanceQty" + inputs[i].name).value;
+                        if (!BALQuanity) {
+                            BALQuanity = 0;
+                        }
+
+
+                        $("#txtReceivedQty" + inputs[i].name).val(BALQuanity);
+
+                        Quanity = document.getElementById("txtReceivedQty" + inputs[i].name).value;
+
+                        Unit_Price = document.getElementById("txtUnitPrice" + inputs[i].name).value;
+                        Currency_Rate = document.getElementById("txtCurrency_Rate" + inputs[i].name).value;
+                        Discount = document.getElementById("txtDiscount" + inputs[i].name).value;
+                        VAT_Rate = document.getElementById("txtVAT_Rate" + inputs[i].name).value;
+
+                        VAT_Exp = document.getElementById("txtVAT_Exp" + inputs[i].name).value;
+                        Amount = document.getElementById("txtAmount" + inputs[i].name).value;
+                        TtlAmount = document.getElementById("txtTTLAmount" + inputs[i].name).value;
+                        Amount_Others = document.getElementById("txtAmount_Others" + inputs[i].name).value;
+
+                        if (!Quanity) {
+                            Quanity = 0;
+                        }
+                        if (!Unit_Price) {
+                            Unit_Price = 0;
+                        }
+                        if (!Discount) {
+                            Discount = 0;
+                        }
+                        if (!VAT_Rate) {
+                            VAT_Rate = 5;
+
+                        }
+                        if (!VAT_Exp) {
+                            VAT_Exp = 0;
+                        }
+
+                        if (!TtlAmount) {
+                            TtlAmount = 1;
+                        }
+                        if (!Amount_Others) {
+                            Amount_Others = 1;
+                        }
+
+
+
+                        Amount = Quanity * Unit_Price;
+                        $("#txtAmount" + inputs[i].name).val(Amount);
+                        //---calculate sum vat exp
+                        VAT_Exp = 0;
+                        $("#txtVAT_Exp" + inputs[i].name).val(VAT_Exp);
+
+                        TtlAmount = (Number(Amount) + Number(VAT_Exp));
+                        $("#txtTTLAmount" + inputs[i].name).val(TtlAmount);
+
+                        //--Calculate Other Amount
+
+                        Amount_Others = TtlAmount;
+                        $("#txtAmount_Others" + inputs[i].name).val(Amount_Others);
+                    }
+
+                }
+
+
+              
+            
+            }
+        }
+        function CalculateSumAmount() {
+            debugger
+            var form = document.getElementById("FormInsertPaymentDetail"),
+                inputs = form.getElementsByTagName("input");
+            var Quanity = 0;
+            var Unit_Price = 0;
+            var Currency_Rate = 1;
+            var Discount = 0;
+            var VAT_Rate = 5;
+
+            var VAT_Exp = 0;
+            var Amount = 0;
+            var TtlAmount = 0;
+            var Amount_Others = 0;
+ 
+
+            for (var i = 0, len = inputs.length; i < len; i++) {
+                if (inputs[i].type === "checkbox" && inputs[i].checked == true) {
+               
+                    Quanity = document.getElementById("txtReceivedQty" + inputs[i].name).value;
+
+                    Unit_Price = document.getElementById("txtUnitPrice" + inputs[i].name).value;
+                    Currency_Rate = document.getElementById("txtCurrency_Rate" + inputs[i].name).value;
+                    Discount = document.getElementById("txtDiscount" + inputs[i].name).value;
+                    VAT_Rate = document.getElementById("txtVAT_Rate" + inputs[i].name).value;
+
+                    VAT_Exp = document.getElementById("txtVAT_Exp" + inputs[i].name).value;
+                    Amount = document.getElementById("txtAmount" + inputs[i].name).value;
+                    TtlAmount = document.getElementById("txtTTLAmount" + inputs[i].name).value;
+                    Amount_Others = document.getElementById("txtAmount_Others" + inputs[i].name).value;
+
+                    if (!Quanity) {
+                        Quanity = 0;
+                    }
+                    if (!Unit_Price) {
+                        Unit_Price = 0;
+                    }
+                    if (!Discount) {
+                        Discount = 0;
+                    }
+                    if (!VAT_Rate) {
+                        VAT_Rate = 5;
+
+                    }
+                    if (!VAT_Exp) {
+                        VAT_Exp = 0;
+                    }
+
+                    if (!TtlAmount) {
+                        TtlAmount = 1;
+                    }
+                    if (!Amount_Others) {
+                        Amount_Others = 1;
+                    }
+
+
+
+                    Amount = Quanity * Unit_Price;
+                    $("#txtAmount" + inputs[i].name).val(Amount);
+                    //---calculate sum vat exp
+                    VAT_Exp = 0;
+                    $("#txtVAT_Exp" + inputs[i].name).val(VAT_Exp);
+
+                    TtlAmount = (Number(Amount) + Number(VAT_Exp));
+                    $("#txtTTLAmount" + inputs[i].name).val(TtlAmount);
+
+                    //--Calculate Other Amount
+
+                    Amount_Others = TtlAmount;
+                    $("#txtAmount_Others" + inputs[i].name).val(Amount_Others);
+                }
+
+
+
+
+
+
+            }
+        }
+    </script>
+    <script>
+            //---show attachment popup
+        function ShowDetails() {
+            debugger
+            var TeamDetailPostBackURL = '/Purchases/Get_PurchaseRefDetails';
+
+            //--assign value to ItemCode hidden field in the main. Dont remove this fields
+           
+           var PurchaseMaster_ID = document.getElementById("PurchaseRef").value;
+            PurchaseMaster_ID = PurchaseMaster_ID.slice(2);
+            if (PurchaseMaster_ID >0 ) {
+                
+                $.ajax({
+                    type: "GET",
+                    url: TeamDetailPostBackURL,
+                    contentType: "application/json; charset=utf-8",
+                    data: { "PurchaseMaster_ID": PurchaseMaster_ID },
+                    datatype: "json",
+                    success: function (data) {
+
+
+                        if (data.message == undefined) {
+                            $('#LocDetailMaster').html(data);
+
+
+
+
+                            $('#ShowDetailsModal').modal('show');
+
+                        } else {
+                            alert(data.message);
+                            $('#ShowDetailsModal').modal('hide');
+                        }
+
+                    },
+                    error: function () {
+                        alert("Dynamic content load failed.");
+                    }
+                });
+            } else {
+                alert("Purchase Ref Not Exist");
+            }
+
+
+
+        }</script>
+    <script type="text/javascript">
+        function SaveForm() {
+            debugger
+
+            var form = document.getElementById("FormInsertPaymentDetail"),
+                inputs = form.getElementsByTagName("input"),
+
+                item_ID = [],
+                item_Description = [],
+                ReceivedQty = [],
+                UOM = [],
+                UnitPrice = [],
+                Currency_ID = [],
+                Currency_Rate = [],
+                Loc_ID = [],
+                VAT_Rate = [],
+                VAT_Exp = [],
+                Discount = [],
+                Amount = [],
+                TTLAmount = [],
+                Amount_Others = [],
+                PurchaseMaster_Id = [],
+                PurchaseDetails_ID = [];
+
+
+
+            for (var i = 0, len = inputs.length; i < len; i++) {
+                if (inputs[i].type === "checkbox" && inputs[i].checked == true) {
+                    PurchaseDetails_ID.push(inputs[i].name);
+                    item_ID.push(document.getElementById("txtitem_ID" + inputs[i].name).value);
+                    item_Description.push(document.getElementById("txtitem_Description" + inputs[i].name).value);
+                    ReceivedQty.push(document.getElementById("txtReceivedQty" + inputs[i].name).value);
+                    UOM.push(document.getElementById("txtUOM" + inputs[i].name).value);
+                    UnitPrice.push(document.getElementById("txtUnitPrice" + inputs[i].name).value);
+                    Currency_ID.push(document.getElementById("txtCurrency_ID" + inputs[i].name).value);
+                    Currency_Rate.push(document.getElementById("txtCurrency_Rate" + inputs[i].name).value);
+                    Loc_ID.push(document.getElementById("txtLoc_ID" + inputs[i].name).value);
+                    VAT_Rate.push(document.getElementById("txtVAT_Rate" + inputs[i].name).value);
+                    VAT_Exp.push(document.getElementById("txtVAT_Exp" + inputs[i].name).value);
+                    Discount.push(document.getElementById("txtDiscount" + inputs[i].name).value);
+                    Amount.push(document.getElementById("txtAmount" + inputs[i].name).value);
+                    TTLAmount.push(document.getElementById("txtTTLAmount" + inputs[i].name).value);
+                    Amount_Others.push(document.getElementById("txtAmount_Others" + inputs[i].name).value);
+                    PurchaseMaster_Id.push(document.getElementById("txtPurchaseMaster_Id" + inputs[i].name).value);
+                }
+
+
+
+
+
+
+            }
+
+
+
+            return $.ajax({
+                type: 'POST',
+                url: "/Purchases/InsertPurchasesReceivedDetail",
+                data: {
+
+                    hdGRVMaster_ID: $('#GRVMaster_ID').val(),
+
+                    Item_ID: item_ID,
+                    item_Description: item_Description,
+                    Quantity: ReceivedQty,
+                    UOM: UOM,
+                    Currency_ID: Currency_ID,
+                    Currency_Rate: Currency_Rate,
+                    Unit_Price: UnitPrice,
+                    VAT_Rate: VAT_Rate,
+                    VAT_Exp: VAT_Exp,
+                    Discount: Discount,
+                    Amount: Amount,
+                    TtlAmount: TTLAmount,
+                    Amount_Others: Amount_Others,
+                    Location_ID: Loc_ID,
+                    PurchaseDetails_ID: PurchaseDetails_ID,
+                    PurchaseMaster_Id: PurchaseMaster_Id,
+
+                },
+                success: function (result, status, xhr) {
+                    mySuccessAuctionDetail(result);
+
+                }
+            });
+
+
+        }
+        function GetPurchaseRefDetail() {
+
+            debugger
+
+
+            var PurchaseMaster_ID = document.getElementById("PurchaseRef").value.toString();
+            
+             PurchaseMaster_ID = PurchaseMaster_ID.slice(2);
+                $("#PurchaseMaster_ID").val(PurchaseMaster_ID);
+                $.ajax({
+
+                    type: "Get",
+                    url: "/Purchases/GetPurchaseRefDetail",
+                    data: { //Passing data
+                        PurchaseMaster_ID: PurchaseMaster_ID
+                    },
+                    datatype: "json",
+                    success: function (response) {
+                        debugger
+
+
+                        $("#Vendor_ID").val(response.vendor_ID);
+                        $("#Vendor_PruchaseTo").val(response.vendor_PruchaseTo);
+                        $("#Vendor_Address").val(response.vendor_Address);
+                        ShowDetails();
+
+
+
+
+
+
+                    }
+                })
+
+
+        }
+        //---this function will hit after success submission of insert Stock detail form
+        function mySuccessAuctionDetail(data) {
+
+            var SuccessDiv = " <div class='col-lg-12'><div class='alert alert-info'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button><strong>Success!</strong> Saved Successfully! <a href ='' class='alert-link'></a></div></div>";
+            debugger
+            if (data.message == undefined) {
+
+
+
+
+                //$('#AddNewPurchaseModal').modal('hide');
+                $('#PurchasesDetailSection').html(data);
+                $('#SuccessErrorSection').html(SuccessDiv).show();
+
+                //reset form after success
+                $('#FormInsertPaymentDetail').trigger("reset");
+                $('#DeletePurchasesDetailModal').modal('hide');
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        //---this function will hit when error occured in submission of Stock detail
+        function myFailureStockDetail() {
+
+            alert("Failured occured. Please try again!");
+        }
+      
+                $(document).ready(function(){
+            $("#print-btn").click(function(event){
+                event.preventDefault();
+
+                var win = window.open("@Url.Action("PurchaseInvoicePrint_GRV", "Report")" + "?GRVMaster_ID=" + $("#GRVMaster_ID").val() , "_blank");
+                win.focus();
+            });
+        })
+    </script>
+
+}
+
+
+
+
+

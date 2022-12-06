@@ -1,0 +1,165 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OAccounts
+@{ Layout = null; }
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+
+<!DOCTYPE HTML>
+<HTML>
+<head>
+
+    <!-- Basic -->
+    <meta charset="UTF-8">
+
+    <title>@ViewBag.PageTitle</title>
+    <meta name="keywords" content="DearlerSol | Dealers Management System " />
+    <meta name="description" content="Vehicle Management System | Dealer Management System | Dealer ERP ">
+    <meta name="author" content="DealerSol.com">
+
+    <!-- Mobile Metas -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <!-- Favicon  -->
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+
+
+    <!-- Vendor CSS -->
+    <link rel="stylesheet" href="~/vendor/bootstrap/css/bootstrap.css" />
+
+
+    <style>
+        .moneycol {
+            text-align: right;
+        }
+
+        .controlheight {
+            height: 1px;
+            border: 1px solid #d3d3d3;
+            margin: 0px;
+        }
+
+            .controlheight table th, .table td {
+                padding: 5px;
+            }
+
+        .SumHeading {
+            background-color: #d3d3d3;
+            text-align: left;
+            font-weight: bold;
+            font-size: 16px
+        }
+
+        .ColHeading {
+            background-color: #d3d3d3;
+            font-size: 18px;
+            text-align: center
+        }
+    </style>
+
+
+</head>
+
+<BODY>
+
+
+    <div class="row">
+        <div class="col">
+            <section>
+                <header>
+                    <div class="row form-inline">
+                        @* Farzaib *@
+                        <div class="col-md-6 ">
+                            <div class="text-center">
+                                <h4 class="text-left" style="position:absolute; top:10%; left: 1.5%;">@Configuration.GetSection("AppSettings").GetSection("CompanyName").Value.ToString()</h4>
+                                <h3>Received Tax Report</h3>
+                            </div>
+                        </div>
+                        @*<div class="col-md-12" style="text-align:center">
+
+                                <h3 style="color:black;">
+                                    Recevied Tax Report
+
+                                </h3>
+
+                            </div>*@
+
+
+                    </div>
+
+                </header>
+                <div>
+                    <table class="table table-bordered" @*id="datatable-default"*@>
+                        <thead>
+                            <tr class="ColHeading">
+
+
+                                <td>  Chassis_No </td>
+                                <td>  SaleDate </td>
+                                <td>  PriceTax   </td>
+                                <td>  AuctionFeeTax </td>
+                                <td>  OfficeChargesTax </td>
+                                <td><b>  Total </b></td>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+
+
+                            @if (Model.ReceivedTax_PR != null)
+                            {
+
+
+                                foreach (TaxReport item in Model.ReceivedTax_PR)
+                                {
+
+
+                                    <tr>
+
+
+                                        <td class="controlheight text-nowrap">@Html.DisplayFor(modelItem => item.Chassis_No) </td>
+                                        <td class="controlheight">@Html.DisplayFor(modelItem => item.SaleDate)</td>
+                                        <td class="controlheight">@Html.DisplayFor(modelItem => item.PriceTax) </td>
+                                        <td class="controlheight ">@Html.DisplayFor(modelItem => item.AuctionFeeTax) </td>
+                                        <td class="controlheight ">@Html.DisplayFor(modelItem => item.OfficeChargesTax) </td>
+                                        <td class="controlheight "><b>@Html.DisplayFor(modelItem => item.Total)</b> </td>
+
+
+
+
+
+                                    </tr>
+                                }
+                            }
+
+
+                        </tbody>
+
+                        <tfoot>
+
+
+                            @foreach (TaxReport item in Model.ReceivedTax_TTL_PR)
+                            {
+
+                                <tr>
+                                    <td>Total</td>
+                                    <td></td>
+                                    <td class="controlheight text-nowrap"><b>@Html.DisplayFor(modelItem => item.PriceTax_ttl)</b> </td>
+                                    <td class="controlheight"><b>@Html.DisplayFor(modelItem => item.AuctionFeeTax_ttl)</b></td>
+                                    <td class="controlheight"><b>@Html.DisplayFor(modelItem => item.OfficeChargesTax_ttl) </b></td>
+                                    <td class="controlheight"><b>@Html.DisplayFor(modelItem => item.Total_ttl) </b></td>
+                                </tr>
+                            }
+
+                        </tfoot>
+
+
+
+
+                    </table>
+                </div>
+            </section>
+        </div>
+    </div>
+</BODY>
+</HTML>

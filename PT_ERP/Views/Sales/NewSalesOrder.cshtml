@@ -1,0 +1,2504 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OSales
+@{
+    ViewData["Title"] = "NewSalesInvoice_TRD";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{
+
+
+
+    string Form_SalesMaster_ActionMethod = "";
+    int? SaleMaster_ID = ViewBag.SaleMaster_ID;
+
+
+    if (Model.SaleMasterObj != null && Model.SaleMasterObj.SaleMaster_ID > 0)
+    {
+
+        Form_SalesMaster_ActionMethod = "UpdateSalesInvoiceMaster_TRD";
+
+
+    }
+    else
+    {
+        Form_SalesMaster_ActionMethod = "InsertSalesInvoiceMaster_TRD";
+
+
+    }
+
+
+
+    //----total values
+    ViewBag.Grand_Amount = "0";
+    ViewBag.Grand_VATExp = "0";
+    ViewBag.Grand_TotalAmount = "0";
+    ViewBag.Total_Amt_inWords = "";
+
+}
+
+
+
+
+
+
+<header class="page-header">
+    <h2>Sales</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+            <li><a asp-area="" asp-controller="Sales" asp-action="SalesInvoiceList_TRD"><span>Sales</span></a></li>
+            <li><a asp-area="" asp-controller="@ViewBag.BreadCumController" asp-action="@ViewBag.BreadCumAction"><span>New Sales Order</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+
+
+
+
+
+<div class="row" id="SuccessErrorSection">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+        <div class="col-lg-12">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-info">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Success!</strong> @TempData["Success"] <a href="" class="alert-link"></a>
+                </div>
+            }
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Error!</strong> @TempData["Error"] <a href="" class="alert-link"></a>
+                </div>
+            }
+        </div>
+    }
+
+
+</div>
+
+<!-- start: page -->
+<section class="card">
+    <div class="card-body">
+        <div class="invoice">
+            <header class="clearfix">
+                <div class="row">
+                    <div class="col-sm-6 mt-0">
+                        <h2 class="h4 mt-0 mb-2 text-dark font-weight-bold">Sales Order</h2>
+
+                    </div>
+
+                    <div class="col-sm-6 mt-0 text-right">
+
+                        @if (String.IsNullOrEmpty(Model.SaleMasterObj.SaleStatus))
+                        {
+                            <h4 class=" mt-0 mb-2 text-dark"><b>Status:</b> <label>Pending</label></h4>
+                        }
+                        else
+                        {
+                            <h4 class=" mt-0 mb-2 text-dark"><b>Status:</b> <label>@Model.SaleMasterObj.SaleStatus</label></h4>
+                        }
+
+
+                    </div>
+
+
+                </div>
+            </header>
+
+            <div class="row">
+                <div class="col-lg-8">
+                    @if (Model.SaleMasterObj.SaleMaster_ID != null)
+                    {
+                        if (Model.SaleMasterObj.SaleMaster_ID > 0)
+                        {
+
+                            <button type="button" id="ButtonSaleMasterUpdate" class="btn-sm btn btn-success">Update &nbsp;<i class="fas fa-save"></i></button>
+
+                            <button type="button" class="btn-sm btn btn-primary">Edit  &nbsp;<i class="fas fa-edit"></i></button>
+
+
+                            <button type="button" class="btn-sm btn btn-warning" data-toggle="modal" data-target="#ChangeStatusSalesModal" onclick="ChangeStatusSalesMaster('@Model.SaleMasterObj.SaleMaster_ID', '5');">Cancel &nbsp;<i class="fas fa-cross"></i></button>
+
+                            <button type="button" class="btn-sm btn btn-danger" data-toggle="modal" data-target="#DeleteSalesMasterModal" onclick="DeleteSalesMaster('@Model.SaleMasterObj.SaleMaster_ID');">Delete &nbsp;<i class="fas fa-trash-alt"></i></button>
+                            <button type="button" class="btn-sm btn btn btn-dark" data-toggle="modal" data-target="#ChangeStatusSalesModal" onclick="ChangeStatusSalesMaster('@Model.SaleMasterObj.SaleMaster_ID', '2');">Approve &nbsp;<i class="fa fa-check"></i></button>
+
+
+                            <button type="button" class="btn-sm btn btn-info" id="print-btn">Print &nbsp;<i class="fas fa-print"></i></button>
+
+                            <button type="button" class="btn-sm btn btn-info" id="print-btn-agreement">Prn-Agr&nbsp;<i class="fas fa-print"></i></button>
+
+                            <button type="button" class="btn-sm btn btn btn-default" style="background-color: #68889E; color:white; border-color:#2F3E48"
+                                    onclick="ShowAttachmentMaster('@Model.SaleMasterObj.SaleMaster_ID');">
+                                Attachment &nbsp;<i class="fa fa-paperclip"></i>
+                            </button>
+
+                            <a asp-controller="Sales" asp-action="SalesInvoiceList_TRD" class="btn-sm btn btn-default">List &nbsp;<i class="fas fa-list"></i></a>
+
+
+                        }
+                    }
+                    else
+                    {
+                        <button type="button" id="ButtonSaleMasterIssue" class="btn-sm btn btn-success">Issue &nbsp;<i class="fas fa-save"></i></button>
+
+                        <button type="button" class="btn-sm btn btn-primary" disabled="disabled">Edit  &nbsp;<i class="fas fa-edit"></i></button>
+
+
+                        <button type="button" class="btn-sm btn btn-warning" disabled="disabled">Cancel &nbsp;<i class="fas fa-cross"></i></button>
+                        <button type="button" class="btn-sm btn btn-danger" disabled="disabled">Delete &nbsp;<i class="fas fa-trash-alt"></i></button>
+                        <button type="button" class="btn-sm btn btn btn-dark" disabled="disabled">Approve &nbsp;<i class="fa fa-check"></i></button>
+                        <button type="button" class="btn-sm btn btn-info" disabled="disabled">Print &nbsp;<i class="fas fa-print"></i></button>
+                        <button type="button" class="btn-sm btn btn-info" disabled="disabled">Prn-Agr&nbsp;<i class="fas fa-print"></i></button>
+
+                        <a asp-controller="Sales" asp-action="SalesInvoiceList_TRD" class="btn-sm btn btn-default">List &nbsp;<i class="fas fa-list"></i></a>
+
+                    }
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div class="col">
+
+
+
+                    <form method="post" asp-area="" asp-controller="Sales" asp-action="@Form_SalesMaster_ActionMethod" id="formSalesMaster">
+                        @Html.AntiForgeryToken()
+
+                        <section class="card">
+
+                            <div class="card-body">
+
+
+
+                                <div class="row form-group">
+                                    <div class="col-lg-4">
+
+                                        <div class="row MasterForm">
+                                            <label for="To" class="col-sm-4 col-form-label">Customer</label>
+                                            <div class="col-sm-8">
+                                                <select class="form-control" id="Customer_ID" name="Customer_ID" onchange="GetCustomerDetail()" asp-items="@(new SelectList( ViewBag.CustomerMaster,"Customer_ID","CustomerName", Model.SaleMasterObj.Customer_ID))" required>
+                                                </select>
+                                                <input type="hidden" id="SaleMaster_ID" name="SaleMaster_ID" value="@SaleMaster_ID" />
+                                            </div>
+                                        </div>
+                                        <div class="row MasterForm">
+                                            <label for="To" class="col-sm-4 col-form-label">Contact</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" id="Customer_Contact" name="Customer_Contact" value="@Model.SaleMasterObj.Customer_Contact" placeholder="Contact Number">
+                                            </div>
+                                        </div>
+
+                                        <div class="row MasterForm">
+                                            <label for="Address" class="col-sm-4 col-form-label">Address</label>
+                                            <div class="col-sm-8">
+                                                @*<textarea class="form-control" rows="1" id="Invoice_address" name="Invoice_address" placeholder="">@Model.SaleMasterObj.Invoice_address</textarea>*@
+                                                <input type="text" class="form-control" id="Invoice_address" name="Invoice_address" value="@Model.SaleMasterObj.Invoice_address" placeholder="Customer Address">
+                                            </div>
+                                        </div>
+                                        <div class="row MasterForm">
+                                            <label for="To" class="col-sm-4 col-form-label">CustomerTRN</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" id="CustomerTRN" name="CustomerTRN" value="@Model.SaleMasterObj.CustomerTRN" placeholder="Customer TRN">
+                                            </div>
+                                        </div>
+
+                                        <div class="row MasterForm">
+                                            <label for="To" class="col-sm-4 col-form-label">Remarks</label>
+                                            <div class="col-sm-8">
+                                                <textarea type="text" class="form-control" id="Remarks" name="Remarks" placeholder="Remarks">@Model.SaleMasterObj.Remarks</textarea>
+                                            </div>
+                                        </div>
+                                        @*<div class="row MasterForm">
+            <label for="shipping_co_ID" class="col-sm-4 col-form-label">Shipping Co</label>
+            <div class="col-sm-8">
+                <select class="form-control" id="shipping_co_ID" name="shipping_co_ID" asp-items="@(new SelectList( ViewBag.ShippingCompanies,"Partner_ID","PartnerName", Model.SaleMasterObj.shipping_co_ID))">
+                    <option>Select Ship Co</option>
+
+                </select>
+
+            </div>
+        </div>*@
+
+
+
+
+                                    </div>
+
+                                    <div class="col-lg-4">
+                                        @*<div class="row MasterForm">
+                                            <label for="ExportTo_Destination_ID" class="col-sm-4 col-form-label">Destination</label>
+                                            <div class="col-sm-8">
+                                                <select class="form-control" id="ExportTo_Destination_ID" name="ExportTo_Destination_ID" asp-items="@(new SelectList( ViewBag.ExportDestinations,"Destinations_ID","Destinations", Model.SaleMasterObj.ExportTo_Destination_ID))">
+                                                    <option value="0"> Select Destination</option>
+
+                                                </select>
+
+                                            </div>
+                                        </div>*@
+                                        @*<div class="row MasterForm">
+                                            <label for="Agent_ID" class="col-sm-4 col-form-label">Port Exit</label>
+                                            <div class="col-sm-8">
+                                                <select class="form-control" id="Port_of_Exit_ID" name="Port_of_Exit_ID" asp-items="@(new SelectList( ViewBag.PortOfExit,"PortOfExit_ID","PortOfExit", Model.SaleMasterObj.Port_of_Exit_ID))">
+                                                    <option value="0">Select Port</option>
+
+                                                </select>
+
+                                            </div>
+                                        </div>*@
+
+                               
+
+                                        @*<div class="row MasterForm">
+                                            <label for="Showroom_ID" class="col-sm-4 col-form-label">Showroom</label>
+                                            <div class="col-sm-8">
+                                                <select class="form-control" id="Showroom_ID" name="Showroom_ID" asp-items="@(new SelectList( ViewBag.ShowroomsList,"ShowRoom_ID","ShowRoomName", Model.SaleMasterObj.Showroom_ID))">
+                                                    <option>Select Showroom</option>
+
+                                                </select>
+
+                                            </div>
+                                        </div>*@
+
+                                        @*<div class="row MasterForm">
+                                            <label for="ExporterCo_ID" class="col-sm-4 col-form-label">Export Co</label>
+                                            <div class="col-sm-8">
+                                                <select class="form-control" id="ExporterCo_ID" name="ExporterCo_ID" asp-items="@(new SelectList( ViewBag.ExportCompanies,"Partner_ID","PartnerName", Model.SaleMasterObj.ExporterCo_ID))">
+
+                                                    <option value="0"> Select Export Co</option>
+
+                                                </select>
+
+                                            </div>
+                                        </div>*@
+
+                                    </div>
+
+                                    <div class="col-lg-4 ">
+
+
+                                        <div class="row MasterForm">
+                                            <label for="PurchaseRef" class="col-sm-4 col-form-label">Ref No</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" id="SaleRef" name="SaleRef" value="@Model.SaleMasterObj.SaleRef" readonly>
+                                            </div>
+                                        </div>
+
+                                        <div class="row MasterForm">
+                                            <label for="PurchaseDate" class="col-sm-4 col-form-label">Date</label>
+                                            <div class="col-sm-8">
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                        </span>
+                                                    </span>
+
+                                                    @if (!String.IsNullOrEmpty(Model.SaleMasterObj.SaleDate))
+                                                    {
+                                                        <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="SaleDate" name="SaleDate" value="@Model.SaleMasterObj.SaleDate" required>
+
+                                                    }
+                                                    else
+                                                    {
+                                                        <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="SaleDate" name="SaleDate" value="@DateTime.Now.ToString("dd-MMM-yyyy")" required>
+
+                                                    }
+
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+
+                                        <div class="row MasterForm">
+                                            <label for="To" class="col-sm-4 col-form-label">Manualbook_Ref</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" id="Manualbook_ref" name="Manualbook_ref" value="@Model.SaleMasterObj.Manualbook_ref" placeholder="Manualbook_Ref">
+                                            </div>
+                                        </div>
+
+                                        <div class="row MasterForm">
+                                            <label for="Seller_ID" class="col-sm-4 col-form-label">Seller</label>
+                                            <div class="col-sm-8">
+                                                <select class="form-control" id="Seller_ID" name="Seller_ID" asp-items="@(new SelectList( ViewBag.SellerList,"Partner_ID","PartnerName", Model.SaleMasterObj.Seller_ID))">
+                                                    <option>Select Seller</option>
+
+                                                </select>
+
+                                            </div>
+                                        </div>
+                                        <div class="row MasterForm">
+                                            <label for="Sale_trans_type" class="col-sm-4 col-form-label">Sale Type</label>
+                                            <div class="col-sm-8">
+                                                <select class="form-control" asp-for="@Model.SaleMasterObj.Sale_trans_type" id="Sale_trans_type" name="Sale_trans_type">
+                                                    <option selected="selected" value="EXP">EXP</option>
+                                                    <option value="IMP">IMP</option>
+                                                    <option value="TRF">TRF</option>
+
+                                                </select>
+
+                                            </div>
+                                        </div>
+                                        @*<div class="row MasterForm">
+            <label for="Agent_ID" class="col-sm-4 col-form-label">Agent</label>
+            <div class="col-sm-8">
+                <select class="form-control" id="Agent_ID" name="Agent_ID" asp-items="@(new SelectList( ViewBag.AgentsList,"Partner_ID","PartnerName", Model.SaleMasterObj.Agent_ID))">
+                    <option>Select Agent</option>
+
+                </select>
+
+            </div>
+        </div>*@
+                                        @*<div class="row MasterForm hidden">
+            <label for="Bank_to_Transfer_payment_ID" class="col-sm-4 col-form-label">Payment Bank</label>
+            <div class="col-sm-8">
+                <select class="form-control" id="Bank_to_Transfer_payment_ID" name="Bank_to_Transfer_payment_ID" asp-items="@(new SelectList( ViewBag.BasicBanksList,"Bank_ID","BankName", Model.SaleMasterObj.Bank_to_Transfer_payment_ID))">
+                    <option value="0">Select Bank</option>
+
+                </select>
+
+            </div>
+        </div>*@
+
+                                    </div>
+
+                             
+                                   
+                                </div>
+                            </div>
+
+
+                        </section>
+                    </form>
+
+                </div>
+
+            </div>
+
+            <div class="row m-2">
+                <div class="col-lg-6">
+                    <h2 class="card-title" style="line-height:normal;">Sale Details </h2>
+                </div>
+                <div class="col-lg-6 text-right">
+                    <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#AddNewSaleDetailModal">Add New &nbsp;<i class="fas fa-plus"></i></button>
+
+
+                </div>
+            </div>
+
+            <div id="SalesDetailSection">
+
+                <table class="table table-responsive-md table-bordered mb-0">
+                    <thead>
+                        <tr>
+                            <th>Edit/Delete</th>
+                            <th>Item</th>
+                            <th>Quantity</th>
+                            <th>UOM</th>
+
+                    
+                            <th>Price</th>
+
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @if (Model.SalesDetailList != null)
+                        {
+
+
+                            foreach (pa_SalesDetails item in Model.SalesDetailList)
+                            {
+
+                                ViewBag.Grand_Amount = item.Grand_Amount;
+                                ViewBag.Grand_VATExp = item.Grand_VATExp;
+                                ViewBag.Grand_TotalAmount = item.Grand_TotalAmount;
+                                ViewBag.Total_Amt_inWords = item.Total_Amt_inWords;
+
+                                <tr>
+
+
+                                    <td>
+
+                                        <a onclick="UpdateSalesDetailByChassis('@item.SalesDetails_ID', '@item.ItemCode', '@item.ItemDesc','@item.Unit_Price','@item.VATRate', '@item.VATExp', '@item.Total_Amount' , '@item.Quantity', '@item.UM_ID', '@item.Location_ID');" data-toggle="modal" data-target="#UdpateSaleDetailByChassisModal"><img style="width: 20px;" src="~/Img/Icons/edit.png" /></a>
+                                        <a onclick="DeleteSalesDetail('@item.SalesDetails_ID');" data-toggle="modal" data-target="#DeleteSalesDetailModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+                                    </td>
+                                    <td>@Html.DisplayFor(modelItem => item.ItemCode)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Quantity)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.UM_ID)</td>
+                                  
+                                    <td>@Html.DisplayFor(modelItem => item.Total_Amount)</td>
+
+
+
+                                </tr>
+
+
+                            }
+                        }
+
+
+                    </tbody>
+
+                </table>
+
+
+                
+
+
+
+                <div class="invoice-summary">
+
+                    <div class="row">
+
+                        <div class="col-lg-6 col-md-6">
+                            <div class="form-group">
+                                <br />
+                                <label class="col-form-label" for="uu">Amounts</label>
+
+                                <input type="text" id="uu" name="uuu" class="form-control" value="@ViewBag.Total_Amt_inWords" readonly />
+
+
+                            </div>
+                        </div>
+
+                        <div class="col-lg-2 col-md-2">
+
+                        </div>
+
+                        <div class="col-lg-4 col-md-4 justify-content-end text-right">
+                            <table class="table h6 text-dark">
+                                <tbody>
+
+                                    <tr class="b-top-0">
+                                        <td colspan="2"> Sub Total:</td>
+                                        <td class="text-right" id="SubTotal">@ViewBag.Grand_Amount</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2">VAT Charge:</td>
+                                        <td class="text-right" id="VAT_ChargeTotal">@ViewBag.Grand_VATExp</td>
+                                    </tr>
+
+
+                                    <tr class="h5">
+                                        <td colspan="2">Total Sale Value:</td>
+                                        <td class="text-right" id="Total_Payable">@ViewBag.Grand_TotalAmount</td>
+                                    </tr>
+
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+
+            <div class="row m-2">
+                <div class="col-lg-6">
+                    <h2 class="card-title" style="line-height:normal;">Receipts Details </h2>
+                </div>
+                <div class="col-lg-6 text-right">
+                    @if (Model.SaleMasterObj.SaleMaster_ID != null)
+                    {
+                        <button class="btn btn-sm btn-primary " id="btnSavePopUp" data-toggle="modal" data-target="#AddNewReceiptDetailModal">Add New &nbsp;<i class="fas fa-plus"></i></button>
+                    }
+                    else
+
+                    {
+
+                        <button class="btn btn-sm btn-primary " id="btnSavePopUp" disabled="disabled" data-toggle="modal" data-target="">Add New &nbsp;<i class="fas fa-plus"></i></button>
+                    }
+
+
+
+                </div>
+            </div>
+            <div class="row">
+                <div id="ReceiptDetailSection">
+                    <table class="table table-responsive-sm table-bordered m-sm-0">
+                        <thead>
+
+
+                            <tr>
+                                <th>Edit/Delete</th>
+                                <th>On Account</th>
+                                <th>Amount</th>
+                                <th width="30%">Description</th>
+
+                                <th>Recieved Mode</th>
+                                <th>Ref</th>
+                                <th>Type</th>
+                                <th>Cheque Details</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            @if (Model.SalesReceiptDetailsList != null)
+                            {
+
+
+                                foreach (pa_ReceiptDetails_DAL item in Model.SalesReceiptDetailsList)
+                                {
+                                    <tr style='color: @(item.transaction_status == "0" ? "green" : "black");'>
+                                        <td>
+                                            <a @(item.Receipttype == "RVS" ? "hidden" : "") onclick="UpdateReceiptDetailGeneral('@item.ReceiptDetail_ID','@item.DR_accountID','@item.Amount','@item.Currency_ID','@item.Currency_Rate','@item.other_curr_amount','@item.CR_accountID','@item.Description','@item.trans_ref','@item.Cheque_Bank_Name',
+                                        '@item.cheque_Date','@item.Cheque_no','@item.VAT_Rate','@item.VAT_Exp','@item.Total_Amount');" data-toggle="modal" data-target="#UpdateReceiptDetailModal" id="btnUpdatePopUp"><img style="width: 20px;" src="~/Img/Icons/edit.png" /></a>
+                                            <a @(item.Receipttype == "RVS" ? "hidden" : "") onclick="DeleteReceiptsDetail('@item.ReceiptDetail_ID');" data-toggle="modal" data-target="#DeleteReceiptDetailModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+                                        </td>
+                                        <td>@Html.DisplayFor(modelItem => item.CR_AccountName)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.Amount)</td>
+                                        <td width="30%"> @Html.DisplayFor(modelItem => item.Description) </td>
+                                        <td>@Html.DisplayFor(modelItem => item.DR_AcountName)</td>
+
+                                        <td>@Html.DisplayFor(modelItem => item.trans_ref)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.Receipttype)</td>
+                                        <td class="text-wrap">
+                                            <b>@Html.DisplayFor(modelItem => item.Cheque_Bank_Name)</b>
+                                            <i>@Html.DisplayFor(modelItem => item.Cheque_no) </i>
+                                            <b>@Html.DisplayFor(modelItem => item.cheque_Date)</b>
+
+                                        </td>
+                                    </tr>
+
+
+                                }
+                            }
+
+
+                        </tbody>
+
+                    </table>
+                </div>
+
+            </div>
+
+
+            <hr />
+
+
+
+            <div class="row">
+
+                <div class="col-sm-3"><span class="show-grid-block">Created at : <b>@Model.SaleMasterObj.Created_at </b></span></div>
+                <div class="col-sm-3"><span class="show-grid-block">Created by :</span><b>@Model.SaleMasterObj.Created_by</b></div>
+                <div class="col-sm-3"><span class="show-grid-block">Modified at :<b>@Model.SaleMasterObj.Modified_at </b></span></div>
+                <div class="col-sm-3"><span class="show-grid-block">Modified by : <b>@Model.SaleMasterObj.Modified_by </b></span></div>
+            </div>
+
+
+
+        </div>
+
+
+    </div>
+</section>
+
+
+
+
+<!-- Modal Insert Sale detail -->
+<div class="modal fade bs-modal-lg" id="AddNewSaleDetailModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Sale Order Details</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" data-ajax="true" data-ajax-success="mySuccessSalesDetail" data-ajax-failure="myFailureSalesDetail"
+                  asp-area="" asp-controller="Sales" asp-action="InsertSalesInvoiceDetail_TRD" data-ajax-loading="" id="FormInsertSalesDetail">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body">
+
+
+
+                            <div class="row form-group">
+
+                                @if (Model.SaleMasterObj.SaleMaster_ID != null)
+                                {
+                                    <input id="hdSaleMaster_ID" name="hdSaleMaster_ID" type="hidden" value="@Model.SaleMasterObj.SaleMaster_ID" />
+                                }
+                                else
+
+                                {
+
+                                    <input id="hdSaleMaster_ID" name="hdSaleMaster_ID" type="hidden" value="0" />
+                                }
+
+
+                                @*<div class="col-lg-4 col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="ServiceType">Type</label>
+                                        <select class="form-control" id="SalesInvoiceType" name="SalesInvoiceType" onchange="DisplayDescription(this)">
+                                            <option value="ByChassis">By Chassis</option>
+                                            <option value="ByService">By Service</option>
+
+                                        </select>
+                                    </div>
+                                </div>*@
+
+
+
+                                <div class="col-lg-4 col-md-4 ByChassisClass">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Chassis">Item*</label>
+                              
+
+                                        <select class="form-control" id="ItemId" name="ItemId" asp-items="@(new SelectList( ViewBag.ItemMaster,"ItemCode","ItemCode"))" required>
+                                            <option value="0">Select Item</option>
+
+                                        </select>
+                                    </div>
+
+                                </div>
+
+
+
+                                <div class="col-lg-4 col-md-4 ByChassisClass">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Quantity">QTY</label>
+                                        <input type="number" id="Quantity" name="Quantity" step="any"  class="form-control" placeholder="0"  />
+
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-4 col-md-4 ByChassisClass">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="UM_ID">UOM</label>
+                                        <input type="text" id="UM_ID" name="UM_ID" class="form-control" placeholder="UOM"  />
+
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-4 col-md-4 ByChassisClass">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Location_ID">Location</label>
+
+                                        <select class="form-control" name="Location_ID" id="Location_ID"
+                                                asp-items="@(new SelectList(ViewBag.CarLocations,"CarLocation_ID","CarLocation"))">
+                                            <option value="0">Select Location</option>
+                                        </select>
+
+
+                                    </div>
+                                </div>
+
+
+                           
+
+
+
+
+                                <div class="col-lg-8 col-md-8 ServiceDescription" >
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="ItemDesc">Item Description</label>
+                                        <textarea class="form-control" rows="2" id="ItemDesc" name="ItemDesc" placeholder=""></textarea>
+                                    </div>
+                                </div>
+
+
+                                <div class="col-lg-4 col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Unit_Price">Sales Price*</label>
+
+
+                                        <input type="number" id="Unit_Price" name="Unit_Price" step="any" class="form-control" onblur="CalculateSumAmount()" placeholder="Sales Price" required />
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-4 col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Amount">VAT Rate</label>
+                                        <select class="form-control" id="VATRate" name="VATRate" step="any" onchange="CalculateSumAmount()">
+                                            <option value="0">0%</option>
+                                            <option value="5">5%</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+
+                                <div class="col-lg-4 col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Amount">VAT Charges</label>
+                                        <input type="number" id="VATExp" name="VATExp" class="form-control" step="any" placeholder="VAT Charges" readonly />
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-4 col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Total_Amount">Total Amount</label>
+                                        <input type="number" id="Total_Amount" name="Total_Amount" class="form-control" step="any" readonly placeholder="Total Amount" />
+                                    </div>
+                                </div>
+
+
+
+                            </div>
+
+
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-sm btn-primary">Add</button>
+                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modal Update Sale Invoice Detail By Chassis-->
+<div class="modal fade bs-modal-lg" id="UdpateSaleDetailByChassisModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Sale Order Details</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" data-ajax="true" data-ajax-success="mySuccessSalesInvoiceUpate" data-ajax-failure="myFailureSalesInvoiceUpdate"
+                  asp-area="" asp-controller="Sales" asp-action="UpdateSalesInvoiceDetailByChassis_TRD" data-ajax-loading="">
+
+                <section class="card">
+
+                    <div class="card-body">
+
+
+
+                        <div class="row form-group">
+                            @if (Model.SaleMasterObj.SaleMaster_ID != null)
+                            {
+                                <input id="hdSaleMaster_ID" name="hdSaleMaster_ID" type="hidden" value="@Model.SaleMasterObj.SaleMaster_ID" />
+                            }
+                            else
+
+                            {
+
+                                <input id="hdSaleMaster_ID" name="hdSaleMaster_ID" type="hidden" value="0" />
+                            }
+
+
+
+
+                            <div class="col-lg-4 col-md-4">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="item_ID">Item*</label>
+
+                                    <select class="form-control" id="ItemIdUdpate_chassis" name="ItemId" asp-items="@(new SelectList( ViewBag.ItemMaster,"ItemCode","ItemCode"))" required>
+                                        <option value="0">Select Item</option>
+
+                                    </select>
+                                    <input type="hidden" id="SalesDetails_ID_Udpate_chassis" name="SalesDetails_ID" />
+                                </div>
+                            </div>
+
+
+
+                            <div class="col-lg-4 col-md-4 ByChassisClass">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="Quantity">QTY</label>
+                                    <input type="number" id="QuantityUdpate_chassis" name="Quantity" step="any" class="form-control" placeholder="0" />
+
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4 col-md-4 ByChassisClass">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="UM_ID">UOM</label>
+                                    <input type="text" id="UM_IDUdpate_chassis" name="UM_ID" class="form-control" placeholder="UOM" />
+
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4 col-md-4 ByChassisClass">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="Location_ID">Location</label>
+
+                                    <select class="form-control" name="Location_ID" id="Location_IDUdpate_chassis"asp-items="@(new SelectList(ViewBag.CarLocations,"CarLocation_ID","CarLocation"))">
+                                        <option value="0">Select Location</option>
+                                    </select>
+
+
+                                </div>
+                            </div>
+                            <div class="col-lg-8 col-md-8 ServiceDescription">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="ItemDesc">Item Description</label>
+                                    <textarea class="form-control" rows="2" id="ItemDescUdpate_chassis" name="ItemDesc" placeholder=""></textarea>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-4">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="Unit_PriceUpdate_chassis">Sales Price*</label>
+
+
+                                    <input type="number" id="Unit_PriceUpdate_chassis" name="Unit_Price" step="any" onblur="CalculateSumAmountUpdate()" class="form-control" placeholder="Sales Price" required />
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4 col-md-4">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="Amount">VAT Rate</label>
+                                    <select class="form-control" id="VATRateUpdate_chassis" name="VAT_Rate" step="any" onchange="CalculateSumAmountUpdate()">
+                                        <option value="0">0%</option>
+                                        <option value="5">5%</option>
+                                    </select>
+                                </div>
+                            </div>
+
+
+                            <div class="col-lg-4 col-md-4">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="Amount">VAT Charges</label>
+                                    <input type="number" id="VATExpUpdate_chassis" name="VAT_Exp" class="form-control" step="any" placeholder="VAT Charges" readonly />
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4 col-md-4">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="Total_Amount">Total Amount</label>
+                                    <input type="number" id="Total_AmountUpdate_chassis" name="Total_Amount" class="form-control" step="any" readonly placeholder="Total Amount" />
+                                </div>
+                            </div>
+
+
+
+
+
+                        </div>
+
+
+
+
+                    </div>
+
+
+
+                </section>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Update</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+<!-- Modal Delete sales master invoice -->
+<div class="modal fade bs-modal-lg" id="DeleteSalesMasterModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Delete Sales Order</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="Sales" asp-action="DeleteSalesInvoiceMaster_TRD">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+
+
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <h3>Do you want to delete this record?</h3>
+
+                                        <input type="hidden" id="SaleMaster_ID_Delete" name="SaleMaster_ID" />
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- Modal Delete PurchaseDetail -->
+<div class="modal fade bs-modal-lg" id="DeleteSalesDetailModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Delete Sales Detail</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="Sales" asp-action="DeleteSalesInvoiceDetail_TRD">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <h3>Do you want to delete this record?</h3>
+
+                                        <input type="hidden" id="SalesDetails_ID_Delete" name="SalesDetails_ID" />
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modal Change sales Master Status -->
+<div class="modal fade bs-modal-lg" id="ChangeStatusSalesModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Change Sales Master Status</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="Sales" asp-action="ChangeSalesBookingMasterStatus" data-ajax-loading="">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <h3>Do you want to change status of this record?</h3>
+
+                                        <input type="hidden" id="SaleMaster_IDStatus" name="SaleMaster_ID" />
+                                        <input type="hidden" id="Sales_Status_ID" name="Status_ID" />
+                                        <input type="hidden" id="Trans_Type" name="Trans_Type" value="Sales_Invoice" />
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<!-- Modal Insert Customer -->
+<div class="modal fade bs-modal-lg" id="AddCustomerModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Add Customer</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="BasicData" asp-action="AddCustomersMaster" enctype="multipart/form-data">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body">
+
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Customer_Ref">Customer Ref</label>
+
+                                        <input type="text" class="form-control" id="Customer_Ref" disabled="disabled" name="Customer_Ref">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="CustomerName">Customer Name*<span style="color: red; font-size: 15px; margin-left: 4px;">*</span></label>
+
+                                        <input type="text" class="form-control" id="CustomerName" name="CustomerName" required>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Contact Number</label>
+
+                                        <input type="text" class="form-control" id="ContactNumber" name="ContactNumber">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Mobile No</label>
+
+                                        <input type="text" class="form-control" id="MobileNo" name="MobileNo">
+                                    </div>
+                                </div>
+
+
+
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Contact Name</label>
+
+                                        <input type="text" class="form-control" id="ContactName" name="ContactName">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Contact Address</label>
+
+                                        <input type="text" class="form-control" id="ContactAddress" name="ContactAddress">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Email </label>
+
+                                        <input type="email" class="form-control" id="Email" name="Email">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Fax </label>
+
+                                        <input type="text" class="form-control" id="Fax" name="Fax">
+                                    </div>
+                                </div>
+
+
+
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">EmiratesID</label>
+
+                                        <input type="text" class="form-control" id="EmiratesID" name="EmiratesID">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">TradeLicenseNo</label>
+
+                                        <input type="text" class="form-control" id="TradeLicenseNo" name="TradeLicenseNo">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">TRN </label>
+
+                                        <input type="text" class="form-control" id="TRN" name="TRN">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Customer Category</label>
+
+                                        <select class="form-control" id="CustomerCat_ID" name="CustomerCat_ID" asp-items="@(new SelectList( ViewBag.CustomerCategoryList,"CustomerCat_ID","CustomerCatName"))">
+                                        </select>
+                                    </div>
+                                </div>
+
+
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Remarks</label>
+
+                                        <textarea type="text" class="form-control" id="Remarks" name="Remarks"></textarea>
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modal show attachment -->
+<div class="modal fade bs-modal-lg" id="ShowAttachmentMasterModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <!-- Following fields is for making a central sales master id for attachments -->
+        <input type="hidden" id="SalesMasterMain" name="SalesMasterMain" />
+
+        <div class="modal-content" id="AttachmentsSaleMaster">
+
+        </div>
+    </div>
+</div>
+
+<!--Insert receipt detail model-->
+<div class="modal fade bs-modal-lg in" id="AddNewReceiptDetailModal" tabindex="-1" role="dialog" aria-hidden="true" style=" padding-right: 17px;">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Receipt Details Sale</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" data-ajax="true" data-ajax-success="mySuccessInsertReceipt" data-ajax-failure="myFailureInsertReceipt"
+                  asp-area="" asp-controller="Sales" asp-action="InsertReceiptDetail_Sale" data-ajax-loading="" id="FormInsertReceiptDetail">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body">
+
+
+
+                            <div class="form-body">
+                                <div class="row">
+                                    @if (Model.SaleMasterObj.SaleMaster_ID != null)
+                                    {
+                                        <input id="hdSaleMaster_ID" name="hdSaleMaster_ID" type="hidden" value="@Model.SaleMasterObj.SaleMaster_ID" />
+                                        <input id="hdCustomer_ID" name="hdCustomer_ID" type="hidden" value="@Model.SaleMasterObj.Customer_ID" />
+                                    }
+                                    else
+
+                                    {
+
+                                        <input id="hdSaleMaster_ID" name="hdSaleMaster_ID" type="hidden" value="0" />
+                                    }
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Account</label>
+                                            <select class="form-control" id="CR_accountID" name="CR_accountID" readonly>
+                                                <option value="39">A/R</option>
+                                            </select>
+
+
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Amount*</label>
+                                            <input type="number" id="Amount" name="Amount" step="any" class="form-control PSum" placeholder="Enter Amount" onblur="CalculateSumAmountReceipt()" required>
+
+                                        </div>
+                                    </div>
+
+                                    <!--/span-->
+
+                                    <div class="col-md-3">
+                                        <label class="control-label">Currency & Rate</label>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-5 col-sm-5" style="padding:0; padding-left:12px;">
+                                                    <select class="form-control" id="Currency_ID" name="Currency_ID" asp-items="@(new SelectList( ViewBag.CurrencyList,"Currency_ID","Currency_ShortName"))" required>
+                                                        @*<option>SELECT</option>*@
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-7 col-sm-7" style="padding:0;">
+                                                    <input type="number" id="Currency_Rate" name="Currency_Rate" step="any" onblur="CalculateSumAmountReceipt()" value="1" class="form-control" placeholder="Rate" required>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Other Amount </label>
+                                            <input type="text" id="other_curr_amount" name="other_curr_amount" step="any" class="form-control" placeholder="Other Amount" readonly>
+
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Received Mode*</label>
+
+                                            <select class="form-control" id="DR_accountID" name="DR_accountID" asp-items="@(new SelectList( ViewBag.DR_AccountsList,"Account_ID","AccountName"))" required>
+                                                <option>Select</option>
+                                            </select>
+
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="control-label">Description</label>
+                                            <input type="text" id="Description" name="Description" class="form-control" placeholder="Enter Description here">
+
+                                        </div>
+                                    </div>
+
+                                    <!--/span-->
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Ref </label>
+                                            <input type="text" class="form-control" id="trans_ref" name="trans_ref" value="@Model.SaleMasterObj.SaleRef" readonly>
+
+
+
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+                                </div>
+                                <div class="row">
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Bank</label>
+                                            <input type="text" id="Cheque_Bank_Name" name="Cheque_Bank_Name" class="form-control" placeholder="Bank">
+
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Cheque Date </label>
+
+                                            <div class="input-group">
+                                                <span class="input-group-prepend">
+                                                    <span class="input-group-text">
+                                                        <i class="fas fa-calendar-alt"></i>
+                                                    </span>
+                                                </span>
+
+                                                <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="cheque_Date" name="cheque_Date">
+
+                                            </div>
+
+
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Cheque # </label>
+                                            <input type="text" id="Cheque_no" name="Cheque_no" class="form-control" placeholder="Cheque #">
+
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-md-3 col-lg-3">
+                                        <label class="control-label">VAT Charges </label>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-5 col-sm-5" style="padding:0; padding-left:12px;">
+                                                    <select class="form-control" id="VAT_Rate" name="VAT_Rate" onchange="CalculateSumAmountReceipt()">
+                                                        <option value="0">0%</option>
+                                                        <option value="5">5%</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-7 col-sm-7" style="padding:0;">
+                                                    <input type="text" id="VAT_Exp" name="VAT_Exp" class="form-control" step="any" placeholder="total" readonly>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-3 col-lg-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Total </label>
+                                            <input type="text" id="Total_Amounts" name="Total_Amount" step="any" class="form-control" placeholder="total" readonly>
+
+                                        </div>
+                                    </div>
+
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Add</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+<!--Update receipt detail model-->
+<div class="modal fade bs-modal-sm in" id="UpdateReceiptDetailModal" tabindex="-1" role="dialog" aria-hidden="true" style=" padding-right: 17px;">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Receipt Details</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" data-ajax="true" data-ajax-success="mySuccessUdpateReceipt" data-ajax-failure="myFailureUpdateReceipt"
+                  asp-area="" asp-controller="Sales" asp-action="UpdateReceiptDetail_Sale" data-ajax-loading="" id="FormUpdateReceiptDetail">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body">
+
+
+
+                            <div class="form-body">
+                                <div class="row">
+                                    @if (Model.SaleMasterObj.SaleMaster_ID != null)
+                                    {
+                                        <input id="hdSaleMaster_ID" name="hdSaleMaster_ID" type="hidden" value="@Model.SaleMasterObj.SaleMaster_ID" />
+                                    }
+                                    else
+
+                                    {
+
+                                        <input id="hdSaleMaster_ID" name="hdSaleMaster_ID" type="hidden" value="0" />
+                                    }
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Account*</label>
+                                            <select class="form-control" id="CR_accountIDUpdate" name="CR_accountID" asp-items="@(new SelectList( ViewBag.CR_AccountsList,"Account_ID","AccountName"))" required readonly>
+                                                <option>Select</option>
+                                            </select>
+
+                                            <!--Following feild is primary key for update-->
+                                            <input type="hidden" id="ReceiptDetail_IDUpdate" name="ReceiptDetail_ID">
+
+
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Amount*</label>
+                                            <input type="number" id="AmountUpdate" name="Amount" step="any" class="form-control" placeholder="Enter Amount" onblur="CalculateSumAmountUpdateReceipt()" required>
+
+                                        </div>
+                                    </div>
+
+                                    <!--/span-->
+
+                                    <div class="col-md-3">
+                                        <label class="control-label">Currency & Rate</label>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-5 col-sm-5" style="padding:0; padding-left:12px;">
+                                                    <select class="form-control" id="Currency_IDUpdate" name="Currency_ID" asp-items="@(new SelectList( ViewBag.CurrencyList,"Currency_ID","Currency_ShortName"))" required>
+                                                        @*<option>SELECT</option>*@
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-7 col-sm-7" style="padding:0;">
+                                                    <input type="number" id="Currency_RateUpdate" name="Currency_Rate" onblur="CalculateSumAmountUpdateReceipt()" value="1" class="form-control" placeholder="Rate" required>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Other Amount </label>
+                                            <input type="text" id="other_curr_amountUpdate" name="other_curr_amount" class="form-control" placeholder="Other Amount" readonly>
+
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Received Mode*</label>
+
+                                            <select class="form-control" id="DR_accountIDUpdate" name="DR_accountID" asp-items="@(new SelectList( ViewBag.DR_AccountsList,"Account_ID","AccountName"))" required>
+                                                <option>Select</option>
+                                            </select>
+
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="control-label">Description</label>
+                                            <input type="text" id="DescriptionUpdate" name="Description" class="form-control" placeholder="Enter Description here">
+
+                                        </div>
+                                    </div>
+
+                                    <!--/span-->
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Ref </label>
+
+                                            <input type="text" id="trans_refUpdate" name="trans_ref" class="form-control" placeholder="Reference" readonly>
+
+
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+                                </div>
+                                <div class="row">
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Bank</label>
+                                            <input type="text" id="Cheque_Bank_NameUpdate" name="Cheque_Bank_Name" class="form-control" placeholder="Bank">
+
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Cheque Date </label>
+
+                                            <div class="input-group">
+                                                <span class="input-group-prepend">
+                                                    <span class="input-group-text">
+                                                        <i class="fas fa-calendar-alt"></i>
+                                                    </span>
+                                                </span>
+
+                                                <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="cheque_DateUpdate" name="cheque_Date">
+
+                                            </div>
+
+
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Cheque # </label>
+                                            <input type="text" id="Cheque_noUpdate" name="Cheque_no" class="form-control" placeholder="Cheque #">
+
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-md-3 col-lg-3">
+                                        <label class="control-label">VAT Charges </label>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-5 col-sm-5" style="padding:0; padding-left:12px;">
+                                                    <select class="form-control" id="VAT_RateUpdate" name="VAT_Rate" onchange="CalculateSumAmountUpdateReceipt()">
+                                                        <option value="0">0%</option>
+                                                        <option value="5">5%</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-7 col-sm-7" style="padding:0;">
+                                                    <input type="text" id="VAT_ExpUpdate" name="VAT_Exp" class="form-control" placeholder="total" readonly>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-3 col-lg-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Total </label>
+                                            <input type="text" id="Total_AmountsUpdate" name="Total_Amount" class="form-control" placeholder="total" readonly>
+
+                                        </div>
+                                    </div>
+
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                    <button type="button" class="btn  btn-sm btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal Delete receipt detail -->
+<div class="modal fade bs-modal-lg" id="DeleteReceiptDetailModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Delete Receipt Detail</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="Sales" asp-action="DeleteReceiptDetailSale">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <h3>Do you want to delete this record?</h3>
+
+                                        <input type="hidden" id="ReceiptDetail_IDDelete" name="ReceiptDetail_ID" />
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+@section Scripts {
+
+
+
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
+
+
+
+    <script>
+        //---show attachment popup
+        function ShowAttachmentMaster(SaleMaster_ID) {
+            debugger
+            var TeamDetailPostBackURL = '/Sales/GetSalesMasterInvoice_Attachments';
+
+            //--assign value to SaleMaster_ID hidden field in the main. Dont remove this fields
+            $("#SalesMasterMain").val(SaleMaster_ID);
+
+
+            if (!SaleMaster_ID) {
+                alert("ID is null. Please try again!");
+            } else {
+                $.ajax({
+                    type: "GET",
+                    url: TeamDetailPostBackURL,
+                    contentType: "application/json; charset=utf-8",
+                    data: { "SaleMaster_ID": SaleMaster_ID },
+                    datatype: "json",
+                    success: function (data) {
+
+
+                        if (data.message == undefined) {
+                            $('#AttachmentsSaleMaster').html(data);
+
+
+                            //--assign value to SaleMaster_ID hidden field. this field is in partial view '_SalesInvoiceAttachment'
+                            $("#SaleMaster_ID_Attachment").val(SaleMaster_ID);
+
+                            $('#ShowAttachmentMasterModal').modal('show');
+
+                        } else {
+                            alert(data.message);
+                            $('#ShowAttachmentMasterModal').modal('hide');
+                        }
+
+                    },
+                    error: function () {
+                        alert("Dynamic content load failed.");
+                    }
+                });
+            }
+
+
+
+        }
+
+
+        //---after successfull submission of attachment
+        function mySuccessAttachment(data) {
+
+            debugger
+            if (data.message == undefined) {
+
+
+                $('#AttachmentsSaleMaster').html(data);
+
+                //---assign id of sales master to the hidden field SaleMaster_ID_Attachment after partial view refresh
+                var SaleMaster_ID = document.getElementById("SalesMasterMain").value;
+                $("#SaleMaster_ID_Attachment").val(SaleMaster_ID);
+
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        //---if error occured in insertion of attachment
+        function myFailureAttachment() {
+
+            alert("Failured occured. Please try again!");
+
+        }
+
+
+        //---Delete Attachment
+        function DeleteAttachment(Attachment_ID, Master_ID, Type, File_Name) {
+            debugger
+            var TeamDetailPostBackURL = '/Sales/DeleteAttachmentSalesInvoice';
+
+            //--in this function , the 'Type' is for the field in attachment table for specifying different voucher documents
+
+            var SaleMaster_ID = Master_ID;
+            if (!SaleMaster_ID) {
+                alert("Attachment ID is null. Please try again!");
+            } else {
+                $.ajax({
+                    type: "GET",
+                    url: TeamDetailPostBackURL,
+                    contentType: "application/json; charset=utf-8",
+                    data: { "SaleMaster_ID": SaleMaster_ID, "Attachment_ID": Attachment_ID, "Type": Type, "File_Name": File_Name },
+                    datatype: "json",
+                    success: function (data) {
+
+
+                        if (data.message == undefined) {
+                            $('#AttachmentsSaleMaster').html(data);
+
+
+                            //--assign value to SaleMaster_ID hidden field. this field is in partial view '_SalesInvoiceAttachment'
+                            $("#SaleMaster_ID_Attachment").val(SaleMaster_ID);
+
+
+
+                        } else {
+                            alert(data.message);
+                            //$('#ShowAttachmentMasterModal').modal('hide');
+                        }
+
+                    },
+                    error: function () {
+                        alert("Dynamic content load failed.");
+                    }
+                });
+            }
+
+
+
+        }
+        //---this function will hit after success submission of insert receipt detail form
+        function mySuccessInsertReceipt(data) {
+
+            var SuccessDiv = " <div class='col-lg-12'><div class='alert alert-info'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button><strong>Success!</strong> Saved Successfully! <a href ='' class='alert-link'></a></div></div>";
+            debugger
+            if (data.message == undefined) {
+
+                //$('#AddNewPurchaseModal').modal('hide');
+                $('#ReceiptDetailSection').html(data);
+                $('#SuccessErrorSection').html(SuccessDiv).show();
+
+                //reset form after success
+                $('#FormInsertReceiptDetail').trigger("reset");
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        //---this function will hit when error occured in submission of receipt detail
+        function myFailureInsertReceipt() {
+
+            alert("Failured occured. Please try again!");
+        }
+
+
+        //---this function will hit after success submission of update receipt detail form
+        function mySuccessUdpateReceipt(data) {
+
+            var SuccessDiv = " <div class='col-lg-12'><div class='alert alert-info'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button><strong>Success!</strong> Saved Successfully! <a href ='' class='alert-link'></a></div></div>";
+            debugger
+            if (data.message == undefined) {
+
+                $('#UpdateReceiptDetailModal').modal('hide');
+                $('#ReceiptDetailSection').html(data);
+                $('#SuccessErrorSection').html(SuccessDiv).show();
+
+                //reset form after success
+                $('#FormUpdateReceiptDetail').trigger("reset");
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        //---this function will hit when error occured in submission of update receipt detail
+        function myFailureUpdateReceipt() {
+
+            alert("Failured occured. Please try again!");
+        }
+
+        //---this function will hit after success submission of insert sales detail form
+        function mySuccessSalesDetail(data) {
+
+            var SuccessDiv = " <div class='col-lg-12'><div class='alert alert-info'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button><strong>Success!</strong> Saved Successfully! <a href ='' class='alert-link'></a></div></div>";
+            debugger
+            if (data.message == undefined) {
+
+                //$('#AddNewPurchaseModal').modal('hide');
+                $('#SalesDetailSection').html(data);
+                $('#SuccessErrorSection').html(SuccessDiv).show();
+
+                //reset form after success
+                $('#FormInsertSalesDetail').trigger("reset");
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        //---this function will hit when error occured in submission of sales detail
+        function myFailureSalesDetail() {
+
+            alert("Failured occured. Please try again!");
+        }
+
+        //---this function will hit after success submission of update purchase detail form
+        function mySuccessSalesInvoiceUpate(data) {
+
+            var SuccessDiv = "<div class='col-lg-12'><div class='alert alert-info'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button><strong>Success!</strong> Updated Successfully! <a href ='' class='alert-link'></a></div></div>";
+            debugger
+            if (data.message == undefined) {
+
+                $('#UdpateSaleDetailByChassisModal').modal('hide');
+                $('#UdpateSaleDetailByServicesModal').modal('hide');
+                $('#SalesDetailSection').html(data);
+                $('#SuccessErrorSection').html(SuccessDiv).show();
+
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        function myFailureSalesInvoiceUpdate() {
+
+            alert("Failured occured. Please try again!");
+        }
+
+
+        //---delete sales invoice master
+        function DeleteSalesMaster(SaleMaster_ID) {
+            debugger
+            $("#SaleMaster_ID_Delete").val(SaleMaster_ID);
+
+        }
+
+
+        //---Delete sales detail
+        function DeleteSalesDetail(SalesDetails_ID) {
+            debugger
+            $("#SalesDetails_ID_Delete").val(SalesDetails_ID);
+
+        }
+
+
+
+        $(document).ready(function () {
+            $("#ButtonSaleMasterIssue").click(function () {
+                $("#formSalesMaster").submit();
+            });
+        });
+
+        $(document).ready(function () {
+            $("#ButtonSaleMasterUpdate").click(function () {
+                $("#formSalesMaster").submit();
+            });
+        });
+
+
+    </script>
+
+    <script>
+        function DisplayDescription(SelectBy) {
+            debugger
+            var SelectedValue = SelectBy.value;
+            if (SelectedValue == 'ByService') {
+                $(".ServiceDescription").show();
+                $(".ByChassisClass").hide();
+                $("#Chassis").prop('required', false);
+                $("#ItemDesc").prop('required', true);
+            } else {
+                $(".ServiceDescription").hide();
+                $(".ByChassisClass").show();
+                $("#Chassis").prop('required', true);
+                $("#ItemDesc").prop('required', false);
+            }
+
+        }
+
+
+
+
+        //This function is for validation of chassis no
+        function ValidateChassis() {
+
+            //debugger
+
+
+            var Chassis = document.getElementById("Chassis").value.toString();
+
+            $.ajax({
+
+                type: "Get",
+                url: "/Accounts/ValidateChassisNo_UNSOLD",
+                data: { //Passing data
+                    ChassisNo: Chassis
+
+
+                },
+                datatype: "json",
+                success: function (response) {
+                    debugger
+                    if (response.message == 'Chassis is valid') {
+                        //debugger
+                        $("#ChassisValidationMessage").text(response.message);
+                        $("#ChassisValidationMessage").css("color", "green");
+                        $("#Chassis").val(response.ItemId);
+                        $("#Make").val(response.make);
+                        $("#ModelDesc").val(response.modelDesciption);
+                        $("#ModelYear").val(response.modelYear);
+                        $("#Color").val(response.color);
+                    } else {
+                        $("#ChassisValidationMessage").text(response.message);
+                        $("#ChassisValidationMessage").css("color", "red");
+                        $("#Chassis").val("");
+                        $("#Make").val("");
+                        $("#ModelDesc").val("");
+                        $("#ModelYear").val("");
+                        $("#Color").val("");
+                    }
+
+                }
+            })
+        }
+        function GetCustomerDetail() {
+
+            //debugger
+
+
+            var Customer = document.getElementById("Customer_ID").value.toString();
+
+            if (Customer == -1) {
+                $('#AddCustomerModal').modal('show');
+            }
+            else {
+            $.ajax({
+
+                type: "Get",
+                url: "/Sales/GetCustomerDetail",
+                data: { //Passing data
+                    Customer_ID: Customer
+                },
+                datatype: "json",
+                success: function (response){
+                    debugger
+
+
+                        $("#Customer_Contact").val(response.contactNumber);
+                        $("#Invoice_address").val(response.contactAddress);
+                        $("#CustomerTRN").val(response.trn);
+
+
+
+
+
+                }
+            })
+            }
+
+        }
+
+        //---change sales master status
+        function ChangeStatusSalesMaster(SaleMaster_ID, Status) {
+            debugger
+            $("#SaleMaster_IDStatus").val(SaleMaster_ID);
+            $("#Sales_Status_ID").val(Status);
+
+        }
+
+
+        //----Assigning values to sales invoice detail form of chassis type
+        function UpdateSalesDetailByChassis(SalesDetails_ID, ItemId, ItemDesc, Unit_Price, VATRate, VATExp, Total_Amount, Quantity, UM_ID, Location_ID) {
+
+            debugger
+
+            $("#SalesDetails_ID_Udpate_chassis").val(SalesDetails_ID);
+            $("#ItemIdUdpate_chassis").val(ItemId);
+            $("#ItemDescUdpate_chassis").val(ItemDesc);
+
+            $("#Unit_PriceUpdate_chassis").val(Unit_Price);
+            $("#VATRateUpdate_chassis").val(VATRate);
+            $("#VATExpUpdate_chassis").val(VATExp);
+            $("#Total_AmountUpdate_chassis").val(Total_Amount);
+            $("#QuantityUdpate_chassis").val(Quantity);
+            $("#UM_IDUdpate_chassis").val(UM_ID);
+            $("#Location_IDUdpate_chassis").val(Location_ID);
+
+
+
+        }
+
+
+        //----Assigning values to Update receipt detail form
+        function UpdateReceiptDetailGeneral(ReceiptDetail_ID, DR_accountID, Amount, Currency_ID, Currency_Rate,
+            other_curr_amount, CR_accountID, Description, trans_ref, Cheque_Bank_Name,
+            cheque_Date, Cheque_no, VAT_Rate, VAT_Exp, Total_Amount) {
+
+
+            debugger
+
+            $("#ReceiptDetail_IDUpdate").val(ReceiptDetail_ID);
+            $("#DR_accountIDUpdate").val(DR_accountID);
+            $("#AmountUpdate").val(Amount);
+
+            $("#Currency_IDUpdate").val(Currency_ID);
+            $("#Currency_RateUpdate").val(Currency_Rate);
+            $("#other_curr_amountUpdate").val(other_curr_amount);
+            $("#CR_accountIDUpdate").val(CR_accountID);
+            $("#DescriptionUpdate").val(Description);
+            $("#trans_refUpdate").val(trans_ref);
+            $("#Cheque_Bank_NameUpdate").val(Cheque_Bank_Name);
+            $("#cheque_DateUpdate").val(cheque_Date);
+            $("#Cheque_noUpdate").val(Cheque_no);
+            $("#VAT_RateUpdate").val(VAT_Rate);
+            $("#VAT_ExpUpdate").val(VAT_Exp);
+            $("#Total_AmountsUpdate").val(Total_Amount);
+
+
+        }
+        function DeleteReceiptsDetail(ReceiptDetail_ID) {
+
+            $("#ReceiptDetail_IDDelete").val(ReceiptDetail_ID);
+
+        }
+        //---function for calculating amounts in the puchase detail pop up form insert
+
+        function CalculateSumAmount() {
+            debugger
+
+            var Unit_Price = 0;
+
+            var VATRate = 5;
+
+            var VATExp = 0;
+
+            var Total_Amount = 0;
+
+
+
+            Unit_Price = document.getElementById("Unit_Price").value;
+
+            VATRate = document.getElementById("VATRate").value;
+
+            VATExp = document.getElementById("VATExp").value;
+
+            Total_Amount = document.getElementById("Total_Amount").value;
+
+
+            if (!Unit_Price) {
+                Unit_Price = 0;
+            }
+
+            if (!VATRate) {
+                VATRate = 5;
+
+            }
+            if (!VATExp) {
+                VATExp = 0;
+            }
+            if (!Total_Amount) {
+                Total_Amount = 1;
+            }
+
+
+
+            //---calculate sum vat exp
+            VATExp = VATRate * Unit_Price / 100;
+            $("#VATExp").val(VATExp);
+
+            Total_Amount = (Number(Unit_Price) + Number(VATExp));
+            $("#Total_Amount").val(Total_Amount);
+
+
+
+        }
+
+        //---function for calculating amounts in the puchase detail pop up form insert
+        function CalculateSumAmountUpdate() {
+            debugger
+
+            var Unit_PriceUpdate_chassis = 0;
+
+            var VATRateUpdate_chassis = 5;
+
+            var VATExpUpdate_chassis = 0;
+
+            var Total_AmountUpdate_chassis = 0;
+
+
+
+            Unit_PriceUpdate_chassis = document.getElementById("Unit_PriceUpdate_chassis").value;
+
+            VATRateUpdate_chassis = document.getElementById("VATRateUpdate_chassis").value;
+
+            VATExpUpdate_chassis = document.getElementById("VATExpUpdate_chassis").value;
+
+            Total_AmountUpdate_chassis = document.getElementById("Total_AmountUpdate_chassis").value;
+
+
+            if (!Unit_PriceUpdate_chassis) {
+                Unit_PriceUpdate = 0;
+            }
+
+            if (!VATRateUpdate_chassis) {
+                VATRateUpdate_chassis = 5;
+
+            }
+            if (!VATExpUpdate_chassis) {
+                VATExpUpdate_chassis = 0;
+            }
+            if (!Total_AmountUpdate_chassis) {
+                Total_AmountUpdate_chassis = 1;
+            }
+
+
+
+            //---calculate sum vat exp
+            VATExpUpdate_chassis = VATRateUpdate_chassis * Unit_PriceUpdate_chassis / 100;
+            $("#VATExpUpdate_chassis").val(VATExpUpdate_chassis);
+
+            Total_AmountUpdate_chassis = (Number(Unit_PriceUpdate_chassis) + Number(VATExpUpdate_chassis));
+            $("#Total_AmountUpdate_chassis").val(Total_AmountUpdate_chassis);
+
+
+
+        }
+
+        //---function for calculating amounts in the puchase detail pop up form insert
+        function CalculateSumAmountUpdateService() {
+            debugger
+
+            var Unit_PriceUpdate_service = 0;
+
+            var VATRateUpdate_service = 5;
+
+            var VATExpUpdate_service = 0;
+
+            var Total_AmountUpdate_service = 0;
+
+
+
+            Unit_PriceUpdate_service = document.getElementById("Unit_PriceUpdate_service").value;
+
+            VATRateUpdate_service = document.getElementById("VATRateUpdate_service").value;
+
+            VATExpUpdate_service = document.getElementById("VATExpUpdate_service").value;
+
+            Total_AmountUpdate_service = document.getElementById("Total_AmountUpdate_service").value;
+
+
+            if (!Unit_PriceUpdate_service) {
+                Unit_PriceUpdate = 0;
+            }
+
+            if (!VATRateUpdate_service) {
+                VATRateUpdate_service = 5;
+
+            }
+            if (!VATExpUpdate_service) {
+                VATExpUpdate_service = 0;
+            }
+            if (!Total_AmountUpdate_service) {
+                Total_AmountUpdate_service = 1;
+            }
+
+
+
+            //---calculate sum vat exp
+            VATExpUpdate_service = VATRateUpdate_service * Unit_PriceUpdate_service / 100;
+            $("#VATExpUpdate_service").val(VATExpUpdate_service);
+
+            Total_AmountUpdate_service = (Number(Unit_PriceUpdate_service) + Number(VATExpUpdate_service));
+            $("#Total_AmountUpdate_service").val(Total_AmountUpdate_service);
+
+
+
+        }
+
+
+        //----method for opening customer popup
+        function AddNewCustomer(Customer) {
+
+
+
+            CustomerValue = Customer.value;
+            if (CustomerValue == 'NewCustomer') {
+                $('#AddCustomerModal').modal('show');
+            }
+        }
+
+        //---function for calculating amounts in the payment detail pop up form insert
+        function CalculateSumAmountReceipt() {
+            debugger
+            var Amount = 0;
+            var VAT_Rate = 0;
+            var Currency_Rate = 1;
+
+
+            var other_curr_amount = 0;
+            var VAT_Exp = 0;
+            var Total_Amount = 0;
+
+
+            Amount = document.getElementById("Amount").value;
+            VAT_Rate = document.getElementById("VAT_Rate").value;
+            Currency_Rate = document.getElementById("Currency_Rate").value;
+
+            other_curr_amount = document.getElementById("other_curr_amount").value;
+            VAT_Exp = document.getElementById("VAT_Exp").value;
+            Total_Amount = document.getElementById("Total_Amount").value;
+
+
+            if (!Amount) {
+                Amount = 0;
+            }
+            if (!VAT_Rate) {
+                VAT_Rate = 0;
+            }
+            if (!Currency_Rate) {
+                Currency_Rate = 1;
+            }
+            if (!other_curr_amount) {
+                other_curr_amount = 0;
+
+            }
+            if (!VAT_Exp) {
+                VAT_Exp = 0;
+            }
+            if (!Total_Amount) {
+                Total_Amount = 0;
+            }
+
+
+
+            //---calculate sum vat exp
+            VAT_Exp = VAT_Rate * Amount / 100;
+            $("#VAT_Exp").val(VAT_Exp);
+
+            Total_Amount = (Number(Amount) + Number(VAT_Exp));
+            $("#Total_Amounts").val(Total_Amount);
+
+            //---calculate Amount_Others
+            other_curr_amount = Amount * Currency_Rate;
+            $("#other_curr_amount").val(other_curr_amount);
+
+
+
+
+        }
+
+        //---function for calculating amounts in the payment detail pop up form Update
+        function CalculateSumAmountUpdateReceipt() {
+            debugger
+            var Amount = 0;
+            var VAT_Rate = 0;
+            var Currency_Rate = 1;
+
+
+            var other_curr_amount = 0;
+            var VAT_Exp = 0;
+            var Total_Amount = 0;
+
+
+            Amount = document.getElementById("AmountUpdate").value;
+            VAT_Rate = document.getElementById("VAT_RateUpdate").value;
+            Currency_Rate = document.getElementById("Currency_RateUpdate").value;
+
+            other_curr_amount = document.getElementById("other_curr_amountUpdate").value;
+            VAT_Exp = document.getElementById("VAT_ExpUpdate").value;
+            Total_Amount = document.getElementById("Total_AmountUpdate").value;
+
+
+            if (!Amount) {
+                Amount = 0;
+            }
+            if (!VAT_Rate) {
+                VAT_Rate = 0;
+            }
+            if (!Currency_Rate) {
+                Currency_Rate = 1;
+            }
+            if (!other_curr_amount) {
+                other_curr_amount = 0;
+
+            }
+            if (!VAT_Exp) {
+                VAT_Exp = 0;
+            }
+            if (!Total_Amount) {
+                Total_Amount = 0;
+            }
+
+
+
+            //---calculate sum vat exp
+            VAT_Exp = VAT_Rate * Amount / 100;
+            $("#VAT_ExpUpdate").val(VAT_Exp);
+
+            Total_Amount = (Number(Amount) + Number(VAT_Exp));
+            $("#Total_AmountsUpdate").val(Total_Amount);
+
+            //---calculate Amount_Others
+            other_curr_amount = Amount * Currency_Rate;
+            $("#other_curr_amountUpdate").val(other_curr_amount);
+
+
+
+
+        }
+
+        $(document).ready(function () {
+            $("#print-btn").click(function(event){
+                event.preventDefault();
+                var win = window.open("@Url.Action("SalesInvoice_Print", "Report")" + "?SaleMaster_ID=" + $("#SaleMaster_ID").val() , "_blank");
+                win.focus();
+            });
+
+             $("#print-btn-agreement").click(function(event){
+                event.preventDefault();
+                 var win = window.open("@Url.Action("SaleInvoiceAgreement_Print", "Report")" + "?SaleMaster_ID=" + $("#SaleMaster_ID").val() , "_blank");
+                win.focus();
+            });
+
+        })
+
+    </script>
+
+}
+

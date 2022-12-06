@@ -1,0 +1,71 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.ODelivery
+
+
+
+
+
+
+    <table class="table table-responsive-md table-bordered mb-0">
+        <thead>
+            <tr>
+
+
+                <th>Delete</th>
+
+                <th>Chassis No</th>
+                <th>CarTakenDate</th>
+                <th>CarTakenPerson</th>
+                <th>CarTakenContact</th>
+                <th>DeliveryOrder_Issued</th>
+
+
+
+
+
+
+
+
+
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.DeliveryOrderDetailList != null)
+            {
+                foreach (Pa_DeliveryOrder_Details item in Model.DeliveryOrderDetailList)
+                {
+
+                    <tr>
+
+                        <td>
+
+                            <a onclick="DeleteDetail('@item.DeliveryDetails_ID')" data-toggle="modal" data-target="#DeleteDetailModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Chassis_No)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.CarTakenDate)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.CarTakenPerson)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.CarTakenContact)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.DilveryOrder_Issued)
+                        </td>
+
+
+
+                    </tr>
+
+
+
+                }
+            }
+        </tbody>
+    </table>

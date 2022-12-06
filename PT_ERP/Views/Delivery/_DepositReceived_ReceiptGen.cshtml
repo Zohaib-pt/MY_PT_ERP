@@ -1,0 +1,69 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.ODelivery
+
+
+<table class="table table-responsive-md table-bordered mb-0">
+    <thead>
+        <tr>
+            <th>Edit/Delete</th>
+            <th>On Account</th>
+            <th>Amount</th>
+            <th>Description</th>
+
+            <th>Payment Mode</th>
+            <th>Cheque Details</th>
+
+
+
+        </tr>
+    </thead>
+    <tbody>
+
+        @if (Model.receiptDetailList != null)
+        {
+
+
+            foreach (pa_ReceiptDetails_DAL item in Model.receiptDetailList)
+            {
+
+
+
+        <tr>
+
+
+            <td>
+                <a onclick="UpdateReceiptDetailGeneral('@item.ReceiptDetail_ID','@item.DR_accountID','@item.Amount','@item.Currency_ID','@item.Currency_Rate','@item.other_curr_amount','@item.CR_accountID','@item.Description','@item.trans_ref','@item.Cheque_Bank_Name',
+                                        '@item.cheque_Date','@item.Cheque_no','@item.VAT_Rate','@item.VAT_Exp','@item.Total_Amount');" data-toggle="modal" data-target="#UpdateReceiptDetailModal"><img style="width: 20px;" src="~/Img/Icons/edit.png" /></a>
+                <a onclick="DeleteReceiptsDetail('@item.ReceiptDetail_ID');" data-toggle="modal" data-target="#DeleteReceiptDetailModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+
+
+
+            </td>
+            <td>@Html.DisplayFor(modelItem => item.DR_AcountName)</td>
+            <td>@Html.DisplayFor(modelItem => item.Amount)</td>
+            <td>@Html.DisplayFor(modelItem => item.Description)</td>
+            <td>@Html.DisplayFor(modelItem => item.CR_AccountName)</td>
+            <td>
+                <b> @Html.DisplayFor(modelItem => item.Cheque_Bank_Name)</b>
+                <i>  @Html.DisplayFor(modelItem => item.Cheque_no)</i>
+                <b>  @Html.DisplayFor(modelItem => item.cheque_Date)</b>
+
+            </td>
+
+
+        </tr>
+
+
+            }
+        }
+
+
+    </tbody>
+
+</table>
+
+
+
+

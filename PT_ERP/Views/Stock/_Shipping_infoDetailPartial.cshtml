@@ -1,0 +1,135 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OStock
+<table class="table table-responsive-md table-bordered mb-0">
+    <thead>
+        <tr>
+            <th>Edit/Delete</th>
+            <th>Chassis</th>
+            <th>Make</th>
+            <th>Shipping</th>
+
+
+
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Shipping_infoDetailList != null)
+        {
+
+            ViewBag.SubTotal = 0;
+            ViewBag.Vat_ExpTotal = 0;
+            ViewBag.DiscountTotal = 0;
+            ViewBag.Grand_Total = 0;
+
+
+            foreach (pa_Shipping_Info_details item in Model.Shipping_infoDetailList)
+            {
+
+
+
+
+                <tr>
+                    <td>
+                        <a onclick="UpdateShipping_infoDetail('@item.ID');"><img style="width: 20px;" src="~/Img/Icons/edit.png" /></a>
+                        <a onclick="DeleteShipping_infoDetail('@item.ID');" data-toggle="modal" data-target="#DeleteShipping_infoDetailModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+                    </td>
+                    <td>@Html.DisplayFor(modelItem => item.Chassis_no)</td>
+                    <td>@Html.DisplayFor(modelItem => item.make)</td>
+                    <td>@Html.DisplayFor(modelItem => item.TotalCharges)</td>
+
+
+                </tr>
+            }
+        }
+
+
+
+
+    </tbody>
+
+</table>
+
+
+<div class="invoice-summary">
+
+    <div class="row">
+
+        <div class="col-lg-9 col-md-9">
+
+        </div>
+
+        <div class="col-lg-3 col-md-3 justify-content-end text-right">
+            <table class="table h6 text-dark">
+                <tbody>
+
+
+                    @{
+                        if (Model.Shipping_infoMasterObj != null)
+                        {
+                            <tr class="b-top-0">
+                                <td colspan="2"> BerthCarry:</td>
+                                <td class="text-right" id="Price">@Model.Shipping_infoMasterObj.Berth_Carry_Charges</td>
+                            </tr>
+                        }
+
+                        else
+                        {
+                            <tr class="b-top-0">
+                                <td colspan="2"> BerthCarry:</td>
+                                <td class="text-right" id="Price">0</td>
+                            </tr>
+                        }
+                        if (Model.Shipping_infoMasterObj != null)
+                        {
+                            <tr>
+                                <td colspan="2">Total:</td>
+                                <td class="text-right" id="TotalTax">@Model.Shipping_infoMasterObj.Total_Amount</td>
+                            </tr>
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="2">Total:</td>
+                                <td class="text-right" id="TotalTax">0</td>
+                            </tr>
+                        }
+                        if (Model.Shipping_infoMasterObj != null)
+                        {
+                            <tr>
+                                <td colspan="2">Paid:</td>
+                                <td class="text-right" id="Paid">@Model.Shipping_infoMasterObj.Paid</td>
+                            </tr>
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="2">Paid:</td>
+                                <td class="text-right" id="Paid">0</td>
+                            </tr>
+                        }
+                        if (Model.Shipping_infoMasterObj != null)
+                        {
+                            <tr>
+                                <td colspan="2">Balance:</td>
+                                <td class="text-right" id="Balance">@Model.Shipping_infoMasterObj.Balance</td>
+                            </tr>
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="2">Balance:</td>
+                                <td class="text-right" id="Balance">0</td>
+                            </tr>
+                        }
+                    }
+
+
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,89 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OAccounts
+
+@using X.PagedList.Mvc.Core; @*//import this so we get our HTML Helper*@
+@using X.PagedList;  @*//import this so we can cast our list to IPagedList*@
+
+<table class="table table-bordered table-striped mb-0">
+    <thead>
+        <tr>
+            <th>Ref</th>
+            <th>Check Date</th>
+            <th>Description</th>
+            <th>Check No</th>
+            <th>Bank Name</th>
+            <th>VoucherDate</th>
+            <th>Type</th>
+            <th> </th>
+
+        </tr>
+    </thead>
+    <tbody>
+
+        @if (Model.PDCReportPageList != null)
+        {
+            foreach (PDCReport_DAL item in Model.PDCReportPageList)
+            {
+
+
+<tr class="gradeX odd" role="row">
+    @*<td><a asp-controller="Accounts" asp-action="NewJournalVoucher" asp-route-JVMaster_ID="@item.JVMaster_ID"> @Html.DisplayFor(modelItem => item.JVMaster_ref)</a></td>*@
+
+
+    <td>@Html.DisplayFor(modelItem => item.Ref_ID)</td>
+    <td>@Html.DisplayFor(modelItem => item.cheque_date)</td>
+    <td>@Html.DisplayFor(modelItem => item.Description)</td>
+    <td>@Html.DisplayFor(modelItem => item.cheque_no)</td>
+    <td>@Html.DisplayFor(modelItem => item.bank_name)</td>
+    <td>@Html.DisplayFor(modelItem => item.Date)</td>
+    <td>@Html.DisplayFor(modelItem => item.PaymentType)</td>
+    <td>
+        @*<a class="btn-sm btn btn-primary" asp-controller="Accounts" asp-action="PDCReport" asp-route-Ref_ID="@item.Ref_ID">POST &nbsp;<i class="fas fa-save"></i></a>*@
+
+
+        @if (@item.IsChequeCleared == 0)
+        {
+<a onclick="UpdatePostPDC('@item.Master_ID', '@item.PaymentType')" data-toggle="modal" data-target="#PostChequeModal"><img style="width: 20px;" src="~/Img/Icons/edit.png" /></a> }
+else
+{
+<a onclick="UpdatePostPDC('@item.Master_ID', '@item.PaymentType')" data-toggle="modal" class="disabled" data-target="#PostChequeModal"><img id="editIgm" style="width: 20px;" src="~/Img/Icons/edit.png" /></a>}
+
+    </td>
+
+</tr>
+}
+}
+
+    </tbody>
+</table>
+
+
+<div class="invoice-summary">
+
+    <div class="row">
+
+        <div class="col-lg-6 col-md-6">
+
+        </div>
+
+        <div class="col-lg-6 col-md-6 justify-content-end text-right">
+            @if (Model.PDCReportPageList.Count() != 0)
+            {
+
+@Html.PagedListPager(Model.PDCReportPageList, page => Url.Action("PDCReportBySearch", "Accounts", new { Ref_ID = ViewBag.PDCRef_ID, StartDate = ViewBag.PDCStartDate, Enddate = ViewBag.PDCEndDate, cheque_no = ViewBag.PDCcheque_no, page })
+
+                         , X.PagedList.Mvc.Core.Common.PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new AjaxOptions()
+                         {
+                             HttpMethod = "get",
+                             UpdateTargetId = "PDCReportSerach"
+                         })
+                               )}
+        </div>
+    </div>
+
+</div>
+
+
+
+

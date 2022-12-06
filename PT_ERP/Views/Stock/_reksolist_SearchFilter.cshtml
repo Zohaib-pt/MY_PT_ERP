@@ -1,0 +1,189 @@
+﻿@using DAL
+@using DAL.Models
+@using X.PagedList.Mvc.Core; @*//import this so we get our HTML Helper*@
+@using X.PagedList;  @*//import this so we can cast our list to IPagedList *@
+
+@model DAL.oClasses.OStock
+
+@{
+    double vTotalAmount = 0;
+    double vBalance = 0;
+    double vPaid = 0; 
+    
+    }
+
+
+<div class="invoice-summary mb-1">
+
+    <div class="row mb-1">
+
+        <div class="col-lg-6 col-md-6 mb-1">
+            <b>@ViewBag.RecordsPerPage</b> records per page
+        </div>
+
+        <div class="col-lg-6 col-md-6 mb-1 justify-content-end text-right">
+
+        </div>
+    </div>
+
+</div>
+
+<table class="table table-bordered table-striped mb-0">
+    <thead>
+        <tr>
+            <th>Ref</th>
+            <th>Date</th>
+            <th>Vendor Name</th>
+            <th>Total</th>
+            <th>Paid</th>
+            <th>Balance</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody id="TableStockListSearch">
+
+
+        @if (Model.ReksoList != null)
+        {
+            foreach (var item in Model.ReksoList)
+            {
+
+                if (vTotalAmount != 0)
+                {
+                    vTotalAmount += Convert.ToDouble(item.Total_Payable);
+                    ViewBag.VpAmount = vTotalAmount;
+                }
+                else
+                {
+                    vTotalAmount = Convert.ToDouble(item.Total_Payable);
+                    ViewBag.VpAmount = vTotalAmount;
+                }
+
+
+
+                if (vPaid != 0)
+                {
+
+                    vPaid += Convert.ToDouble(item.Paid);
+                    ViewBag.VPaid = vPaid;
+                }
+                else
+                {
+                    if (item.Paid != "")
+                    {
+                        vPaid = Convert.ToDouble(item.Paid);
+                        ViewBag.VPaid = vPaid;
+                    }
+                    else
+                    {
+                        ViewBag.VPaid = "0";
+                    }
+
+
+
+                }
+
+
+
+                if (vBalance != 0)
+                {
+                    vBalance += Convert.ToDouble(item.Balance);
+                    ViewBag.vBalance = vBalance;
+                }
+                else
+                {
+                    vBalance = Convert.ToDouble(item.Balance);
+                    ViewBag.vBalance = vBalance;
+                }
+
+
+
+
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Ref)
+                        <span style="font-size:11px;">( @Html.DisplayFor(modelItem => item.PurchaseRef) )</span>
+                    </td>
+                    <td>@Html.DisplayFor(modelItem => item.Date)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Vendor_Name)</td>
+                    <td class="countable">@Html.DisplayFor(modelItem => item.Total_Payable)</td>
+
+                    @if (item.Paid != "" && item.Paid != null)
+                    {
+                        <td class="countable">@Html.DisplayFor(modelItem => item.Paid) </td>
+                    }
+                    else
+                    {
+                        <td class="countable">0</td>
+                    }
+
+
+                    <td class="countable">@Html.DisplayFor(modelItem => item.Balance)</td>
+                    <td>@Html.DisplayFor(modelItem => item.PurchaseStatus)</td>
+                    <td><a href="~/Stock/NewPurchaseMasterJP?PurchaseMaster_ID=@item.PurchaseMaster_ID">View (@item.Car_Count)</a></td>
+                </tr>
+            }
+        }
+
+
+    </tbody>
+    <tfoot>
+        <tr role="row">
+
+            @*<th></th>
+            <th></th>
+            <th></th>
+            <th>@Viewbag.vTotalAmount</th>
+            <th>@Viewbag.vPaid</th>
+            <th>@Viewbag.vBalance</th>
+            <th></th>
+            <th></th>*@
+
+
+            @*By Yaseen 12-23-2021*@
+            @if (Model.ReksoList_total != null)
+            {
+                foreach (var item in Model.ReksoList_total)
+                {
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th>@item.Total_Payable</th>
+                    <th>@item.Paid</th>
+                    <th>@item.Balance</th>
+                    <th></th>
+                    <th></th>
+                }
+            }
+        </tr>
+    </tfoot>
+</table>
+
+<div class="invoice-summary">
+
+    <div class="row">
+
+        <div class="col-lg-6 col-md-6">
+
+        </div>
+
+        <div class="col-lg-6 col-md-6 justify-content-end text-right">
+
+            @if (Model.ReksoList.Count() != 0)
+            {
+
+                @Html.PagedListPager(Model.ReksoList, page => Url.Action("reksolist_SearchFilter", "Stock", new { PurchaseRef = ViewBag.PurchaseRef_reksolist, StartDate = ViewBag.StartDate_reksolist, RekSo_Vendor_ID = ViewBag.RekSo_Vendor_ID, page })
+
+                , X.PagedList.Mvc.Core.Common.PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new AjaxOptions()
+                {
+                    HttpMethod = "get",
+                    UpdateTargetId = "reksoListtable"
+                })
+            )
+
+            }
+        </div>
+    </div>
+
+</div>

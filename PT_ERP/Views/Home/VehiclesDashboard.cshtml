@@ -1,0 +1,1062 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OHome
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+@{ ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+
+    string FirstCurrency = "";
+    string SecondCurrency = "";
+    FirstCurrency = Configuration.GetSection("AppSettings").GetSection("FirstCurrency").Value;
+    SecondCurrency = Configuration.GetSection("AppSettings").GetSection("SecondCurrency").Value;
+    string Stock_Setting = Configuration.GetSection("AppSettings").GetSection("IsStockList_Name").Value;
+    string IsInvestmentTotal = Configuration.GetSection("AppSettings").GetSection("IsInvestmentTotalDashboard").Value;
+    
+}
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+
+<header class="page-header">
+    <h2>Dashboard</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+            <li><a asp-area="" asp-controller="Home" asp-action="Index"><span>Index</span></a></li>
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+<!-- start: page -->
+<div class="row">
+
+
+    <div class="col-md-12">
+        <div class="row mb-3">
+
+            <div class="col-md-3">
+                <section class="card card-featured-left card-featured-primary mb-3">
+                    <div class="card-body">
+
+
+                        <div class="widget-summary">
+                            <div class="widget-summary-col widget-summary-col-icon">
+                                <div class="summary-icon bg-primary">
+                                    <i class="fas fa-dollar-sign"></i>
+                                </div>
+                            </div>
+                            <div class="widget-summary-col">
+                                <div class="summary">
+                                    <h4 class="title">Today's Sale</h4>
+                                    <div class="info">
+                                        <strong class="amount">@FirstCurrency @Model.DashboardObject.Today_Sale </strong>
+                                        @*<span class="text-primary">(14 unread)</span>*@
+                                    </div>
+                                </div>
+                                <div class="summary-footer">
+                                    <a class="text-muted text-uppercase" href="/Sales/SalesInvoiceList?StartDate=@DateTime.Now.ToString("dd-MMM-yyyy")&EndDate=@DateTime.Now.ToString("dd-MMM-yyyy")">View</a>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+
+
+            <div class="col-md-3">
+                <section class="card card-featured-left card-featured-tertiary mb-3">
+                    <div class="card-body">
+                        <div class="widget-summary">
+                            <div class="widget-summary-col widget-summary-col-icon">
+                                <div class="summary-icon bg-tertiary">
+                                    <i class="fas fa-object-group"></i>
+                                </div>
+                            </div>
+
+                            <div class="widget-summary-col">
+                                <div class="summary">
+                                    <h4 class="title">Stock Count </h4>
+                                    <div class="info">
+                                        <strong class="amount">@Model.DashboardObject.UnSold_Count</strong>
+                                    </div>
+                                </div>
+                                <div class="summary-footer">
+
+
+                                    <a class="text-muted text-uppercase" href="/Stock/@Stock_Setting">View</a>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <div class="col-md-3">
+                <section class="card card-featured-left card-featured-tertiary mb-3">
+                    <div class="card-body">
+                        <div class="widget-summary">
+                            <div class="widget-summary-col widget-summary-col-icon">
+                                <div class="summary-icon bg-success">
+                                    <i class="fas fa-money-bill-wave"></i>
+                                </div>
+                            </div>
+                            <div class="widget-summary-col">
+                                <div class="summary">
+                                    <h4 class="title">Stock Value </h4>
+                                    <div class="info">
+                                        <strong style="color:black;font-weight:bold;font-size:1rem" class="small">@FirstCurrency @Model.DashboardObject.UnSold_Value</strong>
+                                    </div>
+                                </div>
+                                <div class="summary-footer">
+
+                                    <a class="text-muted text-uppercase" href="/Stock/@Stock_Setting">View</a>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <div class="col-md-3">
+                <section class="card card-featured-left card-featured-tertiary mb-3">
+                    <div class="card-body">
+                        <div class="widget-summary">
+                            <div class="widget-summary-col widget-summary-col-icon">
+                                <div class="summary-icon bg-success">
+                                    <i class="fas fa-money-bill-wave"></i>
+                                </div>
+                            </div>
+                            <div class="widget-summary-col">
+                                <div class="summary">
+                                    <h4 class="title">Stock Sold </h4>
+                                    <div class="info">
+                                        <strong class="amount">@Model.DashboardObject.Stock_Sold_Count</strong>
+                                    </div>
+                                </div>
+                                <div class="summary-footer">
+
+
+                                    <a class="text-muted text-uppercase" href="/Stock/@Stock_Setting?Stock_Status=SOLD">View</a>
+
+
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <div class="col-md-3">
+                <section class="card card-featured-left card-featured-secondary mb-3">
+                    <div class="card-body">
+                        <div class="widget-summary">
+                            <div class="widget-summary-col widget-summary-col-icon">
+                                <div class="summary-icon bg-secondary">
+                                    <i class="fas fa-money-check"></i>
+                                </div>
+                            </div>
+                            <div class="widget-summary-col">
+                                <div class="summary">
+                                    <h4 class="title">Payables</h4>
+                                    <div class="info">
+                                        <strong style="color:black;font-weight:bold;font-size:1rem" class="small">@SecondCurrency @Model.DashboardObject.Total_Payables </strong>
+                                    </div>
+                                </div>
+                                <div class="summary-footer">
+                                    <a class="text-muted text-uppercase" href="/Report/PayableSummary">View</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+
+
+
+
+            <div class="col-md-3">
+                <section class="card card-featured-left card-featured-quaternary mb-3">
+                    <div class="card-body">
+                        <div class="widget-summary">
+                            <div class="widget-summary-col widget-summary-col-icon">
+                                <div class="summary-icon bg-quaternary">
+                                    <i class="fas fa-file-invoice"></i>
+                                </div>
+                            </div>
+                            <div class="widget-summary-col">
+                                <div class="summary">
+                                    <h4 class="title">Recieveables</h4>
+                                    <div class="info">
+                                        <strong style="color:black;font-weight:bold;font-size:1rem" class="small">@FirstCurrency @Model.DashboardObject.Total_Recievables</strong>
+                                    </div>
+                                </div>
+                                <div class="summary-footer">
+                                    <a class="text-muted text-uppercase" href="/Report/RecievableSummary">View</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+
+            @if (Configuration.GetSection("AppSettings").GetSection("CompanyReportFolderCode").Value == "AM")
+            {
+                <div class="col-md-3" @ViewBag.HideCashOrBank>
+                    <section class="card card-featured-left card-featured-quaternary mb-3">
+                        <div class="card-body">
+                            <div class="widget-summary">
+                                <div class="widget-summary-col widget-summary-col-icon">
+                                    <div class="summary-icon bg-quaternary">
+                                        <i class="fas fa-file-invoice"></i>
+                                    </div>
+                                </div>
+                                <div class="widget-summary-col">
+                                    <div class="summary">
+                                        <h4 class="title">Assets</h4>
+                                        <div class="info">
+                                            <strong style="color:black;font-weight:bold;font-size:1rem" class="small">@FirstCurrency @Model.DashboardObject.TotalAssets</strong>
+                                        </div>
+                                    </div>
+                                    <div class="summary-footer">
+                                        <a class="text-muted text-uppercase" href="/Accounts/BalanceSheet">View</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            }
+            else
+            {
+                <div class="col-md-3" @ViewBag.HideCashOrBank>
+                    <section class="card card-featured-left card-featured-quaternary mb-3">
+                        <div class="card-body">
+                            <div class="widget-summary">
+                                <div class="widget-summary-col widget-summary-col-icon">
+                                    <div class="summary-icon bg-quaternary">
+                                        <i class="fas fa-file-invoice"></i>
+                                    </div>
+                                </div>
+                                <div class="widget-summary-col">
+                                    <div class="summary">
+                                        <h4 class="title">Cash</h4>
+                                        <div class="info">
+                                            <strong style="color:black;font-weight:bold;font-size:1rem" class="small">@FirstCurrency @Model.DashboardObject.Total_Cash</strong>
+                                        </div>
+                                    </div>
+                                    <div class="summary-footer">
+                                        <a class="text-muted text-uppercase" href="/Accounts/Ledger?AccountId=5">View</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            }
+
+
+            <div class="col-md-3" @ViewBag.HideCashOrBank>
+                <section class="card card-featured-left card-featured-quaternary mb-3">
+                    <div class="card-body">
+                        <div class="widget-summary">
+                            <div class="widget-summary-col widget-summary-col-icon">
+                                <div class="summary-icon bg-quaternary">
+                                    <i class="fas fa-money-check"></i>
+                                </div>
+                            </div>
+                            <div class="widget-summary-col">
+                                <div class="summary">
+                                    <h4 class="title">Bank</h4>
+
+                                    <div class="info">
+                                        <strong style="color:black;font-weight:bold;font-size:1rem" class="small">@FirstCurrency @Model.DashboardObject.All_Bank_Total</strong>
+                                    </div>
+                                </div>
+                                <div class="summary-footer">
+                                    @*<a class="text-muted text-uppercase" href="#">View</a>*@
+
+                                    <button type="button" class="text-muted text-uppercase" data-toggle="modal" data-target="#exampleModal">
+                                        View
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Bank Summary</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <section class="card">
+                                <div class="card-body">
+                                    <div class="form-body">
+                                        <div class="row">
+
+
+                                            <table class="table table-bordered table-striped mb-0 mt-1">
+                                                <thead>
+                                                    <tr>
+
+
+                                                        <th>Bank Name</th>
+                                                        <th>Amount</th>
+
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+
+
+                                                    @if (Model.AllBankBalanceListObject != null)
+                                                    {
+                                                        foreach (DashboardStats item in Model.AllBankBalanceListObject)
+                                                        {
+
+                                                            <tr>
+
+
+                                                                <td>@Html.DisplayFor(modelItem => item.BankName)</td>
+                                                                <td>@Html.DisplayFor(modelItem => item.BankBalance)</td>
+
+
+
+
+
+
+                                                            </tr>
+                                                        }
+                                                    }
+
+
+
+
+
+                                                </tbody>
+
+                                            </table>
+
+
+                                        </div>
+
+
+                                    </div>
+                                </div>
+                            </section>
+
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3" @IsInvestmentTotal>
+                <section class="card card-featured-left card-featured-secondary mb-3">
+                    <div class="card-body">
+                        <div class="widget-summary">
+                            <div class="widget-summary-col widget-summary-col-icon">
+                                <div class="summary-icon bg-secondary">
+                                    <i class="fas fa-money-check"></i>
+                                </div>
+                            </div>
+                            <div class="widget-summary-col">
+                                <div class="summary">
+                                    <h4 class="title">@Model.DashboardCurrencyObject.Investment_Acc_Name</h4>
+
+                                    <div class="info">
+                                        <strong style="color:black;font-weight:bold" class="small">@SecondCurrency @Model.DashboardCurrencyObject.Total_Payments_YEN </strong>
+                                    </div>
+
+
+                                    <div class="info">
+                                        <strong style="color:black;font-weight:bold" class="small">Rate @@ @Model.DashboardCurrencyObject.Avg_Currency </strong>
+                                    </div>
+
+
+
+                                    <div class="info">
+                                        <span style="color:black;font-weight:bold" class="small">@FirstCurrency @Model.DashboardCurrencyObject.Total_Payments_AED </span>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+
+
+<div class="row" @ViewBag.HideVehDashboardBarGraph>
+    <div class="col-sm-6 mb-6" @ViewBag.HideVehDashboardBarGraph>
+
+
+        <section class="card">
+            <div class="card-body">
+                <div class="x_title">
+                    <h4>Last 7 Day Sale</h4>
+
+                    <div class="clearfix"></div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <canvas id="mybarChartSale7Days"></canvas>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <div class="col-sm-6 mb-6" @ViewBag.HideVehDashboardBarGraph>
+
+
+        <section class="card">
+            <div class="card-body">
+                <div class="x_title">
+                    <h4>Month Wise Sale</h4>
+
+                    <div class="clearfix"></div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <canvas id="mybarChartSalesMonthWise"></canvas>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div class="col-sm-6 mb-6" @ViewBag.HideVehDashboardBarGraph>
+
+
+        <section class="card">
+            <div class="card-body">
+                <div class="x_title">
+                    <h4>Accounts</h4>
+
+                    <div class="clearfix"></div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <canvas id="mybarChart"></canvas>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+
+    <div class="col-sm-6 mb-6" @ViewBag.HideVehDashboardBarGraph>
+
+
+        <section class="card">
+            <div class="card-body">
+                <div class="x_title">
+                    <h4>Stock Location Summary</h4>
+
+                    <div class="clearfix"></div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <canvas id="mybarChartLocSummary"></canvas>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <div class="col-sm-6 mb-6" @ViewBag.HideVehDashboardBarGraph>
+
+
+        <section class="card">
+            <div class="card-body">
+                <div class="x_title">
+                    <h4>Make Name Sales Count</h4>
+
+                    <div class="clearfix"></div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <canvas id="mybarChartMakeModel"></canvas>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+
+
+
+</div>
+
+
+@*<div class="row">
+    <div class="col-6">
+        <div>
+            <canvas id="myChart" style="width:100%;max-width:600px"></canvas>
+        </div>
+    </div>
+</div>*@
+
+
+
+
+
+@section Scripts {
+    <!-- Chart.js -->
+    <script src="~/js/Chart.js/dist/Chart.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.min.js"></script>
+    <script>
+        var chartCustomer;
+        function getStockLocation_Summary() {
+
+            var months = [];
+            var Nettotal = [];
+
+            if (months.length != 0) {
+
+                months = [];
+
+            }
+            if (Nettotal.length != 0) {
+                Nettotal = [];
+
+            }
+            if (Nettotal.length != 0) {
+                Nettotal = [];
+
+            }
+
+
+
+            $.ajax({
+                data: "{ }",
+                type: "Get",
+                contentType: "application/json; charset=utf-8",
+                url: "/Sales/StockLocation_Summary",
+                dataType: "json",
+                success: function (Result) {
+
+
+                    for (var i in Result) {
+                        serie = new Array();
+                        serie = Array(Result[i].month, Result[i].netTotal);
+                        var Monthname = [];
+                        Monthname = Result[i].month;
+                        months.push(Monthname);
+                        var Monthnameb = new Array();
+                        Monthnameb = Result[i].netTotal;
+                        Nettotal.push(Monthnameb);
+                    }
+                    var ctx = document.getElementById("mybarChartLocSummary");
+                    if (chartCustomer) chartCustomer.destroy();
+                    window.chartCustomer = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: months,
+                            datasets: [{
+                                label: '#Car Location',
+                                backgroundColor: [
+                                    "#f990a7",
+                                    "#aad2ed",
+                                    "#9966FF",
+                                    "#99e5e5",
+                                    "#f7bd83",
+                                ],
+                                borderColor: [
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)'
+                                ],
+                                data: Nettotal
+                            }]
+                        },
+
+                        options: {
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        beginAtZero: true
+                                    }
+                                }]
+                            }
+                        }
+                    });
+                    chartCustomer.update();
+                },
+                error: function (Result) {
+                    alert("Error");
+                }
+            });
+        }
+
+
+
+
+
+    </script>
+
+    <script>
+        var chartAccounts;
+        function getAllAccountsBalance_Summary() {
+
+            var months = [];
+            var Nettotal = [];
+
+            if (months.length != 0) {
+
+                months = [];
+
+            }
+            if (Nettotal.length != 0) {
+                Nettotal = [];
+
+            }
+            if (Nettotal.length != 0) {
+                Nettotal = [];
+
+            }
+
+
+
+            $.ajax({
+                data: "{ }",
+                type: "Get",
+                contentType: "application/json; charset=utf-8",
+                url: "/Sales/All_Accounts_Balance_Summary",
+                dataType: "json",
+                success: function (Result) {
+
+
+                    for (var i in Result) {
+                        serie = new Array();
+                        serie = Array(Result[i].month, Result[i].netTotal);
+                        var Monthname = [];
+                        Monthname = Result[i].month;
+                        months.push(Monthname);
+                        var Monthnameb = new Array();
+                        Monthnameb = Result[i].netTotal;
+                        Nettotal.push(Monthnameb);
+                    }
+                    var ctx = document.getElementById("mybarChart");
+                    if (chartAccounts) chartAccounts.destroy();
+                    window.chartAccounts = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: months,
+                            datasets: [{
+                                label: 'Accounts Summary',
+                                backgroundColor: [
+                                    "#f990a7",
+                                    "#aad2ed",
+                                    "#9966FF",
+                                    "#99e5e5",
+                                    "#f7bd83",
+                                ],
+                                borderColor: [
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)'
+                                ],
+                                data: Nettotal
+                            }]
+                        },
+
+                        options: {
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        beginAtZero: true
+                                    }
+                                }]
+                            }
+                        }
+                    });
+                    chartAccounts.update();
+                },
+                error: function (Result) {
+                    alert("Error");
+                }
+            });
+        }
+
+
+
+
+
+    </script>
+    <script>
+        var chartMakeModel;
+        function getAllMakeModel_Sale_Summary() {
+
+            var months = [];
+            var Nettotal = [];
+
+            if (months.length != 0) {
+
+                months = [];
+
+            }
+            if (Nettotal.length != 0) {
+                Nettotal = [];
+
+            }
+            if (Nettotal.length != 0) {
+                Nettotal = [];
+
+            }
+
+
+
+            $.ajax({
+                data: "{ }",
+                type: "Get",
+                contentType: "application/json; charset=utf-8",
+                url: "/Sales/MakeModel_Summary",
+                dataType: "json",
+                success: function (Result) {
+
+
+                    for (var i in Result) {
+                        serie = new Array();
+                        serie = Array(Result[i].month, Result[i].netTotal);
+                        var Monthname = [];
+                        Monthname = Result[i].month;
+                        months.push(Monthname);
+                        var Monthnameb = new Array();
+                        Monthnameb = Result[i].netTotal;
+                        Nettotal.push(Monthnameb);
+                    }
+                    var ctx = document.getElementById("mybarChartMakeModel");
+
+                    if (chartMakeModel) chartMakeModel.destroy();
+                    window.chartMakeModel = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: months,
+
+                            datasets: [{
+                                label: 'Sales',
+                                backgroundColor: [
+                                    "rgba(54, 162, 235, 0.9)", "rgba(255, 99, 132, 0.9)", "rgba(255, 159, 64, 0.9)", "rgba(255, 205, 86, 0.9)", "rgba(75, 192, 192, 0.9)", "rgba(153, 102, 255, 0.9)", "rgba(201, 203, 207, 0.9)"
+
+                                ],
+                                hoverBackgroundColor: [
+                                    "rgba(54, 162, 235, 0.9)", "rgba(255, 99, 132, 0.9)", "rgba(255, 159, 64, 0.9)", "rgba(255, 205, 86, 0.9)", "rgba(75, 192, 192, 0.9)", "rgba(153, 102, 255, 0.9)", "rgba(201, 203, 207, 0.9)"
+
+                                ],
+                                fillColor: "gradient",
+
+                                pointBorderColor: "rgba(0,0,0,1)",
+                                pointBackgroundColor: "rgba(0,0,0,1)",
+                                pointHoverBackgroundColor: "#fff",
+                                pointHoverBorderColor: "rgba(220,220,220,1)",
+
+                                data: Nettotal
+                            }
+
+
+                            ]
+                        },
+                        options: {
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        beginAtZero: true
+                                    }
+                                }]
+                            }
+
+                        }
+                    });
+                    chartMakeModel.update();
+                },
+                error: function (Result) {
+                    alert("Error");
+                }
+            });
+
+        }
+
+
+
+
+
+    </script>
+    <script>
+        var chart7daySale;
+        function getAll7daySale() {
+
+            var months = [];
+            var Nettotal = [];
+
+            if (months.length != 0) {
+
+                months = [];
+
+            }
+            if (Nettotal.length != 0) {
+                Nettotal = [];
+
+            }
+            if (Nettotal.length != 0) {
+                Nettotal = [];
+
+            }
+
+
+
+            $.ajax({
+                data: "{ }",
+                type: "Get",
+                contentType: "application/json; charset=utf-8",
+                url: "/Sales/getLAST_7DAYS_SALE",
+                dataType: "json",
+                success: function (Result) {
+
+
+                    for (var i in Result) {
+                        serie = new Array();
+                        serie = Array(Result[i].month, Result[i].netTotal);
+                        var Monthname = [];
+                        Monthname = Result[i].month;
+                        months.push(Monthname);
+                        var Monthnameb = new Array();
+                        Monthnameb = Result[i].netTotal;
+                        Nettotal.push(Monthnameb);
+                    }
+                    var ctx = document.getElementById("mybarChartSale7Days");
+
+                    if (chart7daySale) chart7daySale.destroy();
+                    window.chart7daySale = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: months,
+
+                            datasets: [{
+                                label: 'Top Sale',
+                                backgroundColor: [
+                                    "rgba(54, 162, 235, 0.9)", "rgba(255, 99, 132, 0.9)", "rgba(255, 159, 64, 0.9)", "rgba(255, 205, 86, 0.9)", "rgba(75, 192, 192, 0.9)", "rgba(153, 102, 255, 0.9)", "rgba(201, 203, 207, 0.9)"
+
+                                ],
+                                hoverBackgroundColor: [
+                                    "rgba(54, 162, 235, 0.9)", "rgba(255, 99, 132, 0.9)", "rgba(255, 159, 64, 0.9)", "rgba(255, 205, 86, 0.9)", "rgba(75, 192, 192, 0.9)", "rgba(153, 102, 255, 0.9)", "rgba(201, 203, 207, 0.9)"
+
+                                ],
+                                fillColor: "gradient",
+
+                                pointBorderColor: "rgba(0,0,0,1)",
+                                pointBackgroundColor: "rgba(0,0,0,1)",
+                                pointHoverBackgroundColor: "#fff",
+                                pointHoverBorderColor: "rgba(220,220,220,1)",
+
+                                data: Nettotal
+                            }
+
+
+                            ]
+                        },
+                        options: {
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        beginAtZero: true
+                                    }
+                                }]
+                            }
+
+                        }
+                    });
+                    chart7daySale.update();
+                },
+                error: function (Result) {
+                    alert("Error");
+                }
+            });
+
+        }
+
+
+
+
+
+    </script>
+    <script>
+        var chartSalesMonthWise;
+        function getAllSalesMonthWise() {
+
+            var months = [];
+            var Nettotal = [];
+
+            if (months.length != 0) {
+
+                months = [];
+
+            }
+            if (Nettotal.length != 0) {
+                Nettotal = [];
+
+            }
+            if (Nettotal.length != 0) {
+                Nettotal = [];
+
+            }
+
+
+
+            $.ajax({
+                data: "{ }",
+                type: "Get",
+                contentType: "application/json; charset=utf-8",
+                url: "/Sales/getSale_By_Month",
+                dataType: "json",
+                success: function (Result) {
+
+
+                    for (var i in Result) {
+                        serie = new Array();
+                        serie = Array(Result[i].month, Result[i].netTotal);
+                        var Monthname = [];
+                        Monthname = Result[i].month;
+                        months.push(Monthname);
+                        var Monthnameb = new Array();
+                        Monthnameb = Result[i].netTotal;
+                        Nettotal.push(Monthnameb);
+                    }
+                    var ctx = document.getElementById("mybarChartSalesMonthWise");
+
+                    if (chartSalesMonthWise) chartSalesMonthWise.destroy();
+                    window.chartSalesMonthWise = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: months,
+
+                            datasets: [{
+                                label: 'Top Sale by Month',
+                                backgroundColor: [
+                                    "rgba(54, 162, 235, 0.9)", "rgba(255, 99, 132, 0.9)", "rgba(255, 159, 64, 0.9)", "rgba(255, 205, 86, 0.9)", "rgba(75, 192, 192, 0.9)", "rgba(153, 102, 255, 0.9)", "rgba(201, 203, 207, 0.9)"
+
+                                ],
+                                hoverBackgroundColor: [
+                                    "rgba(54, 162, 235, 0.9)", "rgba(255, 99, 132, 0.9)", "rgba(255, 159, 64, 0.9)", "rgba(255, 205, 86, 0.9)", "rgba(75, 192, 192, 0.9)", "rgba(153, 102, 255, 0.9)", "rgba(201, 203, 207, 0.9)"
+
+                                ],
+                                fillColor: "gradient",
+
+                                pointBorderColor: "rgba(0,0,0,1)",
+                                pointBackgroundColor: "rgba(0,0,0,1)",
+                                pointHoverBackgroundColor: "#fff",
+                                pointHoverBorderColor: "rgba(220,220,220,1)",
+
+                                data: Nettotal
+                            }
+
+
+                            ]
+                        },
+                        options: {
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        beginAtZero: true
+                                    }
+                                }]
+                            }
+
+                        }
+                    });
+                    chartSalesMonthWise.update();
+                },
+                error: function (Result) {
+                    alert("Error");
+                }
+            });
+
+        }
+
+
+
+
+
+    </script>
+    <script>
+        $(document).ready(function () {
+
+            getStockLocation_Summary();
+            getAllAccountsBalance_Summary();
+            getAllMakeModel_Sale_Summary();
+            getAll7daySale();
+            getAllSalesMonthWise();
+        });
+
+
+    </script>
+    <script>
+        var xValues = [50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150];
+        var yValues = [7, 8, 8, 9, 9, 9, 10, 11, 14, 14, 15];
+
+        new Chart("myChart", {
+            type: "line",
+            data: {
+                labels: xValues,
+                datasets: [{
+                    fill: false,
+                    lineTension: 0,
+                    backgroundColor: "rgba(0,0,255,1.0)",
+                    borderColor: "rgba(0,0,255,0.1)",
+                    data: yValues
+                }]
+            },
+            options: {
+                legend: { display: false },
+                scales: {
+                    yAxes: [{ ticks: { min: 6, max: 16 } }],
+                }
+            }
+        });
+    </script>
+}
+
+

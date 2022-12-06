@@ -1,0 +1,135 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OStock
+
+<div class="modal-header" style="background: #f6f6f6;">
+
+
+    <h4 class="modal-title">Vanning Details</h4>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+
+</div>
+
+<form method="post" data-ajax="true" data-ajax-complete="myCompleteVanningUpdate" data-ajax-success="mySuccessVanningUpdate" data-ajax-failure="myFailureVanningUpdate"
+      asp-area="" asp-controller="Stock" asp-action="UpdateVanningDetail" data-ajax-loading="" id="FormUpdateVanningDetail">
+
+    <div class="modal-body">
+
+        <section class="card">
+
+            <div class="card-body">
+
+
+
+                <div class="row form-group">
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            <label class="col-form-label" for="ChassisUpdate">Chassis*</label>
+                            <input type="text" id="ChassisUpdate" name="Chassis" onblur="ValidateChassisUpdate()" class="form-control" placeholder="Enter chassis" value="@Model.VanningObject.Chassis_no" required />
+                            <label id="ChassisValidationMessageUpdate"></label>
+
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            <label class="col-form-label" for="Make_ID">Make*</label>
+
+
+
+                            <select class="form-control" id="Make_IDUdpate" name="Make_ID" autofocus asp-items="@(new SelectList( ViewBag.MakeList,"Make_ID","Make",Model.VanningObject.make_ID))" onchange="GetSubModelForUpdate(this);" required>
+                                <option>Select Make</option>
+                            </select>
+
+                            <input type="hidden" id="VanningDetails_IDUpdate" name="VanningDetails_ID" value="@Model.VanningObject.ID" />
+
+
+                        </div>
+                    </div>
+             
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            <label class="col-form-label" for="Model_ID">Model*</label>
+
+                            <select class="form-control MakeModelClassUpdate" id="Model_IDUdpate" name="Model_ID" value="@Model.VanningObject.model_description_ID" required>
+                                <option value="@Model.VanningObject.model_description_ID">@Model.VanningObject.model_description</option>
+
+                            </select>
+
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            <label class="control-label">Amount and Tax (10%)</label>
+
+
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-8" style="padding:0;">
+                                        <input type="text" id="txtAmountUpdate" name="txtAmount" class="form-control" value="@Model.VanningObject.Amount" placeholder="Price" onblur="CalcTaxForAmountUpdate()">
+                                    </div>
+                                    <div class="col-md-4" style="padding:0;">
+                                        <input type="text" id="txtTaxAmountUpdate" name="txtTaxAmount" class="form-control" value="@Model.VanningObject.Tax_Amount" placeholder="Tax" readonly="readonly">
+                                    </div>
+                                </div>
+                            </div>
+                            </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="col-lg-12">
+                            <div class="form-group">
+                                <label class="control-label">Inspect Charges & Tax (10%) </label>
+
+
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-8" style="padding:0;">
+                                            <input type="number" id="txtInspectionChargesUpdate" name="txtInspectionCharges" class="form-control" value="@Model.VanningObject.Inspection_Charges" placeholder="Inspection Charges" onblur="CalcTaxForInspectionChargesUpdate()">
+                                        </div>
+                                        <div class="col-md-4" style="padding:0;">
+                                            <input type="number" id="txtInspectionChargestaxUpdate" name="txtInspectionChargestax" class="form-control" value="@Model.VanningObject.Inspection_ChargesTax" placeholder="Tax" readonly="readonly">
+                                        </div>
+                                    </div>
+                                </div>
+                                </div>
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-lg-4">
+
+                        <div class="col-lg-12">
+                            <div class="form-group">
+                                <label class="control-label">Total </label>
+                                <input type="text" id="txtTotalUpdate" name="txtTotal" class="form-control" value="@Model.VanningObject.Total_Amount" placeholder="Total">
+
+                            </div>
+                        </div>
+
+
+
+
+
+
+
+                    </div>
+                </div>
+
+               
+
+
+            </div>
+
+
+
+        </section>
+    </div>
+
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Update</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+    </div>
+</form>

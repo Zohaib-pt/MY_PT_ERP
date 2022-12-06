@@ -1,0 +1,208 @@
+﻿
+@using DAL
+@using DAL.Models
+@model DAL.oClasses.oReports
+@using X.PagedList.Mvc.Core; @*//import this so we get our HTML Helper*@
+@using X.PagedList;  @*//import this so we can cast our list to IPagedList*@
+<table class="table table-bordered table-striped mb-0" id="datatable-default">
+    <thead>
+        <tr>
+
+
+
+            <td>Date </td>
+            <td>Ref</td>
+            <td>Name</td>
+
+            <td>Quantity </td>
+            <td>UnitPrice </td>
+            <td>Amount/Tax </td>
+           
+            <td>Total(Pur) </td>
+            <td>Location</td>
+            <td>ItemCode </td>
+
+
+            <td>Quanity(Sold) </td>
+
+            <td>UnitPrice</td>
+
+            <td>Amount/Tax</td>
+       
+            <td>Total</td>
+
+          
+            @*<td>Bal_Qty</td>*@
+
+
+
+
+
+
+        </tr>
+    </thead>
+
+
+    <tbody>
+
+        @if (Model.ItemCardReportListParts != null)
+        {
+
+
+            foreach (ItemCard_DAL item in Model.ItemCardReportListParts)
+            {
+
+
+        <tr class="gradeX odd" role="row">
+
+            <td>@Html.DisplayFor(modelItem => item.Trans_Date) </td>
+            <td>@Html.DisplayFor(modelItem => item.Trans_Ref)</td>
+            <td>@Html.DisplayFor(modelItem => item.ItemName) </td>
+
+
+            <td>@Html.DisplayFor(modelItem => item.Qty) </td>
+            <td>@Html.DisplayFor(modelItem => item.UnitPrice) </td>
+
+            <td>
+                @Html.DisplayFor(modelItem => item.Pur_Amount) <br />
+                <span>@Html.DisplayFor(modelItem => item.VATEXP_Pur)</span>
+            </td>
+            <td>@Html.DisplayFor(modelItem => item.Pur_Total_Amt) </td>
+            <td>@Html.DisplayFor(modelItem => item.ItemLocationName) </td>
+            <td><a href="#" onclick="ShowLocDetails('@item.ItemCode');">@item.ItemCode</a> </td>
+
+
+
+            <td>@Html.DisplayFor(modelItem => item.QtySold) </td>
+            <td>@Html.DisplayFor(modelItem => item.SaleUnitPrice) </td>
+
+            <td>
+                @Html.DisplayFor(modelItem => item.SaleAmount) <br />
+                <span> @Html.DisplayFor(modelItem => item.VAT_Sale) </span>
+            </td>
+            <td>@Html.DisplayFor(modelItem => item.Sale_Total_Amt) </td>
+
+
+            @*<td>@Html.DisplayFor(modelItem => item.Qty_Bal) </td>*@
+
+        </tr>
+}
+        }
+
+    </tbody>
+
+    <tfoot>
+        @if (Model.ItemCardReportList_TTL != null)
+        {
+
+
+            foreach (ItemCard_DAL item in Model.ItemCardReportList_TTL)
+            {
+
+                <tr role="row">
+                    <th>Total</th>
+
+
+
+
+                    <td></td>
+                    <td></td>
+                    <td><b>@item.Qty </b></td>
+
+
+                    <td><b>@item.Pur_Amount</b> </td>
+                    <td></td>
+                    <td><b>@item.Pur_Total_Amt</b>  </td>
+
+                    <td> </td>
+                    <td> </td>
+                    <td><b>@item.QtySold </b> </td>
+                    <td></td>
+
+                    <td><b> @item.SaleAmount</b></td>
+
+                    <td><b>@item.Sale_Total_Amt</b> </td>
+
+
+
+
+
+                </tr>
+
+                <tr role="row">
+                    <th>Balance</th>
+
+
+
+
+                    <td></td>
+                    <td><b> Quantity</b></td>
+                    <td><b>@item.QTY_BAL </b></td>
+
+
+                    <td><b></b> </td>
+                    <td></td>
+                    <td><b></b>  </td>
+
+                    <td> </td>
+                    <td> </td>
+                    <td><b> </b> </td>
+                    <td></td>
+
+                    <td><b>Amount</b> </td>
+
+                    <td><b>@item.AMOUNT_BAL</b> </td>
+
+
+
+
+
+                </tr>
+            }
+        }
+    </tfoot>
+
+
+</table>
+<div class="invoice-summary">
+
+    <div class="row">
+
+        <div class="col-lg-6 col-md-6">
+
+        </div>
+
+        <div class="col-lg-6 col-md-6 justify-content-end text-right">
+            @if (Model.ItemCardReportListParts.Count() != 0)
+            {
+
+                @Html.PagedListPager(Model.ItemCardReportListParts, page => Url.Action("InventoryReportItemCardParts_Search", "Report", new
+           {
+               ItemCode = ViewBag.ItemCode,
+               ItemName = ViewBag.Item_ID,
+               traditional = ViewBag.traditional,
+               Make = ViewBag.Make,
+               Fuel = ViewBag.Fuel,
+               Transmission = ViewBag.Transmission,
+               Drive = ViewBag.Drive,
+               ItemGroup_ID = ViewBag.ItemGroup_ID,
+               ItemCategory_ID = ViewBag.ItemCategory_ID,
+               Year = ViewBag.Year,
+               ItemSerialNO = ViewBag.ItemSerialNO,
+               StartDate = ViewBag.StartDate,
+               EndDate = ViewBag.EndDate,
+               Loc_ID = ViewBag.Loc_ID,
+               EngineSpecsCode_ID = ViewBag.EngineSpecsCode_ID,
+               page
+           })
+
+                , X.PagedList.Mvc.Core.Common.PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new AjaxOptions()
+                {
+                    HttpMethod = "get",
+                    UpdateTargetId = "VendorReportSearch"
+                })
+                      )}
+        </div>
+    </div>
+
+</div>

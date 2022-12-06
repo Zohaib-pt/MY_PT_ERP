@@ -1,0 +1,740 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OStock
+@{
+    ViewData["Title"] = "PaperManager";
+    Layout = "~/Views/Shared/_LayoutTablePages.cshtml";
+}
+
+
+<header class="page-header">
+    <h2>Paper</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+            <li><a asp-area="" asp-controller="Paper" asp-action="NewPapers"><span>New Papers</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+<div class="row" id="SuccessErrorSection">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+        <div class="col-lg-12">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-info">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Success!</strong> @TempData["Success"] <a Paperef="" class="alert-link"></a>
+                </div>
+            }
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Error!</strong> @TempData["Error"] <a Paperef="" class="alert-link"></a>
+                </div>
+            }
+        </div>
+    }
+
+</div>
+@{
+    string Form_formPaper_ActionMethod = "";
+    int? id = ViewBag.id;
+
+
+    if (Model.PapersMasterObj != null && Model.PapersMasterObj.Paper_ID > 0)
+    {
+
+        Form_formPaper_ActionMethod = "UpdatePaper";
+
+
+    }
+    else
+    {
+        Form_formPaper_ActionMethod = "InsertPaper";
+
+
+    }
+
+}
+<div class="row">
+    <div class="col-lg-8">
+        @{
+
+            if (Model.PapersMasterObj.Paper_ID > 0)
+            {
+
+                <button type="button" id="ButtonSaveMaster" class="btn-sm btn btn btn-success">Update &nbsp;<i class="fas fa-save"></i></button>
+
+                <button type="button" class="btn btn-sm btn-primary">Edit  &nbsp;<i class="fas fa-edit"></i></button>
+
+
+                <button type="button" class="btn-sm btn btn-danger" data-toggle="modal" data-target="#DeletePaperMasterNew" onclick="DeleteMaster('@Model.PapersMasterObj.Paper_ID');">Delete &nbsp;<i class="fas fa-trash-alt"></i></button>
+
+
+
+
+                <a asp-controller="Stock" asp-action="PaperList" class="btn-sm btn btn-default">List &nbsp;<i class="fas fa-list"></i></a>
+
+
+
+            }
+            else
+            {
+                <button type="button" id="ButtonIssue" class="btn-sm btn btn-success">Issue &nbsp;<i class="fas fa-save"></i></button>
+
+                <button type="button" class="btn-sm btn btn-primary" disabled="disabled">Edit  &nbsp;<i class="fas fa-edit"></i></button>
+
+
+
+                <button type="button" class="btn-sm btn btn-danger" data-toggle="modal" data-target="#exampleModal1" disabled="disabled">Delete &nbsp;<i class="fas fa-trash-alt"></i></button>
+
+
+
+
+
+                <a asp-controller="Stock" asp-action="PaperList" class="btn-sm btn btn-default">List &nbsp;<i class="fas fa-list"></i></a>
+            }
+
+        }
+
+
+
+    </div>
+
+</div>
+<div class="row">
+
+    <div class="col">
+        <form method="post" asp-area="" asp-controller="Stock" asp-action="@Form_formPaper_ActionMethod" id="formPaperMaster">
+            <section class="card">
+
+                <div class="card-body">
+                    <div class="invoice">
+                        <header class="clearfix">
+                            <div class="row">
+                                <div class="col-lg-2">
+                                    <h2 class="card-title" style="line-height:normal;">Paper Management </h2>
+                                </div>
+
+
+                            </div>
+                        </header>
+
+                        <div class="row">
+
+                            @if (Model.PapersMasterObj.Paper_ID != 0)
+                            {
+                        <input type="hidden" name="id" value="@Model.PapersMasterObj.Paper_ID" />}
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="control-label">Chassis No</label>
+                                    <input type="text" id="CHASSIS_No" name="CHASSIS_No" value="@(Model.PapersMasterObj.CHASSIS_NO)" class="form-control" placeholder="Enter Chassis" onblur="ValidateChassis()">
+                                    <label id="ChassisValidationMessage"></label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="Make">Make</label>
+                                    <input type="text" id="Make" name="Make" class="form-control" value="@(Model.PapersMasterObj.make_id)" placeholder="Make" readonly />
+
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="ModelDesc">Model</label>
+                                    <input type="text" id="ModelDesc" name="ModelDesc" class="form-control" value="@(Model.PapersMasterObj.model)" placeholder="Model" readonly />
+
+                                </div>
+                            </div>
+
+
+
+
+                        </div>
+
+
+                        <div class="row">
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="control-label">Recieved Date </label>
+                                    <div id='datetimepicker6' class="input-group date form_date col-md-13">
+                                        @if (Model.PapersMasterObj.Recieved_Date != null)
+                                        {
+                                            <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="RDate" name="RDate" value="@Model.PapersMasterObj.Recieved_Date">
+
+                                        }
+                                        else
+                                        {
+                                            <input type="text" data-plugin-datepicker class="form-control" value="" autocomplete="off" id="RDate" name="RDate">
+
+                                        }
+                                        <span class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                <i class="fas fa-calendar-alt"></i>
+                                            </span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!--/span-->
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <br />
+                                    <br />
+                                    <label class="control-label">Is Recieved : </label>
+                                    @{
+                                        if (Model.PapersMasterObj.IsRecieved != false)
+                                        {
+                                            <input type="checkbox" id="isRecieved" checked name="isRecieved"  />
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" id="isRecieved" name="isRecieved" />
+                                        }
+                                    }
+                                </div>
+                            </div>
+
+
+
+
+                        </div>
+                        <hr />
+
+                        <div class="row">
+
+
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label>Registration No :</label>
+
+                                </div>
+
+                            </div>
+                            @{
+                                var reg = new string[4];
+                                if (Model.PapersMasterObj.Registration != "" && Model.PapersMasterObj.Registration != null)
+                                {
+                                    reg = Model.PapersMasterObj.Registration.Split('-');
+
+                                }
+
+
+                            }
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    @*<label>City</label>*@
+                                    @*<input type="text" id="tbCity" class="form-control" placeholder="City Name">*@
+
+                                    <select class="form-control" id="city" name="city" asp-items="@(new SelectList( ViewBag.CitiesList,"City_Name","City_Name",reg[0]))">
+                                        <option value="">--Select--</option>
+                                    </select>
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-2">
+                                <div class="form-group">
+
+                                    @*<label>Number</label>*@
+                                    <input type="number" id="tbNumber1" name="tbNumber1" class="form-control" placeholder="Number" value="@reg[1]">
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    @*<label>Word </label>*@
+                                    @*<input type="text" id="txtWord" class="form-control" placeholder="Word">*@
+
+                                    <select class="form-control" id="word" name="word" asp-items="@(new SelectList( ViewBag.WordList,"Words","Words",reg[2]))">
+                                        <option value="">--Select--</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    @*<label>Number</label>*@
+                                    <input type="number" id="tbNumber2" name="tbNumber2" class="form-control" placeholder="Number" value="@reg[3]">
+                                </div>
+                            </div>
+
+                        </div>
+
+
+                        <div class="row">
+
+
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label>First Registration</label>
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    @*<label>Year </label>*@
+                                    <input type="number" name="tbYear" id="tbYear" maxlength="4" min="1" class="form-control" placeholder="Year" value="@Model.PapersMasterObj.FirstRegistrationDate.Year">
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-2">
+                                <div class="form-group">
+
+                                    @*<label>Month </label>*@
+
+                                    <input type="number" id="tbMonth" name="tbMonth" maxlength="2" max="12" min="1" class="form-control" placeholder="Month" value="@Model.PapersMasterObj.FirstRegistrationDate.Month">
+                                </div>
+                            </div>
+
+
+
+
+                        </div>
+
+                        <div class="row">
+
+
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label>Manufacture Registration</label>
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    @*<label>Year </label>*@
+                                    <input type="number" id="tbMYear" name="tbMYear" maxlength="4" min="1" class="form-control" placeholder="Year" value="@Model.PapersMasterObj.ManufacturingDate.Year">
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-2">
+                                <div class="form-group">
+
+                                    @*<label>Month </label>*@
+
+                                    <input type="number" id="tbMMonth" name="tbMMonth" maxlength="2" max="12" min="1" class="form-control" placeholder="Month" value="@Model.PapersMasterObj.ManufacturingDate.Month">
+                                </div>
+                            </div>
+
+
+
+
+                        </div>
+
+
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <label>Measures</label>
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <input type="text" id="tbLenght" name="lenght" class="form-control" placeholder="Lenght" value="@Model.PapersMasterObj.Lenght">
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    @*<label>Year </label>*@
+                                    <input type="text" id="tbWidth" name="width" class="form-control" placeholder="Width" value="@Model.PapersMasterObj.width">
+                                </div>
+
+                            </div>
+
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <input type="text" id="tbHeight" name="height" class="form-control" placeholder="Height" value="@Model.PapersMasterObj.height">
+
+                                </div>
+
+                            </div>
+                            <div class="col-sm-1">
+                                <div class="form-group">
+                                    @*<label>Year </label>*@
+                                    <input type="text" id="Weight" name="Weight" class="form-control" placeholder="Weight" value="@Model.PapersMasterObj.weight">
+                                </div>
+
+                            </div>
+                            <div class="col-sm-1" style="padding-right:0;margin-left:0;">
+                                <div class="form-group">
+                                    @*<label>Year </label>*@
+                                    <input type="text" id="tbWeight" name="gweight" class="form-control" placeholder="G Weight" value="@Model.PapersMasterObj.gweight">
+                                </div>
+
+                            </div>
+
+
+
+
+
+
+                        </div>
+
+                        <div class="row">
+
+
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label>Type</label>
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    @*<label>Year </label>*@
+                                    <input type="text" id="tbType" name="paperType" class="form-control" placeholder="Type" value="@Model.PapersMasterObj.PaperType">
+                                </div>
+
+                            </div>
+
+
+
+
+
+
+
+
+                        </div>
+
+                        <div class="row">
+
+
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <label>Engine Type</label>
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    @*<label>Year </label>*@
+                                    <select class="form-control" id="EngineType" name="EngineType" asp-items="@(new SelectList( ViewBag.EngineList,"Engine_Power","Engine_Power",Model.PapersMasterObj.FUEL_TYPE))">
+                                        <option value="">--Select--</option>
+                                    </select>
+                                </div>
+
+                            </div>
+
+                            <div class="col-sm-1">
+                                <div class="form-group">
+                                    <label>Vehicle CC</label>
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-sm-2">
+                                <div class="form-group">
+
+                                    <input type="text" id="tbVcc" name="Vehicle_CC" class="form-control" placeholder="Vehicle CC" value="@Model.PapersMasterObj.Vehicle_CC">
+                                </div>
+
+                            </div>
+
+
+
+
+
+
+                        </div>
+
+
+
+                        <div class="row">
+
+
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <label>Seat</label>
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-sm-2">
+                                <div class="form-control">
+                                    @*<label>Year </label>*@
+                                    @*<input type="text" id="tbSeat"  class="form-control" placeholder="Seat">*@
+
+
+
+                                    <select id="tbSeat" name="SEAT" class="selectpicker" data-live-search="true" title="SELECT" asp-for="@Model.PapersMasterObj.SEAT">
+
+                                        <option value="">--Add New--</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="8">8</option>
+                                        <option value="10">10</option>
+                                        <option value="12">12</option>
+                                        <option value="16">16</option>
+                                        <option value="20">20</option>
+                                        <option value="24">24</option>
+                                        <option value="32">32</option>
+
+
+                                    </select>
+
+
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-sm-1">
+                                <div class="form-group">
+                                    <label>Drive</label>
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-sm-2">
+                                <div class="form-control">
+
+                                    @*<input type="text" id="tbDrive" class="form-control" placeholder="Drive">*@
+
+                                    <select id="tbDrive" name="Drive" class="selectpicker" asp-for="@Model.PapersMasterObj.Drive">
+
+
+                                        <option value="Left">Left</option>
+                                        <option value="Right">Right</option>
+
+                                        }
+
+
+                                    </select>
+                                </div>
+
+                            </div>
+
+
+
+
+
+
+
+
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label>Remarks</label>
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-8">
+                                <div class="form-group">
+                                    @*<label>Year </label>*@
+                                    <input type="text" id="tbref" name="_ref" class="form-control" placeholder="Any Remarks" value="@Model.PapersMasterObj.Ref">
+                                </div>
+
+                            </div>
+
+
+                        </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    </div>
+                </div>
+            </section>
+        </form>
+    </div>
+</div>
+<div class="modal fade bs-modal-lg" id="DeletePaperMasterNew" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Delete Paper</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="Stock" asp-action="DeletePaper" data-ajax-loading="">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <h3>Do you want to delete this record?</h3>
+
+                                        <input type="hidden" id="Paper_ID_Delete" name="id" />
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        //---submit new master Shipping_info voucher
+        $(document).ready(function () {
+            $("#ButtonIssue").click(function () {
+
+                $("#formPaperMaster").submit();
+            });
+        });
+        //---Update master Shipping_info voucher
+        $(document).ready(function () {
+            $("#ButtonSaveMaster").click(function () {
+                $("#formPaperMaster").submit();
+            });
+        });
+
+        function DeleteMaster(Paper_ID) {
+            debugger
+            $("#Paper_ID_Delete").val(Paper_ID);
+
+        }
+    </script>
+    <script>
+
+        function ValidateChassis() {
+
+            //debugger
+
+
+            var Chassis = document.getElementById("CHASSIS_No").value.toString();
+
+            $.ajax({
+
+                type: "Get",
+                url: "/Accounts/ValidateChassisNo",
+                data: { //Passing data
+                    ChassisNo: Chassis
+
+
+                },
+                datatype: "json",
+                success: function (response) {
+                    debugger
+                    if (response.message == 'Chassis is valid') {
+                        //debugger
+                        $("#ChassisValidationMessage").text(response.message);
+                        $("#ChassisValidationMessage").css("color", "green");
+                        $("#CHASSIS_No").val(response.chassis_No);
+                        $("#Make").val(response.make);
+                        $("#ModelDesc").val(response.modelDesciption);
+
+                    } else {
+                        $("#ChassisValidationMessage").text(response.message);
+                        $("#ChassisValidationMessage").css("color", "red");
+                        $("#CHASSIS_No").val("");
+                        $("#Make").val("");
+                        $("#ModelDesc").val("");
+
+                    }
+
+                }
+            })
+        }
+    </script>
+}

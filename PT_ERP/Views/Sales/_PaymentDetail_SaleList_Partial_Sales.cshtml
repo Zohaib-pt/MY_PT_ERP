@@ -1,0 +1,66 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OSales
+
+
+<table class="table table-responsive-md table-bordered mb-0">
+    <thead>
+        <tr>
+            <th>Edit/Delete</th>
+            <th>On Account</th>
+
+            <th>Description</th>
+            <th>Pay Via</th>
+            <th>Ref</th>
+            <th>Amount</th>
+            <th>VAT Charges</th>
+            <th>Total Amount</th>
+
+        </tr>
+    </thead>
+    <tbody>
+
+        @if (Model.PaymentDetailList != null)
+        {
+
+
+            foreach (Pa_PaymentDetails_DAL item in Model.PaymentDetailList)
+            {
+
+
+                ViewBag.Vat_ExpTotal = item.VatExpTotal;
+                ViewBag.AmountTotal = item.AmountTotal;
+                ViewBag.Grand_Total = item.Grand_Total;
+
+
+<tr>
+
+
+
+
+    <td>
+        <a onclick="UpdatePaymentDetailGeneral('@item.PaymentDetails_ID'	,'@item.DR_accountID', '@item.Amount', '@item.VAT_Rate', '@item.Currency_ID', '@item.Currency_Rate', '@item.Amount_Others',
+	                                    '@item.CR_accountID', '@item.Description', '@item.trans_ref','@item.cheque_bank_name','@item.cheque_date', '@item.cheque_no', '@item.VAT_Exp', '@item.Total_Amount');" data-toggle="modal" data-target="#UpdateNewPaymentDetailModal"><img style="width: 20px;" src="~/Img/Icons/edit.png" /></a>
+        <a onclick="DeletePaymentDetail('@item.PaymentDetails_ID');" data-toggle="modal" data-target="#DeletePaymentDetailModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+    </td>
+
+    <td>@Html.DisplayFor(modelItem => item.DR_AccountName)</td>
+    <td>@Html.DisplayFor(modelItem => item.Description)</td>
+    <td>@Html.DisplayFor(modelItem => item.CR_AcountName)</td>
+    <td>@Html.DisplayFor(modelItem => item.trans_ref)</td>
+    <td>@Html.DisplayFor(modelItem => item.Amount)</td>
+    <td>
+        @Html.DisplayFor(modelItem => item.VAT_Exp)
+    </td>
+    <td>@Html.DisplayFor(modelItem => item.Total_Amount)</td>
+
+
+</tr>}
+            }
+
+    </tbody>
+
+</table>
+
+

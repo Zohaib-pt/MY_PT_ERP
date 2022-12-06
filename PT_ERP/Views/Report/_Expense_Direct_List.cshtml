@@ -1,0 +1,167 @@
+﻿
+@using DAL
+@using DAL.Models
+@model DAL.oClasses.oReports
+@using X.PagedList.Mvc.Core; @*//import this so we get our HTML Helper*@
+@using X.PagedList;  @*//import this so we can cast our list to IPagedList*@
+
+@{
+
+
+    string Accounts = "";
+}
+@if (Model.ExpenseDirectReport != null)
+{
+
+
+
+    foreach (pa_Expense item in Model.ExpenseDirectReport)
+    {
+        Accounts = item.ExpenseAccount;
+    }
+}
+<table class="table table-bordered table-striped mb-0">
+    <thead>
+        <tr>
+
+
+           
+            <th>PayVia</></th>
+
+            <th>Chassis_No</th>
+            <th>PaymentDate</th>
+            <th>Currency_Rate</th>
+            <th>Amount</th>
+            <th>VAT_Exp</th>
+            <th>Total_Amount</th>
+
+
+
+
+        </tr>
+    </thead>
+
+
+    <tbody id="PayableSummarySearch">
+        @if (Model.ExpenseDirectReport != null)
+        {
+
+           
+            foreach (var item in Model.ExpenseDirectReport.GroupBy(item => new
+            {
+                item.ExpenseAccount,
+               
+
+
+            }))
+
+            {
+                
+                <tr class="gradeX odd" role="row">
+                    <th>@Html.DisplayFor(modelItem => item.Key.ExpenseAccount)</th>
+                </tr>
+                ViewBag.Total = 0;
+                foreach (var item1 in item)
+                {
+
+                    double Total = Convert.ToDouble(string.IsNullOrEmpty(item1.Total_Amount) == true ? "0" : item1.Total_Amount);
+                    ViewBag.Total = Total + ViewBag.Total;
+
+                    <tr class="gradeX odd" role="row">
+
+
+
+
+
+                        <td>@Html.DisplayFor(modelItem => item1.PayVia)</td>
+
+                        <td>@Html.DisplayFor(modelItem => item1.Chassis_No) </td>
+
+                        <td>@Html.DisplayFor(modelItem => item1.PaymentDate) </td>
+
+                        <td>@Html.DisplayFor(modelItem => item1.Currency_Rate) </td>
+
+                        <td>@Html.DisplayFor(modelItem => item1.Amount) </td>
+
+                        <td>@Html.DisplayFor(modelItem => item1.VAT_Exp) </td>
+
+                        <td>@Html.DisplayFor(modelItem => item1.Total_Amount) </td>
+
+                    </tr>
+
+                }
+                <tr class="gradeX odd" role="row">
+                    <th>SubTotal</th>
+                    <th></th>
+                    <th></th>
+
+
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    @if (ViewBag.Total != null)
+                    {
+                        <th>@string.Format("{0:0,0.00,0}", ViewBag.Total)</th>
+                    }
+                    else
+                    {
+                        <th>@ViewBag.Total</th>
+                    }
+
+                </tr>
+            }
+        }
+
+    </tbody>
+
+
+    <tfoot>
+        <tr role="row">
+
+            <th>Total</th>
+            <th></th>
+            <th></th>
+
+            <th></th>
+
+            <th></th>
+            <th></th>
+            <th>@Model.ExpenseReport_TTL_Direct.Total_Amount</th>
+
+
+
+
+
+
+        </tr>
+    </tfoot>
+
+
+</table>
+
+<div class="invoice-summary">
+
+    <div class="row">
+
+        <div class="col-lg-6 col-md-6">
+
+        </div>
+
+        <div class="col-lg-6 col-md-6 justify-content-end text-right">
+            @if (Model.ExpenseDirectReport.Count() != 0)
+            {
+
+                @Html.PagedListPager(Model.ExpenseDirectReport, page => Url.Action("ExpenseDirectReport_Search", "Report", new { StartDate = ViewBag.StartDate_ExpenseDirectReport, EndDate = ViewBag.EndDate_ExpenseDirectReport, DR_accountID = ViewBag.DR_accountID_ExpenseDirectReport, Chassis_No = ViewBag.Chassis_No_ExpenseDirectReport, page })
+
+, X.PagedList.Mvc.Core.Common.PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new AjaxOptions()
+{
+HttpMethod = "get",
+UpdateTargetId = "ExpenseDirectReportSearch"
+})
+            )
+
+            }
+        </div>
+    </div>
+
+</div>

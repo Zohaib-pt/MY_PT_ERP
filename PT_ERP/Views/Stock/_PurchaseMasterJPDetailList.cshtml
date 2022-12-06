@@ -1,0 +1,218 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OStock
+
+<table class="table table-responsive-md table-bordered mb-0">
+    <thead>
+        <tr>
+            <th>Edit/Delete</th>
+            <th>Chassis</th>
+            <th>Make</th>
+            <th>Color</th>
+
+            <th>Price</th>
+            <th>Auction Fee</th>
+            <th>Recylcle</th>
+            <th>Shaken Fee</th>
+
+            <th>Rekso</th>
+            <th>Total</th>
+
+
+
+        </tr>
+    </thead>
+    <tbody>
+
+
+
+        @if (Model.PurchaseDetailList != null)
+        {
+
+            ViewBag.SubTotal = 0;
+            ViewBag.TotalAmount = 0;
+
+            foreach (JP_PurchaseDetails_DAL item in Model.PurchaseDetailList)
+            {
+
+                //ViewBag.SubTotal = item.Sub_Total;
+                //ViewBag.TotalAmount = item.Total_Amount;
+
+                decimal TotalAmount = item.Total;
+                ViewBag.TotalAmount = Convert.ToDecimal(ViewBag.TotalAmount) + TotalAmount;
+
+
+
+
+                //decimal SubTotal = item.Total;
+                //ViewBag.SubTotal = Convert.ToDecimal(ViewBag.SubTotal) + SubTotal;
+
+
+
+
+                <tr>
+
+                    
+                    <td>
+
+                        <a onclick="UpdateStockmasterDetail('@item.PurchaseDetails_ID',
+    '@item.Chassis_No', '@item.Make_ID', '@item.MakeModelDescription_ID', '@item.Color_ID',
+    '@item.locID', '@item.LotNumber', '@item.PriceOrignal', '@item.PriceRate', '@item.PriceTax',
+    '@item.RecycleFee', '@item.AuctionFee', '@item.AuctionFeeTax', '@item.PlatNumberFee',
+    '@item.Total', '@item.ModelYear', '@item.GoingToLocation', '@item.Risko_Vendor_ID', '@item.ReksoFee',
+    '@item.ReksoFeeTax', '@item.StockType', '@item.transmission');" data-toggle="modal" data-target="#UdpatePurchaseDetailModal"><img style="width: 20px;" src="~/Img/Icons/edit.png" /></a>
+                        <a onclick="DeleteStockDetail(@item.PurchaseDetails_ID);" data-toggle="modal" data-target="#DeleteStockDetailModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+                    </td>
+                    <td>@Html.DisplayFor(modelItem => item.Chassis_No)</td>
+                    <td>@Html.DisplayFor(modelItem => item.make)</td>
+                    <td>@Html.DisplayFor(modelItem => item.color)</td>
+                    <td style="text-align:right;">@Html.DisplayFor(modelItem => item.PriceOrignal) <span class="help-block">  @Convert.ToDecimal(item.PriceTax).ToString("0.##")</span> </td>
+                    <td style="text-align:right;">@Html.DisplayFor(modelItem => item.AuctionFee) <span class="help-block">   @Convert.ToDecimal(item.AuctionFeeTax).ToString("0.##")    </span></td>
+
+                    <td style="text-align:right;">@Html.DisplayFor(modelItem => item.RecycleFee)</td>
+                    <td style="text-align:right;">@Html.DisplayFor(modelItem => item.PlatNumberFee)</td>
+
+                    <td style="text-align:right;">@Html.DisplayFor(modelItem => item.ReksoFee) <span class="help-block">   @Convert.ToDecimal(item.ReksoFeeTax).ToString("0.##") </span></td>
+
+                    <td style="text-align:right;">@Html.DisplayFor(modelItem => item.Total)</td>
+
+
+
+                </tr>
+
+
+            }
+        }
+
+
+
+    </tbody>
+
+
+</table>
+
+
+
+<div class="invoice-summary">
+
+    <div class="row">
+
+
+        <div class="col-lg-9">
+
+        </div>
+
+        <div class="col-lg-3 col-md-3 justify-content-end text-right">
+            <table class="table h6 text-dark">
+                <tfoot>
+
+
+                    <tr></tr>
+
+
+                    <tr class="h6 text-left" style="width:auto; float:right;">
+                        <td><strong>Total Purchase Price:</strong> 0</td>
+                    </tr>
+
+
+
+                    <tr></tr>
+
+
+
+                    <tr class="h6 text-left" style="width:auto; float:right;">
+                        <td><strong>Total Auction Fee:</strong> 0</td>
+                    </tr>
+
+
+
+                    <tr></tr>
+
+
+
+
+                    <tr class="h6 text-left" style="width:auto; float:right;">
+                        <td><strong>Total Recycle:</strong> 0</td>
+                    </tr>
+
+
+
+                    <tr></tr>
+
+
+                    <tr class="h6 text-left" style="width:auto; float:right;">
+                        <td><strong>Total Shakeen: </strong>0</td>
+                    </tr>
+
+
+                    <tr></tr>
+
+
+                    <tr class="h6 text-left" style="width:auto; float:right;">
+                        <td><strong>Total Auction:</strong> 0</td>
+                    </tr>
+
+                    <tr></tr>
+
+
+                    <tr class="h6 text-left" style="width:auto; float:right;">
+                        <td><strong>Total Auction (with Tax):</strong> 0</td>
+                    </tr>
+
+                    <tr></tr>
+
+
+                    <tr class="h6 text-left" style="width:auto; float:right;">
+                        <td><strong>Total Rekso :</strong> 0</td>
+                    </tr>
+
+                    <tr></tr>
+
+
+                    <tr class="h6 text-left" style="width:auto; float:right;">
+                        <td><strong>Total Rekso (with Tax) :</strong> 0</td>
+                    </tr>
+
+                    <tr class="h6 text-left" style="width:auto; float:right;">
+                        <td><strong>Total All Tax:</strong> 0</td>
+                    </tr>
+
+
+
+                    <tr></tr> @*This need to chage*@
+
+
+
+
+                    <tr class="h6 text-left" style="width:auto; float:right;">
+                        <td><strong>Paid(Auction):</strong> 0</td>
+                    </tr>
+                    <tr></tr>
+                    <tr class="h6 text-left" style="width:auto; float:right;">
+                        <td><strong>Paid(Rikso):</strong>0</td>
+                    </tr>
+
+                    <tr></tr>
+
+
+                    <tr class="h6 text-left" style="width:auto; float:right;">
+                        <td><strong>Total Due(All):</strong>0 </td>
+                    </tr>
+
+
+
+                </tfoot>
+            </table>
+        </div>
+
+
+
+
+
+    </div>
+
+
+
+</div>
+

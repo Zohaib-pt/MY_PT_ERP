@@ -1,0 +1,130 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OSales
+
+
+
+
+<link rel="stylesheet" href="~/vendor/datatables/media/css/dataTables.bootstrap4.css" />
+
+<div class="modal-header" style="background: #f6f6f6;">
+
+
+    <h4 class="modal-title">Void Details</h4>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+
+</div>
+
+
+<div class="modal-body">
+
+    <section class="card">
+
+        <div class="card-body">
+
+
+
+
+            <div class="row form-group">
+
+                <div class="col-lg-12">
+
+                    <table class="table table-responsive-md table-bordered mb-0 mt-2" id="datatable-default">
+                        <thead>
+                            <tr>
+                                <th>InvoiceNO</th>
+                                <th>InvoiceDate</th>
+                                <th>ItemName</th>
+                                <th>ItemQty</th>
+
+                                <th>ItemRate</th>
+                                <th>Total</th>
+                                <th>UserName</th>
+                                <th>UserCode</th>
+
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            @if (Model.VoidDetailList != null)
+                            {
+                                foreach (pa_SalesDetails item in Model.VoidDetailList)
+                                {
+
+
+                                    <tr>
+                                        <td>
+
+                                            @item.INVOICENO
+                                        </td>
+                                        <td>
+                                            @item.INOVOICEDATE
+
+
+                                        </td>
+                                        <td>
+                                            @item.ItemName
+
+
+                                        </td>
+                                        <td>
+                                            @item.ItemQty
+
+
+                                        </td>
+
+                                        <td>
+                                            @item.ItemRate
+
+
+                                        </td>
+                                        <td>
+                                            @item.Total
+
+
+                                        </td>
+                                        <td>
+                                            @item.username
+
+
+                                        </td>
+                                        <td>
+                                            @item.usercode
+
+
+                                        </td>
+
+                                    </tr>
+                                }
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+            </div>
+
+
+
+
+
+        </div>
+
+
+
+    </section>
+</div>
+
+<script src="~/vendor/datatables/media/js/jquery.dataTables.min.js"></script>
+<script src="~/vendor/datatables/media/js/dataTables.bootstrap4.min.js"></script>
+<script src="~/js/theme.js"></script>
+<script src="~/js/theme.init.js"></script>
+<script src="~/js/examples/examples.datatables.default.js"></script>
+<script src="~/js/examples/examples.datatables.row.with.details.js"></script>
+<script src="~/js/examples/examples.datatables.tabletools.js"></script>

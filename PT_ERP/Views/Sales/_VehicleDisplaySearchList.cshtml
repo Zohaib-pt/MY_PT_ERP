@@ -1,0 +1,104 @@
+﻿
+@using DAL
+@using DAL.Models
+
+@using X.PagedList.Mvc.Core; @*//import this so we get our HTML Helper*@
+@using X.PagedList;  @*//import this so we can cast our list to IPagedList *@
+
+
+@model DAL.oClasses.OSales
+
+
+
+
+<div class="invoice-summary mb-1">
+
+    <div class="row mb-1">
+
+        <div class="col-lg-6 col-md-6 mb-1">
+            <b>@ViewBag.RecordsPerPage</b> records per page
+        </div>
+
+        <div class="col-lg-6 col-md-6 mb-1 justify-content-end text-right">
+
+        </div>
+    </div>
+
+</div>
+
+<table class="table table-bordered table-striped mb-0 mt-1">
+    <thead>
+        <tr>
+
+            <th>Ref</th>
+            <th>Date</th>
+            <th>Showroom Location</th>
+
+            <th>Create at</th>
+            <th @ViewBag.AttachmentVisibility>Attachments</th>
+            <th>View</th>
+
+        </tr>
+    </thead>
+    <tbody>
+
+        @if (Model.VehicleDisplayMasterList != null)
+        {
+            foreach (pa_vehicle_display_master item in Model.VehicleDisplayMasterList)
+            {
+
+        <tr>
+
+
+
+            <td><a asp-controller="Sales" asp-action="VehicleDisplay" asp-route-vehicle_display_master_ID="@item.vehicle_display_master_ID"> @Html.DisplayFor(modelItem => item.vehicle_display_master_ID)</a></td>
+
+            <td>
+                @Html.DisplayFor(modelItem => item.Delivery_DateTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Showroom_LocationName)
+            </td>
+
+
+            <td> @Html.DisplayFor(modelItem => item.Created_at)</td>
+
+
+            <td @ViewBag.AttachmentVisibility><a href="#" onclick="ShowAttachmentMaster('@item.vehicle_display_master_ID');">Manage Attachment</a> </td>
+
+            <td><a asp-controller="Sales" asp-action="VehicleDisplay" asp-route-vehicle_display_master_ID="@item.vehicle_display_master_ID"> View</a></td>
+
+        </tr>
+
+
+
+            }
+        }
+    </tbody>
+</table>
+<div class="invoice-summary">
+
+    <div class="row">
+
+        <div class="col-lg-6 col-md-6">
+
+        </div>
+
+        <div class="col-lg-6 col-md-6 justify-content-end text-right">
+
+            @if (Model.VehicleDisplayMasterList.Count() != 0)
+            {
+
+                @Html.PagedListPager(Model.VehicleDisplayMasterList, page => Url.Action("VehicleDisplayList_Search", "Sales", new { Ref = ViewBag.Ref_VehicleDisplay, StartDate = ViewBag.StartDate_VehicleDisplay, EndDate = ViewBag.EndDate_VehicleDisplay, Chassis = ViewBag.Chassis_VehicleDisplay, page })
+
+, X.PagedList.Mvc.Core.Common.PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new AjaxOptions()
+{
+HttpMethod = "get",
+UpdateTargetId = "VehicleDisplayListSearch"
+})
+                )
+            }
+        </div>
+    </div>
+
+</div>

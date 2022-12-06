@@ -1,0 +1,122 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.oReports
+@using X.PagedList.Mvc.Core; @*//import this so we get our HTML Helper*@
+@using X.PagedList;  @*//import this so we can cast our list to IPagedList*@
+
+<table class="table table-bordered table-striped mb-0">
+    <thead>
+        <tr>
+
+
+
+            <th> Date</th>
+            <th>Sale Ref </th>
+            <th>Sale Value </th>
+
+            <th> Chassis </th>
+            <th> Make </th>
+            <th> Model </th>
+            <th> Color </th>
+            <th> Total Expense</th>
+            <th> Total_Cost</th>
+            <th> Profit Lost</th>
+            <th> Customer_Name</th>
+
+        </tr>
+    </thead>
+
+
+    <tbody>
+
+        @if (Model.SaleReport != null)
+        {
+
+            foreach (SaleReport item in Model.SaleReport)
+            {
+
+
+
+
+
+        <tr class="gradeX odd" role="row">
+
+
+
+
+
+
+            <td>@Html.DisplayFor(modelItem => item.Date) </td>
+            @*<td>@Html.DisplayFor(modelItem => item.SaleRef)</td>*@
+            <td> <a asp-controller="Sales" asp-action="NewSalesInvoice" asp-route-SaleMaster_ID="@item.SaleMaster_ID">@Html.DisplayFor(modelItem => item.SaleRef)</a></td>
+
+            <td>@Html.DisplayFor(modelItem => item.Sale_Value)</td>
+            @*<td>@Html.DisplayFor(modelItem => item.Chassis_no)</td>*@
+            <td> <a asp-controller="Stock" asp-action="AddNewStock" asp-route-Stock_ID="@item.Stock_id">@Html.DisplayFor(modelItem => item.Chassis_no)</a></td>
+
+            <td>@Html.DisplayFor(modelItem => item.make)</td>
+            <td>@Html.DisplayFor(modelItem => item.model_description)</td>
+            <td>@Html.DisplayFor(modelItem => item.color)</td>
+
+            <td>@Html.DisplayFor(modelItem => item.Total_Expense)</td>
+            <td>@Html.DisplayFor(modelItem => item.Total_Cost)</td>
+            <td>@Html.DisplayFor(modelItem => item.ProfitLost)</td>
+            @*<td>@Html.DisplayFor(modelItem => item.Customer_Name)</td>*@
+            <td> <a asp-controller="Report" asp-action="CustomerReport" asp-route-Customer_ID="@item.Customer_ID"> @Html.DisplayFor(modelItem => item.Customer_Name)</a></td>
+
+
+
+        </tr>
+}
+}
+
+    </tbody>
+
+    <tfoot>
+
+
+
+        <tr role="row">
+            <th></th>
+            <th></th>
+            <th>@Model.SaleReportTTL.Sale_Value</th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th>@Model.SaleReportTTL.Total_Expense</th>
+            <th>@Model.SaleReportTTL.Total_Cost</th>
+            <th>@Model.SaleReportTTL.ProfitLost</th>
+            <th></th>
+
+        </tr>
+
+
+    </tfoot>
+
+
+</table>
+<div class="invoice-summary">
+
+    <div class="row">
+
+        <div class="col-lg-6 col-md-6">
+
+        </div>
+
+        <div class="col-lg-6 col-md-6 justify-content-end text-right">
+            @if (Model.SaleReport.Count() != 0)
+            {
+
+@Html.PagedListPager(Model.SaleReport, page => Url.Action("SalesReport_Search", "Report", new { StartDate = ViewBag.StartDate_SaleReport, EndDate = ViewBag.EndDate_SaleReport, Customer_ID = ViewBag.Customer_ID_SaleReport, Sale_Ref = ViewBag.Sale_Ref_SaleReport, Vendor_ID = ViewBag.Vendor_ID_Sale_Ref_SaleReport, cartype = ViewBag.cartype_SaleReport, chassis = ViewBag.chassis_SaleReport, Pur_Ref = ViewBag.PurRef, Make = ViewBag.Makep, Model_Desc = ViewBag.ModelDesc, Model_Year = ViewBag.ModelYear, page })
+
+, X.PagedList.Mvc.Core.Common.PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new AjaxOptions()
+{
+    HttpMethod = "get",
+    UpdateTargetId = "SaleReportSearch"
+})
+           )}
+        </div>
+    </div>
+
+</div>

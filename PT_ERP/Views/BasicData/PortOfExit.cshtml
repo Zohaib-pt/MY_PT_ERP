@@ -1,0 +1,332 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OBasicData
+@{
+    ViewData["Title"] = "PortOfExit";
+    Layout = "~/Views/Shared/_LayoutTablePages.cshtml";
+}
+<header class="page-header">
+    <h2>@ViewBag.SectionHeaderTitle</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+            <li><a asp-area="" asp-controller="BasicData" asp-action="PortOfExits"><span>@ViewBag.SectionSub_HeaderTitle</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+
+<div class="row">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+        <div class="col-lg-12">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-info">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Success!</strong> @TempData["Success"] <a href="" class="alert-link"></a>
+                </div>
+            }
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Error!</strong> @TempData["Error"] <a href="" class="alert-link"></a>
+                </div>
+            }
+        </div>
+    }
+
+
+</div>
+
+<div class="row">
+    <div class="col">
+        <section class="card">
+            <header class="card-header">
+
+                <div class="row">
+                    <div class="col-lg-6">
+                        <h2 class="card-title" style="line-height:normal;">Port Of Exit List </h2>
+                    </div>
+                    <div class="col-lg-6" style="text-align:right;">
+                        <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#AddPortOfExitModal">Add Port Of Exit &nbsp;<i class="fas fa-plus"></i></button>
+
+                        <button type="button" class="mb-1 mt-1 mr-1 btn btn-sm btn-info">Print &nbsp;<i class="fas fa-print"></i></button>
+                    </div>
+                </div>
+
+            </header>
+            <div class="card-body">
+
+
+
+                <table class="table table-bordered table-striped mb-0" id="datatable-default">
+                    <thead>
+                        <tr>
+
+
+                            <th>Edit/Delete</th>
+
+                            <th>PortOfExit</th>
+
+
+
+                            <th>Create At</th>
+                            <th>Create By</th>
+                            <th>Updated At</th>
+                            <th>Updated By</th>
+
+
+
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @if (Model.PortOfExitList != null)
+                        {
+                            foreach (Pa_PortOfExit_DAL item in Model.PortOfExitList)
+                            {
+
+                                <tr>
+
+                                    <td>
+                                        <a onclick="UpdatePortOfExit('@item.PortOfExit_ID', '@item.PortOfExit')" data-toggle="modal"
+                                           data-target="#UpdatePortOfExitModal"><img style="width: 20px;" src="~/Img/Icons/edit.png" /></a>
+                                        <a onclick="DeletePortOfExit('@item.PortOfExit_ID')" data-toggle="modal" data-target="#DeletePortOfExitModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+                                    </td>
+
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.PortOfExit)
+                                    </td>
+
+
+                                    <td> @Html.DisplayFor(modelItem => item.Created_at)</td>
+                                    <td> @Html.DisplayFor(modelItem => item.Created_by)</td>
+                                    <td> @Html.DisplayFor(modelItem => item.Modified_at)</td>
+                                    <td> @Html.DisplayFor(modelItem => item.Modified_by)</td>
+
+
+                                </tr>
+
+
+
+                            }
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</div>
+
+
+<!-- Modal Insert PortOfExit -->
+<div class="modal fade" id="AddPortOfExitModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Add Port Of Exit</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="BasicData" asp-action="AddPortOfExit" enctype="multipart/form-data">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body">
+
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">PortOfExit*<span style="color: red; font-size: 15px; margin-left: 4px;">*</span></label>
+
+                                        <input type="text" class="form-control" id="PortOfExit" name="PortOfExit" required>
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal Delete PortOfExit -->
+<div class="modal fade" id="DeletePortOfExitModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Delete PortOfExit</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="BasicData" asp-action="DeletePortOfExit">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <h3>Do you want to delete this record?</h3>
+
+                                        <input type="hidden" id="PortOfExitID_Delete" name="PortOfExit_ID" />
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modal udpate PortOfExit -->
+<div class="modal fade bs-modal-sm" id="UpdatePortOfExitModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Update PortOfExit</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="BasicData" asp-action="UpdatePortOfExit" enctype="multipart/form-data">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body">
+
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">PortOfExit*<span style="color: red; font-size: 15px; margin-left: 4px;">*</span></label>
+
+                                        <input type="text" class="form-control" id="PortOfExit_Update" name="PortOfExit" required>
+                                        <input type="hidden" id="PortOfExitID_Update" name="PortOfExit_ID" />
+                                    </div>
+                                </div>
+
+
+
+                            </div>
+
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+
+@section Scripts {
+    <script type="text/javascript">
+
+        function DeletePortOfExit(PortOfExit_ID) {
+            debugger
+            $("#PortOfExitID_Delete").val(PortOfExit_ID);
+
+        }
+
+        function UpdatePortOfExit(PortOfExit_ID, PortOfExit) {
+            debugger
+            $("#PortOfExitID_Update").val(PortOfExit_ID);
+            $("#PortOfExit_Update").val(PortOfExit);
+        }
+
+
+    </script>
+}
+
+

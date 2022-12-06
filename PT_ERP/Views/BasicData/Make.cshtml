@@ -1,0 +1,358 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OBasicData
+
+
+
+@{
+    ViewData["Title"] = "Make";
+    Layout = "~/Views/Shared/_LayoutTablePages.cshtml";
+}
+
+
+
+<header class="page-header">
+    <h2> @ViewBag.SectionHeaderTitle</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+            <li><a asp-area="" asp-controller="BasicData" asp-action="Make"><span>@ViewBag.SectionSub_HeaderTitle</span></a></li>
+          
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+
+<div class="row">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+        <div class="col-lg-12">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-info">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Success!</strong> @TempData["Success"] <a href="" class="alert-link"></a>
+                </div>
+            }
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Error!</strong> @TempData["Error"] <a href="" class="alert-link"></a>
+                </div>
+            }
+        </div>
+    }
+
+
+</div>
+
+<div class="row">
+    <div class="col">
+        <section class="card">
+            <header class="card-header">
+
+                <div class="row">
+                    <div class="col-lg-6">
+                        <h2 class="card-title" style="line-height:normal;">Make List </h2>
+                    </div>
+                    <div class="col-lg-6" style="text-align:right;">
+                        <button class="btn btn-sm btn-sm btn-primary" data-toggle="modal" data-target="#AddMakeModal">Add Make &nbsp;<i class="fas fa-plus"></i></button>
+
+                        <button type="button" class="mb-1 mt-1 mr-1 btn btn-sm btn-info">Print &nbsp;<i class="fas fa-print"></i></button>
+                    </div>
+                </div>
+
+            </header>
+            <div class="card-body">
+
+             
+
+                <table class="table table-bordered table-striped mb-0" id="datatable-default">
+                    <thead>
+                        <tr>
+
+
+                            <th>Edit/Delete</th>
+
+                            <th>Make</th>
+
+                            @*<th>Image</th>*@
+
+                            <th>Create At</th>
+                            <th>Create By</th>
+                            <th>Updated At</th>
+                            <th>Updated By</th>
+
+
+
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @if (Model.makeList != null)
+                        {
+                            foreach (Make_DAL item in Model.makeList)
+                            {
+
+                        <tr>
+
+                            <td>
+                                <a onclick="UpdateMake('@item.Make_ID', '@item.Make')" data-toggle="modal"
+                                   data-target="#UpdateMakeModal"><img style="width: 20px;" src="~/Img/Icons/edit.png" /></a>
+                                <a onclick="DeleteMake('@item.Make_ID', '@item.ImageName')" data-toggle="modal" data-target="#DeleteMakeModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+                          
+                            </td>
+
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Make)
+                            </td>
+
+                            @*<td>
+                                <a href="~/CommonImages/OtherImages/@item.ImageName" target="_blank"><img style="width: 30px; height: 30px;" src="~/CommonImages/OtherImages/@item.ImageName" alt="Image Missing" /></a>
+
+                            </td>*@
+                            <td> @Html.DisplayFor(modelItem => item.Created_at)</td>
+                            <td> @Html.DisplayFor(modelItem => item.Created_by)</td>
+                            <td> @Html.DisplayFor(modelItem => item.Modified_at)</td>
+                            <td> @Html.DisplayFor(modelItem => item.Modified_by)</td>
+
+
+                        </tr>
+
+
+
+                            }
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</div>
+
+
+<!-- Modal Insert Make -->
+<div class="modal fade bs-modal-sm" id="AddMakeModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Add Make</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="BasicData" asp-action="AddMake" enctype="multipart/form-data">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body">
+
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Make<span style="color: red; font-size: 15px; margin-left: 4px;">*</span></label>
+
+                                        <input type="text" class="form-control" id="Make" name="Make" required>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6" hidden>
+
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="TaskAttachment">Make Image</label>
+                                        <input type="file" class="form-control" id="MakeAttachment" name="MakeAttachment" placeholder="">
+
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-sm btn-primary">Save</button>
+                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal Delete Make -->
+<div class="modal fade bs-modal-lg" id="DeleteMakeModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Delete Make</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="BasicData" asp-action="DeleteMake">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <h3>Do you want to delete this record?</h3>
+
+                                        <input type="hidden" id="MakeID_Delete" name="Make_ID" />
+                                        <input type="hidden" id="ImageName_Delete" name="ImageName" />
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modal udpate Make -->
+<div class="modal fade bs-modal-sm" id="UpdateMakeModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Update Make</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="BasicData" asp-action="UpdateMake" enctype="multipart/form-data">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body">
+
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Make<span style="color: red; font-size: 15px; margin-left: 4px;">*</span></label>
+
+                                        <input type="text" class="form-control" id="Make_Update" name="Make" required>
+                                        <input type="hidden" id="MakeID_Update" name="Make_ID" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-6" hidden>
+
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="TaskAttachment">Make Image</label>
+                                        <input type="file" class="form-control" id="MakeAttachment_Udpate" name="MakeAttachment" placeholder="">
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-12" hidden>
+                                    <div class="form-group">
+                                        <h4><b>Note:</b> To change please upload new image else existing image will remain same.</h4>
+
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+
+@section Scripts {
+    <script type="text/javascript">
+
+   function DeleteMake(Make_ID, ImageName) {
+    debugger
+      $("#MakeID_Delete").val(Make_ID);
+      $("#ImageName_Delete").val(ImageName);
+    }
+
+     function UpdateMake(Make_ID, Make) {
+    debugger
+      $("#MakeID_Update").val(Make_ID);
+      $("#Make_Update").val(Make);
+    }
+
+
+    </script>
+}

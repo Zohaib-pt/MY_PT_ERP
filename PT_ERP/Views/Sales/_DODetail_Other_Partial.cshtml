@@ -1,0 +1,112 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OSales
+<table class="table table-responsive-md table-bordered mb-0">
+    <thead>
+        <tr>
+            <th>Delete</th>
+            <th>Item</th>
+            <th>Description</th>
+            <th>Unit Price</th>
+            <th>Sale Qty</th>
+            <th>Delivered Qty</th>
+
+
+
+            <th>Amount</th>
+
+
+
+
+
+
+
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.DODetailList != null)
+        {
+
+            ViewBag.SubTotal = 0;
+            foreach (Pa_SalesDeliveryOrder_Dtl item in Model.DODetailList)
+            {
+
+                ViewBag.Grand_Amount = item.Grand_Amount;
+                ViewBag.Grand_VATExp = item.Grand_VATExp;
+                ViewBag.Grand_TotalAmount = item.Grand_TotalAmount;
+                ViewBag.Total_Amt_inWords = item.Total_Amt_inWords;
+
+<tr>
+
+
+    <td>
+
+        <a onclick="DeleteSalesDetail('@item.DODetails_ID');" data-toggle="modal" data-target="#DeleteSalesDetailModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+    </td>
+    <td>
+        <span class="small"> @Html.DisplayFor(modelItem => item.ItemCode)</span>
+
+        <br />
+
+        <span class="small">
+            @Html.DisplayFor(modelItem => item.ItemName)
+        </span>
+    </td>
+    <td>@Html.DisplayFor(modelItem => item.ItemDesc)</td>
+    <td>@Html.DisplayFor(modelItem => item.Unit_Price)</td>
+    <td>
+        @Html.DisplayFor(modelItem => item.SaleQty) x
+        @Html.DisplayFor(modelItem => item.UM_ID)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.Quantity) x
+        @Html.DisplayFor(modelItem => item.UM_ID)
+    </td>
+
+    <td>@Html.DisplayFor(modelItem => item.Total_Amount)</td>
+
+
+
+
+
+</tr>}
+            }
+    </tbody>
+
+</table>
+
+<div class="invoice-summary">
+
+    <div class="row">
+
+        <div class="col-lg-9 col-md-9">
+
+        </div>
+
+        <div class="col-lg-3 col-md-3 justify-content-end text-right">
+            <table class="table h6 text-dark">
+                <tbody>
+
+
+
+                    <tr class="b-top-0">
+                        <td colspan="2"> Sub Total:</td>
+                        <td class="text-right" id="SubTotal">@ViewBag.Grand_Amount</td>
+                    </tr>
+
+
+
+                    <tr class="h5">
+                        <td colspan="2">Total Sale Value:</td>
+                        <td class="text-right" id="Total_Payable">@ViewBag.Grand_TotalAmount</td>
+                    </tr>
+
+
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,393 @@
+﻿
+@{
+    ViewData["Title"] = "NewPapers";
+    Layout = "~/Views/Shared/_LayoutTablePages.cshtml";
+}
+
+<header class="page-header">
+    <h2>Paper</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+            <li><a asp-area="" asp-controller="Paper" asp-action="NewPapers"><span>New Papers</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+<div class="row" id="SuccessErrorSection">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+        <div class="col-lg-12">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-info">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Success!</strong> @TempData["Success"] <a Paperef="" class="alert-link"></a>
+                </div>
+            }
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Error!</strong> @TempData["Error"] <a Paperef="" class="alert-link"></a>
+                </div>
+            }
+        </div>
+    }
+
+</div>
+
+<section class="card">
+    <div class="card-body">
+        <div class="invoice">
+            <header class="clearfix">
+                <div class="row">
+                    <div class="col-lg-2">
+                        <h2 class="card-title" style="line-height:normal;">Paper Management </h2>
+                    </div>
+                    <div class="col-lg-7">
+
+
+
+
+                        <div class="wizard-progress">
+                            <div class="steps-progress">
+                                <div class="progress-indicator"></div>
+                            </div>
+                            <ul class="nav wizard-steps">
+                                <li class="nav-item active">
+                                    <a class="nav-link" href="#w3-account" data-toggle="tab"><span>1-</span></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#w3-profile" data-toggle="tab"><span>2-</span></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#w3-billing" data-toggle="tab"><span>3-</span></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#w3-confirm" data-toggle="tab"><span>4-</span></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#w3-confirm" data-toggle="tab"><span>5-</span></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#w3-confirm" data-toggle="tab"><span>6-</span></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#w3-confirm" data-toggle="tab"><span>7-</span></a>
+                                </li>
+                            </ul>
+                        </div>
+
+
+
+
+                    </div>
+                    <div class="col-lg-3" style="text-align:right;">
+                        <button type="button" id="ButtonIssue" class="mb-1 mt-1 mr-1 btn btn-sm btn-success">Save &nbsp;<i class="fas fa-save"></i></button>
+
+
+                        <a asp-controller="Delivery" asp-action="PapersList" class="mb-1 mt-1 mr-1 btn btn-sm btn-default">Paper List &nbsp;<i class="fas fa-list"></i></a>
+
+
+                    </div>
+                </div>
+            </header>
+          
+                <div class="row">
+                    <div class="col">
+                        <div class="tabs tabs-dark">
+                            <ul class="nav nav-tabs">
+                                <li class="nav-item active">
+                                    <a class="nav-link" href="#Chassis6" data-toggle="tab">Chassis Validate</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#Receive6" data-toggle="tab">
+                                        Receive Passports
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#Ready6" data-toggle="tab">
+                                        Ready Papers
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#Delivered6" data-toggle="tab">
+                                        Delivered Paper
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#ReceivedShip6" data-toggle="tab">
+                                        Received Ship Paper
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#Claim6" data-toggle="tab" hidden>
+                                        Claim settled
+                                    </a>
+                                </li>
+                            </ul>
+                            <div class="tab-content">
+
+                                <div id="Chassis6" class="tab-pane active">
+                                    <div class="card-body">
+
+                                        <div class="row form-group">
+
+
+
+
+                                            <div class="col-md-5">
+                                                <div class="form-group">
+                                                    <label class="col-form-label" for="Project_ID">Chassis No</label>
+
+                                                    <input type="text" class="form-control" readonly="readonly" id="Emp_No" name="Emp_No">
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-2" style="margin-top:30px">
+                                                <label class="col-form-label" for="TaskAttachment">&nbsp;</label>
+                                                <button type="button" id="ButtonAdd" class="mb-1 mt-1 mr-1 btn btn-sm btn-primary">Validate</button>
+
+                                            </div>
+                                            <div class="col-md-5">
+                                                <div class="form-group">
+                                                    <label class="col-form-label" for="Project_ID">Customer Name</label>
+
+                                                    <input type="text" class="form-control" id="Emp_No" name="Emp_No">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-5">
+                                                <div class="form-group">
+                                                    <label class="col-form-label" for="Project_ID">BOE</label>
+
+                                                    <input type="text" class="form-control" id="Emp_No" name="Emp_No">
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div id="Receive6" class="tab-pane">
+                                    <div class="card-body">
+                                        
+                                        <div class="row form-group">
+                                            <div class="col-lg-5">
+                                                <div class="form-group">
+                                                    <label class="col-form-label" for="Project_ID">Rec. Date</label>
+                                                    <input type="date" class="form-control" id="Emp_No" name="Emp_No">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-2" style="margin-top:30px">
+                                                <div class="form-group">
+                                                    <label class="col-form-label" for="Project_ID">Passport Rec.</label>
+                                                    <input type="checkbox" name="IsActive" id="IsActive">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-5">
+                                                <div class="form-group">
+                                                    <label class="col-form-label" for="Project_ID">Destination</label>
+                                                    <select class="form-control" id="Basic_Salary" name="Basic_Salary"></select>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-5">
+                                                <div class="form-group">
+                                                    <label class="col-form-label" for="Project_ID">Port Of Exit</label>
+                                                    <select class="form-control" id="Basic_Salary" name="Basic_Salary"></select>
+                                                </div>
+                                            </div>
+
+
+
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div id="Ready6" class="tab-pane">
+                                    <div class="card-body">
+                             
+                                        <div class="row form-group">
+                                            <div class="col-lg-5">
+                                                <div class="form-group">
+                                                    <label class="col-form-label" for="Project_ID">Paper Type</label>
+                                                    <select class="form-control" id="Basic_Salary" name="Basic_Salary"></select>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-2" style="margin-top:30px">
+                                                <div class="form-group">
+                                                    <label class="col-form-label" for="Project_ID">Paper Ready</label>
+                                                    <input type="checkbox" name="IsActive" id="IsActive">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-5">
+                                                <div class="form-group">
+                                                    <label class="col-form-label" for="Project_ID">Ready Date</label>
+                                                    <input type="date" class="form-control" id="Emp_No" name="Emp_No">
+                                                </div>
+                                            </div>
+
+
+
+
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div id="Delivered6" class="tab-pane">
+                                    <div class="card-body">
+                                       
+                                        <div class="row form-group">
+                                            <div class="col-lg-5">
+                                                <div class="form-group">
+                                                    <label class="col-form-label" for="Project_ID">Del. Date</label>
+                                                    <input type="date" class="form-control" id="Emp_No" name="Emp_No">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-2" style="margin-top:30px">
+                                                <div class="form-group">
+                                                    <label class="col-form-label" for="Project_ID">Paper Taken</label>
+                                                    <input type="checkbox" name="IsActive" id="IsActive">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-5">
+                                                <div class="form-group">
+                                                    <label class="col-form-label" for="Project_ID">Name</label>
+                                                    <input type="text" class="form-control" id="Emp_No" name="Emp_No">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-5">
+                                                <div class="form-group">
+                                                    <label class="col-form-label" for="Project_ID">Contact</label>
+                                                    <input type="text" class="form-control" id="Emp_No" name="Emp_No">
+                                                </div>
+                                            </div>
+
+
+
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div id="ReceivedShip6" class="tab-pane">
+
+
+                                    <div class="card-body">
+                                       
+                                        <div class="row form-group">
+                                            <div class="col-lg-5">
+                                                <div class="form-group">
+                                                    <label class="col-form-label" for="Project_ID">Rec. Date</label>
+                                                    <input type="date" class="form-control" id="Emp_No" name="Emp_No">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-2" style="margin-top:30px">
+                                                <div class="form-group">
+                                                    <label class="col-form-label" for="Project_ID">Paper Recieved</label>
+                                                    <input type="checkbox" name="IsActive" id="IsActive">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-5">
+                                                <div class="form-group">
+                                                    <label class="col-form-label" for="Project_ID">Received By</label>
+                                                    <input type="text" class="form-control" id="Emp_No" name="Emp_No">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-5">
+                                                <div class="form-group">
+                                                    <label class="col-form-label" for="Project_ID">Ship Date</label>
+                                                    <input type="date" class="form-control" id="Emp_No" name="Emp_No">
+                                                </div>
+                                            </div>
+
+
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="Claim6" class="tab-pane">
+                                    <div class="card-body">
+                                
+                                        <div class="row form-group">
+                                            <div class="col-lg-5">
+                                                <div class="form-group">
+                                                    <label class="col-form-label" for="Project_ID">Claim Date</label>
+                                                    <input type="date" class="form-control" id="Emp_No" name="Emp_No">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-2" style="margin-top:30px">
+                                                <div class="form-group">
+                                                    <label class="col-form-label" for="Project_ID">Claim Rec</label>
+                                                    <input type="checkbox" name="IsActive" id="IsActive">
+                                                </div>
+                                            </div>
+
+
+
+
+                                        </div>
+                                    </div>
+
+                                </div>
+
+
+
+
+
+                            </div>
+                            </div>
+                    </div>
+                </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                            
+
+
+                      
+
+
+                                
+
+
+
+             
+
+
+
+
+                  
+
+
+        </div>
+    </div>
+</section>
+

@@ -1,0 +1,2342 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OPurchases
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+
+
+@{ ViewData["Title"] = "NewPurchase";
+    Layout = "~/Views/Shared/_LayoutTablePages.cshtml"; }
+
+@{ string Form_formPurchaseMaster_ActionMethod = "";
+    int? PurchaseMaster_ID = ViewBag.PurchaseMaster_ID;
+
+
+    if (Model.purchaseMasterObj != null && Model.purchaseMasterObj.PurchaseMaster_ID > 0)
+    {
+
+        Form_formPurchaseMaster_ActionMethod = "UpdatePurchaseMaster";
+
+
+    }
+    else
+    {
+        Form_formPurchaseMaster_ActionMethod = "InsertPurchaseMaster";
+
+
+    }
+    }
+
+
+
+<header class="page-header">
+    <h2>@ViewBag.SectionHeaderTitle</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+            <li><a asp-area="" asp-controller="Purchases" asp-action="PurchaseList"><span>@ViewBag.SectionSub_HeaderMainTitle</span></a></li>
+            <li><a asp-area="" asp-controller="@ViewBag.BreadCumController" asp-action="@ViewBag.BreadCumAction"><span>@ViewBag.SectionSub_HeaderTitle</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+
+
+
+
+
+<div class="row" id="SuccessErrorSection">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+        <div class="col-lg-12">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-info">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Success!</strong> @TempData["Success"] <a href="" class="alert-link"></a>
+                </div>}
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Error!</strong> @TempData["Error"] <a href="" class="alert-link"></a>
+                </div>}
+        </div>}
+
+
+</div>
+
+<!-- start: page -->
+<section class="card">
+    <div class="card-body">
+        <div class="invoice">
+            <header class="clearfix">
+                <div class="row">
+                    <div class="col-sm-6 mt-0">
+                        <h2 class="h4 mt-0 mb-2 text-dark font-weight-bold">Purchase </h2>
+
+                    </div>
+
+                    <div class="col-sm-6 mt-0 text-right">
+                        @if (String.IsNullOrEmpty(Model.purchaseMasterObj.PurchaseStatus))
+                        {
+                            <h4 class=" mt-0 mb-2 text-dark"><b>Status:</b> <label>Pending</label></h4> }
+                        else
+                        {
+                            <h4 class=" mt-0 mb-2 text-dark"><b>Status:</b> <label>@Model.purchaseMasterObj.PurchaseStatus</label></h4>}
+
+
+                    </div>
+
+
+
+                </div>
+            </header>
+
+            <div class="row">
+                <div class="col-lg-8">
+                    @if (Model.purchaseMasterObj.PurchaseMaster_ID != null)
+                    {
+                        if (Model.purchaseMasterObj.PurchaseMaster_ID > 0)
+                        {
+
+                            <button type="button" id="ButtonSaveMaster" class="btn-sm btn btn btn-success">Update &nbsp;<i class="fas fa-save"></i></button>
+
+                            <button type="button" class="btn btn-sm btn-primary">Edit  &nbsp;<i class="fas fa-edit"></i></button>
+
+
+                            <button type="button" id="ChangeStatusMaster" class="btn-sm btn btn-warning" data-toggle="modal" data-target="#ChangeStatusPurchaseModal" onclick="ChangeStatusPurchaseMaster('@Model.purchaseMasterObj.PurchaseMaster_ID', '5');">Cancel &nbsp;<i class="fas fa-cross"></i></button>
+
+                            <button type="button" id="DeletePurchaseMaster" class="btn-sm btn btn-danger" data-toggle="modal" data-target="#DeletePurchaseMasterNew" onclick="DeletePurchaseMaster('@Model.purchaseMasterObj.PurchaseMaster_ID');">Delete &nbsp;<i class="fas fa-trash-alt"></i></button>
+
+                            <button type="button" id="print-btn" class="btn-sm btn btn-info">Print &nbsp;<i class="fas fa-print"></i></button>
+
+                            <button type="button" id="btnApproval" class="btn-sm btn btn btn-success" data-toggle="modal" @ViewBag.ApprovalVisibility data-target="#ChangeStatusPurchaseModal" onclick="ChangeStatusPurchaseMaster('@Model.purchaseMasterObj.PurchaseMaster_ID', '2');">Approve &nbsp;<i class="fa fa-check"></i></button>
+                            <button type="button" id="btnComplete" class="btn-sm btn btn btn-info" data-toggle="modal" data-target="#ChangeStatusPurchaseModal" onclick="ChangeStatusPurchaseMaster('@Model.purchaseMasterObj.PurchaseMaster_ID','4');">Complete &nbsp;<i class="fa fa-check"></i></button>
+                            <button type="button" id="btnAttachment" class="btn-sm btn btn btn-default" @ViewBag.AttachmentVisibility style="background-color: #68889E; color:white; border-color:#2F3E48" onclick="ShowAttachmentMaster('@Model.purchaseMasterObj.PurchaseMaster_ID');">Attachment &nbsp;<i class="fa fa-paperclip"></i></button>
+                            <a asp-controller="Purchases" asp-action="PurchaseList" class="btn-sm btn btn-default">List &nbsp;<i class="fas fa-list"></i></a> }
+
+                    }
+                    else
+                    {
+                        <button type="button" id="ButtonIssue" class="btn-sm btn btn-success">Issue &nbsp;<i class="fas fa-save"></i></button>
+
+                        <button type="button" class="btn-sm btn btn-primary" disabled="disabled">Edit  &nbsp;<i class="fas fa-edit"></i></button>
+
+
+                        <button type="button" class="btn-sm btn btn-warning" disabled="disabled">Cancel &nbsp;<i class="fas fa-cross"></i></button>
+                        <button type="button" class="btn-sm btn btn-danger" disabled="disabled">Delete &nbsp;<i class="fas fa-trash-alt"></i></button>
+                        <button type="button" class="btn-sm btn btn-info" disabled="disabled">Print &nbsp;<i class="fas fa-print"></i></button>
+
+                        <button type="button" class="btn-sm btn btn btn-info">Complete &nbsp;<i class="fa fa-check"></i></button>
+                        <button type="button" class="btn-sm btn btn btn-success" @ViewBag.ApprovalVisibility disabled="disabled">Approve &nbsp;<i class="fa fa-check"></i></button>
+
+
+                        <a asp-controller="Purchases" asp-action="PurchaseList" class="btn-sm btn btn-default">List &nbsp;<i class="fas fa-list"></i></a>}
+
+
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div class="col">
+
+
+
+                    <form method="post" asp-area="" asp-controller="Purchases" asp-action="@Form_formPurchaseMaster_ActionMethod" id="formPurchaseMaster">
+                        @Html.AntiForgeryToken()
+
+                        <section class="card">
+
+                            <div class="card-body">
+
+
+
+                                <div class="row form-group">
+                                    <div class="col-lg-4">
+
+                                        <div class="row MasterForm">
+                                            <label for="Vendor_ID" class="col-sm-3 col-form-label">Vendor</label>
+                                            <div class="col-sm-9">
+                                                <select class="form-control select2" id="Vendor_ID" name="Vendor_ID" onchange="AddNewVendor(this)" asp-items="@(new SelectList( ViewBag.VendorMaster,"Partner_ID","PartnerName", Model.purchaseMasterObj.Vendor_ID))" required>
+                                                    <option value="0">Select Vendor</option>
+                                                    <option value="NewVendor">New Vendor A/C</option>
+                                                </select>
+
+                                                <input type="hidden" id="PurchaseMaster_ID" name="PurchaseMaster_ID" value="@PurchaseMaster_ID" />
+                                            </div>
+                                        </div>
+                                        <div class="row MasterForm">
+                                            <label for="To" class="col-sm-3 col-form-label">To</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" id="Vendor_PruchaseTo" name="Vendor_PruchaseTo" value="@Model.purchaseMasterObj.Vendor_PruchaseTo">
+                                            </div>
+                                        </div>
+                                        <div class="row MasterForm">
+                                            <label for="Address" class="col-sm-3 col-form-label">Address</label>
+                                            <div class="col-sm-9">
+                                                <textarea class="form-control" rows="2" id="Vendor_Address" name="Vendor_Address" placeholder="">@Model.purchaseMasterObj.Vendor_Address</textarea>
+                                            </div>
+                                        </div>
+
+
+
+                                    </div>
+                                    <div class="col-lg-4">
+
+                                    </div>
+
+                                    <div class="col-lg-4 ">
+
+                                        <div class="row MasterForm">
+                                            <label for="PurchaseRef" class="col-sm-3 col-form-label">Ref No</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" id="PurchaseRef" name="PurchaseRef" value="@Model.purchaseMasterObj.PurchaseRef" readonly>
+                                            </div>
+                                        </div>
+
+
+                                        <div class="row MasterForm">
+                                            <label for="PurchaseDate" class="col-sm-3 col-form-label">Date</label>
+                                            <div class="col-sm-9">
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                        </span>
+                                                    </span>
+                                                    @if (Model.purchaseMasterObj.PurchaseDate != null)
+                                                    {
+                                                        <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="PurchaseDate" name="PurchaseDate" value="@Model.purchaseMasterObj.PurchaseDate" required> }
+                                                    else
+                                                    {
+                                                        <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="PurchaseDate" name="PurchaseDate" value="@DateTime.Now.ToString("dd-MMM-yyyy")" required>}
+
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+
+
+
+                                        <div class="row MasterForm">
+                                            <label for="Discount" class="col-sm-3 col-form-label">VAT Charges</label>
+                                            <div class="col-sm-9">
+                                                <select class="form-control" id="VAT_Rate" asp-for="@Model.purchaseMasterObj.VAT_Rate" name="VAT_Rate" onchange="CalculateSumTotalOfStock()">
+                                                    <option value="0">0%</option>
+                                                    <option value="5">5%</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="row MasterForm">
+                                            <label for="Discount" class="col-sm-3 col-form-label">Discount</label>
+                                            <div class="col-sm-9">
+                                                <input type="number" class="form-control" id="Discount" name="Discount" step="any" onblur="CalculateSumTotalOfStock()" value="@Model.purchaseMasterObj.Discount">
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+
+                            </div>
+
+
+
+                        </section>
+                    </form>
+                </div>
+
+            </div>
+
+            <div class="row m-1">
+                <div class="col-lg-3">
+                    <h2 class="card-title" style="line-height:normal;"> Details </h2>
+                </div>
+
+
+                <div class="col-lg-9 col-md-9 text-right">
+                    <button class="btn-sm btn btn-primary" id="btnNewAdd" data-toggle="modal" data-target="#AddNewPurchaseModal">Add New &nbsp;<i class="fas fa-plus"></i></button>
+
+
+                </div>
+            </div>
+
+            <div id="PaymentDetailSection">
+
+                <table class="table table-responsive-md table-bordered mb-0">
+                    <thead>
+                        <tr>
+
+                            <th>Edit/Delete</th>
+                            <th>Make</th>
+                            <th>Make Model</th>
+                            <th>Color</th>
+                            <th>Qty</th>
+                            @*<th>ItemDesc</th>*@
+                            <th>Curr</th>
+                            <th>Unit Price</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.purchaseDetailList != null)
+                        {
+
+                            ViewBag.SubTotal = 0;
+                            ViewBag.Vat_ExpTotal = 0;
+                            ViewBag.DiscountTotal = 0;
+                            ViewBag.Grand_Total = 0;
+
+
+                            foreach (Pa_PurchaseDetails_DAL item in Model.purchaseDetailList)
+                            {
+
+                                ViewBag.SubTotal = item.SubTotal;
+                                ViewBag.Vat_ExpTotal = item.Vat_ExpTotal;
+                                ViewBag.DiscountTotal = item.DiscountTotal;
+                                ViewBag.Grand_Total = item.Grand_Total;
+
+
+                                <tr>
+                                    <td>
+                                        <a onclick="UpdatePurchaseDetail('@item.PurchaseDetails_ID');"><img style="width: 20px;" src="~/Img/Icons/edit.png" /></a>
+                                        <a onclick="DeletePurchaseDetail('@item.PurchaseDetails_ID');" data-toggle="modal" data-target="#DeletePurchaseDetailModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+                                    </td>
+
+                                    <td>@Html.DisplayFor(modelItem => item.Make) <br /> <span class="help-block">  @item.Chassis_No</span> </td>
+                                    <td>@Html.DisplayFor(modelItem => item.ModelDesciption)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.ColorName)</td>
+
+                                    <td>@Html.DisplayFor(modelItem => item.Quantity)</td>
+                                    @*<td></td>*@
+
+                                    <td>@Html.DisplayFor(modelItem => item.Currency_Name) x  @item.Currency_Rate</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Unit_Price)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Amount)</td>
+
+
+                                </tr>
+                            }
+                        }
+
+
+
+
+                    </tbody>
+
+                </table>
+                <div class="col-lg">
+                    <a asp-controller="Purchases" asp-action="StockInPO" asp-route-PurchaseRef="@Model.purchaseMasterObj.PurchaseRef">Stock In PO </a>
+
+                </div>
+
+                <div class="invoice-summary">
+
+                    <div class="row">
+
+                        <div class="col-lg-9 col-md-9">
+
+                        </div>
+
+                        <div class="col-lg-3 col-md-3 justify-content-end text-right">
+                            <table class="table h6 text-dark">
+                                <tbody>
+
+
+                                    <tr class="b-top-0">
+                                        <td colspan="2"> Sub Total:</td>
+                                        <td class="text-right" id="SubTotal" style="width:136px">@ViewBag.SubTotal</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2">VAT Charge:</td>
+                                        <td class="text-right" id="VAT_ChargeTotal">@ViewBag.Vat_ExpTotal</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td colspan="2">Discount:</td>
+                                        <td class="text-right" id="DiscountTotal">@ViewBag.DiscountTotal</td>
+                                    </tr>
+                                    <tr class="h6">
+                                        <td colspan="2">Total Payable&nbsp;(@ViewBag.DefaultCurrencyDisplay):</td>
+                                        <td class="text-right" id="Total_Payable">   @ViewBag.Grand_Total</td>
+                                    </tr>
+
+
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <hr />
+            <div class="row">
+                <div class="col-sm-3"><span class="show-grid-block">Created at : <b>@Model.purchaseMasterObj.Created_at </b></span></div>
+                <div class="col-sm-3"><span class="show-grid-block">Created by :</span><b>@Model.purchaseMasterObj.Created_by</b></div>
+                <div class="col-sm-3"><span class="show-grid-block">Modified at :<b>@Model.purchaseMasterObj.Modified_at </b></span></div>
+                <div class="col-sm-3"><span class="show-grid-block">Modified by : <b>@Model.purchaseMasterObj.Modified_by </b></span></div>
+            </div>
+
+
+
+
+
+
+        </div>
+
+
+    </div>
+</section>
+
+
+
+
+<!-- Modal Insert task -->
+<div class="modal fade bs-modal-sm in" id="AddNewPurchaseModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Stock Details-Add</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" data-ajax="true" data-ajax-complete="myComplete" data-ajax-success="mySuccess" data-ajax-failure="myFailure"
+                  asp-area="" asp-controller="Purchases" asp-action="InsertPurchaseDetail" data-ajax-loading="" id="FormInsertPurchaseDetail">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body">
+
+
+
+                            <div class="row form-group">
+                                @if (Model.purchaseMasterObj.PurchaseMaster_ID != null)
+                                {
+                                    <input id="hdPurchaseMaster_ID" name="hdPurchaseMaster_ID" type="hidden" value="@Model.purchaseMasterObj.PurchaseMaster_ID" /> }
+                                else
+
+                                {
+
+                                    <input id="hdPurchaseMaster_ID" name="hdPurchaseMaster_ID" type="hidden" value="0" />}
+                                @if (Configuration.GetSection("AppSettings").GetSection("IsDirectStockPurEnabled").Value == "false")
+                                {
+                                    <div class="col-lg-3 col-md-3">
+
+
+                                        <div class="form-group">
+                                            <label class="col-form-label" for="Make_ID">Make*</label>
+
+
+
+                                            <select class="form-control" id="Make_ID" name="Make_ID" asp-items="@(new SelectList(ViewBag.MakeList, "Make_ID", "Make"))" onchange="GetSubModel(this);" required>
+                                                <option>Select Make</option>
+                                            </select>
+
+
+
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 col-md-3">
+                                        <div class="form-group">
+                                            <label class="col-form-label" for="Model_ID">Model*</label>
+
+                                            <select class="form-control MakeModelClass" id="Model_ID" name="Model_ID" required>
+                                                <option value="">Select Model</option>
+
+                                            </select>
+
+                                        </div>
+                                    </div>
+
+                                }
+
+
+
+
+
+
+                                @if (Configuration.GetSection("AppSettings").GetSection("IsDirectStockPurEnabled").Value == "true")
+                                {
+
+
+
+                                    <div class="col-lg-3 col-md-3">
+
+                                        <div class="form-group">
+                                            <label class="col-form-label">Chassis No</label>
+                                            <input type="text" id="Chassis" name="Chassis" value="" class="form-control" onblur="GetMakeCodeDetail();" placeholder="Enter Chassis">
+                                            <label id="ChassisValidationMessage"></label>
+
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-lg-3 col-md-3">
+                                        <div class="form-group">
+                                            <label class="col-form-label" for="Make_ID">Make*</label>
+
+
+
+                                            <select class="form-control" id="Make_ID" name="Make_ID" asp-items="@(new SelectList( ViewBag.MakeList,"Make_ID","Make"))" onchange="GetSubModel(this);" required>
+                                                <option>Select Make</option>
+                                            </select>
+
+
+
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 col-md-3">
+                                        <div class="form-group">
+                                            <label class="col-form-label" for="Model_ID">Model*</label>
+
+                                            <select class="form-control MakeModelClass" id="Model_ID" name="Model_ID" required>
+                                                <option value="">Select Model</option>
+
+                                            </select>
+
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-3 col-md-3">
+                                        <div class="form-group">
+                                            <label class="col-form-label" for="ModelYear">Year</label>
+                                            <input type="text" id="Year" name="Year" class="form-control" placeholder="Year">
+
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 col-md-3">
+                                        <div class="form-group">
+                                            <label class="col-form-label" for="color_exterior_ID">Color(Int)</label>
+                                            <select class="form-control" id="color_interior_ID" name="color_interior_ID" asp-items="@(new SelectList( ViewBag.ColorsList,"Color_ID","ColorName"))">
+                                                <option value="0">Select Color(Int)</option>
+                                            </select>
+                                        </div>
+
+                                    </div>}
+
+                                <div class="col-lg-3 col-md-3">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Color">Color</label>
+
+
+                                        <select class="form-control" id="Color_ID" name="Color_ID" asp-items="@(new SelectList( ViewBag.ColorsList,"Color_ID","ColorName"))">
+                                            <option>Select Color</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+
+                                @if (Configuration.GetSection("AppSettings").GetSection("IsDirectStockPurEnabled").Value == "true")
+                                {
+
+                                    <div class="col-lg-3 col-md-3">
+                                        <div class="form-group">
+                                            <label class="col-form-label" for="loc_ID">Location</label>
+
+                                            <select class="form-control" name="loc" id="loc"
+                                                    asp-items="@(new SelectList(ViewBag.CarLocations,"CarLocation_ID","CarLocation"))">
+                                                <option value="0">Select Location</option>
+                                            </select>
+
+
+                                        </div>
+                                    </div> }
+                                else
+                                {
+                                    <div class="col-lg-3 col-md-3">
+                                        <div class="form-group">
+                                            <label class="col-form-label" for="Quantity">Quantity*</label>
+
+
+                                            <input type="number" id="Quantity" name="Quantity" class="form-control" onblur="CalculateSumAmount()" placeholder="Quantity" required />
+
+                                        </div>
+                                    </div>}
+
+                                @if (Configuration.GetSection("AppSettings").GetSection("IsDirectStockPurEnabled").Value == "true")
+                                {
+
+                                    <div class="col-lg-3 col-md-3">
+                                        <div class="form-group">
+                                            <label class="col-form-label" for="Others">Mileage</label>
+                                            <input type="text" id="mileage" name="mileage" class="form-control" placeholder="Mileage" />
+                                        </div>
+                                    </div>}
+
+                                @if (Configuration.GetSection("AppSettings").GetSection("IsDirectStockPurEnabled").Value == "true")
+                                {
+                                    <div class="col-lg-3 col-md-3">
+                                        <div class="form-group">
+                                            <label class="col-form-label" for="Make_category_ID">Category</label>
+
+
+
+                                            <select class="form-control" id="Make_category_ID" name="Make_category_ID" asp-items="@(new SelectList(ViewBag.VehicleCategory,  "VehCategory_ID", "VehCategoryName"))"
+                                                    required>
+                                                <option>Select Category</option>
+                                            </select>
+
+                                        </div>
+                                    </div>}
+
+                                @if (Configuration.GetSection("AppSettings").GetSection("IsDirectStockPurEnabled").Value == "true")
+                                {
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="col-form-label" for="Drive">Drive</label>
+
+                                            <select class="form-control" name="Drive" id="Drive">
+                                                <option value="">Select</option>
+                                                <option value="Right">Right</option>
+                                                <option value="Left">Left</option>
+                                            </select>
+                                        </div>
+                                    </div>}
+
+                                @if (Configuration.GetSection("AppSettings").GetSection("IsDirectStockPurEnabled").Value == "true")
+                                {
+                                    <div class="col-lg-3 col-md-3">
+                                        <div class="form-group">
+                                            <label class="col-form-label" for="Used_New">New/Used</label>
+
+
+
+                                            <select class="form-control" name="Used_New" id="Used_New">
+                                                <option value="N">New</option>
+                                                <option value="U">Used</option>
+                                            </select>
+                                        </div>
+                                    </div>}
+
+
+
+
+
+
+
+
+                                @if (Configuration.GetSection("AppSettings").GetSection("IsDirectStockPurEnabled").Value == "true")
+                                {
+                                    <div class="col-lg-3 col-md-3">
+                                        <div class="form-group">
+                                            <label class="col-form-label" for="EngineType">Engine Type</label>
+                                            <select class="form-control" name="EngineType" id="EngineType"
+                                                   
+                                                    asp-items="@(new SelectList(ViewBag.EngineType, "EngineType_ID", "Engine_Power"))">
+                                                <option value="">Select</option>
+                                            </select>
+                                        </div>
+                                    </div>}
+
+                                @if (Configuration.GetSection("AppSettings").GetSection("IsDirectStockPurEnabled").Value == "true")
+                                {
+
+                                    <div class="col-lg-3 col-md-3">
+                                        <div class="form-group">
+                                            <label class="col-form-label" for="FUEL_TYPE">Fuel</label>
+
+                                            <select class="form-control" name="FUEL_TYPE" id="FUEL_TYPE">
+                                                <option value="">Select</option>
+                                                <option value="PETROL">PETROL</option>
+                                                <option value="DEISEL">DEISEL</option>
+
+                                            </select>
+                                        </div>
+                                    </div>}
+
+                                @if (Configuration.GetSection("AppSettings").GetSection("IsDirectStockPurEnabled").Value == "true")
+                                {
+
+                                    <div class="col-lg-3 col-md-3">
+                                        <div class="form-group">
+                                            <label class="col-form-label" for="BL_NO">BL No</label>
+
+                                            <input type="text" class="form-control" id="BL_NO" name="BL_NO">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 col-md-3">
+                                        <div class="form-group">
+                                            <label class="col-form-label" for="BL_NO">Container No</label>
+
+                                            <input type="text" class="form-control" id="Cont_NO" name="Cont_NO">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 col-md-3">
+                                        <div class="form-group">
+                                            <label class="col-form-label" for="BL_NO">Auction Name</label>
+
+                                            <input type="text" class="form-control" id="AuctionName" name="AuctionName">
+                                        </div>
+                                    </div>
+                                }
+
+
+
+                                @if (Configuration.GetSection("AppSettings").GetSection("IsDirectStockPurEnabled").Value == "true")
+                                {
+
+
+                                    <div class="col-lg-3 col-md-3">
+                                        <div class="form-group">
+                                            <label class="col-form-label" for="StockType_ID">StockType</label>
+
+                                            <select class="form-control" name="StockType_ID" id="StockType_ID"
+                                                    asp-items="@(new SelectList(ViewBag.StockType, "StockType_ID","StockTypeName"))">
+                                            </select>
+
+                                            @*<select class="form-control" id="color_exterior_ID" name="color_exterior_ID"
+                                                        asp-items="@(new SelectList( ViewBag.ColorsList,"Color_ID","ColorName",Model.StockObject.Color_Exterior_ID))">
+                                                    <option>Select Color</option>
+                                                </select>*@
+
+                                        </div>
+                                    </div>
+
+                                }
+
+
+                                @if (Configuration.GetSection("AppSettings").GetSection("IsDirectStockPurEnabled").Value == "true")
+                                {
+                                    <div class="col-lg-3 col-md-3">
+                                        <div class="form-group">
+                                            <label class="col-form-label" for="Door">Door</label>
+
+                                            <select class="form-control" name="Door" id="Door">
+                                                <option value="">Select</option>
+                                                <option value="2">2</option>
+                                                <option value="3">3</option>
+                                                <option value="4">4</option>
+                                                <option value="5">5</option>
+                                                <option value="6">6</option>
+                                            </select>
+                                        </div>
+
+                                    </div>
+                                }
+
+                                @if (Configuration.GetSection("AppSettings").GetSection("IsDirectStockPurEnabled").Value == "true")
+                                {
+                                    <div class="col-lg-3 col-md-3">
+                                        <div class="form-group">
+                                            <label class="col-form-label" for="HS_CODE"> HS Code</label>
+
+                                            <input type="text" class="form-control" id="HS_CODE" name="HS_CODE">
+                                        </div>
+                                    </div>
+                                }
+
+
+
+                                @if (Configuration.GetSection("AppSettings").GetSection("IsDirectStockPurEnabled").Value == "false")
+                                {
+
+
+                                    <div class="col-lg-12 col-md-12">
+                                        <div class="form-group">
+                                            <label class="col-form-label" for="Others">Specs</label>
+                                            <textarea class="form-control" rows="3" id="OthersSpecs" name="OthersSpecs" placeholder="Specification"></textarea>
+                                        </div>
+                                    </div>}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                            </div>
+
+
+                            <div class="row form-group">
+                                <div class="col-lg-3 col-md-3">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Unit Price">Unit Price*</label>
+
+                                        <input type="number" id="Unit_Price" name="Unit_Price" step="any" class="form-control" onblur="CalculateSumAmount()" placeholder="Unit Price" required />
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-3 col-md-3">
+                                    <div class="form-group" style="margin-top:2px;">
+                                        <label class="control-label">Currency </label>
+                                        <div class="row">
+                                            <div class="col-md-5 col-sm-5" style="padding:0;">
+                                                <select class="form-control" id="Currency_ID" name="Currency_ID" asp-items="@(new SelectList( ViewBag.CurrencyList,"Currency_ID","Currency_ShortName"))">
+                                                    @*<option>SELECT</option>*@
+                                                </select>
+                                            </div>
+                                            <div class="col-md-7 col-sm-7" style="padding:0;">
+                                                <input type="number" id="Currency_Rate" name="Currency_Rate" step="any" onblur="CalculateSumAmount()" value="1" class="form-control" placeholder="Rate">
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-3 col-md-3" @ViewBag.IsPurchaseCost_JP_Enabled>
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Unit Price">Tax(10%)</label>
+
+                                        <input type="number" id="PriceTax" name="PriceTax" step="any" class="form-control" onblur="CalculateSumAmount()" placeholder="Price Tax" readonly required />
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-3 col-md-3" @ViewBag.IsPurchaseCost_JP_Enabled>
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Unit Price">Auction Fee</label>
+
+                                        <input type="number" id="AuctionFee" name="AuctionFee" step="any" class="form-control" onblur="CalculateSumAmount()" placeholder="Auction Fee" />
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-3 col-md-3" @ViewBag.IsPurchaseCost_JP_Enabled>
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Unit Price">Rekso</label>
+
+                                        <input type="number" id="ReksoFee" name="ReksoFee" step="any" class="form-control" onblur="CalculateSumAmount()" placeholder="Rekso" />
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-3 col-md-3" @ViewBag.IsPurchaseCost_JP_Enabled>
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Unit Price">Recycle Fee</label>
+
+                                        <input type="number" id="RecycleFee" name="RecycleFee" step="any" class="form-control" onblur="CalculateSumAmount()" placeholder="Recycle Fee" />
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-3 col-md-3" @ViewBag.IsPurchaseCost_JP_Enabled>
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Unit Price">LA</label>
+
+                                        <input type="number" id="Vanning_Charges" name="Vanning_Charges" step="any" class="form-control" onblur="CalculateSumAmount()" placeholder="LA" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-3" @ViewBag.IsPurchaseCost_JP_Enabled>
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Unit Price">Other Charges</label>
+
+                                        <input type="number" id="Other_Charges" name="Other_Charges" step="any" class="form-control" onblur="CalculateSumAmount()" placeholder="OtherCharges" />
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-3 col-md-3" @ViewBag.IsPurchaseCost_JP_Enabled>
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="JP_Charges">JP Charges</label>
+
+                                        <input type="number" id="JP_Charges" name="JP_Charges" step="any" class="form-control" onblur="CalculateSumAmount()" placeholder="JPCharges" />
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-3 col-md-3" @ViewBag.IsPurchaseCost_JP_Enabled>
+                                    <div class="form-group" style="margin-top:2px;">
+                                        <label class="control-label">Freight </label>
+                                        <div class="row">
+                                            <div class="col-md-5 col-sm-5" style="padding:0;">
+                                                <input type="number" id="FreightCharges" name="FreightCharges" step="any" class="form-control" onblur="CalculateSumAmount()" placeholder="Freight Charges" />
+                                            </div>
+                                            <div class="col-md-7 col-sm-7" style="padding:0;">
+                                                <input type="number" id="FreightRate" name="FreightRate" step="any" onblur="CalculateSumAmount()" value="1" class="form-control" placeholder="Rate">
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-3">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Amount">Amount (@ViewBag.DefaultCurrencyDisplay)</label>
+
+                                        <input type="number" id="Amount" name="Amount" class="form-control" step="any" placeholder="Amount" readonly required />
+                                    </div>
+                                </div>
+
+
+                                <div class="col-lg-3 col-md-3">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Amount_Others">Amt (Others)</label>
+                                        <input type="number" id="Amount_Others" name="Amount_Others" class="form-control" step="any" readonly placeholder="Amt (Others)" required />
+                                    </div>
+                                </div>
+                                @if (Configuration.GetSection("AppSettings").GetSection("IsDirectStockPurEnabled").Value == "true")
+                                {
+                                    @if (Configuration.GetSection("AppSettings").GetSection("CompanyReportFolderCode").Value == "AM")
+                                    {
+                                        <div class="col-lg-3 col-md-3">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="Ref">C Code</label>
+                                                <input type="text" id="Ref" name="Ref" class="form-control"
+                                                       placeholder="C Code" />
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="col-lg-3 col-md-3">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="Ref">LOT#</label>
+                                                <input type="text" id="Ref" name="Ref" class="form-control"
+                                                       placeholder="LOT#" />
+                                            </div>
+                                        </div>
+
+                                    }
+
+
+
+
+                                    <div class="col-lg-3 col-md-3">
+                                        <div class="form-group">
+                                            <label class="col-form-label" for="SellingPrice">Selling Price</label>
+
+                                            <input type="text" class="form-control" id="Selling_Price" name="Selling_Price" step="any">
+                                        </div>
+                                    </div>
+
+
+
+                                    <div class="col-lg-3 col-md-3">
+                                        <div class="form-group">
+                                            <label class="col-form-label" for="OtherCost">Other Cost</label>
+
+                                            <input type="text" class="form-control" id="OtherCost" name="OtherCost" step="any">
+                                        </div>
+                                    </div>
+
+                                }
+
+
+
+
+
+
+                            </div>
+
+                        </div>
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-sm btn-primary">Add</button>
+                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modal Update Purchase -->
+<div class="modal fade bs-modal-sm in" id="UdpateNewPurchaseModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content" id="ModalContentPurchaseDetail">
+
+
+
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal Delete PurchaseDetail -->
+<div class="modal fade bs-modal-sm in" id="DeletePurchaseDetailModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Delete Stock</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" data-ajax="true" data-ajax-success="SuccessDelete" data-ajax-failure="FailureDelete"
+                  asp-area="" asp-controller="Purchases" asp-action="DeletePurchaseDetail" data-ajax-loading="">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <h3>Do you want to delete this record?</h3>
+
+                                        <input type="hidden" id="PurchaseDetails_ID_Delete" name="PurchaseDetails_ID" />
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- Modal Delete PurchaseMaster -->
+<div class="modal fade bs-modal-lg" id="DeletePurchaseMasterNew" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Delete Purchase Master</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="Purchases" asp-action="DeletePurchaseMasterNew" data-ajax-loading="">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <h3>Do you want to delete this record?</h3>
+
+                                        <input type="hidden" id="PurchaseMaster_ID_Delete" name="PurchaseMaster_ID" />
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal Change Purchase Master Status -->
+<div class="modal fade bs-modal-lg" id="ChangeStatusPurchaseModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Change Purchase Master Status</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="Purchases" asp-action="ChangePurchaseMasterStatus" data-ajax-loading="">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <h3>Do you want to change status of this record?</h3>
+
+                                        <input type="hidden" id="PurchaseMaster_ID_Status" name="PurchaseMaster_ID" />
+                                        <input type="hidden" id="Purchase_Status_ID" name="Status_ID" />
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- Modal Insert Partner -->
+<div class="modal fade bs-modal-lg" id="AddPartnerModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Add Vendor</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="BasicData" asp-action="AddPartnersVendor" enctype="multipart/form-data">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body">
+
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Vendor Ref</label>
+
+                                        <input type="text" class="form-control" id="Partner_Ref" disabled="disabled" name="Partner_Ref">
+
+
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Vendor Name<span style="color: red; font-size: 15px; margin-left: 4px;">*</span></label>
+
+                                        <input type="text" class="form-control" id="PartnerName" name="PartnerName" required>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Contact Number</label>
+
+                                        <input type="text" class="form-control" id="ContactNumber" name="ContactNumber">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Mobile No</label>
+
+                                        <input type="text" class="form-control" id="MobileNo" name="MobileNo">
+                                    </div>
+                                </div>
+
+
+
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Contact Name</label>
+
+                                        <input type="text" class="form-control" id="ContactName" name="ContactName">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Contact Address</label>
+
+                                        <input type="text" class="form-control" id="ContactAddress" name="ContactAddress">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Email </label>
+
+                                        <input type="email" class="form-control" id="Email" name="Email">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Fax </label>
+
+                                        <input type="text" class="form-control" id="Fax" name="Fax">
+                                    </div>
+                                </div>
+
+
+
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">EmiratesID</label>
+
+                                        <input type="text" class="form-control" id="EmiratesID" name="EmiratesID">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">TradeLicenseNo</label>
+
+                                        <input type="text" class="form-control" id="TradeLicenseNo" name="TradeLicenseNo">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">TRN </label>
+
+                                        <input type="text" class="form-control" id="TRN" name="TRN">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Vendor Category</label>
+
+                                        <select class="form-control" id="VendorCat_ID" name="VendorCat_ID" asp-items="@(new SelectList( ViewBag.VendorCategoryList,"VendorCat_ID","VendorCatName"))">
+                                        </select>
+                                    </div>
+                                </div>
+
+
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Remarks</label>
+
+                                        <textarea type="text" class="form-control" id="Remarks" name="Remarks"></textarea>
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<!-- Modal show attachment -->
+<div class="modal fade bs-modal-sm" id="ShowAttachmentMasterModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <!-- Following fields is for making a central purchase master id for attachments -->
+        <input type="hidden" id="PurchaseMasterMain" name="PurchaseMasterMain" />
+        <h2 style="color:white; background-color:#000">
+            Purchase Ref : @Model.purchaseMasterObj.PurchaseRef
+        </h2>
+        <div class="modal-content" id="AttachmentsPurchaseMaster">
+
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+
+
+    @*Please dont remove following script lib bcz it is for all ajaz and partial view calls*@
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
+
+    <script src="~/js/Swal/swal.js"></script>
+    <link href="~/css/Swal/Swal.css" rel="stylesheet" />
+
+
+    <script>
+
+        $(function () {
+            $(".select2").select2({
+                theme: "bootstrap",
+
+            });
+        });
+
+
+    </script>
+
+
+    <script>
+
+        function GetMakeCodeDetail() {
+
+            debugger;
+
+
+            var Chassis = document.getElementById("Chassis").value;
+
+            if (Chassis == -1) {
+
+            }
+            else {
+                $.ajax({
+
+                    type: "Get",
+                    url: "/Stock/GetDetailsByCode",
+                    data: { //Passing data
+                        Code: Chassis
+                    },
+                    datatype: "json",
+                    success: function (response) {
+                        debugger
+                       
+                        $("#Make_ID").val(response.make_ID);
+                        //$("#loc").val(response.VehicalCountry);
+                        $("#Make_category_ID").val(response.vehicalCategory);
+                        $("#Drive").val(response.drive);
+                        $("#EngineType").val(response.engine_Type);
+                        $("#FUEL_TYPE").val(response.fuel_Type);
+                        $("#Door").val(response.door);
+                        $("#HS_CODE").val(response.hs_Code);
+
+                        console.log(response);
+                        var ID = response.make_ID;
+                        var procemessage = "<option value='0'> Please wait...</option>";
+                        $(".MakeModelClass").html(procemessage).show();
+
+
+                        if (!ID) {
+                            ID = 0;
+                            var emptyAppend = "<option value=''>Select</option>";
+                            $(".MakeModelClass").html(emptyAppend).show();
+
+                        } else {
+                            $.getJSON("/Stock/GetModelDescListByID", { Make_ID: ID }, function (data) {
+                                //first empty the model
+                                //debugger
+                                $(".MakeModelClass").empty();
+                                //Then append select
+                                $(".MakeModelClass").append("<option value=''>Select</option>");
+                                $.each(data, function (index, row) {
+                                    debugger
+                                    //Now here appending all options in the sub classification list
+                                    //$(".MakeModelClass").append("<option value='" + row.modelDesc_ID + "'>" + row.modelDesciption + "</option>")
+                                    var optionText = row.modelDesciption;
+                                    $('.MakeModelClass').append($("<option></option>").attr("value", row.modelDesc_ID).text(optionText));
+                                });
+                                if (response.modelDesc_ID > 0) {
+                                    $("#Model_ID").val(response.modelDesc_ID);
+                                }
+                            });
+                        }
+
+
+
+
+
+
+
+
+                    }
+                })
+            }
+
+        }
+
+        //---show attachment popup
+        function ShowAttachmentMaster(PurchaseMaster_ID) {
+            debugger
+            var TeamDetailPostBackURL = '/Purchases/GetPurchaseMasterNew_Attachments';
+
+            //--assign value to PurchaseMaster_ID hidden field in the main. Dont remove this fields
+            $("#PurchaseMasterMain").val(PurchaseMaster_ID);
+
+
+            if (!PurchaseMaster_ID) {
+                alert("ID is null. Please try again!");
+            } else {
+                $.ajax({
+                    type: "GET",
+                    url: TeamDetailPostBackURL,
+                    contentType: "application/json; charset=utf-8",
+                    data: { "PurchaseMaster_ID": PurchaseMaster_ID },
+                    datatype: "json",
+                    success: function (data) {
+
+
+                        if (data.message == undefined) {
+                            $('#AttachmentsPurchaseMaster').html(data);
+
+
+                            //--assign value to PurchaseMaster_ID hidden field. this field is in partial view '_PurchaseListAttachment'
+                            $("#PurchaseMaster_ID_Attachment").val(PurchaseMaster_ID);
+
+                            $('#ShowAttachmentMasterModal').modal('show');
+
+                        } else {
+                            alert(data.message);
+                            $('#ShowAttachmentMasterModal').modal('hide');
+                        }
+
+                    },
+                    error: function () {
+                        alert("Dynamic content load failed.");
+                    }
+                });
+            }
+
+
+
+        }
+
+
+        function GetAllFields(PurchaseDetails_ID) {
+
+
+
+            var PurchaseDetails_ID = PurchaseDetails_ID;
+
+            if (!PurchaseDetails_ID) {
+                alert("Stock id is null!");
+            } else {
+
+                var TeamDetailPostBackURL = '/Purchases/GetPuchaseDetailByID';
+                $.ajax({
+                    type: "GET",
+                    url: TeamDetailPostBackURL,
+                    contentType: "application/json; charset=utf-8",
+                    data: { "PurchaseDetails_ID": PurchaseDetails_ID },
+                    datatype: "json",
+                    success: function (data) {
+                        debugger
+
+                        if (data.message == undefined) {
+                            //alert("Saved Successfully!");
+                            $('#Year').html(data);
+
+                            $('#UdpateNewPurchaseModal').modal('show');
+
+                        } else {
+                            alert(data.message);
+                            //$('#UdpateNewPurchaseModal').modal('hide');
+                        }
+
+                    },
+                    error: function () {
+                        alert("Failured occured. Please try again!");
+
+                    }
+                });
+            }
+
+
+
+
+        }
+
+        
+
+
+        //---after successfull submission of attachment
+        function mySuccessAttachment(data) {
+
+            debugger
+            if (data.message == undefined) {
+
+
+                $('#AttachmentsPurchaseMaster').html(data);
+
+                //---assign id of purchase master to the hidden field PurchaseMaster_ID_Attachment after partial view refresh
+                var PurchaseMaster_ID = document.getElementById("PurchaseMasterMain").value;
+                $("#PurchaseMaster_ID_Attachment").val(PurchaseMaster_ID);
+
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        //---if error occured in insertion of attachment
+        function myFailureAttachment() {
+
+            alert("Failured occured. Please try again!");
+
+        }
+
+
+        ////---Delete Attachment
+        //function DeleteAttachment(Attachment_ID, Master_ID, Type, File_Name) {
+        //    debugger
+        //    var TeamDetailPostBackURL = '/Purchases/DeleteAttachmentPurchaseNew';
+
+        //    //--in this function , the 'Type' is for the field in attachment table for specifying different voucher documents
+
+        //    var PurchaseMaster_ID = Master_ID;
+        //    if (!PurchaseMaster_ID) {
+        //        alert("Attachment ID is null. Please try again!");
+        //    } else {
+        //        $.ajax({
+        //            type: "GET",
+        //            url: TeamDetailPostBackURL,
+        //            contentType: "application/json; charset=utf-8",
+        //            data: { "PurchaseMaster_ID": PurchaseMaster_ID, "Attachment_ID": Attachment_ID, "Type": Type, "File_Name": File_Name },
+        //            datatype: "json",
+        //            success: function (data) {
+
+
+        //                if (data.message == undefined) {
+        //                    $('#AttachmentsPurchaseMaster').html(data);
+
+
+        //                    //--assign value to PurchaseMaster_ID hidden field. this field is in partial view '_SalesInvoiceAttachment'
+        //                    $("#PurchaseMaster_ID_Attachment").val(PurchaseMaster_ID);
+
+
+
+        //                } else {
+        //                    alert(data.message);
+        //                    //$('#ShowAttachmentMasterModal').modal('hide');
+        //                }
+
+        //            },
+        //            error: function () {
+        //                alert("Dynamic content load failed.");
+        //            }
+        //        });
+        //    }
+
+
+
+        //}
+
+        function DeleteAttachment(Attachment_ID, Master_ID, Type, File_Name) {
+
+            swal({
+                title: "Delete Purchase Attachment",
+
+                text: " Are you sure do you want to delete this Attachment? \n",
+
+                showCancelButton: true,
+                confirmButtonColor: "#0088CC",
+                confirmButtonText: "Confirm",
+
+                closeOnConfirm: true
+            },
+                function (isConfirm) {
+                    if (isConfirm) {
+                        var TeamDetailPostBackURL = '/Purchases/DeleteAttachmentPurchaseNew';
+
+                        //--in this function , the 'Type' is for the field in attachment table for specifying different voucher documents
+
+                        var PurchaseMaster_ID = Master_ID;
+                        if (!PurchaseMaster_ID) {
+                            alert("Attachment ID is null. Please try again!");
+                        } else {
+                            $.ajax({
+                                type: "GET",
+                                url: TeamDetailPostBackURL,
+                                contentType: "application/json; charset=utf-8",
+                                data: { "PurchaseMaster_ID": PurchaseMaster_ID, "Attachment_ID": Attachment_ID, "Type": Type, "File_Name": File_Name },
+                                datatype: "json",
+                                success: function (data) {
+
+
+                                    if (data.message == undefined) {
+                                        $('#AttachmentsPurchaseMaster').html(data);
+
+
+                                        //--assign value to PurchaseMaster_ID hidden field. this field is in partial view '_SalesInvoiceAttachment'
+                                        $("#PurchaseMaster_ID_Attachment").val(PurchaseMaster_ID);
+
+
+
+                                    } else {
+                                        alert(data.message);
+                                        //$('#ShowAttachmentMasterModal').modal('hide');
+                                    }
+
+                                },
+                                error: function () {
+                                    alert("Dynamic content load failed.");
+                                }
+                            });
+                        }
+                    }
+                });
+
+
+
+
+
+
+
+
+
+
+        }
+
+        //---this function will hit after success submission of insert purchase detail form
+        function mySuccess(data) {
+
+            var SuccessDiv = " <div class='col-lg-12'><div class='alert alert-info'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button><strong>Success!</strong> Saved Successfully! <a href ='' class='alert-link'></a></div></div>";
+            debugger
+            if (data.message == undefined) {
+
+                //$('#AddNewPurchaseModal').modal('hide');
+                $('#PaymentDetailSection').html(data);
+                $('#SuccessErrorSection').html(SuccessDiv).show();
+
+                //reset form after success
+                $('#FormInsertPurchaseDetail').trigger("reset");
+
+                //Calculate bottom total values
+                CalculateSumTotalOfStock();
+
+
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        function myFailure() {
+
+            alert("Failured occured. Please try again!");
+        }
+
+        function myComplete() {
+
+            //alert("Complete");
+        }
+
+        function mySuccessPurchaseUpdate(data) {
+
+            var SuccessDiv = " <div class='col-lg-12'><div class='alert alert-info'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button><strong>Success!</strong> Updated Successfully! <a href ='' class='alert-link'></a></div></div>";
+            debugger
+            if (data.message == undefined) {
+                //alert("Saved Successfully!");
+                $('#UdpateNewPurchaseModal').modal('hide');
+                $('#PaymentDetailSection').html(data);
+                $('#SuccessErrorSection').html(SuccessDiv).show();
+
+                //reset form after success
+                $('#FormUpdatePurchaseDetail').trigger("reset");
+
+                //Calculate bottom total values
+                CalculateSumTotalOfStock();
+
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        function myFailurePurchaseUpdate() {
+
+            alert("Failured occured. Please try again!");
+        }
+
+        function myCompletePurchaseUpdate() {
+
+            //alert("Complete");
+        }
+    </script>
+
+    <script>
+        //this function is for selecting model description on the basis of Make ID
+        function GetSubModel(Make_ID) {
+            //debugger
+            var ID = Make_ID.value;
+            var procemessage = "<option value='0'> Please wait...</option>";
+            $(".MakeModelClass").html(procemessage).show();
+
+
+            if (!ID) {
+                ID = 0;
+                var emptyAppend = "<option value=''>Select</option>";
+                $(".MakeModelClass").html(emptyAppend).show();
+
+            } else {
+                $.getJSON("/Purchases/GetModelDescListByID", { Make_ID: ID }, function (data) {
+                    //first empty the model
+                    //debugger
+                    $(".MakeModelClass").empty();
+                    //Then append select
+                    $(".MakeModelClass").append("<option value=''>Select</option>");
+                    $.each(data, function (index, row) {
+                        debugger
+                        //Now here appending all options in the sub classification list
+                        //$(".MakeModelClass").append("<option value='" + row.modelDesc_ID + "'>" + row.modelDesciption + "</option>")
+                        var optionText = row.modelDesciption;
+                        $('.MakeModelClass').append($("<option></option>").attr("value", row.modelDesc_ID).text(optionText));
+                    });
+                });
+            }
+
+
+
+        }
+
+
+
+        //this function is for selecting model description on the basis of Make ID
+        function GetSubModelForUpdate(Make_ID) {
+            //debugger
+            var ID = Make_ID.value;
+            var procemessage = "<option value='0'> Please wait...</option>";
+            $(".MakeModelClassUpdate").html(procemessage).show();
+
+
+            if (!ID) {
+                ID = 0;
+                var emptyAppend = "<option value=''>Select</option>";
+                $(".MakeModelClassUpdate").html(emptyAppend).show();
+
+            } else {
+                $.getJSON("/Purchases/GetModelDescListByID", { Make_ID: ID }, function (data) {
+                    //first empty the model
+                    //debugger
+                    $(".MakeModelClassUpdate").empty();
+                    //Then append select
+                    $(".MakeModelClassUpdate").append("<option value=''>Select</option>");
+                    $.each(data, function (index, row) {
+                        debugger
+                        //Now here appending all options in the sub classification list
+                        //$(".MakeModelClass").append("<option value='" + row.modelDesc_ID + "'>" + row.modelDesciption + "</option>")
+                        var optionText = row.modelDesciption;
+                        $('.MakeModelClassUpdate').append($("<option></option>").attr("value", row.modelDesc_ID).text(optionText));
+                    });
+                });
+            }
+
+
+
+        }
+
+
+    </script>
+
+    <script>
+        //---submit new master purchase voucher
+        $(document).ready(function () {
+
+            if ("@Model.purchaseMasterObj.PurchaseStatus"=="Cancelled") {
+                $('#ButtonSaveMaster').attr('disabled', 'disabled');
+                $('#ChangeStatusMaster').attr('disabled', 'disabled');
+
+                $('#btnApproval').attr('disabled', 'disabled');
+                $('#btnComplete').attr('disabled', 'disabled');
+                $('#btnAttachment').attr('disabled', 'disabled');
+                $('#btnNewAdd').attr('disabled', 'disabled');
+
+            }
+
+
+
+
+
+            $("#ButtonIssue").click(function () {
+                if ($("#Vendor_ID").val() == 0) {
+                    alert('Please select Vendor')
+                    return false;
+                }
+                else {
+                    $("#formPurchaseMaster").submit();
+                }
+
+            });
+        });
+        //---Update master purchase voucher
+        $(document).ready(function () {
+            $("#ButtonSaveMaster").click(function () {
+                if ($("#Vendor_ID").val() == 0) {
+                    alert('Please select Vendor')
+                    return false;
+                }
+                else {
+                    $("#formPurchaseMaster").submit();
+                }
+
+            });
+        });
+
+
+    </script>
+
+    <script type="text/javascript">
+
+
+
+
+        function SuccessDelete(data) {
+
+            var SuccessDiv = " <div class='col-lg-12'><div class='alert alert-info'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button><strong>Success!</strong> Deleted Successfully! <a href='' class='alert-link'></a></div></div>";
+            debugger
+            if (data.message == undefined) {
+
+                //alert("Saved Successfully!");
+                $('#DeletePurchaseDetailModal').modal('hide');
+                $('#PaymentDetailSection').html(data);
+                $('#SuccessErrorSection').html(SuccessDiv).show();
+
+
+                CalculateSumTotalOfStock();
+
+
+            } else {
+                alert(data.message);
+                $('#DeletePurchaseDetailModal').modal('hide');
+            }
+
+
+        }
+
+        function FailureDelete() {
+
+            alert("Failured occured. Please try again!");
+            $('#DeletePurchaseDetailModal').modal('hide');
+        }
+
+
+
+    </script>
+
+    <script>
+
+        function DeletePurchaseDetail(PurchaseDetails_ID) {
+            debugger
+            $("#PurchaseDetails_ID_Delete").val(PurchaseDetails_ID);
+
+        }
+
+
+        //---delete purchase master
+        function DeletePurchaseMaster(PurchaseMaster_ID) {
+            debugger
+            $("#PurchaseMaster_ID_Delete").val(PurchaseMaster_ID);
+
+        }
+
+        //---change purchase master status
+        function ChangeStatusPurchaseMaster(PurchaseMaster_ID, Status) {
+            debugger
+            $("#PurchaseMaster_ID_Status").val(PurchaseMaster_ID);
+            $("#Purchase_Status_ID").val(Status);
+
+        }
+
+
+
+        //--function call on click in the detail table and bring values in the update form
+        function UpdatePurchaseDetail(PurchaseDetails_ID) {
+            var PurchaseDetails_ID = PurchaseDetails_ID;
+
+            if (!PurchaseDetails_ID) {
+                alert("Stock id is null!");
+            } else {
+
+                var TeamDetailPostBackURL = '/Purchases/GetPuchaseDetailByID';
+                $.ajax({
+                    type: "GET",
+                    url: TeamDetailPostBackURL,
+                    contentType: "application/json; charset=utf-8",
+                    data: { "PurchaseDetails_ID": PurchaseDetails_ID },
+                    datatype: "json",
+                    success: function (data) {
+                        debugger
+
+                        if (data.message == undefined) {
+                            //alert("Saved Successfully!");
+                            $('#ModalContentPurchaseDetail').html(data);
+                            $('#UdpateNewPurchaseModal').modal('show');
+
+                        } else {
+                            alert(data.message);
+                            //$('#UdpateNewPurchaseModal').modal('hide');
+                        }
+
+                    },
+                    error: function () {
+                        alert("Failured occured. Please try again!");
+
+                    }
+                });
+            }
+
+
+
+
+        }
+
+
+        //---function for calculating amounts in the puchase detail pop up form
+        function CalculateSumAmount() {
+            debugger;
+            var Quanity = 0;
+            var Other_Charges = 0;
+            var UnitPrice = 0;
+            var Amount = 0;
+            var Amount_Others = 0;
+            var Currency_Rate = 0;
+
+            var resultTotalAmount = 0;
+            var resultAmount = 0;
+            var TAX = 0;
+            var TotalFreight = 0;
+            var resultTotalOtherAmount = 0;
+            var PriceTax = 0;
+            var AuctionFee = 0;
+            var ReksoFee = 0;
+            var RecycleFee = 0;
+            var Vanning_Charges = 0;
+            var FreightCharges = 0;
+            var FreightRate = 0;
+            var JP_Charges = 0;
+              let RecycleandTaxExclude = "@Configuration.GetSection("AppSettings").GetSection("RecycleandTaxExclude").Value";
+
+
+            if (document.getElementById("Quantity") != null) {
+                Quanity = document.getElementById("Quantity").value;
+            } else {
+                Quanity = 1;
+            }
+            if (document.getElementById("Other_Charges") != null) {
+                Other_Charges = document.getElementById("Other_Charges").value;
+            } else {
+                Other_Charges = 0;
+            }
+            if (document.getElementById("PriceTax") != null && RecycleandTaxExclude =="false") {
+                PriceTax = document.getElementById("PriceTax").value;
+            } else {
+                PriceTax = 0;
+            }
+            if (document.getElementById("AuctionFee") != null) {
+                AuctionFee = document.getElementById("AuctionFee").value;
+            } else {
+                AuctionFee = 0;
+            }
+            if (document.getElementById("ReksoFee") != null) {
+                ReksoFee = document.getElementById("ReksoFee").value;
+            } else {
+                ReksoFee = 0;
+            }
+            if (document.getElementById("RecycleFee") != null && RecycleandTaxExclude == "false") {
+                RecycleFee = document.getElementById("RecycleFee").value;
+            } else {
+                RecycleFee = 0;
+            }
+            if (document.getElementById("Vanning_Charges") != null) {
+                Vanning_Charges = document.getElementById("Vanning_Charges").value;
+            } else {
+                Vanning_Charges = 0;
+            }
+            if (document.getElementById("FreightCharges") != null) {
+                FreightCharges = document.getElementById("FreightCharges").value;
+            } else {
+                FreightCharges = 0;
+            }
+            if (document.getElementById("FreightRate") != null) {
+                FreightRate = document.getElementById("FreightRate").value;
+            } else {
+                FreightRate = 0;
+            }
+
+            if (document.getElementById("JP_Charges") != null) {
+                JP_Charges = document.getElementById("JP_Charges").value;
+            } else {
+                JP_Charges = 0;
+            }
+
+            UnitPrice = document.getElementById("Unit_Price").value;
+            Amount = document.getElementById("Amount").value;
+            Amount_Others = document.getElementById("Amount_Others").value;
+            Currency_Rate = document.getElementById("Currency_Rate").value;
+
+            if (!Quanity) {
+                Quanity = 0;
+            }
+            if (!Other_Charges) {
+                Other_Charges = 0;
+            }
+            if (!UnitPrice) {
+                UnitPrice = 0;
+            }
+            if (!Amount) {
+                Amount = 0;
+            }
+            if (!Amount_Others) {
+                Amount_Others = 0;
+            }
+            if (!Currency_Rate) {
+                Currency_Rate = 1;
+            }
+            if (!PriceTax) {
+                PriceTax = 0;
+            }
+            if (!AuctionFee) {
+                AuctionFee = 0;
+            }
+            if (!ReksoFee) {
+                ReksoFee = 0;
+            }
+            if (!RecycleFee) {
+                RecycleFee = 0;
+            }
+            if (!Vanning_Charges) {
+                Vanning_Charges = 0;
+            }
+            if (!FreightCharges) {
+                FreightCharges = 0;
+            }
+            if (!FreightRate) {
+                FreightRate = 0;
+            }
+            if (!JP_Charges) {
+                JP_Charges = 0;
+            }
+
+            //---calculate Amount
+                    let AppSettingHeading = "@Configuration.GetSection("AppSettings").GetSection("IsPurchaseCost_JP_Enabled").Value";
+            //---calculate Amount
+            if (AppSettingHeading != "hidden" && RecycleandTaxExclude == "false") {
+                TAX = UnitPrice * 10 / 100;
+                $("#PriceTax").val(TAX);
+            }
+            else {
+                TAX = 0;
+                $("#PriceTax").val(TAX);
+            }
+
+
+            TotalFreight = Number(FreightRate) * Number(FreightCharges);
+
+            resultAmount = Number(Currency_Rate) * Number(Quanity) * Number(UnitPrice);
+           // resultTotalAmount = Number(resultAmount) + Number(TAX) + Number(AuctionFee) + Number(ReksoFee) + Number(RecycleFee) + Number(Vanning_Charges) + Number(TotalFreight);
+
+            resultTotalAmount = ((Number(UnitPrice) * Number(Quanity)) + Number(TAX) + Number(AuctionFee) + Number(ReksoFee) + Number(RecycleFee) + Number(Vanning_Charges) + Number(JP_Charges) + Number(Other_Charges)) * Number(Currency_Rate) + Number(TotalFreight);
+            resultTotalOtherAmount = (Number(UnitPrice) * Number(Quanity)) + Number(TAX) + Number(AuctionFee) + Number(ReksoFee) + Number(RecycleFee) + Number(Vanning_Charges) + Number(FreightCharges) + Number(JP_Charges) + Number(Other_Charges);
+
+
+
+
+            $("#Amount").val(resultTotalAmount.toFixed(2));
+
+            //--Calculate Other Amount
+
+         //   resultTotalOtherAmount =  resultTotalAmount;
+            $("#Amount_Others").val(resultTotalOtherAmount.toFixed(2));
+
+
+        }
+
+        //---function for calculating amounts in the puchase detail update pop up form
+
+        function CalcSumAmountPurchaseUpdate() {
+            debugger;
+            var Quanity = 0;
+            var Other_Charges = 0;
+            var JP_Charges = 0;
+            var UnitPrice = 0;
+            var Amount = 0;
+            var Amount_Others = 0;
+            var Currency_Rate = 0;
+            var PriceTax = 0;
+            var AuctionFee = 0;
+            var ReksoFee = 0;
+            var RecycleFee = 0;
+            var Vanning_Charges = 0;
+            var FreightCharges = 0;
+            var FreightRate = 0;
+            var resultTotalAmount = 0;
+            var resultTotalOtherAmount = 0;
+            var resultAmount = 0;
+            var TAX = 0;
+            var TotalFreight = 0;
+
+            let RecycleandTaxExclude = "@Configuration.GetSection("AppSettings").GetSection("RecycleandTaxExclude").Value";
+
+            if (document.getElementById("QuantityUpdate") != null) {
+                Quanity = document.getElementById("QuantityUpdate").value;
+            } else {
+                Quanity = 1;
+            }
+            if (document.getElementById("Other_Charges_Update") != null) {
+                Other_Charges = document.getElementById("Other_Charges_Update").value;
+            } else {
+                Other_Charges = 0;
+            }
+            if (document.getElementById("PriceTaxUpdate") != null && RecycleandTaxExclude == "false") {
+                PriceTax = document.getElementById("PriceTaxUpdate").value;
+            } else {
+                PriceTax = 0;
+            }
+            if (document.getElementById("AuctionFeeUpdate") != null) {
+                AuctionFee = document.getElementById("AuctionFeeUpdate").value;
+            } else {
+                AuctionFee = 0;
+            }
+            if (document.getElementById("ReksoFeeUpdate") != null) {
+                ReksoFee = document.getElementById("ReksoFeeUpdate").value;
+            } else {
+                ReksoFee = 0;
+            }
+            if (document.getElementById("RecycleFeeUpdate") != null && RecycleandTaxExclude == "false") {
+                RecycleFee = document.getElementById("RecycleFeeUpdate").value;
+            } else {
+                RecycleFee = 0;
+            }
+            if (document.getElementById("Vanning_ChargesUpdate") != null) {
+                Vanning_Charges = document.getElementById("Vanning_ChargesUpdate").value;
+            } else {
+                Vanning_Charges = 0;
+            }
+            if (document.getElementById("FreightChargesUpdate") != null) {
+                FreightCharges = document.getElementById("FreightChargesUpdate").value;
+            } else {
+                FreightCharges = 0;
+            }
+            if (document.getElementById("FreightRateUpdate") != null) {
+                FreightRate = document.getElementById("FreightRateUpdate").value;
+            } else {
+                FreightRate = 0;
+            }
+
+            if (document.getElementById("JP_Charges_Update") != null) {
+                JP_Charges = document.getElementById("JP_Charges_Update").value;
+            } else {
+                JP_Charges = 0;
+            }
+
+
+
+            UnitPrice = document.getElementById("Unit_PriceUpdate").value;
+            Amount = document.getElementById("AmountUpdate").value;
+            Amount_Others = document.getElementById("Amount_OthersUpdate").value;
+            Currency_Rate = document.getElementById("Currency_RateUpdate").value;
+
+            if (!Quanity) {
+                Quanity = 0;
+            }
+            if (!Other_Charges) {
+                Other_Charges = 0;
+            }
+            if (!UnitPrice) {
+                UnitPrice = 0;
+            }
+            if (!Amount) {
+                Amount = 0;
+            }
+            if (!Amount_Others) {
+                Amount_Others = 0;
+            }
+            if (!Currency_Rate) {
+                Currency_Rate = 1;
+            }
+            if (!PriceTax) {
+                PriceTax = 0;
+            }
+            if (!AuctionFee) {
+                AuctionFee = 0;
+            }
+            if (!ReksoFee) {
+                ReksoFee = 0;
+            }
+            if (!RecycleFee) {
+                RecycleFee = 0;
+            }
+            if (!Vanning_Charges) {
+                Vanning_Charges = 0;
+            }
+            if (!FreightCharges) {
+                FreightCharges = 0;
+            }
+            if (!FreightRate) {
+                FreightRate = 0;
+            }
+            if (!JP_Charges) {
+                JP_Charges = 0;
+            }
+
+            let AppSettingHeading = "@Configuration.GetSection("AppSettings").GetSection("IsPurchaseCost_JP_Enabled").Value";
+            //---calculate Amount
+            if (AppSettingHeading != "hidden" && RecycleandTaxExclude == "false") {
+                TAX = UnitPrice * 10 / 100;
+                $("#PriceTaxUpdate").val(TAX);
+            } else {
+                TAX = 0;
+                $("#PriceTaxUpdate").val(TAX);
+            }
+            TotalFreight = Number(FreightRate) * Number(FreightCharges);
+            resultAmount = Number(Currency_Rate) * Number(Quanity) * Number(UnitPrice);
+
+
+            resultTotalAmount = ((Number(UnitPrice) * Number(Quanity)) + Number(TAX) + Number(AuctionFee) + Number(ReksoFee) + Number(RecycleFee) + Number(Vanning_Charges) + Number(JP_Charges) + Number(Other_Charges)) * Number(Currency_Rate) + Number(TotalFreight);
+            resultTotalOtherAmount = (Number(UnitPrice) * Number(Quanity)) + Number(TAX) + Number(AuctionFee) + Number(ReksoFee) + Number(RecycleFee) + Number(Vanning_Charges) + Number(FreightCharges) + Number(JP_Charges) + Number(Other_Charges);
+
+
+
+            $("#AmountUpdate").val(resultTotalAmount.toFixed(2));
+
+            //--Calculate Other Amount
+
+       //     resultTotalOtherAmount = resultTotalAmount;
+            $("#Amount_OthersUpdate").val(resultTotalOtherAmount.toFixed(2));
+
+
+
+        }
+
+
+        function CalculateSumTotalOfStock() {
+            debugger
+
+            //---following portion is for updating the total and other fields
+            var SubTotal = 0;
+            var VAT_Rate = 0;
+            var Discount = 0;
+            var VAT_Charges = 0;
+            var TotalPayable = 0;
+
+
+            SubTotal = document.getElementById("SubTotal").textContent;
+            VAT_Rate = document.getElementById("VAT_Rate").value;
+            Discount = document.getElementById("Discount").value;
+
+            if (!SubTotal) {
+                SubTotal = 0;
+            }
+            if (!VAT_Rate) {
+                VAT_Rate = 0;
+            }
+            if (!Discount) {
+                Discount = 0;
+            }
+
+            VAT_Charges = VAT_Rate * SubTotal / 100;
+
+            TotalPayable = (Number(SubTotal) + Number(VAT_Charges)) - Number(Discount);
+            $("#VAT_ChargeTotal").text(VAT_Charges);
+            $("#Total_Payable").text(TotalPayable);
+            $("#DiscountTotal").text(Discount);
+
+
+        }
+
+
+
+
+
+        //----method for opening vendor popup
+        function AddNewVendor(Vendor) {
+            vendorValue = Vendor.value;
+            if (vendorValue == 'NewVendor') {
+                $('#AddPartnerModal').modal('show');
+            }
+        }
+        $(document).ready(function(){
+            $("#print-btn").click(function(event){
+                event.preventDefault();
+
+                var win = window.open("@Url.Action("PurchaseInvoicePrint", "Report")" + "?PurchaseMaster_ID=" + $("#PurchaseMaster_ID").val() , "_blank");
+                win.focus();
+            });
+        })
+    </script>
+
+
+}
+

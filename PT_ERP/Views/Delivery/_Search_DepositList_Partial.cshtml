@@ -1,0 +1,117 @@
+﻿@using DAL
+@using DAL.Models
+
+@using X.PagedList.Mvc.Core; @*//import this so we get our HTML Helper*@
+@using X.PagedList;  @*//import this so we can cast our list to IPagedList *@
+@model DAL.oClasses.ODelivery
+
+<div class="invoice-summary mb-1">
+
+    <div class="row mb-1">
+
+        <div class="col-lg-6 col-md-6 mb-1">
+            <b>@ViewBag.RecordsPerPage</b> records per page
+        </div>
+
+        <div class="col-lg-6 col-md-6 mb-1 justify-content-end text-right">
+
+        </div>
+    </div>
+
+</div>
+
+<table class="table table-bordered table-striped mb-0">
+    <thead>
+        <tr>
+
+
+
+
+            <th>Ref</th>
+
+            <th>Date</th>
+            <th>Customer Name</th>
+            <th>Deposit</th>
+            <th>Others</th>
+            <th>Total</th>
+            <th>Recieved</th>
+            <th>Return</th>
+            <th>Attachments</th>
+            <th>View</th>
+
+
+
+
+
+        </tr>
+    </thead>
+    <tbody>
+
+        @if (Model.DepositsDetailListIPageList.Any())
+        {
+            foreach (Deposits_DAL item in Model.DepositsDetailListIPageList)
+            {
+                <tr>
+
+                    <td>@Html.DisplayFor(modelItem => item.DV_Ref)</td>
+                    <td>@Convert.ToDateTime(item.Date_Taken).ToShortDateString()</td>
+
+                    <td>@Html.DisplayFor(modelItem => item.CUSTOMER_NAME)</td>
+                    <td>@item.Deposit</td>
+                    <td>@item.Others</td>
+
+                    <td>@item.Total_Collected</td>
+                    <td>@item.Amount_Recieved</td>
+                    <td>@item.Amount_Return</td>
+                    <td><a href="#" onclick="ShowAttachmentMaster('@item.DV_ID');">Manage Attachment</a> </td>
+                    <td>
+                        <a asp-controller="Delivery" asp-action="DepositRecieved" asp-route-DV_ID="@item.DV_ID"> Deposit</a><br />
+                        <a asp-controller="Delivery" asp-action="DepositReturn" asp-route-DV_ID="@item.DV_ID"> Claim </a>
+
+
+
+                    </td>
+                </tr>
+            }
+        }
+
+
+
+
+
+    </tbody>
+</table>
+<div class="invoice-summary">
+
+    <div class="row">
+
+        <div class="col-lg-6 col-md-6">
+
+        </div>
+
+        <div class="col-lg-6 col-md-6 justify-content-end text-right">
+            @if (Model.DepositsDetailListIPageList.Count() != 0)
+            {
+
+                @Html.PagedListPager(Model.DepositsDetailListIPageList, page => Url.Action("DepositListSearch", "Delivery", new
+           {
+               DV_Ref = ViewBag.DV_Ref_Deposit,
+               Party_ID_Name = ViewBag.Party_ID_Name_Deposit,
+               StartDate = ViewBag.StartDate_Deposit,
+               EndDate = ViewBag.EndDate_Deposit,
+               ChassisNo = ViewBag.ChassisNo_Deposit,
+               Cheque_no = ViewBag.Cheque_no_Deposit,
+               c_ID = ViewBag.c_ID_Deposit,
+               page
+           })
+
+                 , X.PagedList.Mvc.Core.Common.PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new AjaxOptions()
+                 {
+                     HttpMethod = "get",
+                     UpdateTargetId = "DepositpartialviewListarea"
+                 }))
+            }
+        </div>
+    </div>
+
+</div>

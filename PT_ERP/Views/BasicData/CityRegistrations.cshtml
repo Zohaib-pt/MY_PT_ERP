@@ -1,0 +1,315 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OBasicData
+@{ ViewData["Title"] = "CityRegistration";
+    Layout = "~/Views/Shared/_LayoutTablePages.cshtml"; }
+
+<header class="page-header">
+    <h2>Basic Data</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+            <li><a asp-area="" asp-controller="BasicData" asp-action="CityRegistration"><span>CityRegistrations</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+<div class="row">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+<div class="col-lg-12">
+    @if (TempData["Success"] != null)
+    {
+<div class="alert alert-info">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+    <strong>Success!</strong> @TempData["Success"] <a href="" class="alert-link"></a>
+</div>}
+
+    @if (TempData["Error"] != null)
+    {
+<div class="alert alert-danger">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+    <strong>Error!</strong> @TempData["Error"] <a href="" class="alert-link"></a>
+</div>}
+</div>}
+
+
+</div>
+
+<div class="row">
+    <div class="col">
+        <section class="card">
+            <header class="card-header">
+
+                <div class="row">
+                    <div class="col-lg-6">
+                        <h2 class="card-title" style="line-height:normal;">Add City Registration</h2>
+                    </div>
+                    <div class="col-lg-6" style="text-align:right;">
+                        <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#AddCityRegModal">Add City Registration &nbsp;<i class="fas fa-plus"></i></button>
+
+                        <button type="button" class="mb-1 mt-1 mr-1 btn btn-sm btn-info">Print &nbsp;<i class="fas fa-print"></i></button>
+                    </div>
+                </div>
+
+            </header>
+            <div class="card-body">
+
+
+
+                <table class="table table-bordered table-striped mb-0" id="datatable-default">
+                    <thead>
+                        <tr>
+
+
+                            <th>Edit/Delete</th>
+                            <th>City Name</th>
+                            <th>City Name English</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @if (Model.CustomerRegistrationList != null)
+                        {
+                            foreach (CityRegistration item in Model.CustomerRegistrationList)
+                            {
+
+            <tr>
+                <td>
+                    <a onclick="UpdateCityRegExit('@item.ID', '@item.CityName', '@item.CityNameEnglish')" data-toggle="modal"
+                       data-target="#UpdateMakeModal"><img style="width: 20px;" src="~/Img/Icons/edit.png" /></a>
+                    <a onclick="DeleteCityRegExit('@item.ID')" data-toggle="modal" data-target="#DeleteMakeModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+                </td>
+                <td> @Html.DisplayFor(modelItem => item.CityName)</td>
+                <td> @Html.DisplayFor(modelItem => item.CityNameEnglish)</td>
+
+
+
+            </tr>}
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</div>
+
+
+<!-- Modal Insert AddCityRegistrationModal -->
+<div class="modal fade" id="AddCityRegModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Add City Registration</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="BasicData" asp-action="Insert_CityReg_DAL" enctype="multipart/form-data">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body">
+
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="CityName">CityName*<span style="color: red; font-size: 15px; margin-left: 4px;">*</span></label>
+
+                                        <input type="text" class="form-control" id="CityName" name="CityName" required>
+
+                                        <label class="col-form-label" for="CityNameEnglish">CityNameEnglish*<span style="color: red; font-size: 15px; margin-left: 4px;">*</span></label>
+
+                                        <input type="text" class="form-control" id="CityNameEnglish" name="CityNameEnglish" required>
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal Delete Make -->
+<div class="modal fade bs-modal-lg" id="DeleteMakeModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Delete City Registration</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="BasicData" asp-action="DeleteCityRegExit">
+
+                <div class="modal-body">
+                    
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <h3>Do you want to delete this record?</h3>
+
+                                        <input type="hidden" id="CityReg_ID" name="ID" />
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Model udpate Make -->
+<div class="modal fade bs-modal-sm" id="UpdateMakeModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Update City Registration</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="BasicData" asp-action="Update_CityReg_DAL">
+
+                <div class="modal-body">
+
+
+                    <section class="card">
+
+                        <div class="card-body">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="City_Name">City Name</label>
+                                        <input type="text" class="form-control" id="City_Name" name="CityName" placeholder="City Name" required>
+                                    
+                                        <input type="hidden" id="ID" name="ID">
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="City_Name_English">City Name English</label>
+                                        <input type="text" class="form-control" id="City_Name_English" name="CityNameEnglish" placeholder="City Name English" required>
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+@section Scripts {
+    <script type="text/javascript">
+
+        function DeleteCityRegExit(ID) {
+            debugger
+            $("#CityReg_ID").val(ID);
+
+        }
+
+        function UpdateCityRegExit(ID, CityName, CityNameEnglish) {
+            debugger
+            $("#ID").val(ID);
+            $("#City_Name").val(CityName);
+            $("#City_Name_English").val(CityNameEnglish);
+        }
+
+
+    </script>
+}
+

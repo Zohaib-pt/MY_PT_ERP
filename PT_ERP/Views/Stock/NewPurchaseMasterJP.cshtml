@@ -1,0 +1,2446 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OStock
+
+@{
+    //ViewData["Title"] = "NewPurchase";
+    Layout = "~/Views/Shared/_LayoutTablePages.cshtml";
+    int Update_Make = 0;
+}
+
+<style>
+    .table th, .table td {
+        border-top: none;
+        padding: 12px;
+        padding-top: 3px;
+    }
+
+    h4, .h4, h5, .h5, h6, .h6 {
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+
+   
+
+</style>
+
+
+@{
+
+
+
+    string Form_StockMaster_ActionMethod = "";
+    int? PurchaseMaster_ID = ViewBag.PurchaseMaster_ID;
+
+
+    if (Model.PurchaseMasterObj != null && Model.PurchaseMasterObj.PurchaseMaster_ID > 0)
+    {
+
+        Form_StockMaster_ActionMethod = "UpdatePurchaseMasterJPMaster";
+
+
+    }
+    else
+    {
+        Form_StockMaster_ActionMethod = "InsertPurchaseMasterJPMaster";
+
+
+    }
+
+}
+
+
+<header class="page-header">
+    <h2>Stock</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+            <li><a asp-area="" asp-controller="Purchases" asp-action="PurchaseList"><span>Stock</span></a></li>
+            <li><a asp-area="" asp-controller="@ViewBag.BreadCumController" asp-action="@ViewBag.BreadCumAction"><span>New Purchase Master</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+
+
+
+
+
+<div class="row" id="SuccessErrorSection">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+        <div class="col-lg-12">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-info">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Success!</strong> @TempData["Success"] <a href="" class="alert-link"></a>
+                </div>
+            }
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Error!</strong> @TempData["Error"] <a href="" class="alert-link"></a>
+                </div>
+            }
+        </div>
+    }
+
+
+</div>
+
+<!-- start: page -->
+<section class="card">
+    <div class="card-body">
+        <div class="invoice">
+            <header class="clearfix">
+                <div class="row">
+                    <div class="col-sm-6 mt-0">
+                        <h2 class="h4 mt-0 mb-2 text-dark font-weight-bold">Purchase Master</h2>
+
+                    </div>
+
+                    <div class="col-sm-6 mt-0 text-right">
+
+                        @if (String.IsNullOrEmpty(Model.PurchaseMasterObj.PurchaseStatus))
+                        {
+                            <h4 class=" mt-0 mb-2 text-dark"><b>Status:</b> <label>Pending</label></h4>
+                        }
+                        else
+                        {
+                            <h4 class=" mt-0 mb-2 text-dark"><b>Status:</b> <label>@Model.PurchaseMasterObj.PurchaseStatus</label></h4>
+                        }
+                    </div>
+
+
+                </div>
+            </header>
+
+            <div class="row">
+                <div class="col-lg-8">
+
+
+                    @if (Model.PurchaseMasterObj.PurchaseMaster_ID != null)
+                    {
+                        if (Model.PurchaseMasterObj.PurchaseMaster_ID > 0)
+                        {
+
+                            <button type="button" id="ButtonPurchaseMasterUpdate" class="btn-sm btn btn-success">Update &nbsp;<i class="fas fa-save"></i></button>
+
+                            <button type="button" class="btn-sm btn btn-primary">Edit  &nbsp;<i class="fas fa-edit"></i></button>
+
+
+                            <button type="button" class="btn-sm btn btn-warning" data-toggle="modal" data-target="#ChangeStatusStockModal" onclick="ChangeStatusStockMaster('@Model.PurchaseMasterObj.PurchaseMaster_ID', '5');">Cancel &nbsp;<i class="fas fa-cross"></i></button>
+
+                            <button type="button" class="btn-sm btn btn-danger" data-toggle="modal" data-target="#DeleteStockMasterModal" onclick="DeleteStockMaster('@Model.PurchaseMasterObj.PurchaseMaster_ID');">Delete &nbsp;<i class="fas fa-trash-alt"></i></button>
+
+                            <button type="button" class="btn-sm btn btn-info" id="print-btn">Print &nbsp;<i class="fas fa-print"></i></button>
+
+                            <a asp-controller="Stock" asp-action="PurchaseListJP" class="btn-sm btn btn-default">List &nbsp;<i class="fas fa-list"></i></a>
+
+
+                        }
+                    }
+                    else
+                    {
+
+                        <button type="button" id="ButtonPurchaseMasterIssue" class="btn-sm btn btn-success">Issue &nbsp;<i class="fas fa-save"></i></button>
+
+                        <button type="button" class="btn-sm btn btn-primary" disabled="disabled">Edit  &nbsp;<i class="fas fa-edit"></i></button>
+
+
+                        <button type="button" class="btn-sm btn btn-warning" disabled="disabled">Cancel &nbsp;<i class="fas fa-cross"></i></button>
+                        <button type="button" class="btn-sm btn btn-danger" disabled="disabled">Delete &nbsp;<i class="fas fa-trash-alt"></i></button>
+                        <button type="button" class="btn-sm btn btn-info">Print &nbsp;<i class="fas fa-print"></i></button>
+
+                        <a asp-controller="Stock" asp-action="PurchaseListJP" class="btn-sm btn btn-default">List &nbsp;<i class="fas fa-list"></i></a>
+
+                    }
+
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div class="col">
+
+
+
+                    <form method="post" asp-area="" asp-controller="Stock" asp-action="@Form_StockMaster_ActionMethod" id="formStockMaster">
+                        @Html.AntiForgeryToken()
+
+                        <section class="card">
+
+                            <div class="card-body">
+
+
+
+                                <div class="row form-group">
+                                    <div class="col-lg-4">
+
+                                        <div class="row MasterForm">
+                                            <label for="To" class="col-sm-4 col-form-label">Auction</label>
+                                            <div class="col-sm-8">
+                                                <select class="form-control select2" id="Vendor" name="Vendor" onchange="AddNewVendor(this)" asp-items="@(new SelectList(ViewBag.VendorMaster, "Partner_ID", "PartnerName", Model.PurchaseMasterObj.Vendor_ID))" required>
+                                                    <option>Select Auction</option>
+                                                    <option value="NewVendor">New Vendor A/C</option>
+                                                </select>
+
+                                                <input type="hidden" id="PurchaseMaster_ID" name="PurchaseMaster_ID" value="@PurchaseMaster_ID" />
+                                            </div>
+                                        </div>
+                                        <div class="row MasterForm">
+                                            <label for="To" class="col-sm-4 col-form-label">Contact</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" id="SupplierContact" name="SupplierContact" value="@Model.PurchaseMasterObj.Vendor_Contact" placeholder="Contact Number">
+                                            </div>
+                                        </div>
+
+                                        <div class="row MasterForm">
+                                            <label for="Address" class="col-sm-4 col-form-label">Address</label>
+                                            <div class="col-sm-8">
+                                                @*<textarea class="form-control" rows="1" id="Invoice_address" name="Invoice_address" placeholder="">@Model.PurchaseMasterObj.Invoice_address</textarea>*@
+                                                <input type="text" class="form-control" id="SupplierAddress" name="SupplierAddress" value="@Model.PurchaseMasterObj.Vendor_Address" placeholder="Customer Address">
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+                                    <div class="col-lg-4">
+
+                                    </div>
+
+                                    <div class="col-lg-4 ">
+
+
+                                        <div class="row MasterForm">
+                                            <label for="PurchaseRef" class="col-sm-4 col-form-label">Ref No</label>
+                                            <div class="col-sm-8">
+                                                @if (!String.IsNullOrEmpty(Model.PurchaseMasterObj.PurchaseRef))
+                                                {
+                                                    <input type="text" class="form-control" id="Ref" name="Ref" value="@Model.PurchaseMasterObj.PurchaseRef" readonly>
+                                                }
+                                                else
+                                                {
+                                                    <input type="text" class="form-control" id="Ref" name="Ref" value="@Model.PurchaseMasterRef.PurchaseRef" readonly>
+                                                }
+                                            </div>
+                                        </div>
+
+                                        <div class="row MasterForm">
+                                            <label for="PurchaseDate" class="col-sm-4 col-form-label">Purchase Date</label>
+                                            <div class="col-sm-8">
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                        </span>
+                                                    </span>
+
+                                                    @if (!String.IsNullOrEmpty(Model.PurchaseMasterObj.PurchaseDate))
+                                                    {
+                                                        <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="Date" name="Date" value="@Model.PurchaseMasterObj.PurchaseDate" required>
+
+                                                    }
+                                                    else
+                                                    {
+                                                        <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="Date" name="Date" value="@DateTime.Now.ToString("dd-MMM-yyyy")" required>
+
+                                                    }
+
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+
+                                        <div class="row MasterForm">
+                                            <label for="To" class="col-sm-4 col-form-label">
+                                                SupplierRef
+                                            </label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" id="PurchaseRef" name="PurchaseRef" value="@Model.PurchaseMasterObj.OtherREF" placeholder="Other Ref">
+                                            </div>
+                                        </div>
+                                        <div class="row MasterForm">
+                                            <label for="PurchaseDate" class="col-sm-4 col-form-label">Payment Due Date</label>
+                                            <div class="col-sm-8">
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                        </span>
+                                                    </span>
+
+                                                    @if (!String.IsNullOrEmpty(Model.PurchaseMasterObj.PaymentDueDate))
+                                                    {
+                                                        <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="PaymentDueDate" name="PaymentDueDate" value="@Model.PurchaseMasterObj.PaymentDueDate">
+
+                                                    }
+                                                    else
+                                                    {
+                                                        <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="PaymentDueDate" name="PaymentDueDate" value="@DateTime.Now.ToString("dd-MMM-yyyy")">
+
+                                                    }
+
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+
+                                    </div>
+
+
+                                </div>
+
+                            </div>
+
+
+
+                        </section>
+                    </form>
+
+                </div>
+
+            </div>
+
+            <div class="row m-2">
+                <div class="col-lg-6">
+                    <h2 class="card-title" style="line-height:normal;">Purchase Details </h2>
+                </div>
+                <div class="col-lg-6 text-right">
+                    <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#AddNewPurchaseDetailModal">Add New &nbsp;<i class="fas fa-plus"></i></button>
+
+
+                </div>
+            </div>
+
+            <div id="StockDetailSection">
+
+                <table class="table table-responsive-md table-bordered mb-0">
+                    <thead>
+                        <tr>
+                            <th>Edit/Delete</th>
+                            <th>Chassis</th>
+                            <th>Make</th>
+                            <th>Color</th>
+
+                            <th>Price</th>
+                            <th>Auction Fee</th>
+                            <th>Recylcle</th>
+                            <th>Shaken Fee</th>
+
+                            <th>Rekso</th>
+                            <th>Total</th>
+
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+
+
+
+                        @if (Model.PurchaseDetailList != null)
+                        {
+
+                            ViewBag.SubTotal = 0;
+                            ViewBag.TotalAmount = 0;
+
+                            foreach (JP_PurchaseDetails_DAL item in Model.PurchaseDetailList)
+                            {
+
+                                //ViewBag.SubTotal = item.Sub_Total;
+                                //ViewBag.TotalAmount = item.Total_Amount;
+
+                                decimal TotalAmount = item.Total;
+                                ViewBag.TotalAmount = Convert.ToDecimal(ViewBag.TotalAmount) + TotalAmount;
+
+
+
+
+                                //decimal SubTotal = item.Total;
+                                //ViewBag.SubTotal = Convert.ToDecimal(ViewBag.SubTotal) + SubTotal;
+
+
+
+
+                                <tr>
+
+
+                                    <td>
+
+                                        <a onclick="UpdateStockmasterDetail('@item.PurchaseDetails_ID',
+    '@item.Chassis_No', '@item.Make_ID', '@item.MakeModelDescription_ID', '@item.Color_ID',
+    '@item.locID', '@item.LotNumber', '@item.PriceOrignal', '@item.PriceRate', '@item.PriceTax',
+    '@item.RecycleFee', '@item.AuctionFee', '@item.AuctionFeeTax', '@item.PlatNumberFee',
+    '@item.Total', '@item.ModelYear', '@item.GoingToLocation', '@item.Risko_Vendor_ID', '@item.ReksoFee',
+    '@item.ReksoFeeTax', '@item.StockType', '@item.transmission');" data-toggle="modal" data-target="#UdpatePurchaseDetailModal"><img style="width: 20px;" src="~/Img/Icons/edit.png" /></a>
+                                        <a onclick="DeleteStockDetail(@item.PurchaseDetails_ID);" data-toggle="modal" data-target="#DeleteStockDetailModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+                                    </td>
+                                    <td>@Html.DisplayFor(modelItem => item.Chassis_No)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.make)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.color)</td>
+                                    <td style="text-align:right;">@Html.DisplayFor(modelItem => item.PriceOrignal) <span class="help-block">  @Convert.ToDecimal(item.PriceTax).ToString("0.##")</span> </td>
+                                    <td style="text-align:right;">@Html.DisplayFor(modelItem => item.AuctionFee) <span class="help-block">   @Convert.ToDecimal(item.AuctionFeeTax).ToString("0.##")    </span></td>
+
+                                    <td style="text-align:right;">@Html.DisplayFor(modelItem => item.RecycleFee)</td>
+                                    <td style="text-align:right;">@Html.DisplayFor(modelItem => item.PlatNumberFee)</td>
+
+                                    <td style="text-align:right;">@Html.DisplayFor(modelItem => item.ReksoFee) <span class="help-block">   @Convert.ToDecimal(item.ReksoFeeTax).ToString("0.##") </span></td>
+
+                                    <td style="text-align:right;">@Html.DisplayFor(modelItem => item.Total)</td>
+
+
+
+                                </tr>
+
+
+                            }
+                        }
+
+
+
+                    </tbody>
+
+
+                </table>
+
+                <div class="invoice-summary">
+
+                    <div class="row">
+
+
+                        <div class="col-lg-9">
+
+                        </div>
+
+                        <div class="col-lg-3 col-md-3 justify-content-end text-right">
+                            <table class="table h6 text-dark">
+                                <tfoot>
+                                    @if (Model.PurchaseDetailGrandTotal != null)
+                                    {
+
+                                        <tr></tr>
+
+
+                                        <tr class="h6 text-left" style="width:auto; float:right;">
+                                            <td><strong>Total Purchase Price:</strong> @Model.PurchaseDetailGrandTotal.TotalPriceOrignal</td>
+                                        </tr>
+
+
+
+                                        <tr></tr>
+
+
+
+                                        <tr class="h6 text-left" style="width:auto; float:right;">
+                                            <td><strong>Total Auction Fee:</strong> @Model.PurchaseDetailGrandTotal.TotalAuctionFee</td>
+                                        </tr>
+
+
+
+                                        <tr></tr>
+
+
+
+
+                                        <tr class="h6 text-left" style="width:auto; float:right;">
+                                            <td><strong>Total Recycle:</strong> @Model.PurchaseDetailGrandTotal.TotalRecycleFee</td>
+                                        </tr>
+
+
+
+                                        <tr></tr>
+
+
+                                        <tr class="h6 text-left" style="width:auto; float:right;">
+                                            <td><strong>Total Shakeen: </strong> @Model.PurchaseDetailGrandTotal.TotalPlatNumberFee</td>
+                                        </tr>
+
+
+                                        <tr></tr>
+
+
+                                        <tr class="h6 text-left" style="width:auto; float:right;">
+                                            <td><strong>Total Auction:</strong> @Model.PurchaseDetailGrandTotal.TotalAuctionPayable</td>
+                                        </tr>
+
+                                        <tr></tr>
+
+
+                                        <tr class="h6 text-left" style="width:auto; float:right;">
+                                            <td><strong>Total Auction (with Tax):</strong> @Model.PurchaseDetailGrandTotal.TotalAuctionPayableWithTax</td>
+                                        </tr>
+
+                                        <tr></tr>
+
+
+                                        <tr class="h6 text-left" style="width:auto; float:right;">
+                                            <td><strong>Total Rekso :</strong> @Model.PurchaseDetailGrandTotal.TotalReksoPayable</td>
+                                        </tr>
+
+                                        <tr></tr>
+
+
+                                        <tr class="h6 text-left" style="width:auto; float:right;">
+                                            <td><strong>Total Rekso (with Tax) :</strong> @Model.PurchaseDetailGrandTotal.TotalReksoPayableWithTax</td>
+                                        </tr>
+
+                                        <tr class="h6 text-left" style="width:auto; float:right;">
+                                            <td><strong>Total All Tax:</strong> @Model.PurchaseDetailGrandTotal.TotalTaxOnly</td>
+                                        </tr>
+
+
+
+                                        <tr></tr>
+                                        @*This need to chage*@
+
+
+
+
+                                        <tr class="h6 text-left" style="width:auto; float:right;">
+                                            <td><strong>Paid(Auction):</strong> @Model.PurchaseDetailGrandTotal.Paid_Auction</td>
+                                        </tr>
+                                        <tr></tr>
+                                        <tr class="h6 text-left" style="width:auto; float:right;">
+                                            <td><strong>Paid(Rikso):</strong> @Model.PurchaseDetailGrandTotal.Paid_Rikso</td>
+                                        </tr>
+
+                                        <tr></tr>
+
+                                        <tr class="h6 text-left" style="width:auto; float:right;">
+                                            <td><strong>Shaken(Refund):</strong> @Model.PurchaseDetailGrandTotal.PlatNumberFee_Refund</td>
+                                        </tr>
+
+                                        <tr></tr>
+                                        <tr class="h6 text-left" style="width:auto; float:right;">
+                                            <td><strong>Total Due(All):</strong> @Model.PurchaseDetailGrandTotal.Bal_Due  </td>
+                                        </tr>
+}
+
+                                </tfoot>
+                            </table>
+                        </div>
+
+
+
+
+
+                    </div>
+
+
+
+                </div>
+
+            </div>
+            <hr />
+            <div class="row">
+                <div class="col-sm-3"><span class="show-grid-block">Created at : <b>@Model.PurchaseMasterObj.Created_at </b></span></div>
+                <div class="col-sm-3"><span class="show-grid-block">Created by :</span><b>@Model.PurchaseMasterObj.Created_by</b></div>
+                <div class="col-sm-3"><span class="show-grid-block">Modified at :<b>@Model.PurchaseMasterObj.Modified_at </b></span></div>
+                <div class="col-sm-3"><span class="show-grid-block">Modified by : <b>@Model.PurchaseMasterObj.Modified_by </b></span></div>
+            </div>
+
+
+
+        </div>
+
+
+    </div>
+</section>
+
+
+
+
+<!-- Modal Insert Purchase detail -->
+<div class="modal fade bs-modal-lg" id="AddNewPurchaseDetailModal"  role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Purchase  Details</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" data-ajax="true" data-ajax-success="mySuccessStockDetail" data-ajax-failure="myFailureStockDetail"
+                  asp-area="" asp-controller="Stock" asp-action="InsertPurchaseMasterJPDetail" data-ajax-loading="" id="FormInsertStockDetail">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body">
+
+                            <div class="form-body">
+
+                                <div class="row">
+                                    @if (Model.PurchaseMasterObj.PurchaseMaster_ID != null)
+                                    {
+                                        <input id="hdPurchaseMaster_ID" name="hdPurchaseMaster_ID" type="hidden" value="@Model.PurchaseMasterObj.PurchaseMaster_ID" />
+                                    }
+                                    else
+
+                                    {
+
+                                        <input id="hdPurchaseMaster_ID" name="hdPurchaseMaster_ID" type="hidden" value="0" />
+                                    }
+
+                                    <input type="hidden" id="PurchaseMaster_ID" name="PurchaseMaster_ID" value="@PurchaseMaster_ID" />
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Lot #</label>
+                                            <input type="text" id="Lot" name="Lot" class="form-control" placeholder="Enter LOT #">
+
+                                            @if (!String.IsNullOrEmpty(Model.PurchaseMasterObj.PurchaseRef))
+                                            {
+                                                <input type="hidden" id="Ref" name="Ref" value="@Model.PurchaseMasterObj.PurchaseRef">
+                                            }
+                                            else
+                                            {
+                                                <input type="hidden" id="Ref" name="Ref" value="@Model.PurchaseMasterRef.PurchaseRef">
+                                            }
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Chassis No</label>
+                                            <input type="text" id="Chassis" name="Chassis" value="" class="form-control" onblur="ValidateChassis(); GetMakeCodeDetail();" placeholder="Enter Chassis">
+                                            <label id="ChassisValidationMessage"></label>
+
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label class="col-form-label" for="Make_ID">Make*</label>
+
+
+
+                                            <select class="form-control" id="Make_ID" name="Make" asp-items="@(new SelectList(ViewBag.MakeList, "Make_ID", "Make"))" onchange="GetSubModel(this);" required>
+                                                <option>Select Make</option>
+                                            </select>
+
+
+
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label class="col-form-label" for="Model_ID">Model*</label>
+
+                                            <select class="form-control MakeModelClass" id="Model_ID" name="Model" required>
+                                                <option value="">Select Model</option>
+
+                                            </select>
+
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-3">
+                                        <div class="form-group">
+                                            <label class="col-form-label" for="ModelYear">Year</label>
+                                            <input type="text" id="Year" name="Year" class="form-control" placeholder="Year" />
+
+                                        </div>
+                                    </div>
+
+                                    <!--/span-->
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="col-form-label" for="color_exterior_ID">Color</label>
+
+
+                                            <select class="form-control" id="Color" name="Color" asp-items="@(new SelectList(ViewBag.ColorsList, "Color_ID", "ColorName"))">
+                                                <option>Select Color</option>
+                                            </select>
+
+
+                                        </div>
+                                    </div>
+
+                                    <!--/span-->
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="col-form-label" for="Transmission">Transmission</label>
+
+                                            <select class="form-control" name="Transmission" id="Transmission">
+                                                <option value="A/T">A/T</option>
+                                                <option value="M/T">M/T</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+
+                                    <!--/span-->
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="col-form-label" for="StockType_ID">StockType</label>
+
+                                            <select class="form-control" name="StockType" id="StockType"
+                                                    asp-items="@(new SelectList(ViewBag.StockType, "StockType_ID", "StockTypeName"))">
+                                            </select>
+
+
+
+
+                                        </div>
+                                    </div>
+
+
+
+
+                                </div>
+                                <!--/span-->
+                                <div class="row">
+                                    <!--/span-->
+                                    <div class="col-md-3">
+                                        <label class="control-label">Price </label>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-8" style="padding:0;">
+                                                    <input type="text" id="Price" name="Price" class="form-control Sum dividePrice" placeholder="Basic Price">
+                                                </div>
+                                                <div class="col-md-4" style="padding:0;">
+                                                    <input type="text" id="PriceRate" name="PriceRate" class="form-control dividePrice" placeholder="Rate">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Price Tax (10%)</label>
+                                            <input type="text" id="PriceTax" name="PriceTax" class="form-control Sum" placeholder="Price Tax" readonly="readonly">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Auction Fee and Tax (10%) </label>
+                                            <div class="form-group">
+                                                <div class="row">
+                                                    <div class="col-md-8" style="padding:0;">
+                                                        <input type="text" id="auctionfee" name="auctionfee" class="form-control Sum divideauction" placeholder="Auction Fee" onblur="CalcTax()">
+                                                    </div>
+                                                    <div class="col-md-4" style="padding:0;">
+                                                        <input type="text" id="auctionfeetax" name="auctionfeetax" class="form-control Sum" placeholder="Tax" readonly="readonly">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Recycle Fee @*and Tax*@ </label>
+                                            @*<div class="form-group">
+                                                <div class="col-md-8" style="padding:0;">*@
+                                            <input type="text" id="RecycleFee" name="RecycleFee" class="form-control Sum divideRecycleFee" placeholder="Recycle Fee">
+                                            @*</div>
+                                                    <div class="col-md-4" style="padding:0;">
+                                                        <input type="text" id="txtRecycleFeeTax" name="txtRecycleFeeTax" class="form-control Sum" placeholder="Tax" readonly="readonly">
+                                                    </div>
+                                                </div>*@
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                                <!--/span-->
+                                <div class="row">
+
+                                    <!--/span-->
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label"> Shaken Fee @*NumberPlate Fee and Tax*@ </label>
+                                            @*<div class="form-group">
+                                                <div class="col-md-8" style="padding:0;">*@
+                                            @*<input type="text" id="txtNumberPlate" name="txtNumberPlate" class="form-control Sum divide" placeholder="Number Plate Fee">*@
+                                            <input type="text" id="NumberPlate" name="NumberPlate" class="form-control Sum" placeholder="Number Plate Fee">
+                                            @*</div>
+                                                    <div class="col-md-4" style="padding:0;">
+                                                        <input type="text" id="txtNumberPlateTax" name="txtNumberPlateTax" class="form-control Sum" placeholder="Tax" readonly="readonly">
+                                                    </div>
+                                                </div>*@
+                                        </div>
+                                    </div>
+
+                                    <!--/span-->
+
+                                    <div class="col-sm-3">
+                                        <div class="form-group">
+                                            <label class="col-form-label" for="StockType_ID">Rekso</label>
+                                            <select class="form-control" id="VendorName" name="VendorName" asp-items="@(new SelectList(ViewBag.ReskoMaster,"Partner_ID","PartnerName"))">
+                                                <option>Select Rekso</option>
+
+                                            </select>
+
+                                        </div>
+                                    </div>
+
+                                    <!--/span-->
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Rekso Fee and Tax (10%) </label>
+                                            <div class="form-group">
+                                                <div class="row">
+                                                    <div class="col-md-8" style="padding:0;">
+                                                        <input type="text" id="ReksoFee" name="ReksoFee" class="form-control Sum divideauction" placeholder="Auction Fee" onblur="CalcReksoTax()">
+                                                    </div>
+                                                    <div class="col-md-4" style="padding:0;">
+                                                        <input type="text" id="ReksoFeeTax" name="ReksoFeeTax" class="form-control Sum" placeholder="Tax" readonly="readonly">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Total Price </label>
+                                            <input type="text" id="TotalPrice" name="TotalPrice" class="form-control" placeholder="Total Price" readonly="readonly">
+                                        </div>
+                                    </div>
+
+
+                                </div>
+
+
+
+
+
+                                <!--/span-->
+                                <!--/span-->
+                                <div class="row">
+
+
+                                    <!--/span-->
+                                    <!--/span-->
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="col-form-label" for="loc_ID">Location</label>
+
+                                            <select class="form-control select2" name="loc" id="loc"
+                                                    asp-items="@(new SelectList(ViewBag.CarLocations,"CarLocation_ID","CarLocation"))">
+                                                <option value="0">Select Location</option>
+                                            </select>
+
+
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="col-form-label" for="loc_ID">Going To Location</label>
+                                            @*<label>City</label>*@
+                                            @*<input type="text" id="tbCity" class="form-control" placeholder="City Name">*@
+
+                                            @*<select class="form-control" id="GoingToLocation" name="GoingToLocation" asp-items="@(new SelectList( ViewBag.GoingLocation,"Country_ID","CountryName"))">
+                                                    <option value="">--Select--</option>
+                                                </select>*@
+
+                                            <select class="form-control" id="GoingToLocation" name="GoingToLocation" asp-items="@(new SelectList( ViewBag.GoingLocation,"CarLocation_ID","CarLocation"))">
+                                                <option value="">--Select--</option>
+                                            </select>
+
+                                        </div>
+
+                                    </div>
+
+
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-sm btn-primary">Add</button>
+                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modal Update Purchase Detail -->
+<div class="modal fade bs-modal-lg" id="UdpatePurchaseDetailModal"  role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Purchase  Details</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" data-ajax="true" data-ajax-success="mySuccessStockmasterUpate" data-ajax-failure="myFailureStockmasterUpdate"
+                  asp-area="" asp-controller="Stock" asp-action="UpdatePurchaseMasterJPDetail" data-ajax-loading="">
+
+
+
+                <div class="card-body">
+
+                    <div class="form-body">
+
+                        <div class="row">
+                            @if (Model.PurchaseMasterObj.PurchaseMaster_ID != null)
+                            {
+                                <input id="hdPurchaseMaster_ID" name="hdPurchaseMaster_ID" type="hidden" value="@Model.PurchaseMasterObj.PurchaseMaster_ID" />
+                            }
+                            else
+
+                            {
+
+                                <input id="hdPurchaseMaster_ID" name="hdPurchaseMaster_ID" type="hidden" value="0" />
+                            }
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="control-label">Lot #</label>
+                                    <input type="text" id="Update_Lot" name="Lot" class="form-control" placeholder="Enter LOT #">
+                                </div>
+                            </div>
+                            <!--/span-->
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="control-label">Chassis No</label>
+                                    <input type="text" id="Update_Chassis" name="Chassis" value="" class="form-control" onblur="ValidateChassisUpdate();" placeholder="Enter Chassis">
+                                    <label id="ChassisValidationMessage"></label>
+
+                                </div>
+                            </div>
+                            <!--/span-->
+                            <div class="col-lg-3">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="Make_ID">Make*</label>
+
+
+
+                                    <select class="form-control" id="Update_Make" name="Make" autofocus asp-items="@(new SelectList( ViewBag.MakeList,"Make_ID","Make",Update_Make))" onchange="GETMakeModelClassUpdate(this);" required>
+                                        <option>Select Make</option>
+                                    </select>
+
+                                    <input type="hidden" id="PurchaseDetails_IDUpdate" name="PurchaseDetailID" value="" />
+
+
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="Model_IDUpdate">Model*</label>
+
+                                    <select class="form-control MakeModelClassUpdate" id="Update_Model" asp-for="@Update_Make" name="Model" required>
+                                        <option>Select Model</option>
+
+                                    </select>
+
+                                </div>
+                            </div>
+                            <!--/span-->
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-3 col-md-3">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="ModelYear">Year</label>
+                                    <input type="text" id="Update_Year" name="Year" class="form-control" placeholder="Year" />
+
+                                </div>
+                            </div>
+
+                            <!--/span-->
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="color_exterior_ID">Color</label>
+
+
+                                    <select class="form-control" id="Update_Color" name="Color" asp-items="@(new SelectList(ViewBag.ColorsList,"Color_ID","ColorName"))">
+                                        <option>Select Color</option>
+                                    </select>
+
+
+                                </div>
+                            </div>
+
+                            <!--/span-->
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="Transmission">Transmission</label>
+
+                                    <select class="form-control" name="Transmission" id="Update_Transmission">
+                                        <option value="A/T">A/T</option>
+                                        <option value="M/T">M/T</option>
+                                    </select>
+                                </div>
+                            </div>
+
+
+                            <!--/span-->
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="StockType_ID">StockType</label>
+
+                                    <select class="form-control" name="StockType" id="Update_StockType"
+                                            asp-items="@(new SelectList(ViewBag.StockType,"StockType_ID","StockTypeName"))">
+                                    </select>
+
+
+
+
+                                </div>
+                            </div>
+
+
+
+
+                        </div>
+                        <!--/span-->
+                        <div class="row">
+                            <!--/span-->
+                            <div class="col-md-3">
+                                <label class="control-label">Price </label>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-8" style="padding:0;">
+                                            <input type="text" id="Update_Price" name="Price" class="form-control Sum1 dividePriceUpdate" placeholder="Basic Price">
+                                        </div>
+                                        <div class="col-md-4" style="padding:0;">
+                                            <input type="text" id="Update_PriceRate" name="PriceRate" class="form-control dividePriceUpdate" placeholder="Rate">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="control-label">Price Tax (10%)</label>
+                                    <input type="text" id="Update_PriceTax" name="PriceTax" class="form-control Sum1" placeholder="Price Tax" readonly="readonly">
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="control-label">Auction Fee and Tax (10%) </label>
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-8" style="padding:0;">
+                                                <input type="text" id="Update_auctionfee" name="auctionfee" class="form-control Sum1 divideauctionUpdate" placeholder="Auction Fee" onblur="CalcTaxUpdate()">
+                                            </div>
+                                            <div class="col-md-4" style="padding:0;">
+                                                <input type="text" id="Update_auctionfeetax" name="auctionfeetax" class="form-control Sum1" placeholder="Tax" readonly="readonly">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--/span-->
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="control-label">Recycle Fee @*and Tax*@ </label>
+                                    @*<div class="form-group">
+                                        <div class="col-md-8" style="padding:0;">*@
+                                    <input type="text" id="Update_RecycleFee" name="RecycleFee" class="form-control Sum1 divideRecycleFeeUpdate" placeholder="Recycle Fee">
+                                    @*</div>
+                                            <div class="col-md-4" style="padding:0;">
+                                                <input type="text" id="txtRecycleFeeTax" name="txtRecycleFeeTax" class="form-control Sum" placeholder="Tax" readonly="readonly">
+                                            </div>
+                                        </div>*@
+                                </div>
+                            </div>
+
+
+                        </div>
+                        <!--/span-->
+                        <div class="row">
+
+                            <!--/span-->
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="control-label"> Shaken Fee @*NumberPlate Fee and Tax*@ </label>
+                                    @*<div class="form-group">
+                                        <div class="col-md-8" style="padding:0;">*@
+                                    @*<input type="text" id="txtNumberPlate" name="txtNumberPlate" class="form-control Sum divide" placeholder="Number Plate Fee">*@
+                                    <input type="text" id="Update_NumberPlate" name="NumberPlate" class="form-control Sum1" placeholder="Number Plate Fee">
+                                    @*</div>
+                                            <div class="col-md-4" style="padding:0;">
+                                                <input type="text" id="txtNumberPlateTax" name="txtNumberPlateTax" class="form-control Sum" placeholder="Tax" readonly="readonly">
+                                            </div>
+                                        </div>*@
+                                </div>
+                            </div>
+
+                            <!--/span-->
+
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="StockType_ID">Rekso</label>
+                                    <select  class="form-control" id="Update_VendorName" name="VendorName" asp-items="@(new SelectList(ViewBag.ReskoMaster,"Partner_ID","PartnerName"))">
+                                        <option>Select Rekso</option>
+
+                                    </select>
+
+                                </div>
+                            </div>
+
+                            <!--/span-->
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="control-label">Rekso Fee and Tax (10%) </label>
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-8" style="padding:0;">
+                                                <input type="text" id="Update_ReksoFee" name="ReksoFee" class="form-control Sum1 divideauctionUpdate" placeholder="Auction Fee" onblur="CalcReksoTaxUpdate()">
+                                            </div>
+                                            <div class="col-md-4" style="padding:0;">
+                                                <input type="text" id="Update_ReksoFeeTax" name="ReksoFeeTax" class="form-control Sum1" placeholder="Tax" readonly="readonly">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="control-label">Total Price </label>
+                                    <input type="text" id="Update_TotalPrice" name="TotalPrice" class="form-control" placeholder="Total Price" readonly="readonly">
+                                </div>
+                            </div>
+
+
+                        </div>
+
+
+
+
+
+                        <!--/span-->
+                        <!--/span-->
+                        <div class="row">
+
+
+                            <!--/span-->
+                            <!--/span-->
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="loc_ID">Location</label>
+
+                                    <select class="form-control select2" name="loc" id="Update_loc"
+                                            asp-items="@(new SelectList(ViewBag.CarLocations,"CarLocation_ID","CarLocation"))">
+                                        <option value="0">Select Location</option>
+                                    </select>
+
+
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="loc_ID">Going To Location</label>
+
+                                    <select class="form-control" id="Update_GoingToLocation" name="GoingToLocation" asp-items="@(new SelectList(ViewBag.GoingLocation,"CarLocation_ID","CarLocation"))">
+                                        <option value="0">--Select--</option>
+                                    </select>
+
+                                </div>
+
+                            </div>
+
+
+                        </div>
+                    </div>
+
+                </div>
+
+
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- Modal Delete Stock detail -->
+<div class="modal fade bs-modal-lg" id="DeleteStockDetailModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Delete Stock Detail</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" data-ajax="true" data-ajax-complete="CompleteDelete" data-ajax-success="SuccessDelete" data-ajax-failure="FailureDelete"
+                  asp-area="" asp-controller="Stock" asp-action="DeletePurchaseDetail">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <h3>Do you want to delete this record?</h3>
+
+                                        <input type="hidden" id="StockDetails_ID_Delete" name="StockDetails_ID" />
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modal Delete Stock master -->
+<div class="modal fade bs-modal-lg" id="DeleteStockMasterModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Delete Stock Invoice</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="Stock" asp-action="DeletePurchaseMasterJPMaster">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <h3>Do you want to delete this record?</h3>
+
+                                        <input type="hidden" id="PurchaseMaster_ID_Delete" name="PurchaseMaster_ID" />
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modal Change Stock Master Status -->
+<div class="modal fade bs-modal-lg" id="ChangeStatusStockModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Change Stock Master Status</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="Stock" asp-action="Cancel_PurchaseJP" data-ajax-loading="">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <h3>Do you want to cancel of this record?</h3>
+
+                                        <input type="hidden" id="PurchaseMaster_IDStatus" name="PurchaseMaster_IDStatus" />
+                                        <input type="hidden" id="Purchase_Status_ID" name="Status_ID" />
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal Insert Partner -->
+<div class="modal fade bs-modal-lg" id="AddPartnerModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Add Vendor</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="BasicData" asp-action="AddPartnersVendor" enctype="multipart/form-data">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body">
+
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Vendor Ref</label>
+
+                                        <input type="text" class="form-control" id="Partner_Ref" disabled="disabled" name="Partner_Ref">
+
+
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Vendor Name<span style="color: red; font-size: 15px; margin-left: 4px;">*</span></label>
+
+                                        <input type="text" class="form-control" id="PartnerName" name="PartnerName" required>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Contact Number</label>
+
+                                        <input type="text" class="form-control" id="ContactNumber" name="ContactNumber">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Mobile No</label>
+
+                                        <input type="text" class="form-control" id="MobileNo" name="MobileNo">
+                                    </div>
+                                </div>
+
+
+
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Contact Name</label>
+
+                                        <input type="text" class="form-control" id="ContactName" name="ContactName">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Contact Address</label>
+
+                                        <input type="text" class="form-control" id="ContactAddress" name="ContactAddress">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Email </label>
+
+                                        <input type="email" class="form-control" id="Email" name="Email">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Fax </label>
+
+                                        <input type="text" class="form-control" id="Fax" name="Fax">
+                                    </div>
+                                </div>
+
+
+
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">EmiratesID</label>
+
+                                        <input type="text" class="form-control" id="EmiratesID" name="EmiratesID">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">TradeLicenseNo</label>
+
+                                        <input type="text" class="form-control" id="TradeLicenseNo" name="TradeLicenseNo">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">TRN </label>
+
+                                        <input type="text" class="form-control" id="TRN" name="TRN">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Vendor Category</label>
+
+                                        <select class="form-control" id="VendorCat_ID" name="VendorCat_ID" asp-items="@(new SelectList( ViewBag.VendorCategoryList,"VendorCat_ID","VendorCatName",3))" readonly>
+                                        </select>
+                                    </div>
+                                </div>
+
+
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Remarks</label>
+
+                                        <textarea type="text" class="form-control" id="Remarks" name="Remarks"></textarea>
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+@section Scripts {
+
+
+
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+    <script>
+
+        $(function () {
+            $(".select2").select2({
+                theme: "bootstrap",
+            });
+
+        });
+       
+    </script>
+    <script>
+
+        function SuccessDelete(data) {
+
+            var SuccessDiv = " <div class='col-lg-12'><div class='alert alert-info'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button><strong>Success!</strong> Saved Successfully! <a href ='' class='alert-link'></a></div></div>";
+            debugger
+            if (data.message == undefined) {
+                //alert("Saved Successfully!");
+                $('#DeleteStockDetailModal').modal('hide');
+                //$('#AddNewSaleModal').modal('hide');
+                $('#StockDetailSection').html(data);
+                $('#SuccessErrorSection').html(SuccessDiv).show();
+
+
+
+
+
+
+
+            } else {
+                alert(data.message);
+                $('#DeleteStockDetailModal').modal('hide');
+            }
+
+
+        }
+
+        function FailureDelete() {
+
+            alert("Failured occured. Please try again!");
+            $('#DeleteStockDetailModal').modal('hide');
+        }
+
+        function onDataInsert() {
+
+        }
+
+
+
+        //---this function will hit after success submission of insert Stock detail form
+        function mySuccessStockDetail(data) {
+
+            var SuccessDiv = " <div class='col-lg-12'><div class='alert alert-info'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button><strong>Success!</strong> Saved Successfully! <a href ='' class='alert-link'></a></div></div>";
+            debugger
+            if (data.message == undefined) {
+                //$('#AddNewPurchaseModal').modal('hide');
+                $('#StockDetailSection').html(data);
+                $('#SuccessErrorSection').html(SuccessDiv).show();
+
+                //reset form after success
+                $('#FormInsertStockDetail').trigger("reset");
+                $("#loc").val('').trigger('change');
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        //---this function will hit when error occured in submission of Stock detail
+        function myFailureStockDetail() {
+
+            alert("Failured occured. Please try again!");
+        }
+
+        //---this function will hit after success submission of update purchase detail form
+        function mySuccessStockmasterUpate(data) {
+
+            var SuccessDiv = "<div class='col-lg-12'><div class='alert alert-info'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button><strong>Success!</strong> Updated Successfully! <a href ='' class='alert-link'></a></div></div>";
+
+            if (data.message == undefined) {
+
+                $('#UdpatePurchaseDetailModal').modal('hide');
+
+                $('#StockDetailSection').html(data);
+                $('#SuccessErrorSection').html(SuccessDiv).show();
+
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        function myFailureStockmasterUpdate() {
+
+            alert("Failured occured. Please try again!");
+        }
+
+        //This function is for validation of chassis no
+        function ValidateChassis() {
+
+            debugger
+
+
+            var Chassis = document.getElementById("Chassis").value.toString();
+
+            $.ajax({
+
+                type: "Get",
+                url: "/Accounts/ValidateChassisNoJP",
+                data: { //Passing data
+                    ChassisNo: Chassis
+
+
+                },
+                datatype: "json",
+                success: function (response) {
+                    debugger
+                    if (response.message == 'Chassis is valid') {
+
+                        $("#ChassisValidationMessage").text('Chassis already exists');
+                        $("#ChassisValidationMessage").css("color", "red");
+
+                    } else {
+                        $("#ChassisValidationMessage").text('Chassis not exists');
+                        $("#ChassisValidationMessage").css("color", "green");
+                    }
+
+                }
+            })
+        }
+
+        //This function is for validation of chassis no
+        function ValidateChassisUpdate() {
+
+            //debugger
+
+
+            var Chassis = document.getElementById("Update_Chassis").value.toString();
+
+            $.ajax({
+
+                type: "Get",
+                url: "/Accounts/ValidateChassisNo",
+                data: { //Passing data
+                    ChassisNo: Chassis
+
+
+                },
+                datatype: "json",
+                success: function (response) {
+                    debugger
+                    if (response.message == 'Chassis is valid') {
+
+                        $("#ChassisValidationMessage").text('Chassis already exists');
+                        $("#ChassisValidationMessage").css("color", "red");
+
+                    } else {
+                        $("#ChassisValidationMessage").text('Chassis not exists');
+                        $("#ChassisValidationMessage").css("color", "green");
+                    }
+
+                }
+            })
+        }
+
+
+
+
+
+        //---change Stock master status
+        function ChangeStatusStockMaster(PurchaseMaster_ID, Status) {
+            debugger
+            $("#PurchaseMaster_IDStatus").val(PurchaseMaster_ID);
+            $("#Purchase_Status_ID").val(Status);
+
+
+        }
+
+
+
+        $(document).ready(function () {
+
+
+
+            $("#ButtonPurchaseMasterIssue").click(function () {
+                if ($("#Vendor").val() !== "Select Auction") {
+                    $("#formStockMaster").submit();
+                } else {
+                    Swal.fire({
+                        icon: 'info',
+                        text: 'Please select Auction!',
+                    })
+                }
+            });
+
+
+
+        });
+
+        $(document).ready(function () {
+            $("#ButtonPurchaseMasterUpdate").click(function () {
+                $("#formStockMaster").submit();
+            });
+        });
+
+
+
+
+
+        //----Assigning values to Stock master detail form of service type
+            function UpdateStockmasterDetail(PurchaseDetails_ID, Chassis_No, Make_ID, MakeModelDescription_ID, Color_ID, locID, LotNumber,
+                PriceOrignal, PriceRate, PriceTax, RecycleFee, AuctionFee, AuctionFeeTax, PlatNumberFee, Total,  ModelYear, GoingToLocation, Vendor_ID,
+                ReksoFee, ReksoFeeTax, StockType, transmission) {
+                debugger;
+
+
+                //console.log(locID)
+               /// console.log(GoingToLocation)
+              
+
+                //var test = $("#Update_loc").select2('val', locID);
+               //console.log(test);
+
+                //var test = $("#Update_loc").val(locID).trigger("Change");
+               
+                //var test = $("#Update_loc").select2().val(locID).trigger("Change");
+                //console.log(test);
+
+
+                $("#Update_loc").val(locID).trigger("Change");
+            $("#PurchaseDetails_IDUpdate").val(PurchaseDetails_ID);
+            $("#Update_Chassis").val(Chassis_No);
+            $("#Update_Make").val(Make_ID);
+            $("#Update_Model").val(MakeModelDescription_ID);
+            $("#Update_Color").val(Color_ID);
+            //$("#Update_loc").val(locID);
+
+                $('#Update_loc').val(locID);
+                $('#Update_loc').trigger('change');
+         
+            $("#Update_Lot").val(LotNumber);
+            $("#Update_Price").val(PriceOrignal);
+            $("#Update_PriceRate").val(PriceRate);
+            $("#Update_PriceTax").val(PriceTax);
+            $("#Update_RecycleFee").val(RecycleFee);
+            $("#Update_auctionfee").val(AuctionFee);
+            $("#Update_auctionfeetax").val(AuctionFeeTax);
+            $("#Update_NumberPlate").val(PlatNumberFee);
+            $("#Update_TotalPrice").val(Total);
+            $("#Update_Year").val(ModelYear);
+            $("#Update_GoingToLocation").val(GoingToLocation);
+            $("#Update_VendorName").val(Vendor_ID);
+            $("#Update_ReksoFee").val(ReksoFee);
+            $("#Update_ReksoFeeTax").val(ReksoFeeTax);
+            $("#Update_StockType").val(StockType);
+            $("#Update_Transmission").val(transmission);
+
+
+             
+            GetModelOnUpdateTime(Make_ID);
+
+            setInterval(function () {
+              document.getElementById("Update_Model").value = MakeModelDescription_ID
+            }, 2000);
+
+
+              
+        }
+
+        //---Delete Stock detail
+        function DeleteStockDetail(PurchaseDetails_ID) {
+            debugger
+            $("#StockDetails_ID_Delete").val(PurchaseDetails_ID);
+            debugger
+
+        }
+
+        //---delete Stock invoice master
+        function DeleteStockMaster(PurchaseMaster_ID) {
+            debugger
+            $("#PurchaseMaster_ID_Delete").val(PurchaseMaster_ID);
+
+
+        }
+
+        //---This function is for Selecting/Deselecting all columns in the Purchase detail table
+
+        //--Convert Stock master function
+
+
+        function CalcTax() {
+
+            num1 = 0;
+            num2 = 1;
+            num3 = 0;
+
+            num1 = document.getElementById("auctionfee").value;
+
+            num3 = num1 * num2 / 100 * 10;
+            sum = num3;
+
+
+            $("#auctionfeetax").val(sum);
+        }
+
+
+
+        function CalcTaxUpdate() {
+
+            num1 = 0;
+            num2 = 1;
+            num3 = 0;
+
+            num1 = document.getElementById("Update_auctionfee").value;
+
+            num3 = num1 * num2 / 100 * 10;
+            sum = num3;
+
+
+            $("#Update_auctionfeetax").val(sum);
+        }
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".divideauction").each(function () {
+
+                $(this).keyup(function () {
+                    calculateSumauction();
+                });
+            });
+
+        });
+
+        function calculateSumauction() {
+            var sum = 0;
+            //iterate through each textboxes and add the values
+            $(".divideauction").each(function () {
+
+                //add only if the value is number
+                if (!isNaN(this.value) && this.value.length != 0) {
+                    num2 = 0;
+                    num1 = document.getElementById("auctionfee").value;
+                    num2 = num1 / 100 * 10;
+                    sum = num2;
+                }
+
+            });
+
+            $("#auctionfeetax").val(sum);
+        }
+        $(document).ready(function () {
+            $(".divideauctionUpdate").each(function () {
+
+                $(this).keyup(function () {
+                    calculateSumauction();
+                });
+            });
+
+        });
+
+        function calculateSumauction() {
+            var sum = 0;
+            //iterate through each textboxes and add the values
+            $(".divideauctionUpdate").each(function () {
+
+                //add only if the value is number
+                if (!isNaN(this.value) && this.value.length != 0) {
+                    num2 = 0;
+                    num1 = document.getElementById("Update_auctionfee").value;
+                    num2 = num1 / 100 * 10;
+                    sum = num2;
+                }
+
+            });
+
+            $("#Update_auctionfeetax").val(sum);
+        }
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".dividePrice").each(function () {
+
+                $(this).keyup(function () {
+                    calculateSumPriceo();
+                });
+            });
+
+        });
+
+        function calculateSumPriceo() {
+            var sum = 0;
+            //iterate through each textboxes and add the values
+            $(".dividePrice").each(function () {
+
+                //add only if the value is number
+                if (!isNaN(this.value) && this.value.length != 0) {
+                    num1 = 0;
+                    num2 = 0;
+                    num3 = 0;
+
+                    num1 = document.getElementById("Price").value;
+                    num2 = document.getElementById("PriceRate").value;
+
+                    num3 = num1 * num2 / 100 * 10;
+                    sum = num3;
+                }
+
+            });
+
+            $("#PriceTax").val(sum);
+        }
+        $(document).ready(function () {
+            $(".dividePriceUpdate").each(function () {
+
+                $(this).keyup(function () {
+                    calculateSumPrice();
+                });
+            });
+
+        });
+
+        function calculateSumPrice() {
+            var sum = 0;
+            //iterate through each textboxes and add the values
+            $(".dividePriceUpdate").each(function () {
+
+                //add only if the value is number
+                if (!isNaN(this.value) && this.value.length != 0) {
+                    num1 = 0;
+                    num2 = 0;
+                    num3 = 0;
+
+                    num1 = document.getElementById("Update_Price").value;
+                    num2 = document.getElementById("Update_PriceRate").value;
+
+                    num3 = num1 * num2 / 100 * 10;
+                    sum = num3;
+                }
+
+            });
+
+            $("#Update_PriceTax").val(sum);
+        }
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".divideRecycleFee").each(function () {
+
+                $(this).keyup(function () {
+                    calculateSumRecycleFee();
+                });
+            });
+
+        });
+
+        function calculateSumRecycleFee() {
+            var sum = 0;
+            //iterate through each textboxes and add the values
+            $(".divideRecycleFee").each(function () {
+
+                //add only if the value is number
+                if (!isNaN(this.value) && this.value.length != 0) {
+                    num2 = 0;
+                    num1 = document.getElementById("RecycleFee").value;
+                    num2 = num1 / 100 * 10;
+                    sum = num2;
+                }
+
+            });
+
+            $("#RecycleFeeTax").val(sum);
+        }
+        $(document).ready(function () {
+            $(".divideRecycleFeeUpdate").each(function () {
+
+                $(this).keyup(function () {
+                    calculateSumRecycleFee();
+                });
+            });
+
+        });
+
+        function calculateSumRecycleFee() {
+            var sum = 0;
+            //iterate through each textboxes and add the values
+            $(".divideRecycleFeeUpdate").each(function () {
+
+                //add only if the value is number
+                if (!isNaN(this.value) && this.value.length != 0) {
+                    num2 = 0;
+                    num1 = document.getElementById("Update_RecycleFee").value;
+                    num2 = num1 / 100 * 10;
+                    sum = num2;
+                }
+
+            });
+
+            $("#Update_RecycleFeeTax").val(sum);
+        }
+        function CalcReksoTax() {
+
+            num1 = 0;
+            num2 = 1;
+            num3 = 0;
+
+            num1 = document.getElementById("ReksoFee").value;
+
+            num3 = num1 * num2 / 100 * 10;
+            sum = num3;
+
+            $("#ReksoFeeTax").val(sum);
+        }
+        function CalcReksoTaxUpdate() {
+
+            num1 = 0;
+            num2 = 1;
+            num3 = 0;
+
+            num1 = document.getElementById("Update_ReksoFee").value;
+
+            num3 = num1 * num2 / 100 * 10;
+            sum = num3;
+
+
+            $("#Update_ReksoFeeTax").val(sum);
+        }
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $(".Sum").each(function () {
+
+                $(this).keyup(function () {
+                    calculateSum();
+
+                });
+            });
+
+        });
+
+        //----method for opening vendor popup
+        function AddNewVendor(Vendor) {
+            vendorValue = Vendor.value;
+            var Vendor = document.getElementById("Vendor").value.toString();
+            if (vendorValue == 'NewVendor') {
+                $('#AddPartnerModal').modal('show');
+            }
+            else {
+                $.ajax({
+
+                    type: "Get",
+                    url: "/Stock/GetVendorDetail",
+                    data: { //Passing data
+                        Vendor_ID: Vendor
+                    },
+                    datatype: "json",
+                    success: function (response) {
+                        debugger
+
+
+                        $("#SupplierContact").val(response.contactNumber);
+                        $("#SupplierAddress").val(response.contactAddress);
+               
+
+
+
+
+
+                    }
+                })
+            }
+        }
+
+
+        function calculateSum() {
+
+            var sum = 0;
+            //iterate through each textboxes and add the values
+            $(".Sum").each(function () {
+
+                //add only if the value is number
+                if (!isNaN(this.value) && this.value.length != 0 && (this.value) != "") {
+                    sum += parseFloat(this.value);
+                }
+
+            });
+
+            $("#TotalPrice").val(sum);
+        }
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $(".Sum1").each(function () {
+
+                $(this).keyup(function () {
+                    calculateSumUpdate();
+
+                });
+            });
+
+        });
+
+
+
+        function calculateSumUpdate() {
+
+            var sum = 0;
+            //iterate through each textboxes and add the values
+            $(".Sum1").each(function () {
+
+                //add only if the value is number
+                if (!isNaN(this.value) && this.value.length != 0 && (this.value) != "") {
+                    sum += parseFloat(this.value);
+                }
+
+            });
+
+            $("#Update_TotalPrice").val(sum);
+        }
+        //this function is for selecting model description on the basis of Make ID
+
+        function GetSubModel(Make_ID) {
+            debugger
+            var ID = Make_ID.value;
+            var procemessage = "<option value='0'> Please wait...</option>";
+            $(".MakeModelClass").html(procemessage).show();
+
+
+            if (!ID) {
+                ID = 0;
+                var emptyAppend = "<option value=''>Select</option>";
+                $(".MakeModelClass").html(emptyAppend).show();
+
+            } else {
+                $.getJSON("/Stock/GetModelDescListByID", { Make_ID: ID }, function (data) {
+                    //first empty the model
+                    //debugger
+                    $(".MakeModelClass").empty();
+                    //Then append select
+                    $(".MakeModelClass").append("<option value=''>Select</option>");
+                    $.each(data, function (index, row) {
+                        //debugger
+                        //Now here appending all options in the sub classification list
+                        //$(".MakeModelClass").append("<option value='" + row.modelDesc_ID + "'>" + row.modelDesciption + "</option>")
+                        var optionText = row.modelDesciption;
+                        $('.MakeModelClass').append($("<option></option>").attr("value", row.modelDesc_ID).text(optionText));
+                    });
+                });
+            }
+
+
+
+        }
+        //By Yaseen 
+        function GETMakeModelClassUpdate(Make_ID) {
+
+            debugger
+            var ID = Make_ID.value;
+            var procemessage = "<option value='0'> Please wait...</option>";
+            $(".MakeModelClassUpdate").html(procemessage).show();
+
+
+            if (!ID) {
+                ID = 0;
+                var emptyAppend = "<option value=''>Select</option>";
+                $(".MakeModelClassUpdate").html(emptyAppend).show();
+
+            } else {
+                $.getJSON("/Stock/GetModelDescListByID", { Make_ID: ID }, function (data) {
+                    //first empty the model
+                    //debugger
+                    $(".MakeModelClassUpdate").empty();
+                    //Then append select
+                    $(".MakeModelClassUpdate").append("<option value=''>Select</option>");
+                    $.each(data, function (index, row) {
+                        //debugger
+                        //Now here appending all options in the sub classification list
+                       // $(".MakeModelClassUpdate").append("<option value='" + row.modelDesc_ID + "'>" + row.modelDesciption + "</option>")
+                        var optionText = row.modelDesciption;
+                        $('.MakeModelClassUpdate').append($("<option></option>").attr("value", row.modelDesc_ID).text(optionText));
+                    });
+                });
+            }
+        }
+
+
+     
+
+        function UpdateStockBookingDetail(
+           
+            LotNumber,
+            PurchaseDetails_ID,
+            Chassis_No,
+            MakeId,
+            MakeModelDescription_ID,
+            Color_ID,
+            locID,
+            LotNumber,
+            PriceOrignal,
+            PriceRate,
+            PriceTax,
+            RecycleFee,
+            AuctionFee,
+            AuctionFeeTax,
+            PlatNumberFee,
+            Total,
+            Year,
+            GoingToLocation,
+            Risko_Vendor_ID,
+            Vendor_ID,
+            ReksoFee,
+            ReksoFeeTax,
+            StockType,
+            transmission,
+            vendor_ID,
+            Going_To_Location) {
+
+
+
+            $('#UdpatePurchaseDetailModal').modal('show');
+
+            //console.log(LotNumber,
+            //    PurchaseDetails_ID,
+            //    Chassis_No,
+            //    MakeModelDescription_ID,
+            //    Color_ID,
+            //    locID,
+            //    LotNumber,
+            //    PriceOrignal,
+            //    PriceRate,
+            //    PriceTax,
+            //    RecycleFee,
+            //    AuctionFee,
+            //    AuctionFeeTax,
+            //    PlatNumberFee,
+            //    Total,
+            //    Year,
+            //    GoingToLocation,
+            //    Vendor_ID,
+            //    ReksoFee,
+            //    ReksoFeeTax,
+            //    StockType,
+            //    transmission,
+            //    vendor_ID,
+            //    Risko_Vendor_ID,
+            //    Going_To_Location);
+            console.log(year);
+            debugger
+            $("#Update_Year").val(Year);
+
+            $("#Update_Lot").val(LotNumber);
+            $("#Update_Chassis").val(Chassis_No);
+            $("#Update_Make").val(MakeId);
+
+            GetModelOnUpdateTime(MakeId);
+
+           // $("#Update_Model").val(MakeId);
+
+            $("#Update_Model").val(MakeModelDescription_ID);
+            setInterval(function () {
+                document.getElementById("Update_Model").value = MakeModelDescription_ID
+            }, 1000);
+
+            $("#Update_Color").val(Color_ID);
+            $("#Update_Transmission").val(transmission);
+            $("#Update_StockType").val(StockType);
+            $("#Update_Price").val(PriceOrignal);
+            $("#Update_PriceRate").val(PriceRate);
+            $("#Update_PriceTax").val(PriceTax);
+
+            $("#Update_auctionfee").val(AuctionFee);
+            $("#Update_auctionfeetax").val(AuctionFeeTax);
+
+
+
+            $("#Update_RecycleFee").val(RecycleFee);
+            $("#Update_NumberPlate").val(PlatNumberFee);
+            $("#Update_VendorName").val(Risko_Vendor_ID);
+
+            $("#Update_ReksoFee").val(ReksoFee);
+            $("#Update_ReksoFeeTax").val(ReksoFeeTax);
+            $("#Update_TotalPrice").val(Total);
+
+            $("#Update_loc").select2('val', locID);
+            $("#Update_GoingToLocation").val(GoingToLocation);
+            $("#PurchaseDetails_IDUpdate").val(PurchaseDetails_ID);
+
+        }
+
+
+        function GetModelOnUpdateTime(Make_Id) {
+
+            debugger;
+            var ID = Make_Id;
+            var procemessage = "<option value='0'> Please wait...</option>";
+            $(".MakeModelClassUpdate").html(procemessage).show();
+
+
+            if (!ID) {
+                ID = 0;
+                var emptyAppend = "<option value=''>Select</option>";
+                $(".MakeModelClassUpdate").html(emptyAppend).show();
+
+
+            } else {
+                $.getJSON("/Stock/GetModelDescListByID", { Make_ID: ID }, function (data) {
+                    //first empty the model
+                    //debugger
+                    //$(".MakeModelClassUpdate").empty();
+                    //Then append select
+                    $(".MakeModelClassUpdate").append("<option value=''>Select</option>");
+                    $.each(data, function (index, row) {
+                        debugger
+                        //Now here appending all options in the sub classification list
+                        //$(".MakeModelClass").append("<option value='" + row.modelDesc_ID + "'>" + row.modelDesciption + "</option>")
+                        var optionText = row.modelDesciption;
+                        $('.MakeModelClassUpdate').append($("<option></option>").attr("value", row.modelDesc_ID).text(optionText));
+                    });
+                });
+
+            }
+
+        }
+
+        function GetMakeCodeDetail() {
+
+           // debugger
+
+
+            var Chassis = document.getElementById("Chassis").value;
+
+            if (Chassis == -1) {
+
+            }
+            else {
+                $.ajax({
+
+                    type: "Get",
+                    url: "/Stock/GetMakeCodeDetail",
+                    data: { //Passing data
+                        Code: Chassis
+                    },
+                    datatype: "json",
+                    success: function (response) {
+                        debugger
+
+                        $("#Make_ID").val(response.make_ID);
+                        var ID = response.make_ID;
+                        var procemessage = "<option value='0'> Please wait...</option>";
+                        $(".MakeModelClass").html(procemessage).show();
+
+
+                        if (!ID) {
+                            ID = 0;
+                            var emptyAppend = "<option value=''>Select</option>";
+                            $(".MakeModelClass").html(emptyAppend).show();
+
+                        } else {
+                            $.getJSON("/Stock/GetModelDescListByID", { Make_ID: ID }, function (data) {
+                                //first empty the model
+                                //debugger
+                                $(".MakeModelClass").empty();
+                                //Then append select
+                                $(".MakeModelClass").append("<option value=''>Select</option>");
+                                $.each(data, function (index, row) {
+                                    debugger
+                                    //Now here appending all options in the sub classification list
+                                    //$(".MakeModelClass").append("<option value='" + row.modelDesc_ID + "'>" + row.modelDesciption + "</option>")
+                                    var optionText = row.modelDesciption;
+                                    $('.MakeModelClass').append($("<option></option>").attr("value", row.modelDesc_ID).text(optionText));
+                                });
+                                if (response.modelDesc_ID > 0) {
+                                    $("#Model_ID").val(response.modelDesc_ID);
+                                }
+                            });
+                        }
+
+
+
+
+
+
+
+
+                    }
+                })
+            }
+
+        }
+
+               $(document).ready(function(){
+            $("#print-btn").click(function(event){
+                event.preventDefault();
+
+                var win = window.open("@Url.Action("PurchaseInvoice_JP_Print", "Report")" + "?PurchaseMaster_ID=" + $("#PurchaseMaster_ID").val() , "_blank");
+                win.focus();
+            });
+        })
+
+    </script>
+
+
+
+}

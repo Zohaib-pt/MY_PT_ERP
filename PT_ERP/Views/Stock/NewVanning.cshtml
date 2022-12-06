@@ -1,0 +1,1625 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OStock
+@{
+    ViewData["Title"] = "NewVanning";
+    Layout = "~/Views/Shared/_LayoutTablePages.cshtml";
+}
+
+@{
+    string Form_formVanningMaster_ActionMethod = "";
+    int? vanning_master_ID = ViewBag.vanning_master_ID;
+
+
+    if (Model.VanningMasterObj != null && Model.VanningMasterObj.vanning_Master_ID > 0)
+    {
+
+        Form_formVanningMaster_ActionMethod = "UpdateVanningMaster";
+
+
+    }
+    else
+    {
+        Form_formVanningMaster_ActionMethod = "InsertVanningMaster";
+
+
+    }
+
+}
+<header class="page-header">
+    <h2>Vannings</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="index.html">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+            <li><a asp-area="" asp-controller="Stock" asp-action="VanningList"><span>Vanning List</span></a></li>
+            <li><a asp-area="" asp-controller="@ViewBag.BreadCumController" asp-action="@ViewBag.BreadCumAction"><span>New Vanning</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+
+
+
+
+
+<div class="row" id="SuccessErrorSection">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+        <div class="col-lg-12">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-info">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Success!</strong> @TempData["Success"] <a href="" class="alert-link"></a>
+                </div>
+            }
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Error!</strong> @TempData["Error"] <a href="" class="alert-link"></a>
+                </div>
+            }
+        </div>
+    }
+
+
+</div>
+
+<!-- start: page -->
+<section class="card">
+    <div class="card-body">
+        <div class="invoice">
+            <header class="clearfix">
+                <div class="row">
+                    <div class="col-sm-6 mt-0">
+                        <h2 class="h4 mt-0 mb-2 text-dark font-weight-bold">Vanning </h2>
+
+                    </div>
+
+
+
+                </div>
+            </header>
+
+            <div class="row">
+                <div class="col-lg-8">
+                    @if (Model.VanningMasterObj.vanning_Master_ID != null)
+                    {
+                        if (Model.VanningMasterObj.vanning_Master_ID > 0)
+                        {
+
+                            <button type="button" id="ButtonSaveMaster" class="btn-sm btn btn btn-success">Update &nbsp;<i class="fas fa-save"></i></button>
+
+                            <button type="button" class="btn btn-sm btn-primary">Edit  &nbsp;<i class="fas fa-edit"></i></button>
+
+
+                            <button type="button" class="btn-sm btn btn-danger" data-toggle="modal" data-target="#DeleteVanningMasterNew" onclick="DeleteVanningMaster('@Model.VanningMasterObj.vanning_Master_ID');">Delete &nbsp;<i class="fas fa-trash-alt"></i></button>
+                            <button class="btn-sm btn btn-warning" id="btnCancel" name="btnCancel" data-toggle="modal" data-target="#exampleModal3" onclick="CancelVanningMaster('@Model.VanningMasterObj.vanning_Master_ID','5');">
+                                Cancel
+                                <i class="fas fa-cross"></i>
+                            </button>
+                            @*<button type="button" class="btn-sm btn btn-danger" data-toggle="modal" data-target="#exampleModal1" >Delete &nbsp;<i class="fas fa-trash-alt"></i></button>*@
+                            <button type="button" id="print-btn" class="btn-sm btn btn-info">Print &nbsp;<i class="fas fa-print"></i></button>
+
+
+                            <a asp-controller="Stock" asp-action="VanningList" class="btn-sm btn btn-default">List &nbsp;<i class="fas fa-list"></i></a>
+
+
+
+                        }
+                        else
+                        {
+                            <button type="button" id="ButtonIssue" class="btn-sm btn btn-success">Issue &nbsp;<i class="fas fa-save"></i></button>
+
+                            <button type="button" class="btn-sm btn btn-primary" disabled="disabled">Edit  &nbsp;<i class="fas fa-edit"></i></button>
+
+                            <button class="btn-sm btn btn-warning" id="btnCancel" name="btnCancel" data-toggle="modal" data-target="#exampleModal3" disabled="disabled">
+                                Cancel
+                                <i class="fas fa-cross"></i>
+                            </button>
+
+                            <button type="button" class="btn-sm btn btn-danger" data-toggle="modal" data-target="#exampleModal1" disabled="disabled">Delete &nbsp;<i class="fas fa-trash-alt"></i></button>
+                            <button type="button" class="btn-sm btn btn-info" disabled="disabled">Print &nbsp;<i class="fas fa-print"></i></button>
+
+
+
+
+                            <a asp-controller="Stock" asp-action="VanningList" class="btn-sm btn btn-default">List &nbsp;<i class="fas fa-list"></i></a>
+                        }
+
+                    }
+                    else
+                    {
+                        <button type="button" id="ButtonIssue" class="btn-sm btn btn-success">Issue &nbsp;<i class="fas fa-save"></i></button>
+
+                        <button type="button" class="btn-sm btn btn-primary" disabled="disabled">Edit  &nbsp;<i class="fas fa-edit"></i></button>
+
+
+                        <button class="btn-sm btn btn-warning" id="btnCancel" name="btnCancel" data-toggle="modal" data-target="#exampleModal3" disabled="disabled">
+                            Cancel
+                            <i class="fas fa-cross"></i>
+                        </button>
+                        <button type="button" class="btn-sm btn btn-danger" disabled="disabled">Delete &nbsp;<i class="fas fa-trash-alt"></i></button>
+                        <button type="button" class="btn-sm btn btn-info" disabled="disabled">Print &nbsp;<i class="fas fa-print"></i></button>
+
+
+
+
+                        <a asp-controller="Stock" asp-action="VanningList" class="btn-sm btn btn-default">List &nbsp;<i class="fas fa-list"></i></a>
+                    }
+
+
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div class="col">
+
+
+
+                    <form method="post" asp-area="" asp-controller="Stock" asp-action="@Form_formVanningMaster_ActionMethod" id="formVanningMaster">
+                        @Html.AntiForgeryToken()
+
+                        <section class="card">
+
+                            <div class="card-body">
+
+
+
+                                <div class="row form-group">
+                                    <div class="col-lg-4">
+
+                                        <div class="row MasterForm">
+                                            <label for="Vendor_ID" class="col-sm-3 col-form-label">Supplier</label>
+                                            <div class="col-sm-9">
+                                                <select class="form-control" id="Vendor_ID" name="Vendor_ID" onchange="AddNewVendor(this)" asp-items="@(new SelectList(ViewBag.VendorMaster, "Partner_ID", "PartnerName", Model.VanningMasterObj.Vendor_ID))" required>
+                                                    <option>Select Vendor</option>
+                                                    <option value="NewVendor">New Vendor A/C</option>
+                                                </select>
+
+                                                <input type="hidden" id="vanning_master_ID" name="vanning_master_ID" value="@vanning_master_ID" />
+                                            </div>
+                                        </div>
+                                        <div class="row MasterForm">
+                                            <label for="To" class="col-sm-3 col-form-label">Comments</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" id="Comments" name="Comments" value="@Model.VanningMasterObj.Comments">
+                                            </div>
+                                        </div>
+                                        @*<div class="row MasterForm">
+                                                <label for="Address" class="col-sm-3 col-form-label">Invoice Ref</label>
+                                                <div class="col-sm-9">
+                                                    <textarea class="form-control" rows="2" id="vanning_ref" name="vanning_ref" placeholder="">@Model.VanningMasterObj.Vendor_Address</textarea>
+                                                </div>
+                                            </div>*@
+
+
+
+                                    </div>
+                                    <div class="col-lg-4">
+
+                                    </div>
+
+                                    <div class="col-lg-4 ">
+
+                                        <div class="row MasterForm">
+                                            <label for="VanningRef" class="col-sm-3 col-form-label">Ref No</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" id="vanning_ref" name="vanning_ref" value="@Model.VanningMasterObj.vanning_ref" readonly>
+                                                <input type="hidden" id="htemp_ID" name="htemp_ID" value="@ViewBag.VanningRef" />
+                                            </div>
+                                        </div>
+
+
+                                        <div class="row MasterForm">
+                                            <label for="VanningDate" class="col-sm-3 col-form-label">Date</label>
+                                            <div class="col-sm-9">
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                        </span>
+                                                    </span>
+                                                    @if (Model.VanningMasterObj.Date != null)
+                                                    {
+                                                        <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="Date" name="Date" value="@Model.VanningMasterObj.Date" required>
+
+                                                    }
+                                                    else
+                                                    {
+                                                        <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="Date" name="Date" value="@DateTime.Now.ToString("dd-MMM-yyyy")" required>
+
+                                                    }
+
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+
+
+
+
+
+                                        <div class="row MasterForm">
+                                            <label for="Discount" class="col-sm-3 col-form-label">Other Ref</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" id="trans_Ref" name="trans_Ref" value="@Model.VanningMasterObj.trans_ref">
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+
+                            </div>
+
+
+
+                        </section>
+                    </form>
+                </div>
+
+            </div>
+
+            <div class="row m-1">
+                <div class="col-lg-3">
+                    <h2 class="card-title" style="line-height:normal;">Vanning Details </h2>
+                </div>
+
+
+                <div class="col-lg-9 col-md-9 text-right">
+                    <div class="row">
+                        <div class="col-lg-6 text-left">
+                            <label for="Sale_ID" class="col-sm-3 col-form-label">Sale Ref</label>
+                            <div class="col-sm-12">
+                                <select class="form-control" id="Sale_refDrop" name="Sale_refDrop" asp-items="@(new SelectList(ViewBag.SaleRefList, "SaleMaster_ID", "SaleRef"))">
+                                </select>
+                            </div>
+
+                        </div>
+                  
+
+
+                    </div>
+                </div>
+            </div>
+
+            <div id="PaymentDetailSection">
+
+                <table class="table table-responsive-md table-bordered mb-0">
+                    <thead>
+                        <tr>
+                            <th>Edit/Delete</th>
+                            <th>Chassis</th>
+                            <th>Make</th>
+                            <th>Make Model</th>
+                            <th>Amount</th>
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.VanningDetailList != null)
+                        {
+
+                            ViewBag.SubTotal = 0;
+                            ViewBag.Vat_ExpTotal = 0;
+                            ViewBag.DiscountTotal = 0;
+                            ViewBag.Grand_Total = 0;
+
+
+                            foreach (pa_Vanning_Details item in Model.VanningDetailList)
+                            {
+
+
+
+
+                                <tr>
+                                    <td>
+                                        <a onclick="UpdateVanningDetail('@item.ID');"><img style="width: 20px;" src="~/Img/Icons/edit.png" /></a>
+                                        <a onclick="DeleteVanningDetail('@item.ID');" data-toggle="modal" data-target="#DeleteVanningDetailModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+                                    </td>
+                                    <td>@Html.DisplayFor(modelItem => item.Chassis_no)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.make)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.model_description)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Total_Amount)</td>
+
+                                </tr>
+                            }
+                        }
+
+
+
+
+                    </tbody>
+
+                </table>
+
+
+                <div class="invoice-summary">
+
+                    <div class="row">
+
+                        <div class="col-lg-9 col-md-9">
+
+                        </div>
+
+                        <div class="col-lg-3 col-md-3 justify-content-end text-right">
+                            <table class="table h6 text-dark">
+                                <tbody>
+
+                                    @{
+                                        if (Model.VanningMasterObj != null)
+                                        {
+                                            <tr class="b-top-0">
+                                                <td colspan="2"> Price:</td>
+                                                <td class="text-right" id="Price">@Model.VanningMasterObj.Amount</td>
+                                            </tr>
+                                        }
+
+                                        else
+                                        {
+                                            <tr class="b-top-0">
+                                                <td colspan="2"> Price:</td>
+                                                <td class="text-right" id="Price">0</td>
+                                            </tr>
+                                        }
+
+                                        if (Model.VanningMasterObj != null)
+                                        {
+                                            <tr>
+                                                <td colspan="2">Total Tax:</td>
+                                                <td class="text-right" id="TotalTax">@Model.VanningMasterObj.Tax_Amount</td>
+                                            </tr>
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td colspan="2">Total Tax:</td>
+                                                <td class="text-right" id="TotalTax">0</td>
+                                            </tr>
+                                        }
+
+                                        if (Model.VanningMasterObj != null)
+                                        {
+                                            <tr>
+                                                <td colspan="2">Total:</td>
+                                                <td class="text-right" id="Total">@Model.VanningMasterObj.Total_Amount</td>
+                                            </tr>
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td colspan="2">Total:</td>
+                                                <td class="text-right" id="Total">0</td>
+                                            </tr>
+                                        }
+
+
+                                        if (Model.VanningMasterObj != null)
+                                        {
+                                            <tr>
+                                                <td colspan="2">Paid:</td>
+                                                <td class="text-right" id="Paid">@Model.VanningMasterObj.Paid</td>
+                                            </tr>
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td colspan="2">Paid:</td>
+                                                <td class="text-right" id="Paid">0</td>
+                                            </tr>
+                                        }
+
+                                        if (Model.VanningMasterObj != null)
+                                        {
+                                            <tr>
+                                                <td colspan="2">Balance:</td>
+                                                <td class="text-right" id="Balance">@Model.VanningMasterObj.Balance</td>
+                                            </tr>
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td colspan="2">Balance:</td>
+                                                <td class="text-right" id="Balance">0</td>
+                                            </tr>
+ }
+
+                                    }
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <hr />
+            <div class="row">
+                <div class="col-sm-3"><span class="show-grid-block">Created at : <b>@Model.VanningMasterObj.Created_at </b></span></div>
+                <div class="col-sm-3"><span class="show-grid-block">Created by :</span><b>@Model.VanningMasterObj.Created_By</b></div>
+                <div class="col-sm-3"><span class="show-grid-block">Modified at :<b>@Model.VanningMasterObj.Last_Updated_at </b></span></div>
+                <div class="col-sm-3"><span class="show-grid-block">Modified by : <b>@Model.VanningMasterObj.Last_Updated_by </b></span></div>
+            </div>
+
+
+
+
+
+
+        </div>
+
+
+    </div>
+</section>
+
+
+
+
+<!-- Modal Insert task -->
+<div class="modal fade bs-modal-lg" id="AddNewVanningModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Stock Details</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+
+            </div>
+
+
+
+            <form method="post" data-ajax="true" data-ajax-complete="myComplete" data-ajax-success="mySuccess" data-ajax-failure="myFailure"
+                  asp-area="" asp-controller="Stock" asp-action="InsertVanningDetail" data-ajax-loading="" id="FormInsertVanningDetail">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body">
+
+
+
+                            <div class="row form-group">
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Make_ID">Chassis No*</label>
+
+
+
+                                        <input type="text" id="Chassis" name="Chassis" onblur="ValidateChassis()" class="form-control" placeholder="Enter chassis" required />
+                                        <label id="ChassisValidationMessage"></label>
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Make_ID">Make*</label>
+
+
+
+                                        <select class="form-control" id="Make_ID" name="Make_ID" asp-items="@(new SelectList( ViewBag.MakeList,"Make_ID","Make"))" onchange="GetSubModel(this);" required>
+                                            <option>Select Make</option>
+                                        </select>
+
+
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Model_ID">Model*</label>
+
+                                        <select class="form-control MakeModelClass" id="Model_ID" name="Model_ID" required>
+                                            <option value="">Select Model</option>
+
+                                        </select>
+
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="control-label">Amount and Tax (10%)</label>
+
+
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-8" style="padding:0;">
+                                                    <input type="text" id="txtAmount" name="txtAmount" class="form-control" placeholder="Price" onblur="CalcTaxForAmount()">
+                                                </div>
+                                                <div class="col-md-4" style="padding:0;">
+                                                    <input type="text" id="txtTaxAmount" name="txtTaxAmount" class="form-control" placeholder="Tax" readonly="readonly">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="col-lg-12">
+                                        <div class="form-group">
+                                            <label class="control-label">Inspect Charges & Tax (10%) </label>
+
+
+                                            <div class="form-group">
+                                                <div class="row">
+                                                    <div class="col-md-8" style="padding:0;">
+                                                        <input type="number" id="txtInspectionCharges" name="txtInspectionCharges" class="form-control" placeholder="Inspection Charges" onblur="CalcTaxForInspectionCharges()">
+                                                    </div>
+                                                    <div class="col-md-4" style="padding:0;">
+                                                        <input type="number" id="txtInspectionChargestax" name="txtInspectionChargestax" class="form-control" placeholder="Tax" readonly="readonly">
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                </div>
+
+
+                                <div class="col-lg-4">
+
+                                    <div class="col-lg-12">
+                                        <div class="form-group">
+                                            <label class="control-label">Total </label>
+                                            <input type="text" id="txtTotal" name="txtTotal" class="form-control" placeholder="Total">
+
+                                        </div>
+                                    </div>
+
+
+
+
+
+
+
+                                </div>
+
+                            </div>
+
+
+
+
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Add</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+
+
+</div>
+<!-- Modal Update Vanning -->
+<div class="modal fade bs-modal-lg" id="UdpateNewVanningModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content" id="ModalContentVanningDetail">
+
+
+
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- Modal Delete VanningDetail -->
+<div class="modal fade bs-modal-lg" id="DeleteVanningDetailModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Vanning Detail</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" data-ajax="true" data-ajax-complete="CompleteDelete" data-ajax-success="SuccessDelete" data-ajax-failure="FailureDelete"
+                  asp-area="" asp-controller="Stock" asp-action="DeleteVanningDetail" data-ajax-loading="">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <h3>Do you want to delete this record?</h3>
+
+                                        <input type="hidden" id="VanningDetails_ID_Delete" name="VanningDetails_ID" />
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- Modal Delete VanningMaster -->
+<div class="modal fade bs-modal-lg" id="DeleteVanningMasterNew" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Delete Vanning Master</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="Stock" asp-action="Delete_Vanning" data-ajax-loading="">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <h3>Do you want to delete this record?</h3>
+
+                                        <input type="hidden" id="vanning_master_ID_Delete" name="vanning_master_ID" />
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+<!-- Modal Insert Partner -->
+<div class="modal fade bs-modal-lg" id="AddPartnerModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Add Vendor</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="BasicData" asp-action="AddPartnersVendor" enctype="multipart/form-data">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body">
+
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Vendor Ref</label>
+
+                                        <input type="text" class="form-control" id="Partner_Ref" disabled="disabled" name="Partner_Ref">
+
+
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Vendor Name<span style="color: red; font-size: 15px; margin-left: 4px;">*</span></label>
+
+                                        <input type="text" class="form-control" id="PartnerName" name="PartnerName" required>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Contact Number</label>
+
+                                        <input type="text" class="form-control" id="ContactNumber" name="ContactNumber">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Mobile No</label>
+
+                                        <input type="text" class="form-control" id="MobileNo" name="MobileNo">
+                                    </div>
+                                </div>
+
+
+
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Contact Name</label>
+
+                                        <input type="text" class="form-control" id="ContactName" name="ContactName">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Contact Address</label>
+
+                                        <input type="text" class="form-control" id="ContactAddress" name="ContactAddress">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Email </label>
+
+                                        <input type="email" class="form-control" id="Email" name="Email">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Fax </label>
+
+                                        <input type="text" class="form-control" id="Fax" name="Fax">
+                                    </div>
+                                </div>
+
+
+
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">EmiratesID</label>
+
+                                        <input type="text" class="form-control" id="EmiratesID" name="EmiratesID">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">TradeLicenseNo</label>
+
+                                        <input type="text" class="form-control" id="TradeLicenseNo" name="TradeLicenseNo">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">TRN </label>
+
+                                        <input type="text" class="form-control" id="TRN" name="TRN">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Vendor Category</label>
+
+                                        <select class="form-control" id="VendorCat_ID" name="VendorCat_ID" asp-items="@(new SelectList( ViewBag.VendorCategoryList,"VendorCat_ID","VendorCatName"))">
+                                        </select>
+                                    </div>
+                                </div>
+
+
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Remarks</label>
+
+                                        <textarea type="text" class="form-control" id="Remarks" name="Remarks"></textarea>
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="exampleModal3" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Cancel Vanning Master</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="Stock" asp-action="Cancel_Vanning" data-ajax-loading="">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <h3>Do you want to cancel this record?</h3>
+
+                                        <input type="hidden" id="vanning_master_ID_Cancel" name="vanning_master_ID" />
+                                        <input type="hidden" id="vanning_Status_ID" name="Status_ID" />
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+
+
+    @*Please dont remove following script lib bcz it is for all ajaz and partial view calls*@
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
+
+    <script>
+        //---this function will hit after success submission of insert Vanning detail form
+        function mySuccess(data) {
+
+            var SuccessDiv = " <div class='col-lg-12'><div class='alert alert-info'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button><strong>Success!</strong> Saved Successfully! <a href ='' class='alert-link'></a></div></div>";
+            debugger
+            if (data.message == undefined) {
+
+                //$('#AddNewVanningModal').modal('hide');
+                $('#PaymentDetailSection').html(data);
+                $('#SuccessErrorSection').html(SuccessDiv).show();
+
+                //reset form after success
+                $('#FormInsertVanningDetail').trigger("reset");
+
+                //Calculate bottom total values
+
+
+
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        function myFailure() {
+
+            alert("Failured occured. Please try again!");
+        }
+
+        function myComplete() {
+
+            //alert("Complete");
+        }
+
+        function mySuccessVanningUpdate(data) {
+
+            var SuccessDiv = " <div class='col-lg-12'><div class='alert alert-info'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button><strong>Success!</strong> Updated Successfully! <a href ='' class='alert-link'></a></div></div>";
+            debugger
+            if (data.message == undefined) {
+                //alert("Saved Successfully!");
+                $('#UdpateNewVanningModal').modal('hide');
+                $('#PaymentDetailSection').html(data);
+                $('#SuccessErrorSection').html(SuccessDiv).show();
+
+                //reset form after success
+                $('#FormUpdateVanningDetail').trigger("reset");
+
+                //Calculate bottom total values
+
+
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+            function Cancel_Vanning()
+    {
+                var id = $('#vanning_master_ID').val;
+        var urlll = '/Stock/Cancel_Vanning?' + id;
+
+        debugger;
+        $.ajax({
+            type: "POST",
+            url: urlll,
+
+            success: function (data) {
+                //alert("Canceled Successfully");
+
+                if (data == "Canceled Successfully") {
+
+                    alert("Canceled Successfully");
+                    window.location = "@Url.Action("Vanninglist", "Stock")";
+                }
+            }
+        });
+    }
+            function Delete_VanningDetails()
+    {
+
+                var id = $('#vanning_master_ID').val;
+        var urlll = '/Stock/Delete_Vanning?' + id;
+        //alert("Do You Want To Delete The Payment..........");
+
+        $.ajax({
+            type: "POST",
+            url: urlll,
+            //data: $("#add").serialize(),
+            success: function (data) {
+
+
+                if (data == "Deleted Successfully") {
+                    window.location = "@Url.Action("VanningList", "Stock")";
+                } else {
+                    alert(data);
+                }
+
+
+            }
+        });
+    }
+        function myFailureVanningUpdate() {
+
+            alert("Failured occured. Please try again!");
+        }
+
+        function myCompleteVanningUpdate() {
+
+            //alert("Complete");
+        }
+    </script>
+
+    <script>
+        //this function is for selecting model description on the basis of Make ID
+        function GetSubModel(Make_ID) {
+            //debugger
+            var ID = Make_ID.value;
+            var procemessage = "<option value='0'> Please wait...</option>";
+            $(".MakeModelClass").html(procemessage).show();
+
+
+            if (!ID) {
+                ID = 0;
+                var emptyAppend = "<option value=''>Select</option>";
+                $(".MakeModelClass").html(emptyAppend).show();
+
+            } else {
+                $.getJSON("/Stock/GetModelDescListByID", { Make_ID: ID }, function (data) {
+                    //first empty the model
+                    //debugger
+                    $(".MakeModelClass").empty();
+                    //Then append select
+                    $(".MakeModelClass").append("<option value=''>Select</option>");
+                    $.each(data, function (index, row) {
+                        debugger
+                        //Now here appending all options in the sub classification list
+                        //$(".MakeModelClass").append("<option value='" + row.modelDesc_ID + "'>" + row.modelDesciption + "</option>")
+                        var optionText = row.modelDesciption;
+                        $('.MakeModelClass').append($("<option></option>").attr("value", row.modelDesc_ID).text(optionText));
+                    });
+                });
+            }
+
+
+
+        }
+
+
+
+        //this function is for selecting model description on the basis of Make ID
+        function GetSubModelForUpdate(Make_ID) {
+            //debugger
+            var ID = Make_ID.value;
+            var procemessage = "<option value='0'> Please wait...</option>";
+            $(".MakeModelClassUpdate").html(procemessage).show();
+
+
+            if (!ID) {
+                ID = 0;
+                var emptyAppend = "<option value=''>Select</option>";
+                $(".MakeModelClassUpdate").html(emptyAppend).show();
+
+            } else {
+                $.getJSON("/Stock/GetModelDescListByID", { Make_ID: ID }, function (data) {
+                    //first empty the model
+                    //debugger
+                    $(".MakeModelClassUpdate").empty();
+                    //Then append select
+                    $(".MakeModelClassUpdate").append("<option value=''>Select</option>");
+                    $.each(data, function (index, row) {
+                        debugger
+                        //Now here appending all options in the sub classification list
+                        //$(".MakeModelClass").append("<option value='" + row.modelDesc_ID + "'>" + row.modelDesciption + "</option>")
+                        var optionText = row.modelDesciption;
+                        $('.MakeModelClassUpdate').append($("<option></option>").attr("value", row.modelDesc_ID).text(optionText));
+                    });
+                });
+            }
+
+
+
+        }
+
+
+    </script>
+
+    <script>
+        //---submit new master Vanning voucher
+        $(document).ready(function () {
+            $("#ButtonIssue").click(function () {
+
+                $("#formVanningMaster").submit();
+            });
+        });
+        //---Update master Vanning voucher
+        $(document).ready(function () {
+            $("#ButtonSaveMaster").click(function () {
+                $("#formVanningMaster").submit();
+            });
+        });
+
+
+    </script>
+
+    <script type="text/javascript">
+
+
+
+
+        function SuccessDelete(data) {
+
+            var SuccessDiv = " <div class='col-lg-12'><div class='alert alert-info'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button><strong>Success!</strong> Deleted Successfully! <a href='' class='alert-link'></a></div></div>";
+            debugger
+            if (data.message == undefined) {
+                //alert("Saved Successfully!");
+                $('#DeleteVanningDetailModal').modal('hide');
+                $('#PaymentDetailSection').html(data);
+                $('#SuccessErrorSection').html(SuccessDiv).show();;
+
+
+
+
+
+            } else {
+                alert(data.message);
+                $('#DeleteVanningDetailModal').modal('hide');
+            }
+
+
+        }
+
+        function FailureDelete() {
+
+            alert("Failured occured. Please try again!");
+            $('#DeleteVanningDetailModal').modal('hide');
+        }
+
+
+
+    </script>
+
+    <script>
+
+        function DeleteVanningDetail(VanningDetails_ID) {
+            debugger
+            $("#VanningDetails_ID_Delete").val(VanningDetails_ID);
+
+        }
+
+
+        //---delete Vanning master
+        function DeleteVanningMaster(vanning_master_ID) {
+            debugger
+            $("#vanning_master_ID_Delete").val(vanning_master_ID);
+
+        }
+
+        function CancelVanningMaster(vanning_master_ID,StatusID) {
+            debugger
+            $("#vanning_master_ID_Cancel").val(vanning_master_ID);
+            $("#vanning_Status_ID").val(StatusID);
+
+        }
+
+
+
+        //--function call on click in the detail table and bring values in the update form
+        function UpdateVanningDetail(ID) {
+            var ID = ID;
+
+            if (!ID) {
+                alert("Vanning id is null!");
+            } else {
+
+                var TeamDetailPostBackURL = '/Stock/GetVanningDetailByID';
+                $.ajax({
+                    type: "GET",
+                    url: TeamDetailPostBackURL,
+                    contentType: "application/json; charset=utf-8",
+                    data: { "ID": ID },
+                    datatype: "json",
+                    success: function (data) {
+                        debugger
+
+                        if (data.message == undefined) {
+                            //alert("Saved Successfully!");
+                            $('#ModalContentVanningDetail').html(data);
+                            $('#UdpateNewVanningModal').modal('show');
+
+                        } else {
+                            alert(data.message);
+                            //$('#UdpateNewVanningModal').modal('hide');
+                        }
+
+                    },
+                    error: function () {
+                        alert("Failured occured. Please try again!");
+
+                    }
+                });
+            }
+
+
+
+
+        }
+
+
+        //---function for calculating amounts in the puchase detail pop up form
+
+        function CalculateSumAmount() {
+
+            var Quanity = 0;
+            var UnitPrice = 0;
+            var Amount = 0;
+            var Amount_Others = 0;
+            var Currency_Rate = 0;
+
+            var resultTotalAmount = 0;
+            var resultTotalOtherAmount = 0;
+
+            Quanity = document.getElementById("Quantity").value;
+            UnitPrice = document.getElementById("Unit_Price").value;
+            Amount = document.getElementById("Amount").value;
+            Amount_Others = document.getElementById("Amount_Others").value;
+            Currency_Rate = document.getElementById("Currency_Rate").value;
+
+            if (!Quanity) {
+                Quanity = 0;
+            }
+            if (!UnitPrice) {
+                UnitPrice = 0;
+            }
+            if (!Amount) {
+                Amount = 0;
+            }
+            if (!Amount_Others) {
+                Amount_Others = 0;
+            }
+            if (!Currency_Rate) {
+                Currency_Rate = 1;
+            }
+
+            //---calculate Amount
+            resultTotalAmount = Quanity * UnitPrice;
+            $("#Amount").val(resultTotalAmount);
+
+            //--Calculate Other Amount
+
+            resultTotalOtherAmount = Currency_Rate * resultTotalAmount;
+            $("#Amount_Others").val(resultTotalOtherAmount);
+
+
+        }
+
+        //---function for calculating amounts in the puchase detail update pop up form
+
+        function CalcSumAmountVanningUpdate() {
+
+            var Quanity = 0;
+            var UnitPrice = 0;
+            var Amount = 0;
+            var Amount_Others = 0;
+            var Currency_Rate = 0;
+
+            var resultTotalAmount = 0;
+            var resultTotalOtherAmount = 0;
+
+            Quanity = document.getElementById("QuantityUpdate").value;
+            UnitPrice = document.getElementById("Unit_PriceUpdate").value;
+            Amount = document.getElementById("AmountUpdate").value;
+            Amount_Others = document.getElementById("Amount_OthersUpdate").value;
+            Currency_Rate = document.getElementById("Currency_RateUpdate").value;
+
+            if (!Quanity) {
+                Quanity = 0;
+            }
+            if (!UnitPrice) {
+                UnitPrice = 0;
+            }
+            if (!Amount) {
+                Amount = 0;
+            }
+            if (!Amount_Others) {
+                Amount_Others = 0;
+            }
+            if (!Currency_Rate) {
+                Currency_Rate = 1;
+            }
+
+            //---calculate Amount
+            resultTotalAmount = Quanity * UnitPrice;
+            $("#AmountUpdate").val(resultTotalAmount);
+
+            //--Calculate Other Amount
+
+            resultTotalOtherAmount = Currency_Rate * resultTotalAmount;
+            $("#Amount_OthersUpdate").val(resultTotalOtherAmount);
+
+
+
+        }
+
+
+
+        function ValidateChassis() {
+
+            //debugger
+
+
+            var Chassis = document.getElementById("Chassis").value.toString();
+
+            $.ajax({
+
+                type: "Get",
+                url: "/Accounts/ValidateChassisNo",
+                data: { //Passing data
+                    ChassisNo: Chassis
+
+
+                },
+                datatype: "json",
+                success: function (response) {
+                    debugger
+                    if (response.message == 'Chassis is valid') {
+                        //debugger
+                        $("#ChassisValidationMessage").text(response.message);
+                        $("#ChassisValidationMessage").css("color", "green");
+                        $("#Chassis").val(response.chassis_No);
+                        $("#Make_ID").val(response.make_ID);
+                        $("#Model_ID").val(response.makeModel_description_ID);
+
+                    } else {
+                        $("#ChassisValidationMessage").text(response.message);
+                        $("#ChassisValidationMessage").css("color", "red");
+                        $("#Chassis").val("");
+                        $("#Make_ID").val("");
+                        $("#Model_ID").val("");
+
+                    }
+
+                }
+            })
+        }
+
+        //This function is for validation of chassis no
+        function ValidateChassisUpdate() {
+
+            //debugger
+
+
+            var Chassis = document.getElementById("ChassisUpdate").value.toString();
+
+            $.ajax({
+
+                type: "Get",
+                url: "/Accounts/ValidateChassisNo",
+                data: { //Passing data
+                    ChassisNo: Chassis
+
+
+                },
+                datatype: "json",
+                success: function (response) {
+                    debugger
+                    if (response.message == 'Chassis is valid') {
+                        //debugger
+                        $("#ChassisValidationMessageUpdate").text(response.message);
+                        $("#ChassisValidationMessageUpdate").css("color", "green");
+                        $("#ChassisUpdate").val(response.chassis_No);
+                        $("#Make_IDUpdate").val(response.make_ID);
+                        $("#Model_IDUpdate").val(response.makeModel_description_ID);
+
+                    } else {
+                        $("#ChassisValidationMessageUpdate").text(response.message);
+                        $("#ChassisValidationMessageUpdate").css("color", "red");
+                        $("#ChassisUpdate").val("");
+                        $("#Make_IDUpdate").val("");
+                        $("#Model_IDUpdate").val("");
+
+                    }
+
+                }
+            })
+        }
+        function CalcTaxForInspectionCharges() {
+
+            num1 = 0;
+            result = 1;
+
+            num1 = document.getElementById("txtInspectionCharges").value;
+
+            result = 10 * num1 / 100;
+
+            $("#txtInspectionChargestax").val(result);
+
+            //calling sum function
+            CalculateSum();
+
+        }
+        function CalcTaxForAmount() {
+
+            num1 = 0;
+            result = 1;
+
+            num1 = document.getElementById("txtAmount").value;
+
+            result = 10 * num1 / 100;
+
+            $("#txtTaxAmount").val(result);
+
+            //calling sum function
+            CalculateSum();
+        }
+
+        //----method for opening vendor popup
+        function AddNewVendor(Vendor) {
+            vendorValue = Vendor.value;
+            if (vendorValue == 'NewVendor') {
+                $('#AddPartnerModal').modal('show');
+            }
+        }
+
+        function CalculateSum() {
+            var txtAmount = 0;
+            var txtTaxAmount = 0;
+            var txtInspectionCharges = 0;
+            var txtInspectionChargestaxUpdate = 0;
+
+            var resultTotal = 0;
+
+            txtAmount = document.getElementById("txtAmount").value;
+            txtTaxAmount = document.getElementById("txtTaxAmount").value;
+            txtInspectionCharges = document.getElementById("txtInspectionCharges").value;
+            txtInspectionChargestax = document.getElementById("txtInspectionChargestax").value;
+
+            resultTotal = Number(txtAmount) + Number(txtTaxAmount) + Number(txtInspectionCharges) + Number(txtInspectionChargestax);
+
+            //result = 10 * num1 / 100;
+
+            $("#txtTotal").val(resultTotal);
+        }
+
+
+        //---------------------------------------------------------------
+
+        function CalcTaxForAmountUpdate() {
+
+            num1 = 0;
+            result = 1;
+
+            num1 = document.getElementById("txtAmountUpdate").value;
+
+            result = 10 * num1 / 100;
+
+            $("#txtTaxAmountUpdate").val(result);
+
+            //calling sum function
+            CalculateSumUpdate();
+        }
+
+
+
+
+        function CalcTaxForInspectionChargesUpdate() {
+
+            num1 = 0;
+            result = 1;
+
+            num1 = document.getElementById("txtInspectionChargesUpdate").value;
+
+            result = 10 * num1 / 100;
+
+            $("#txtInspectionChargestaxUpdate").val(result);
+
+            //calling sum function
+            CalculateSumUpdate();
+
+        }
+
+
+        function CalculateSumUpdate() {
+            var txtAmount = 0;
+            var txtTaxAmount = 0;
+            var txtInspectionCharges = 0;
+            var txtInspectionChargestaxUpdate = 0;
+
+            var resultTotal = 0;
+
+            txtAmount = document.getElementById("txtAmountUpdate").value;
+            txtTaxAmount = document.getElementById("txtTaxAmountUpdate").value;
+            txtInspectionCharges = document.getElementById("txtInspectionChargesUpdate").value;
+            txtInspectionChargestax = document.getElementById("txtInspectionChargestaxUpdate").value;
+
+            resultTotal = Number(txtAmount) + Number(txtTaxAmount) + Number(txtInspectionCharges) + Number(txtInspectionChargestax);
+
+            //result = 10 * num1 / 100;
+
+            $("#txtTotalUpdate").val(resultTotal);
+        }
+        //method for getting search record when we click on drop down "Sale_refDrop" in this page
+        $(document).ready(function () {
+
+            //$("#Sale_refDrop").click(function () {
+
+            $("#Sale_refDrop").change(function () {
+
+                var Sale_ID = $(this).val();
+                var htemp_ID = $("#htemp_ID").val();
+
+                debugger;
+
+
+                $.ajax({
+
+                    type: "Post",
+                    url: "/Stock/GetChasisBySaleRef?Sale_ID=" + Sale_ID + "&temp_ID=" + htemp_ID,
+                    contentType: "html",
+                    success: function (response) {
+                        console.log(response);
+                        $("#PaymentDetailSection").html(response);
+                    }
+                })
+            })
+        })
+                              $(document).ready(function(){
+            $("#print-btn").click(function(event){
+                event.preventDefault();
+
+                var win = window.open("@Url.Action("Vanning_JP_Print", "Report")" + "?ID=" + $("#vanning_master_ID").val() , "_blank");
+                win.focus();
+            });
+        })
+    </script>
+
+
+}
+
+
+

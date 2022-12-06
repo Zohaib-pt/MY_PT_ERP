@@ -1,0 +1,239 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OStock
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+@{
+    Layout = null;
+
+    bool isShow = Model.StockListStats1.isOptionalCost;
+}
+
+<!DOCTYPE HTML>
+<HTML>
+<head>
+
+    <!-- Basic -->
+    <meta charset="UTF-8">
+
+    <title>@ViewBag.PageTitle</title>
+    <meta name="keywords" content="DearlerSol | Dealers Management System " />
+    <meta name="description" content="Vehicle Management System | Dealer Management System | Dealer ERP ">
+    <meta name="author" content="DealerSol.com">
+
+    <!-- Mobile Metas -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <!-- Favicon  -->
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+
+
+    <!-- Vendor CSS -->
+    <link rel="stylesheet" href="~/vendor/bootstrap/css/bootstrap.css" />
+
+
+
+
+
+
+
+
+
+
+
+
+    <style>
+        .moneycol {
+            text-align: right;
+        }
+
+        .controlheight {
+            height: 1px;
+            border: 1px solid #d3d3d3;
+            margin: 0px;
+        }
+
+            .controlheight table th, .table td {
+                padding: 5px;
+            }
+
+        .SumHeading {
+            background-color: #d3d3d3;
+            text-align: left;
+            font-weight: bold;
+            font-size: 16px
+        }
+
+        .ColHeading {
+            background-color: #d3d3d3;
+            font-size: 18px;
+            text-align: center
+        }
+    </style>
+
+
+</head>
+
+<BODY>
+
+
+    <div class="row">
+        <div class="col">
+            <section>
+                <header>
+                    <div class="row form-inline">
+                        @* Farzaib *@
+                        <div class="col-md-6 ">
+                            <div class="text-center">
+                                <h4 class="text-left" style="position:absolute; top:15%; left: 1.5%;">@Configuration.GetSection("AppSettings").GetSection("CompanyName").Value.ToString()</h4>
+                                <h3>Stock List</h3>
+                            </div>
+                        </div>
+                        @*<div class="col-md-12">
+
+            <h5 style="color:black;">
+                @Configuration.GetSection("AppSettings").GetSection("CompanyName").Value
+
+            </h5>
+            <p style="color:black;">
+                Phone No:
+
+
+            </p>
+        </div>*@
+
+
+                        @*<div class="col-md-6" style="text-align:center">
+
+
+
+            <h3 style="color:black;">
+                <span style="float:left;">@Configuration.GetSection("AppSettings").GetSection("CompanyName").Value.ToString()</span>
+                <span>Stock List</span>
+
+            </h3>
+
+        </div>*@
+
+
+
+
+                    </div>
+                    @*<div class="row form-group">
+                            <div class="col-xs-12">
+                                <h6 style="text-align:center">From   - To   </h6>
+                            </div>
+                        </div>*@
+                </header>
+                <div>
+                    <table class="table table-bordered" @*id="datatable-default"*@>
+                        <thead>
+                            <tr class="ColHeading">
+                                <th>S.NO</th>
+                                <th>Chassis No</th>
+                                <th>Make</th>
+                                <th>Make Model</th>
+                                <th>Color</th>
+                                <th>Model Year</th>
+                                <th>Stock Type</th>
+
+                                @if (isShow == true)
+                                {
+                            <th>Vendor</th>}
+
+
+                                <th>Purchase Date</th>
+                                <th>Interior Color</th>
+                                <th>Production Date</th>
+                                <th>Location</th>
+
+                                @if (isShow == true)
+                                {
+                            <th>Total Cost</th>}
+
+
+                                <th>Status</th>
+
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                int TotalCounter = 0;
+
+                            }
+                           
+                            @if (Model.StockListGetObject != null)
+                            {
+                                int counter = 0;
+
+                                foreach (StockDetails item in Model.StockListGetObject)
+                                {
+                                    int Total = (int)Convert.ToDouble(item.Total_Cost);
+
+                                    TotalCounter += Total;
+
+                                    counter++;
+
+                            <tr>
+
+                                <TD class="controlheight text-center">@counter</TD>
+                                <TD class="controlheight">@item.Chassis_No</TD>
+                                <TD class="controlheight">@item.Make</TD>
+                                <TD class="controlheight">@item.ModelDesciption</TD>
+                                <TD class="controlheight">@item.Color</TD>
+                                <TD class="controlheight">@item.ModelYear</TD>
+                                <TD class="controlheight">@item.StockTypeName</TD>
+
+
+                                @if (isShow == true)
+                                {
+                            <TD class="controlheight">@item.Vendor_Name</TD>
+}
+
+
+                                <TD class="controlheight text-nowrap">@item.PurchaseDate</TD>
+                                <TD class="controlheight">@item.InteriorColor</TD>
+                                <TD class="controlheight text-nowrap">@item.ProuctionDate</TD>
+                                <TD class="controlheight">@item.CarLocation</TD>
+
+                                @if (isShow == true)
+                                {
+                            <TD class="controlheight moneycol">@item.Total_Cost</TD>
+}
+
+
+                                <TD class="controlheight">@item.Stock_Status</TD>
+
+
+                            </tr>
+                                }
+                            }
+
+                            @if (isShow == true) 
+                            { 
+                               <tr>
+                            <TD class="SumHeading">Total</TD>
+                            <TD class="controlheight"></TD>
+                            <TD class="controlheight"></TD>
+                            <TD class="controlheight"></TD>
+                            <TD class="controlheight"></TD>
+                            <TD class="controlheight"></TD>
+                            <TD class="controlheight"></TD>
+                            <TD class="controlheight"></TD>
+                            <TD class="controlheight"></TD>
+                            <TD class="controlheight"></TD>
+                            <TD class="controlheight moneycol">@TotalCounter</TD>
+                            <TD class="controlheight"></TD>
+                        </tr>
+                            }
+
+
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </div>
+</BODY>
+</HTML>

@@ -1,0 +1,178 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OAccounts
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+@{ Layout = null; }
+
+<!DOCTYPE HTML>
+<HTML>
+<head>
+
+    <!-- Basic -->
+    <meta charset="UTF-8">
+
+    <title>@ViewBag.PageTitle</title>
+    <meta name="keywords" content="DearlerSol | Dealers Management System " />
+    <meta name="description" content="Vehicle Management System | Dealer Management System | Dealer ERP ">
+    <meta name="author" content="DealerSol.com">
+
+    <!-- Mobile Metas -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <!-- Favicon  -->
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+
+
+    <!-- Vendor CSS -->
+    <link rel="stylesheet" href="~/vendor/bootstrap/css/bootstrap.css" />
+
+
+    <style>
+        .moneycol {
+            text-align: right;
+        }
+
+        .controlheight {
+            height: 1px;
+            border: 1px solid #d3d3d3;
+            margin: 0px;
+        }
+
+            .controlheight table th, .table td {
+                padding: 5px;
+            }
+
+        .SumHeading {
+            background-color: #d3d3d3;
+            text-align: left;
+            font-weight: bold;
+            font-size: 16px
+        }
+
+        .ColHeading {
+            background-color: #d3d3d3;
+            font-size: 18px;
+            text-align: center
+        }
+    </style>
+
+
+</head>
+
+<BODY>
+
+
+    <div class="row">
+        <div class="col">
+            <section>
+                <header>
+                    <div class="row form-inline">
+                        @* Farzaib *@
+                        <div class="col-md-6 ">
+                            <div class="text-center">
+                                <h4 class="text-left" style="position:absolute; top:10%; left: 1.5%;">@Configuration.GetSection("AppSettings").GetSection("CompanyName").Value.ToString()</h4>
+                                <h3>Paid Tax Report</h3>
+                            </div>
+                        </div>
+                        @*<div class="col-md-12" style="text-align:center">
+
+                                <h3 style="color:black;">
+                                    Paid Tax Report
+
+                                </h3>
+
+                            </div>*@
+
+
+                    </div>
+
+                </header>
+                <div>
+                    <table class="table table-bordered" @*id="datatable-default"*@>
+                        <thead>
+                            <tr class="ColHeading">
+
+
+                                <td>  Chassis_No </td>
+                                <td>  Purchase Date </td>
+                                <td>  Price Tax  </td>
+                                <td>  Auction Fee Tax  </td>
+                                <td>  Rekso Fee Tax </td>
+                                <td>   Vanning Tax Amount  </td>
+                                <td>  Inspection Charges Tax   </td>
+                                <td>  Berth Carry ChargesTax </td>
+                                <td>  Payment Ref Tax  </td>
+                                <td>  Payment Tax Amount  </td>
+                                <td>  Payment Others Charges Tax </td>
+                                <td>  Total   </td>
+
+
+                            </tr>
+                        </thead>
+                        <tbody>
+
+
+                            @if (Model.PaidTax_PR != null)
+                            {
+
+
+                                foreach (TaxReport item in Model.PaidTax_PR)
+                                {
+
+
+                <tr>
+
+
+                    <td class="controlheight text-nowrap">@Html.DisplayFor(modelItem => item.Chassis_No) </td>
+                    <td class="controlheight">@Html.DisplayFor(modelItem => item.PurchaseDate)</td>
+                    <td class="controlheight moneycol">@Html.DisplayFor(modelItem => item.PriceTax)</td>
+                    <td class="controlheight moneycol">@Html.DisplayFor(modelItem => item.AuctionFeeTax)</td>
+                    <td class="controlheight moneycol">@Html.DisplayFor(modelItem => item.ReksoFeeTax)</td>
+                    <td class="controlheight moneycol">@Html.DisplayFor(modelItem => item.Tax_Amount)</td>
+                    <td class="controlheight moneycol">@Html.DisplayFor(modelItem => item.Inspection_ChargesTax)</td>
+                    <td class="controlheight moneycol">@Html.DisplayFor(modelItem => item.Berth_Carry_ChargesTax)</td>
+                    <td class="controlheight moneycol">@Html.DisplayFor(modelItem => item.ExtraChargesFeeTax)</td>
+                    <td class="controlheight moneycol">@Html.DisplayFor(modelItem => item.TaxAmount)</td>
+                    <td class="controlheight moneycol">@Html.DisplayFor(modelItem => item.TaxAmountOthers)</td>
+                    <td class="controlheight moneycol">@Html.DisplayFor(modelItem => item.Total)</td>
+
+                </tr>}
+                            }
+
+
+
+                        </tbody>
+
+
+                        <tfoot>
+
+                            @foreach (TaxReport item in Model.PaidTax_TTL_PR)
+                            {
+                <tr>
+                    <td class="ColHeading"><b>Total</b></td>
+                    <td class="controlheight moneycol"></td>
+                    <td class="controlheight moneycol"><b>@Html.DisplayFor(modelItem => item.PriceTax_ttl)</b></td>
+                    <td class="controlheight moneycol"><b>@Html.DisplayFor(modelItem => item.AuctionFeeTax_ttl)</b></td>
+                    <td class="controlheight moneycol"><b>@Html.DisplayFor(modelItem => item.ReksoFeeTax_ttl)</b></td>
+                    <td class="controlheight moneycol"><b>@Html.DisplayFor(modelItem => item.Tax_Amount_ttl)</b></td>
+                    <td class="controlheight moneycol"><b>@Html.DisplayFor(modelItem => item.Inspection_ChargesTax_ttl)</b></td>
+                    <td class="controlheight moneycol"><b>@Html.DisplayFor(modelItem => item.Berth_Carry_ChargesTax_ttl)</b></td>
+                    <td class="controlheight moneycol"><b>@Html.DisplayFor(modelItem => item.ExtraChargesFeeTax_ttl)</b></td>
+                    <td class="controlheight moneycol"><b>@Html.DisplayFor(modelItem => item.TaxAmount_ttl)</b></td>
+                    <td class="controlheight moneycol"><b>@Html.DisplayFor(modelItem => item.TaxAmountOthers_ttl)</b></td>
+                    <td class="controlheight moneycol"><b>@Html.DisplayFor(modelItem => item.Total_ttl)</b></td>
+                </tr>}
+
+                        </tfoot>
+
+
+
+
+                    </table>
+                </div>
+            </section>
+        </div>
+    </div>
+</BODY>
+</HTML>

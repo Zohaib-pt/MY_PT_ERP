@@ -1,0 +1,157 @@
+﻿@using DAL.Models
+@model DAL.oClasses.OHR
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+
+@{
+    Layout = null;
+}
+<!DOCTYPE HTML>
+<HTML>
+<head>
+
+    <!-- Basic -->
+    <meta charset="UTF-8">
+
+    <title>DealerSol | Dealers Management System</title>
+    <meta name="keywords" content="DearlerSol | Dealers Management System " />
+    <meta name="description" content="Vehicle Management System | Dealer Management System | Dealer ERP ">
+    <meta name="author" content="DealerSol.com">
+
+    <!-- Mobile Metas -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <!-- Favicon  -->
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+
+
+    <!-- Vendor CSS -->
+    <link rel="stylesheet" href="~/vendor/bootstrap/css/bootstrap.css" />
+
+
+    <style>
+        .moneycol {
+            text-align: right;
+        }
+
+        .CompanyTitle {
+            font-size: 21px;
+            padding-bottom: 20px;
+        }
+
+        .PartyName {
+            font-size: 17px;
+        }
+
+        .StafPayRoll {
+            font-size: 20px;
+            padding-bottom: 20px;
+            padding-left: 20px;
+        }
+
+        .controlheight {
+            height: 1px;
+            border: 1px solid #d3d3d3;
+            margin: 0px;
+        }
+
+            .controlheight table th, .table td {
+                padding: 5px;
+            }
+
+        .SumHeading {
+            background-color: #d3d3d3;
+            text-align: left;
+            font-weight: bold;
+            font-size: 16px
+        }
+
+        .ColHeading {
+            background-color: #d3d3d3;
+            font-size: 18px;
+            text-align: center
+        }
+    </style>
+
+
+</head>
+
+<BODY>
+
+
+    <div class="row">
+        <div class="col">
+            <section>
+                <header>
+                    <div class="row form-inline">
+
+
+                        @*<h2 class="CompanyTitle" style="text-align:left"><b><u>GULFLINE MOTORS</u></b></h2>
+
+                        <h4 class="StafPayRoll" style="float: right"><b>Staf Pay Roll</b></h4>*@
+
+
+
+                        <div class="col-md-6" style="text-align:center">
+
+                            <h3 style="color:black;">
+                                <span style="float:left;">@Configuration.GetSection("AppSettings").GetSection("CompanyName").Value.ToString()</span>
+                                <span>Staff Pay Roll</span>
+
+                            </h3>
+
+                        </div>
+
+
+
+
+                    </div>
+                    @*<div class="row form-group">
+                            <div class="col-xs-12">
+                                <h6 style="text-align:center">From   - To   </h6>
+                            </div>
+                        </div>*@
+                </header>
+                <div>
+                    <table class="table table-bordered" @*id="datatable-default"*@>
+                        <thead>
+                            <tr class="ColHeading">
+
+                                <th>Employee No</th>
+                                <th>Employee Name</th>
+                                <th>Period Description</th>
+                                <th>Balance Recieved</th>
+                                <th>Salary Paid</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+
+                            @if (Model.PaySlipVoucharList_Print != null)
+                            {
+
+                                foreach (PaySlipVouchar_DAL item in Model.PaySlipVoucharList_Print)
+                                {
+
+
+                <tr>
+
+                    <TD class="controlheight text-center">@item.emp_No</TD>
+                    <TD class="controlheight">@item.emp_name</TD>
+                    <TD class="controlheight">@item.Period_Desc</TD>
+                    <TD class="controlheight">@item.Bal_Recieved</TD>
+                    <TD class="controlheight">@item.Salary_Paid</TD>
+
+
+                </tr>}
+                            }
+
+
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </div>
+</BODY>
+</HTML>

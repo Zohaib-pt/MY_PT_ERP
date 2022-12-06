@@ -1,0 +1,363 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.oReports
+@using X.PagedList.Mvc.Core; @*//import this so we get our HTML Helper*@
+@using X.PagedList;  @*//import this so we can cast our list to IPagedList*@
+
+@{ ViewData["Title"] = "SalesReport";
+    Layout = "~/Views/Shared/_LayoutTablePages.cshtml"; }
+
+<header class="page-header">
+    <h2>Reports</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+
+            <li><a><span>@ViewBag.BreadCumController</span></a></li>
+            <li><a asp-area="" asp-controller="@ViewBag.BreadCumController" asp-action="@ViewBag.BreadCumAction"><span>Sale Report</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+
+<div class="row">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+<div class="col-lg-12">
+    @if (TempData["Success"] != null)
+    {
+<div class="alert alert-info">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+    <strong>Success!</strong> @TempData["Success"] <a href="" class="alert-link"></a>
+</div>}
+
+    @if (TempData["Error"] != null)
+    {
+<div class="alert alert-danger">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+    <strong>Error!</strong> @TempData["Error"] <a href="" class="alert-link"></a>
+</div>}
+</div>}
+
+
+</div>
+
+
+
+<div class="row" style="padding-top:1px;">
+    <div class="col">
+        <section class="card">
+            <header class="card-header">
+
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <section class="card">
+                            <div class="card-body">
+
+                                <form method="get" data-ajax="true" data-ajax-complete="myCompleteSearch" data-ajax-success="mySuccessSearch" data-ajax-failure="myFailureSearch"
+                                      data-ajax-begin="myBeginSearch" asp-area="" asp-controller="Report" asp-action="SalesReport_Search" data-ajax-loading="">
+
+                                    <div class="row form-group">
+
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="From_Date">Start Date</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                        </span>
+                                                    </span>
+
+                                                    <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="From_Date" value="" name="StartDate">
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="To_Date">End Date</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                        </span>
+                                                    </span>
+
+                                                    <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="To_Date" value="" name="EndDate">
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+
+
+                                        <div class="col-lg-2">
+                                            <div class="form-group">
+                                                <label>Customer</label>
+
+
+
+
+                                                <select class="form-control select2" id="Customer_ID" name="Customer_ID" asp-items="@(new SelectList( ViewBag.AllCustomers,"Customer_ID","CustomerName"))">
+                                                    <option>Select Customer</option>
+
+                                                </select>
+
+
+                                            </div>
+                                        </div>
+
+
+                                        <div class="col-lg-2">
+                                            <div class="form-group col-6">
+                                                <label>Sale Ref</label>
+                                                <input type="text" class="form-control" placeholder="" id="Sale_Ref" name="Sale_Ref">
+
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-2">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="Vendor_ID">Vendor</label>
+                                                <select class="form-control" id="Vendor_ID" name="Vendor_ID" asp-items="@(new SelectList( ViewBag.VendorMaster,"Partner_ID","PartnerName"))">
+                                                    <option>Select</option>
+
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                    
+
+
+                                        <div class="col-lg-4">
+
+
+
+
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="Search"> &nbsp; </label>
+                                                <br />
+                                                <button type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-primary">Search&nbsp;<i class="fas fa-search"></i></button>
+
+
+
+                                                <a type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-info" href="" id="print-btn">Print &nbsp;<i class="fas fa-print"></i></a>
+                                                <a type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-success" href="" id="export-btn">Export &nbsp;<i class="fas fa-file-excel"></i></a>
+
+                                            </div>
+
+
+                                        </div>
+
+                                    </div>
+
+                                </form>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
+
+
+            </header>
+            <div class="card-body">
+
+
+                <div id="SaleReportSearch">
+                    <table class="table table-bordered table-striped mb-0">
+                        <thead>
+                            <tr>
+
+
+
+                                <th>Date</th>
+                                <th>Ref </th>
+                                <th>Sale Value </th>
+                                <th>VAT</th>
+                                <th>Total </th>
+                                <th>Cost </th>
+                                <th>Expense </th>
+                                <th> Profit/Lost</th>
+                                
+
+                            </tr>
+                        </thead>
+
+
+                        <tbody>
+
+                            @if (Model.SaleReport != null)
+                            {
+
+                                foreach (SaleReport item in Model.SaleReport)
+                                {
+
+
+
+
+
+                            <tr class="gradeX odd" role="row">
+
+                            
+
+                                <td>@Html.DisplayFor(modelItem => item.Date) </td>
+                                <td>@Html.DisplayFor(modelItem => item.SaleRef)</td>
+                                <td>@Html.DisplayFor(modelItem => item.Sale_Value)</td>
+
+
+
+
+                                <td>@Html.DisplayFor(modelItem => item.VATExp)</td>
+                                <td>@Html.DisplayFor(modelItem => item.Total_Amt)</td>
+                                <td>@Html.DisplayFor(modelItem => item.Total_Cost)</td>
+
+
+                                <td>@Html.DisplayFor(modelItem => item.Total_Expense)</td>
+                                <td>@Html.DisplayFor(modelItem => item.ProfitLost)</td>
+
+
+
+
+                            </tr>}
+                            }
+
+                        </tbody>
+
+                        <tfoot>
+
+
+
+                            <tr role="row">
+                                <th></th>
+                                <th></th>
+                                <th>@Model.SaleReportTTL.Sale_Value</th>
+
+                                <th>@Model.SaleReportTTL.VATExp</th>
+                                <th>@Model.SaleReportTTL.Total_Amt</th>
+                                <th>@Model.SaleReportTTL.Total_Cost</th>
+                                <th>@Model.SaleReportTTL.Total_Expense</th>
+                                <th>@Model.SaleReportTTL.ProfitLost</th>
+
+
+                            </tr>
+
+
+                        </tfoot>
+
+
+                    </table>
+                    <div class="invoice-summary">
+
+                        <div class="row">
+
+                            <div class="col-lg-6 col-md-6">
+
+                            </div>
+
+                            <div class="col-lg-6 col-md-6 justify-content-end text-right">
+                                @if (Model.SaleReport.Count() != 0)
+                                {
+
+                    @Html.PagedListPager(Model.SaleReport, page => Url.Action("SalesReport_Search_trd", "Report", new { StartDate = ViewBag.StartDate_SaleReport, EndDate = ViewBag.EndDate_SaleReport, Customer_ID = ViewBag.Customer_ID_SaleReport, Sale_Ref = ViewBag.Sale_Ref_SaleReport, Vendor_ID = ViewBag.Vendor_ID_SaleReport, page })
+
+          , X.PagedList.Mvc.Core.Common.PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new AjaxOptions()
+          {
+              HttpMethod = "get",
+              UpdateTargetId = "SaleReportSearch"
+          })
+                                    )}
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+@section Scripts{
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
+
+    <script>$(function () {
+            $(".select2").select2({
+                theme: "bootstrap",
+            });
+
+        });</script>
+    <script>function myBeginSearch() {
+            $("#LoaderImage").css("visibility", "visible");
+        }
+
+        function mySuccessSearch(data) {
+
+            debugger
+            if (data.message == undefined) {
+
+                $('#SaleReportSearch').html(data);
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        function myFailureSearch() {
+
+            alert("Failured occured. Please try again!");
+            $("#LoaderImage").css("visibility", "hidden");
+        }
+
+        function myCompleteSearch() {
+            $("#LoaderImage").css("visibility", "hidden");
+
+        }</script>
+    <script>
+        function ResetSearch() {
+
+            $("#From_Date").val('');
+            $("#To_Date").val('');
+            $("#AccountID").val('');
+            $("#Sale_Ref").val('');
+
+        }
+
+
+
+
+        $(document).ready(function(){
+    $("#print-btn").click(function(event){
+    event.preventDefault();
+
+        var win = window.open("@Url.Action("SaleReport_Print_trd", "Report")" + "?StartDate=" + $("#From_Date").val() + "&EndDate=" + $("#To_Date").val() + "&Customer_ID=" + $("#Customer_ID").val() + "&Sale_Ref=" + $("#Sale_Ref").val() + "&Vendor_ID=" + $("#Vendor_ID").val() , "_blank");
+    win.focus();
+    });
+    })
+         $(document).ready(function(){
+    $("#export-btn").click(function(event){
+    event.preventDefault();
+        window.location.href = "@Url.Action("SaleReport_Excel_trd", "Report")" + "?StartDate=" + $("#From_Date").val() + "&EndDate=" + $("#To_Date").val() + "&Customer_ID=" + $("#Customer_ID").val() + "&Sale_Ref=" + $("#Sale_Ref").val() + "&Vendor_ID=" + $("#Vendor_ID").val();
+    });
+    })
+
+    </script>
+
+
+}

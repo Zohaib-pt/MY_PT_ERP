@@ -1,0 +1,230 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.oReports
+@using Microsoft.Extensions.Configuration
+    @inject IConfiguration Configuration
+@{ Layout = null;
+    ViewBag.CompanyName = Configuration.GetSection("AppSettings").GetSection("CompanyName").Value;
+
+
+    }
+
+<!DOCTYPE HTML>
+<HTML>
+<head>
+
+    <!-- Basic -->
+    <meta charset="UTF-8">
+
+    <title>@ViewBag.PageTitle</title>
+    <meta name="keywords" content="DearlerSol | Dealers Management System " />
+    <meta name="description" content="Vehicle Management System | Dealer Management System | Dealer ERP ">
+    <meta name="author" content="DealerSol.com">
+
+    <!-- Mobile Metas -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <!-- Favicon  -->
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+
+
+    <!-- Vendor CSS -->
+    <link rel="stylesheet" href="~/vendor/bootstrap/css/bootstrap.css" />
+
+
+
+
+
+
+    <style>
+        .moneycol {
+            text-align: right;
+        }
+
+        .controlheight {
+            height: 1px;
+            border: 1px solid #d3d3d3;
+            margin: 0px;
+        }
+
+            .controlheight table, .table td {
+                padding: 5px;
+            }
+
+        .SumHeading {
+            background-color: #d3d3d3;
+            text-align: left;
+            font-weight: bold;
+            font-size: 16px
+        }
+
+        .ColHeading {
+            background-color: #d3d3d3;
+            font-size: 15px;
+            text-align: center
+             
+        }
+        .CompanyTitle {
+            font-size: 21px;
+            padding-bottom: 20px;
+        }
+
+        .VendorReport {
+            font-size: 20px;
+            padding-bottom: 20px;
+        }
+
+        .ref {
+            width: 2%;
+        }
+
+        .PartyName {
+            font-size: 17px;
+        }
+
+        .startEnd {
+            font-size: 15px;
+        }
+
+        .opbal {
+            font-size: 14px;
+            padding-right:20px;
+        }
+    </style>
+
+
+</head>
+
+<BODY>
+
+
+    <div class="row">
+        <div class="col">
+            <section>
+                <header>
+                    <div class="row form-inline">
+                        @*FARZAIB*@
+                        <div class="col-md-6 ">
+                            <div class="text-center">
+                                @if (TempData["VendorId"] != null)
+                                {
+                                    <h5 class="PartyName text-right"><b>@TempData["PartyName"]</b></h5>
+                                }
+                                @if (@TempData["Start2"] != null && @TempData["End2"] != null)
+                                {
+                                    <h5 class="startEnd text-right"> From:   @TempData["Start2"]    till:   @TempData["End2"]</h5>
+
+                                    <h5 class="opbal text-right"><b>Opening Balance:@Model.Ledger_TTL_Print.Opening_Balance</b></h5>
+                                }
+                                else
+                                {
+                                    <h5 class="opbal text-right"><b>Opening Balance:@Model.Ledger_TTL_Print.Opening_Balance</b></h5>
+                                }
+                                <h4 class="text-left" style="position:absolute; top:50%; left: 1.5%;">@Configuration.GetSection("AppSettings").GetSection("CompanyName").Value.ToString()</h4>
+                                <h3>Vendor Report</h3>
+                                
+
+                            </div>
+                        </div>
+                        @*<div class="col-md-12">
+
+            <h5 style="color:black;">
+                @Configuration.GetSection("AppSettings").GetSection("CompanyName").Value
+
+            </h5>
+            <p style="color:black;">
+                Phone No:
+
+
+            </p>
+        </div>*@
+                        @*<div class="col-md-12" style="text-align:center">
+
+            <h2 class="CompanyTitle" style="text-align:left"><b><u>@ViewBag.CompanyName</u></b></h2>
+            <h4 class="VendorReport" style="float: right"><b>Vendor Report</b></h4>
+            @if(TempData["VendorId"] != null )
+            {
+                <h5 class="PartyName" style="text-align:left"><b>@TempData["PartyName"]</b></h5>
+            }
+
+            <div style="clear: both">
+                @if (@TempData["Start2"] != null && @TempData["End2"] != null)
+                {
+                <h5 class="startEnd" style="float: left"> From:   @TempData["Start2"]    till:   @TempData["End2"]</h5>
+
+                <h5 class="opbal" style="float: right"><b>Opening Balance:@Model.Ledger_TTL_Print.Opening_Balance</b></h5>
+                }
+                else
+                {
+                        <h5 class="opbal" style="float: right"><b>Opening Balance:@Model.Ledger_TTL_Print.Opening_Balance</b></h5>
+                }
+                </div>
+
+        </div>*@
+
+
+                    </div>
+                    @*<div class="row form-group">
+                            <div class="col-xs-12">
+                                <h6 style="text-align:center">From   - To   </h6>
+                            </div>
+                        </div>*@
+                </header>
+                <div>
+                    <table class="table table-bordered" @*id="datatable-default"*@>
+                        <thead>
+                            <tr class="ColHeading">
+
+
+
+                                <th>Date</></th>
+                                <th class="ref">Ref #</th>
+                                <th>Chassis No</th>
+                                <th>Description</th>
+                                <th>Debit</></th>
+                                <th>Credit</th>
+
+
+                            </tr>
+
+
+
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            @if (Model.Ledger_Print != null)
+                            {
+
+
+                                foreach (pa_tblLedgers item in Model.Ledger_Print)
+                                {
+                <tr>
+                    <TD class="controlheight  text-nowra">@item.Date</TD>
+                    <TD class="controlheight">@item.trans_ref</TD>
+                    <TD class="controlheight">@item.Chassis_No</TD>
+                    <TD class="controlheight">@item.Description</TD>
+                    <TD class="controlheight moneycol">@item.Debit</TD>
+                    <TD class="controlheight moneycol">@item.Credit</TD>
+
+                </tr>
+}
+        }
+
+                        <tr>
+
+                            <TD class="SumHeading">Total</TD>
+                            <td colspan="3" class="controlheight moneycol "> </td>                     
+                            <TD class="controlheight moneycol " style=" font-weight: bold; text-align: right">@Model.Ledger_TTL_Print.TotalDebit</TD>
+                            <TD class="controlheight moneycol" style=" font-weight: bold; text-align: right">@Model.Ledger_TTL_Print.TotalCredit</TD>
+
+                        </tr>                    
+                        </tbody>
+                    </table>
+                    <h5 class="opbal" style="float: right"><b>Closing Balance: @Model.Ledger_TTL_Print.Closing_Balance</b></h5>
+                </div>
+            </section>
+        </div>
+    </div>
+</BODY>
+</HTML>

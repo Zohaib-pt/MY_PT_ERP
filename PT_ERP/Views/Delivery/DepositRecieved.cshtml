@@ -1,0 +1,1900 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.ODelivery
+
+@{
+    //ViewData["Title"] = "SalesInvoice";
+    Layout = "~/Views/Shared/_LayoutTablePages.cshtml";
+}
+
+
+@{
+
+
+
+    string Form_DepositMaster_ActionMethod = "";
+    int? DV_ID = ViewBag.DV_ID;
+
+
+    if (Model.DepositMasterObj != null && Model.DepositMasterObj.DV_ID > 0)
+    {
+
+        Form_DepositMaster_ActionMethod = "Update_DepositVoucherMaster";
+
+
+    }
+    else
+    {
+        Form_DepositMaster_ActionMethod = "Insert_DepositVoucherMaster";
+
+
+    }
+
+
+
+    //--viewbag for showing total
+    ViewBag.Total_Amount = null;
+
+
+}
+
+
+
+
+<header class="page-header">
+    <h2>@ViewBag.SectionHeaderTitle</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+            <li><a asp-area="" asp-controller="Purchases" asp-action="PurchaseList"><span>@ViewBag.SectionSub_HeaderMainTitle</span></a></li>
+            <li><a asp-area="" asp-controller="@ViewBag.BreadCumController" asp-action="@ViewBag.BreadCumAction"><span>@ViewBag.SectionSub_HeaderTitle</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+
+<div class="row" id="SuccessErrorSection">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+        <div class="col-lg-12">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-info">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Success!</strong> @TempData["Success"] <a href="" class="alert-link"></a>
+                </div>
+            }
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Error!</strong> @TempData["Error"] <a href="" class="alert-link"></a>
+                </div>
+            }
+        </div>
+    }
+
+
+</div>
+
+
+<!-- start: page -->
+<section class="card">
+    <div class="card-body">
+        <div class="invoice">
+            <header class="clearfix">
+                <div class="row">
+                    <div class="col-sm-7 mt-0">
+                        <h2 class="h4 text-dark font-weight-bold">Deposit >> Customer and Vehicle Details</h2>
+
+
+
+                    </div>
+
+                    <div class="col-sm-5" style="text-align:right;">
+                        <button type="submit" id="ButtonSave" class="mb-1 mt-1 mr-1 btn btn-sm btn-success">Save &nbsp;<i class="fas fa-save"></i></button>
+                        <button type="button" class="mb-1 mt-1 mr-1 btn btn-sm btn-danger">Cancel &nbsp;<i class="fas fa-times"></i></button>
+                        <button type="button" class="mb-1 mt-1 mr-1 btn-sm btn-info" id="print-btn">Print &nbsp;<i class="fas fa-print"></i></button>
+                       
+                        <button type="button"  @ViewBag.AttachmentVisibility  class="btn-sm btn btn btn-default" style="background-color: #68889E; color:white; border-color:#2F3E48" onclick="ShowAttachmentMaster('@Model.DepositMasterObj.DV_ID');">Attachment &nbsp;<i class="fa fa-paperclip"></i></button>
+                        
+                        <a asp-controller="Delivery" asp-action="DepositList" class="mb-1 mt-1 mr-1 btn btn-sm btn-default">List &nbsp;<i class="fas fa-list"></i></a>
+
+                    </div>
+
+
+                </div>
+            </header>
+
+            <div class="row">
+
+                <div class="col">
+
+                    <form method="post" asp-area="" asp-controller="Delivery" asp-action="@Form_DepositMaster_ActionMethod" id="formDeliveryMaster">
+                        @Html.AntiForgeryToken()
+
+                        <section class="card">
+
+                            <div class="card-body">
+
+                                <div class="row form-group">
+                                    <div class="col-lg-4">
+
+
+                                        <div class="row MasterForm">
+                                            <label for="To" class="col-sm-4 col-form-label">Customer Name</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" id="Customer_Name" name="Customer_Name" value="@Model.DepositMasterObj.CUSTOMER_NAME" placeholder="Customer Name" required>
+
+                                                <!--hidden field for saving customer id-->
+                                                <input type="hidden" class="form-control" id="Customer_ID" name="Customer_ID" value="@Model.DepositMasterObj.Customer_ID">
+
+                                                <!--hidden master id field-->
+                                                <input type="hidden" id="DV_ID" name="DV_ID" value="@DV_ID" />
+                                            </div>
+                                        </div>
+                                        <div class="row MasterForm">
+                                            <label for="To" class="col-sm-4 col-form-label">Contact</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" id="Customer_Contact" name="Customer_Contact" value="@Model.DepositMasterObj.CUSTOMER_CONTACT" placeholder="Contact Number">
+                                            </div>
+                                        </div>
+
+
+
+
+                                        <div class="row MasterForm">
+                                            <label for="refund_Customer" class="col-sm-4 col-form-label">Refund Name</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" multiple class="form-control" id="refund_Customer" name="refund_Customer" value="@Model.DepositMasterObj.refund_Customer" placeholder="Refund Customer" readonly>
+                                            </div>
+                                        </div>
+
+
+
+                                    </div>
+                                    <div class="col-lg-4">
+
+                                        <div class="row MasterForm">
+                                            <label for="ExportTo_Destination_ID" class="col-sm-4 col-form-label">Destination</label>
+                                            <div class="col-sm-8">
+                                                <select class="form-control" id="export_to_Destination_ID" name="export_to_Destination_ID" asp-items="@(new SelectList( ViewBag.ExportDestinations,"Destinations_ID","Destinations",Model.DepositMasterObj.export_to_Destination_ID))">
+                                                    <option>Select Export To</option>
+
+                                                </select>
+
+                                            </div>
+                                        </div>
+
+                                        <div class="row MasterForm">
+                                            <label for="port_ID" class="col-sm-4 col-form-label">Port Exit</label>
+                                            <div class="col-sm-8">
+                                                <select class="form-control" id="port_ID" name="port_ID" asp-items="@(new SelectList( ViewBag.PortOfExit,"PortOfExit_ID","PortOfExit", Model.DepositMasterObj.port_ID))">
+                                                    <option>Select Port</option>
+
+                                                </select>
+
+                                            </div>
+                                        </div>
+
+                                        <div class="row MasterForm">
+                                            <label for="To" class="col-sm-4 col-form-label">Contact(Refund)</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" multiple class="form-control" id="refund_Contact" name="refund_Contact" value="@Model.DepositMasterObj.refund_Contact" placeholder="Contact(Refund)" readonly>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="col-lg-4 ">
+
+
+                                        <div class="row MasterForm">
+                                            <label for="DV_Ref" class="col-sm-4 col-form-label">Ref No</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" id="DV_Ref" name="DV_Ref" value="@Model.DepositMasterObj.DV_Ref" readonly>
+                                            </div>
+                                        </div>
+
+                                        <div class="row MasterForm">
+                                            <label for="Date_Taken" class="col-sm-4 col-form-label">Date Taken</label>
+                                            <div class="col-sm-8">
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                        </span>
+                                                    </span>
+
+
+                                                    @if (!String.IsNullOrEmpty(Model.DepositMasterObj.Date_Taken))
+                                                    {
+                                                        <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="Date_Taken" name="Date_Taken" value="@Model.DepositMasterObj.Date_Taken" required>
+
+                                                    }
+                                                    else
+                                                    {
+                                                        <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="Date_Taken" name="Date_Taken" value="@DateTime.Now.ToShortDateString()" required>
+
+                                                    }
+
+
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+
+
+
+                                        <div class="row MasterForm">
+                                            <label for="Date_Return" class="col-sm-4 col-form-label">Return Date</label>
+                                            <div class="col-sm-8">
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                        </span>
+                                                    </span>
+
+                                                    <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="Date_Return" name="Date_Return" value="@Model.DepositMasterObj.Date_Return" readonly>
+
+
+
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+
+                                    </div>
+
+
+                                </div>
+
+
+
+                            </div>
+
+
+                        </section>
+
+
+
+
+                    </form>
+
+
+                </div>
+
+            </div>
+
+            <div class="row">
+                <h4 class="header-row font-weight-bold"> Chassis Details </h4>
+
+                <form method="post" data-ajax="true" data-ajax-success="mySuccessDepositDetail" data-ajax-failure="myFailureDepositDetail"
+                      asp-area="" asp-controller="Delivery" asp-action="InsertDepositVoucherDetail" data-ajax-loading="" id="FormInsertDepositDetail">
+                    <div class="row form-group">
+                        @if (Model.DepositMasterObj.DV_ID != 0)
+                        {
+                            <input id="hdDV_ID" name="hdDV_ID" type="hidden" value="@Model.DepositMasterObj.DV_ID" />
+                        }
+                        else
+
+                        {
+
+                            <input id="hdDV_ID" name="hdDV_ID" type="hidden" value="0" />
+                        }
+                        <div class="col-lg">
+                            <div class="form-group">
+                                <label class="col-form-label" for="getChassisNo">Chassis</label>
+                                <input type="text" id="getChassisNo" name="getChassisNo" class="form-control" onblur="ValidateChassis()" placeholder="Chassis" required />
+                                <label id="ChassisValidationMessage"></label>
+                                <!--Hiddend field for saving stock id-->
+                                <input type="hidden" id="Stock_ID_Deposit" name="Stock_ID" class="form-control" placeholder="Chassis" />
+
+
+                            </div>
+                        </div>
+                        <div class="col-lg hidden">
+                            <div class="form-group">
+                                <label class="col-form-label" for="Car_Sale_Value">Sale Value</label>
+                                <input type="number" id="Car_Sale_Value" step="any" name="Car_Sale_Value" class="form-control" placeholder="Sale Value" />
+
+                            </div>
+                        </div>
+                        <div class="col-lg">
+                            <div class="form-group">
+                                <label class="col-form-label" for="Deposit">Deposit</label>
+                                <input type="number" id="Deposit" name="Deposit" step="any" class="form-control" placeholder="Deposit" />
+
+                            </div>
+                        </div>
+                        <div class="col-lg">
+                            <div class="form-group">
+                                <label class="col-form-label" for="fixCharges">Fix Charges</label>
+                                <input type="number" id="Fix_Deductable_Charges" name="Fix_Deductable_Charges" step="any" class="form-control" placeholder="Fix Charges" />
+
+                            </div>
+                        </div>
+                        <div class="col-lg">
+                            <div class="form-group">
+                                <label class="col-form-label" for="papers">Papers</label>
+                                <input type="number" id="PaperExpense_Changes" name="PaperExpense_Changes" step="any" class="form-control" placeholder="Paper Charges" />
+
+                            </div>
+                        </div>
+                        <div class="col-lg">
+                            <div class="form-group">
+                                <label class="col-form-label" for="VAT_Security_Deposit">VAT Security</label>
+                                <input type="number" id="VAT_Security_Deposit" name="VAT_Security_Deposit" step="any" class="form-control" placeholder="Security" />
+
+                            </div>
+                        </div>
+                        <div class="col-lg">
+                            <div class="form-group">
+                                <label class="col-form-label" for="Other_Charges">Others</label>
+                                <input type="number" id="Other_Charges" name="Other_Charges" class="form-control" placeholder="Other" />
+
+                            </div>
+                        </div>
+                        <div class="col-lg">
+                            <div class="form-group">
+                                <label class="col-form-label" for="Submission_Date">Submit Date</label>
+                                <input type="text" data-plugin-datepicker id="Submission_Date" name="Submission_Date" class="form-control" placeholder="Submit Date" />
+
+                            </div>
+                        </div>
+
+
+
+
+
+
+
+
+                        <div class="col-lg">
+                            <div class="form-group">
+                                <label class="col-form-label" for="ShipDate">Ship Date</label>
+                                <input type="text" data-plugin-datepicker id="ShipDate" name="ShipDate" class="form-control" placeholder="Ship Date" />
+
+                            </div>
+                        </div>
+                        <div class="col-lg">
+                            <div class="form-group">
+                                <label class="col-form-label" for="External_Trans_Ref">Ref</label>
+                                <input type="text" id="External_Trans_Ref" name="External_Trans_Ref" class="form-control" placeholder="Ref" />
+
+                            </div>
+                        </div>
+
+                        <div class="col-lg">
+                            <div class="form-group">
+                                <br />
+                                <button type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-info">Add&nbsp;<i class="fas fa-plus"></i></button>
+
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+            <div class="row">
+
+                <div id="DepositVoucherDetailSection">
+
+                    <table class="table table-responsive-md table-bordered mb-0">
+                        <thead>
+                            <tr>
+                                <th>Edit/Delete</th>
+                                <th>Chassis</th>
+
+                                <th>Deposit</th>
+                                <th>Fix Charge</th>
+                                <th>Paper</th>
+                                <th>Security</th>
+                                <th>Others</th>
+                                <th>SubmitDate</th>
+                                <th>Ref</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.DepositsDetailList.Any())
+                            {
+                                ViewBag.Total_Amount = 0;
+
+                                foreach (Deposits_DAL item in Model.DepositsDetailList)
+                                {
+
+                             
+                                    decimal Total_Amount = Convert.ToDecimal(item.Total_Amount);
+                                    ViewBag.Total_Amount = Convert.ToDecimal(ViewBag.Total_Amount) + Total_Amount;
+
+                                    <tr>
+                                        <td>
+                                            <a onclick="UpdateDepositVoucherDetail_Script('@item.DVdetails_ID ','@item.Chassis_No', '@item.Stock_ID', '@item.Car_Sale_Value', '@item.Deposit ', '@item.Fix_Deductable_Charges', '@item.PaperExpense_Changes', '@item.VAT_Security_Deposit','@item.Other_Charges','@item.Submission_Date', '@item.ShipDate', '@item.External_Trans_Ref');" data-toggle="modal" data-target="#UpdateDepositDetailModal"><img style="width: 20px;" src="~/Img/Icons/edit.png" /></a>
+                                            <a onclick="DeleteDepositDetail('@item.DVdetails_ID');" data-toggle="modal" data-target="#DeleteDepositDetailModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+                                        </td>
+                                        <td>@Html.DisplayFor(modelItem => item.Chassis_No)</td>
+
+
+                                        <td>@Html.DisplayFor(modelItem => item.Deposit)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.Fix_Deductable_Charges)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.PaperExpense_Changes)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.VAT_Security_Deposit)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.Other_Charges)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.Submission_Date)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.External_Trans_Ref)</td>
+
+
+                                    </tr>
+
+
+                                }
+                            }
+
+
+                        </tbody>
+
+                    </table>
+
+
+                    <div class="invoice-summary">
+
+                        <div class="row">
+
+
+
+                            <div class="col-lg-9 col-md-9">
+
+                            </div>
+
+                            <div class="col-lg-3 col-md-3 justify-content-end text-right">
+                                <table class="table h6 text-dark">
+                                    <tbody>
+
+                                        <tr class="b-top-0">
+                                            <td colspan="2"> Total Amount:</td>
+                                            @if (ViewBag.Total_Amount != null)
+                                            {
+                                        <td class="text-right" id=""> @string.Format("{0:0,0.0,0}", ViewBag.Total_Amount)</td> }
+                                                    else
+                                                    {
+                                                        <td class="text-right" id=""> @ViewBag.Total_Amount</td>
+                                                    }
+
+                                        </tr>
+
+
+
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+
+            </div>
+
+
+
+
+        </div>
+
+    </div>
+</section>
+
+<section class="card">
+    <div class="card-body">
+        <header class="clearfix">
+            <div class="row">
+                <div class="col-sm-6 col-lg-6 col-md-6 mt-0">
+                    @*<h3 class="h4 mt-0 mb-2 text-dark font-weight-bold"></h3>*@
+
+                    <h4 class="header-row font-weight-bold text-dark"> Deposit >> Recieved </h4>
+
+                </div>
+
+
+                <div class="col-sm-6 col-lg-6 col-md-6  text-right">
+                    <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#AddNewReceiptDetailModal">Add New &nbsp;<i class="fas fa-plus"></i></button>
+
+                </div>
+
+
+            </div>
+        </header>
+        <div id="ReceiptDetailSection">
+
+            <table class="table table-responsive-md table-bordered mb-0">
+                <thead>
+                    <tr>
+                        <th>Edit/Delete</th>
+                        <th>On Account</th>
+                        <th>Amount</th>
+                        <th>Description</th>
+
+                        <th>Payment Mode</th>
+
+                        <th>Cheque Details</th>
+
+
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @if (Model.receiptDetailList != null)
+                    {
+
+
+                        foreach (pa_ReceiptDetails_DAL item in Model.receiptDetailList)
+                        {
+
+
+
+                            <tr>
+
+
+                                <td>
+                                    <a onclick="UpdateReceiptDetailGeneral('@item.ReceiptDetail_ID','@item.DR_accountID','@item.Amount','@item.Currency_ID','@item.Currency_Rate','@item.other_curr_amount','@item.CR_accountID','@item.Description','@item.trans_ref','@item.Cheque_Bank_Name',
+                                        '@item.cheque_Date','@item.Cheque_no','@item.VAT_Rate','@item.VAT_Exp','@item.Total_Amount');" data-toggle="modal" data-target="#UpdateReceiptDetailModal"><img style="width: 20px;" src="~/Img/Icons/edit.png" /></a>
+                                    <a onclick="DeleteReceiptsDetail('@item.ReceiptDetail_ID');" data-toggle="modal" data-target="#DeleteReceiptDetailModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+
+
+
+                                </td>
+                                <td>@Html.DisplayFor(modelItem => item.DR_AcountName)</td>
+                                <td>@Html.DisplayFor(modelItem => item.Amount)</td>
+                                <td>@Html.DisplayFor(modelItem => item.Description)</td>
+                                <td>@Html.DisplayFor(modelItem => item.CR_AccountName)</td>
+                                <td>
+                                    <b> @Html.DisplayFor(modelItem => item.Cheque_Bank_Name)</b>
+                                    <i>  @Html.DisplayFor(modelItem => item.Cheque_no)</i>
+                                    <b>  @Html.DisplayFor(modelItem => item.cheque_Date)</b>
+
+                                </td>
+
+
+                            </tr>
+
+
+                        }
+                    }
+
+
+                </tbody>
+
+            </table>
+
+
+
+        </div>
+
+
+    </div>
+</section>
+
+
+
+
+
+
+<!-- Modal Update Chassis detail -->
+<div class="modal fade bs-modal-sm" id="UpdateDepositDetailModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Chassis Details</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" data-ajax="true" data-ajax-success="mySuccessDepositDetailUpdate" data-ajax-failure="myfailureDepositDetailUpdate"
+                  asp-area="" asp-controller="Delivery" asp-action="UpdateDepositVoucherDetail" data-ajax-loading="" id="FormDepositDetailUpdate">
+
+                <div class="card-body">
+
+
+
+                    <div class="row form-group">
+                        @if (Model.DepositMasterObj.DV_ID != 0)
+                        {
+                            <input id="hdDV_ID" name="hdDV_ID" type="hidden" value="@Model.DepositMasterObj.DV_ID" />
+                        }
+                        else
+
+                        {
+
+                            <input id="hdDV_ID" name="hdDV_ID" type="hidden" value="0" />
+                        }
+                        <div class="col-lg-3 col-md-3">
+                            <div class="form-group">
+                                <label class="col-form-label" for="getChassisNo">Chassis*</label>
+                                <input type="text" id="getChassisNoUpdate" name="getChassisNo" onblur="ValidateChassisUpdate()" class="form-control" placeholder="Enter chassis" required />
+                                <label id="ChassisValidationMessageUpdate"></label>
+
+                                <input type="hidden" id="DVdetails_IDUpdate" name="DVdetails_ID" />
+
+                                <!--Hiddend field for saving stock id-->
+                                <input type="hidden" id="Stock_ID_DepositUpdate" name="Stock_ID" class="form-control" placeholder="Chassis" />
+
+
+                            </div>
+                        </div>
+
+                        <div class="col-lg-3 col-md-3 hidden">
+                            <div class="form-group">
+                                <label class="col-form-label" for="Unit_PriceUpdate">Sale Value</label>
+
+
+                                <input type="text" id="Car_Sale_ValueUpdate" name="Car_Sale_Value" step="any" class="form-control" placeholder="Sales Value" />
+                            </div>
+                        </div>
+
+
+                        <div class="col-lg-3 col-md-3">
+                            <div class="form-group">
+                                <label class="col-form-label" for="Deposit">Deposit</label>
+                                <input type="text" id="DepositReceivedUpdate" name="Deposit" step="any" class="form-control" placeholder="Deposit" />
+                            </div>
+                        </div>
+
+
+                        <div class="col-lg-3 col-md-3">
+                            <div class="form-group">
+                                <label class="col-form-label" for="Amount">Fix Charges</label>
+                                <input type="text" id="Fix_Deductable_ChargesUpdate" name="Fix_Deductable_Charges" step="any" class="form-control" placeholder="Fix Charges" />
+                            </div>
+                        </div>
+
+
+
+
+
+                    </div>
+                    <div class="row form-group">
+                        <div class="col-lg-3 col-md-3">
+                            <div class="form-group">
+                                <label class="col-form-label" for="PaperExpense_Changes">Papers</label>
+                                <input type="text" id="PaperExpense_ChangesUpdate" name="PaperExpense_Changes" class="form-control" step="any"  placeholder="Paper Charges" />
+                            </div>
+                        </div>
+
+                        <div class="col-lg-3 col-md-3">
+                            <div class="form-group">
+                                <label class="col-form-label" for="Total_Amount">VAT Security</label>
+                                <input type="text" id="VAT_Security_DepositUpdate" name="VAT_Security_Deposit" class="form-control" step="any"  placeholder="VAT Security" />
+                            </div>
+                        </div>
+
+                        <div class="col-lg-3 col-md-3">
+                            <div class="form-group">
+                                <label class="col-form-label" for="Other_Charges">Others</label>
+                                <input type="text" id="Other_ChargesUpdate" name="Other_Charges" class="form-control" placeholder="Others" />
+
+                            </div>
+                        </div>
+
+                        <div class="col-lg-3 col-md-3">
+                            <div class="form-group">
+                                <label class="col-form-label" for="Submission_Date">Submit Date</label>
+
+                                <div class="input-group">
+                                    <span class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-calendar-alt"></i>
+                                        </span>
+                                    </span>
+
+                                    <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="Submission_DateUpdate" name="Submission_Date">
+
+
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-3 col-md-3">
+                            <div class="form-group">
+                                <label class="col-form-label" for="ModelYearUpdate">Ship Date</label>
+
+                                <div class="input-group">
+                                    <span class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-calendar-alt"></i>
+                                        </span>
+                                    </span>
+
+                                    <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="ShipDateUpdate" name="ShipDate">
+
+
+
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="row form-group">
+
+                        <div class="col-lg-3 col-md-3">
+                            <div class="form-group">
+                                <label class="col-form-label" for="ColorUpdate">Ref</label>
+                                <input type="text" id="External_Trans_RefUpdate" name="External_Trans_Ref" class="form-control" placeholder="Ref" />
+
+                            </div>
+                        </div>
+
+
+
+
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modal Delete receipt detail -->
+<div class="modal fade bs-modal-lg" id="DeleteDepositDetailModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Delete Receipt Detail</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="Delivery" asp-action="DeleteDepositVoucherDetail">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <h3>Do you want to delete this record?</h3>
+
+                                        <input type="hidden" id="DVdetails_IDDelete" name="DVdetails_ID" />
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<!-- Modal Delete receipt detail -->
+<div class="modal fade bs-modal-lg" id="DeleteReceiptDetailModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Delete Receipt Detail</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="Delivery" asp-action="DeleteReceiptDetailDepositVoucher">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <h3>Do you want to delete this record?</h3>
+
+                                        <input type="hidden" id="ReceiptDetail_IDDelete" name="ReceiptDetail_ID" />
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<!--Insert receipt detail model-->
+<div class="modal fade bs-modal-sm in" id="AddNewReceiptDetailModal" tabindex="-1" role="dialog" aria-hidden="true" style=" padding-right: 17px;">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Receipt Details</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" data-ajax="true" data-ajax-success="mySuccessInsertReceipt" data-ajax-failure="myFailureInsertReceipt"
+                  asp-area="" asp-controller="Delivery" asp-action="InsertReceiptDetail_Deposit" data-ajax-loading="" id="FormInsertReceiptDetail">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body">
+
+
+
+                            <div class="form-body">
+                                <div class="row">
+                                    @if (Model.DepositMasterObj.DV_ID != 0)
+                                    {
+                                        <input id="hdDV_ID" name="hdDV_ID" type="hidden" value="@Model.DepositMasterObj.DV_ID" />
+                                    }
+                                    else
+
+                                    {
+
+                                        <input id="hdDV_ID" name="hdDV_ID" type="hidden" value="0" />
+                                    }
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Account</label>
+                                            <select class="form-control" id="DR_accountID" name="DR_accountID" readonly>
+                                                <option value="14">Deposit</option>
+                                            </select>
+
+
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Amount*</label>
+                                            <input type="number" id="Amount" name="Amount" step="any" class="form-control PSum" placeholder="Enter Amount" onblur="CalculateSumAmount()" required>
+
+                                        </div>
+                                    </div>
+
+                                    <!--/span-->
+
+                                    <div class="col-md-3">
+                                        <label class="control-label">Currency & Rate</label>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-5 col-sm-5" style="padding:0; padding-left:12px;">
+                                                    <select class="form-control" id="Currency_ID" name="Currency_ID" asp-items="@(new SelectList( ViewBag.CurrencyList,"Currency_ID","Currency_ShortName"))" required>
+                                                        @*<option>SELECT</option>*@
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-7 col-sm-7" style="padding:0;">
+                                                    <input type="number" id="Currency_Rate" name="Currency_Rate" step="any" onblur="CalculateSumAmount()" value="1" class="form-control" placeholder="Rate" required>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Other Amount </label>
+                                            <input type="text" id="other_curr_amount" name="other_curr_amount" step="any" class="form-control" placeholder="Other Amount" readonly>
+
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Received Mode*</label>
+
+                                            <select class="form-control" id="CR_accountID" name="CR_accountID" asp-items="@(new SelectList( ViewBag.CR_accountIDList,"Account_ID","AccountName"))" required>
+                                                <option>Select</option>
+                                            </select>
+
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="control-label">Description</label>
+                                            <input type="text" id="Description" name="Description" class="form-control" placeholder="Enter Description here">
+
+                                        </div>
+                                    </div>
+
+                                    <!--/span-->
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Ref </label>
+
+                                            <input type="text" id="trans_ref" name="trans_ref" class="form-control" placeholder="Reference">
+
+
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+                                </div>
+                                <div class="row">
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Bank</label>
+                                            <input type="text" id="Cheque_Bank_Name" name="Cheque_Bank_Name" class="form-control" placeholder="Bank">
+
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Cheque Date </label>
+
+                                            <div class="input-group">
+                                                <span class="input-group-prepend">
+                                                    <span class="input-group-text">
+                                                        <i class="fas fa-calendar-alt"></i>
+                                                    </span>
+                                                </span>
+
+                                                <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="cheque_Date" name="cheque_Date">
+
+                                            </div>
+
+
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Cheque # </label>
+                                            <input type="text" id="Cheque_no" name="Cheque_no" class="form-control" placeholder="Cheque #">
+
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-md-3 col-lg-3">
+                                        <label class="control-label">VAT Charges </label>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-5 col-sm-5" style="padding:0; padding-left:12px;">
+                                                    <select class="form-control" id="VAT_Rate" name="VAT_Rate" onchange="CalculateSumAmount()">
+                                                        <option value="0">0%</option>
+                                                        <option value="5">5%</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-7 col-sm-7" style="padding:0;">
+                                                    <input type="text" id="VAT_Exp" name="VAT_Exp" step="any" class="form-control" placeholder="total" readonly>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-3 col-lg-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Total </label>
+                                            <input type="text" id="Total_Amount" name="Total_Amount" step="any" class="form-control" placeholder="total" readonly>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-sm btn-primary">Add</button>
+                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+<!--Update receipt detail model-->
+<div class="modal fade bs-modal-lg in" id="UpdateReceiptDetailModal" tabindex="-1" role="dialog" aria-hidden="true" style=" padding-right: 17px;">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Receipt Details</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" data-ajax="true" data-ajax-success="mySuccessUdpateReceipt" data-ajax-failure="myFailureUpdateReceipt"
+                  asp-area="" asp-controller="Delivery" asp-action="UpdateReceiptDetail_Deposit" data-ajax-loading="" id="FormUpdateReceiptDetail">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body">
+
+
+
+                            <div class="form-body">
+                                <div class="row">
+                                    @if (Model.DepositMasterObj.DV_ID != 0)
+                                    {
+                                        <input id="hdDV_ID" name="hdDV_ID" type="hidden" value="@Model.DepositMasterObj.DV_ID" />
+                                    }
+                                    else
+
+                                    {
+
+                                        <input id="hdDV_ID" name="hdDV_ID" type="hidden" value="0" />
+                                    }
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Account</label>
+                                           
+
+                                            <select class="form-control" id="DR_accountIDUpdate" name="DR_accountID" readonly>
+                                                <option value="14">Deposit</option>
+                                            </select>
+                                            <!--Following feild is primary key for update-->
+                                            <input type="hidden" id="ReceiptDetail_IDUpdate" name="ReceiptDetail_ID">
+
+
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Amount*</label>
+                                            <input type="number" id="AmountUpdate" name="Amount" class="form-control PSum" placeholder="Enter Amount" onblur="CalculateSumAmountUpdate()" required>
+
+                                        </div>
+                                    </div>
+
+                                    <!--/span-->
+
+                                    <div class="col-md-3">
+                                        <label class="control-label">Currency & Rate</label>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-5 col-sm-5" style="padding:0; padding-left:12px;">
+                                                    <select class="form-control" id="Currency_IDUpdate" name="Currency_ID" asp-items="@(new SelectList( ViewBag.CurrencyList,"Currency_ID","Currency_ShortName"))" required>
+                                                        @*<option>SELECT</option>*@
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-7 col-sm-7" style="padding:0;">
+                                                    <input type="number" id="Currency_RateUpdate" name="Currency_Rate" onblur="CalculateSumAmountUpdate()" value="1" class="form-control" placeholder="Rate" required>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Other Amount </label>
+                                            <input type="text" id="other_curr_amountUpdate" name="other_curr_amount" class="form-control" placeholder="Other Amount" readonly>
+
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Received Mode*</label>
+
+                                            <select class="form-control" id="CR_accountIDUpdate" name="CR_accountID" asp-items="@(new SelectList( ViewBag.CR_accountIDList,"Account_ID","AccountName"))" required>
+                                                <option>Select</option>
+                                            </select>
+
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="control-label">Description</label>
+                                            <input type="text" id="DescriptionUpdate" name="Description" class="form-control" placeholder="Enter Description here">
+
+                                        </div>
+                                    </div>
+
+                                    <!--/span-->
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Ref </label>
+
+                                            <input type="text" id="trans_refUpdate" name="trans_ref" class="form-control" placeholder="Reference">
+
+
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+                                </div>
+                                <div class="row">
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Bank</label>
+                                            <input type="text" id="Cheque_Bank_NameUpdate" name="Cheque_Bank_Name" class="form-control" placeholder="Bank">
+
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Cheque Date </label>
+
+                                            <div class="input-group">
+                                                <span class="input-group-prepend">
+                                                    <span class="input-group-text">
+                                                        <i class="fas fa-calendar-alt"></i>
+                                                    </span>
+                                                </span>
+
+                                                <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="cheque_DateUpdate" name="cheque_Date">
+
+                                            </div>
+
+
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Cheque # </label>
+                                            <input type="text" id="Cheque_noUpdate" name="Cheque_no" class="form-control" placeholder="Cheque #">
+
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-md-3 col-lg-3">
+                                        <label class="control-label">VAT Charges </label>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-5 col-sm-5" style="padding:0; padding-left:12px;">
+                                                    <select class="form-control" id="VAT_RateUpdate" name="VAT_Rate" onchange="CalculateSumAmountUpdate()">
+                                                        <option value="0">0%</option>
+                                                        <option value="5">5%</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-7 col-sm-7" style="padding:0;">
+                                                    <input type="text" id="VAT_ExpUpdate" name="VAT_Exp" class="form-control" placeholder="total" readonly>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-3 col-lg-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Total </label>
+                                            <input type="text" id="Total_AmountUpdate" name="Total_Amount" class="form-control" placeholder="total" readonly>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Update</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+<!-- Modal show attachment -->
+<div class="modal fade bs-modal-lg" id="ShowAttachmentMasterModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <!-- Following fields is for making a central sales master id for attachments -->
+        <input type="hidden" id="DepositMain" name="DepositMain" />
+
+        <div class="modal-content" id="AttachmentsDV">
+
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+
+
+
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
+
+
+
+    <script>
+
+        //---show attachment popup
+        function ShowAttachmentMaster(DV_ID) {
+            debugger
+            var TeamDetailPostBackURL = '/Delivery/GetDepositInvoice_Attachments';
+
+            //--assign value to DV_ID hidden field in the main. Dont remove this fields
+            $("#DepositMain").val(DV_ID);
+
+
+            if (!DV_ID) {
+                alert("ID is null. Please try again!");
+            } else {
+                $.ajax({
+                    type: "GET",
+                    url: TeamDetailPostBackURL,
+                    contentType: "application/json; charset=utf-8",
+                    data: { "DV_ID": DV_ID },
+                    datatype: "json",
+                    success: function (data) {
+
+
+                        if (data.message == undefined) {
+                            $('#AttachmentsDV').html(data);
+
+
+                            //--assign value to DV_ID hidden field. this field is in partial view '_SalesInvoiceAttachment'
+                            $("#DV_ID_Attachment").val(DV_ID);
+
+                            $('#ShowAttachmentMasterModal').modal('show');
+
+                        } else {
+                            alert(data.message);
+                            $('#ShowAttachmentMasterModal').modal('hide');
+                        }
+
+                    },
+                    error: function () {
+                        alert("Dynamic content load failed.");
+                    }
+                });
+            }
+
+
+
+        }
+
+
+        //---after successfull submission of attachment
+        function mySuccessAttachment(data) {
+
+            debugger
+            if (data.message == undefined) {
+
+
+                $('#AttachmentsDV').html(data);
+
+                //---assign id of sales master to the hidden field DV_ID_Attachment after partial view refresh
+                var DV_ID = document.getElementById("DepositMain").value;
+                $("#DV_ID_Attachment").val(DV_ID);
+
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        //---if error occured in insertion of attachment
+        function myFailureAttachment() {
+
+            alert("Failured occured. Please try again!");
+
+        }
+
+
+        //---Delete Attachment
+        function DeleteAttachment(Attachment_ID, Master_ID, Type, File_Name) {
+            debugger
+            var TeamDetailPostBackURL = '/Delivery/DeleteAttachmentDeposit';
+
+            //--in this function , the 'Type' is for the field in attachment table for specifying different voucher documents
+
+            var DV_ID = Master_ID;
+            if (!DV_ID) {
+                alert("Attachment ID is null. Please try again!");
+            } else {
+                $.ajax({
+                    type: "GET",
+                    url: TeamDetailPostBackURL,
+                    contentType: "application/json; charset=utf-8",
+                    data: { "DV_ID": DV_ID, "Attachment_ID": Attachment_ID, "Type": Type, "File_Name": File_Name },
+                    datatype: "json",
+                    success: function (data) {
+
+
+                        if (data.message == undefined) {
+                            $('#AttachmentsDV').html(data);
+
+
+                            //--assign value to DV_ID hidden field. this field is in partial view '_SalesInvoiceAttachment'
+                            $("#DV_ID_Attachment").val(DV_ID);
+
+
+
+                        } else {
+                            alert(data.message);
+                            //$('#ShowAttachmentMasterModal').modal('hide');
+                        }
+
+                    },
+                    error: function () {
+                        alert("Dynamic content load failed.");
+                    }
+                });
+            }
+
+
+
+        }
+
+
+        //---this function will hit after success submission of insert deposit detail form
+        function mySuccessDepositDetail(data) {
+
+            var SuccessDiv = " <div class='col-lg-12'><div class='alert alert-info'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button><strong>Success!</strong> Saved Successfully! <a href ='' class='alert-link'></a></div></div>";
+            debugger
+            if (data.message == undefined) {
+
+
+                $('#DepositVoucherDetailSection').html(data);
+                $('#SuccessErrorSection').html(SuccessDiv).show();
+
+
+                //reset form after success
+                $('#FormInsertDepositDetail').trigger("reset");
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        //---this function will hit when error occured in submission of deposit detail
+        function myFailureDepositDetail() {
+
+            alert("Failured occured. Please try again!");
+        }
+
+
+
+        //---this function will hit after success submission of insert deposit detail form
+        function mySuccessDepositDetailUpdate(data) {
+
+            var SuccessDiv = " <div class='col-lg-12'><div class='alert alert-info'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button><strong>Success!</strong> Saved Successfully! <a href ='' class='alert-link'></a></div></div>";
+            debugger
+            if (data.message == undefined) {
+
+
+                $('#DepositVoucherDetailSection').html(data);
+                $('#SuccessErrorSection').html(SuccessDiv).show();
+
+
+                $('#UpdateDepositDetailModal').modal('hide');
+                //reset form after success
+                $('#FormDepositDetailUpdate').trigger("reset");
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        //---this function will hit when error occured in submission of deposit detail
+        function myfailureDepositDetailUpdate() {
+
+            alert("Failured occured. Please try again!");
+        }
+
+
+
+
+        //---this function will hit after success submission of insert receipt detail form
+        function mySuccessInsertReceipt(data) {
+
+            var SuccessDiv = " <div class='col-lg-12'><div class='alert alert-info'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button><strong>Success!</strong> Saved Successfully! <a href ='' class='alert-link'></a></div></div>";
+            debugger
+            if (data.message == undefined) {
+
+
+                $('#ReceiptDetailSection').html(data);
+                $('#SuccessErrorSection').html(SuccessDiv).show();
+
+                //--hide Modal
+                $('#AddNewReceiptDetailModal').modal('hide');
+
+                //reset form after success
+                $('#FormInsertReceiptDetail').trigger("reset");
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        //---this function will hit when error occured in submission of receipt detail
+        function myFailureInsertReceipt() {
+
+            alert("Failured occured. Please try again!");
+        }
+
+
+        //---this function will hit after success submission of insert receipt detail form
+        function mySuccessUdpateReceipt(data) {
+
+            var SuccessDiv = " <div class='col-lg-12'><div class='alert alert-info'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button><strong>Success!</strong> Saved Successfully! <a href ='' class='alert-link'></a></div></div>";
+            debugger
+            if (data.message == undefined) {
+
+
+                $('#ReceiptDetailSection').html(data);
+                $('#SuccessErrorSection').html(SuccessDiv).show();
+
+                //--hide Modal
+                $('#UpdateReceiptDetailModal').modal('hide');
+
+                //reset form after success
+                $('#FormUpdateReceiptDetail').trigger("reset");
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        //---this function will hit when error occured in submission of receipt detail
+        function myFailureUpdateReceipt() {
+
+            alert("Failured occured. Please try again!");
+        }
+
+
+
+
+        $(document).ready(function () {
+            $("#ButtonSave").click(function () {
+                $("#formDeliveryMaster").submit();
+            });
+        });
+
+
+
+    </script>
+
+    <script>
+
+
+        //This function is for validation of chassis no
+        function ValidateChassis() {
+
+            //debugger
+
+
+            var Chassis = document.getElementById("getChassisNo").value.toString();
+
+            $.ajax({
+
+                type: "Get",
+                url: "/Delivery/ValidateChassisNoForDeposit",
+                data: { //Passing data
+                    ChassisNo: Chassis
+
+
+                },
+                datatype: "json",
+                success: function (response) {
+                    debugger
+                    if (response.message == 'Chassis is valid') {
+                        //debugger
+                        $("#ChassisValidationMessage").text(response.message);
+                        $("#ChassisValidationMessage").css("color", "green");
+
+                        $("#Stock_ID_Deposit").val(response.stock_ID);
+                        $("#Customer_ID").val(response.customer_ID);
+                        $("#Customer_Contact").val(response.contactNumber);
+                        $("#Customer_Name").val(response.customerName);
+                        $("#export_to_Destination_ID").val(response.exportTo_Destination_ID);
+                        $("#port_ID").val(response.port_of_Exit_ID);
+
+
+
+
+
+                    } else {
+                        $("#ChassisValidationMessage").text(response.message);
+                        $("#ChassisValidationMessage").css("color", "red");
+                        $("#getChassisNo").val("");
+
+                        $("#Stock_ID_Deposit").val("");
+                        $("#Customer_ID").val("");
+                        $("#Customer_Contact").val("");
+                        $("#Customer_Name").val("");
+                        $("#export_to_Destination_ID").val("");
+                        $("#port_ID").val("");
+
+                    }
+
+                }
+            })
+        }
+
+
+        //This function is for validation of chassis no
+        function ValidateChassisUpdate() {
+
+            //debugger
+
+
+            var Chassis = document.getElementById("getChassisNoUpdate").value.toString();
+
+            $.ajax({
+
+                type: "Get",
+                url: "/Delivery/ValidateChassisNoForDeposit",
+                data: { //Passing data
+                    ChassisNo: Chassis
+
+
+                },
+                datatype: "json",
+                success: function (response) {
+                    debugger
+                    if (response.message == 'Chassis is valid') {
+                        //debugger
+                        $("#ChassisValidationMessageUpdate").text(response.message);
+                        $("#ChassisValidationMessageUpdate").css("color", "green");
+
+                        $("#Stock_ID_DepositUpdate").val(response.stock_ID);
+                        $("#Customer_ID").val(response.customer_ID);
+                        $("#Customer_Contact").val(response.contactNumber);
+                        $("#Customer_Name").val(response.customerName);
+                        $("#export_to_Destination_ID").val(response.exportTo_Destination_ID);
+                        $("#port_ID").val(response.port_of_Exit_ID);
+
+
+
+
+
+                    } else {
+                        $("#ChassisValidationMessageUpdate").text(response.message);
+                        $("#ChassisValidationMessageUpdate").css("color", "red");
+                        $("#getChassisNo").val("");
+
+                        $("#Stock_ID_DepositUpdate").val("");
+                        $("#Customer_ID").val("");
+                        $("#Customer_Contact").val("");
+                        $("#Customer_Name").val("");
+                        $("#export_to_Destination_ID").val("");
+                        $("#port_ID").val("");
+
+                    }
+
+                }
+            })
+        }
+
+
+
+        //---function for calculating amounts in the receipt detail pop up form insert
+        function CalculateSumAmount() {
+            debugger
+            var Amount = 0;
+            var VAT_Rate = 0;
+            var Currency_Rate = 1;
+
+
+            var other_curr_amount = 0;
+            var VAT_Exp = 0;
+            var Total_Amount = 0;
+
+
+            Amount = document.getElementById("Amount").value;
+            VAT_Rate = document.getElementById("VAT_Rate").value;
+            Currency_Rate = document.getElementById("Currency_Rate").value;
+
+            other_curr_amount = document.getElementById("other_curr_amount").value;
+            VAT_Exp = document.getElementById("VAT_Exp").value;
+            Total_Amount = document.getElementById("Total_Amount").value;
+
+
+            if (!Amount) {
+                Amount = 0;
+            }
+            if (!VAT_Rate) {
+                VAT_Rate = 0;
+            }
+            if (!Currency_Rate) {
+                Currency_Rate = 1;
+            }
+            if (!other_curr_amount) {
+                other_curr_amount = 0;
+
+            }
+            if (!VAT_Exp) {
+                VAT_Exp = 0;
+            }
+            if (!Total_Amount) {
+                Total_Amount = 0;
+            }
+
+
+
+            //---calculate sum vat exp
+            VAT_Exp = VAT_Rate * Amount / 100;
+            $("#VAT_Exp").val(VAT_Exp);
+
+            Total_Amount = (Number(Amount) + Number(VAT_Exp));
+            $("#Total_Amount").val(Total_Amount);
+
+            //---calculate Amount_Others
+            other_curr_amount = Amount * Currency_Rate;
+            $("#other_curr_amount").val(other_curr_amount);
+
+
+
+
+        }
+
+
+        //---function for calculating amounts in the payment detail pop up form Update
+        function CalculateSumAmountUpdate() {
+            debugger
+            var Amount = 0;
+            var VAT_Rate = 0;
+            var Currency_Rate = 1;
+
+
+            var other_curr_amount = 0;
+            var VAT_Exp = 0;
+            var Total_Amount = 0;
+
+
+            Amount = document.getElementById("AmountUpdate").value;
+            VAT_Rate = document.getElementById("VAT_RateUpdate").value;
+            Currency_Rate = document.getElementById("Currency_RateUpdate").value;
+
+            other_curr_amount = document.getElementById("other_curr_amountUpdate").value;
+            VAT_Exp = document.getElementById("VAT_ExpUpdate").value;
+            Total_Amount = document.getElementById("Total_AmountUpdate").value;
+
+
+            if (!Amount) {
+                Amount = 0;
+            }
+            if (!VAT_Rate) {
+                VAT_Rate = 0;
+            }
+            if (!Currency_Rate) {
+                Currency_Rate = 1;
+            }
+            if (!other_curr_amount) {
+                other_curr_amount = 0;
+
+            }
+            if (!VAT_Exp) {
+                VAT_Exp = 0;
+            }
+            if (!Total_Amount) {
+                Total_Amount = 0;
+            }
+
+
+
+            //---calculate sum vat exp
+            VAT_Exp = VAT_Rate * Amount / 100;
+            $("#VAT_ExpUpdate").val(VAT_Exp);
+
+            Total_Amount = (Number(Amount) + Number(VAT_Exp));
+            $("#Total_AmountUpdate").val(Total_Amount);
+
+            //---calculate Amount_Others
+            other_curr_amount = Amount * Currency_Rate;
+            $("#other_curr_amountUpdate").val(other_curr_amount);
+
+
+
+
+        }
+
+
+
+        function DeleteDepositDetail(DVdetails_ID) {
+            debugger
+            $("#DVdetails_IDDelete").val(DVdetails_ID);
+
+        }
+
+        //---delete receipt detail gen
+        function DeleteReceiptsDetail(ReceiptDetail_ID) {
+            debugger
+            $("#ReceiptDetail_IDDelete").val(ReceiptDetail_ID);
+
+        }
+
+        //---update
+        function UpdateDepositVoucherDetail_Script(DVdetails_ID, Chassis_No, Stock_ID, Car_Sale_Value, Deposit, Fix_Deductable_Charges, PaperExpense_Changes,
+            VAT_Security_Deposit, Other_Charges, Submission_Date, ShipDate, External_Trans_Ref) {
+            debugger
+            $("#DVdetails_IDUpdate").val(DVdetails_ID);
+            $("#getChassisNoUpdate").val(Chassis_No);
+            $("#Stock_ID_DepositUpdate").val(Stock_ID);
+            $("#Car_Sale_ValueUpdate").val(Car_Sale_Value);
+            $("#DepositReceivedUpdate").val(Deposit);
+            $("#Fix_Deductable_ChargesUpdate").val(Fix_Deductable_Charges);
+            $("#PaperExpense_ChangesUpdate").val(PaperExpense_Changes);
+            $("#VAT_Security_DepositUpdate").val(VAT_Security_Deposit);
+            $("#Other_ChargesUpdate").val(Other_Charges);
+            $("#Submission_DateUpdate").val(Submission_Date);
+            $("#ShipDateUpdate").val(ShipDate);
+            $("#External_Trans_RefUpdate").val(External_Trans_Ref);
+
+        }
+
+
+
+        //----Assigning values to Update receipt detail form
+        function UpdateReceiptDetailGeneral(ReceiptDetail_ID, DR_accountID, Amount, Currency_ID, Currency_Rate,
+            other_curr_amount, CR_accountID, Description, trans_ref, Cheque_Bank_Name,
+            cheque_Date, Cheque_no, VAT_Rate, VAT_Exp, Total_Amount) {
+
+
+            debugger
+
+            $("#ReceiptDetail_IDUpdate").val(ReceiptDetail_ID);
+            $("#DR_accountIDUpdate").val(DR_accountID);
+            $("#AmountUpdate").val(Amount);
+
+            $("#Currency_IDUpdate").val(Currency_ID);
+            $("#Currency_RateUpdate").val(Currency_Rate);
+            $("#other_curr_amountUpdate").val(other_curr_amount);
+            $("#CR_accountIDUpdate").val(CR_accountID);
+            $("#DescriptionUpdate").val(Description);
+            $("#trans_refUpdate").val(trans_ref);
+            $("#Cheque_Bank_NameUpdate").val(Cheque_Bank_Name);
+            $("#cheque_DateUpdate").val(cheque_Date);
+            $("#Cheque_noUpdate").val(Cheque_no);
+            $("#VAT_RateUpdate").val(VAT_Rate);
+            $("#VAT_ExpUpdate").val(VAT_Exp);
+            $("#Total_AmountUpdate").val(Total_Amount);
+
+
+        }
+
+               $(document).ready(function(){
+    $("#print-btn").click(function(event){
+        event.preventDefault();
+
+        var win = window.open("@Url.Action("DVReport_Print", "Report")"+"?DV_ID=" + $("#DV_ID").val() , "_blank");
+        win.focus();
+    });
+        })
+    </script>
+
+}

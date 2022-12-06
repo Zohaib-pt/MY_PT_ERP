@@ -1,0 +1,896 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OHome
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+@{ ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    string Stock_Setting = Configuration.GetSection("AppSettings").GetSection("IsStockList_Name").Value;
+}
+
+
+
+
+
+<header class="page-header">
+    <h2>Dashboard</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+            <li><a asp-area="" asp-controller="Home" asp-action="Index"><span>Index</span></a></li>
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+<!-- start: page -->
+<div class="row">
+
+
+    <div class="col-md-12">
+        <div class="row mb-3">
+
+            <div class="col-md-3">
+                <section class="card card-featured-left card-featured-primary mb-3">
+                    <div class="card-body">
+
+
+                        <div class="widget-summary">
+                            <div class="widget-summary-col widget-summary-col-icon">
+                                <div class="summary-icon bg-primary">
+                                    <i class="fas fa-dollar-sign"></i>
+                                </div>
+                            </div>
+                            <div class="widget-summary-col">
+                                <div class="summary">
+                                    <h4 class="title">Today's Sale</h4>
+                                    <div class="info">
+                                        <strong class="amount">@Model.DashboardObject.Today_Sale</strong>
+                                        @*<span class="text-primary">(14 unread)</span>*@
+                                    </div>
+                                </div>
+                                <div class="summary-footer">
+                                    <a class="text-muted text-uppercase" href="/Sales/SalesInvoiceList?StartDate=@DateTime.Now.ToString("dd-MMM-yyyy")&EndDate=@DateTime.Now.ToString("dd-MMM-yyyy")">View</a>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <div class="col-md-3">
+                <section class="card card-featured-left card-featured-secondary mb-3">
+                    <div class="card-body">
+                        <div class="widget-summary">
+                            <div class="widget-summary-col widget-summary-col-icon">
+                                <div class="summary-icon bg-secondary">
+                                    <i class="fas fa-money-check"></i>
+                                </div>
+                            </div>
+                            <div class="widget-summary-col">
+                                <div class="summary">
+                                    <h4 class="title">Payables</h4>
+                                    <div class="info">
+                                        <strong class="amount"> @Model.DashboardObject.Total_Payables</strong>
+                                    </div>
+                                </div>
+                                <div class="summary-footer">
+                                    <a class="text-muted text-uppercase" href="/Report/PayableSummary">View</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <div class="col-md-3">
+                <section class="card card-featured-left card-featured-tertiary mb-3">
+                    <div class="card-body">
+                        <div class="widget-summary">
+                            <div class="widget-summary-col widget-summary-col-icon">
+                                <div class="summary-icon bg-tertiary">
+                                    <i class="fas fa-object-group"></i>
+                                </div>
+                            </div>
+                            <div class="widget-summary-col">
+                                <div class="summary">
+                                    <h4 class="title">UnSold Stock</h4>
+                                    <div class="info">
+                                        <strong class="amount">@Model.DashboardObject.UnSold_Count</strong>
+                                    </div>
+                                </div>
+                                <div class="summary-footer">
+                                    <a class="text-muted text-uppercase" href="/Stock/@Stock_Setting">View</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <div class="col-md-3">
+                <section class="card card-featured-left card-featured-quaternary mb-3">
+                    <div class="card-body">
+                        <div class="widget-summary">
+                            <div class="widget-summary-col widget-summary-col-icon">
+                                <div class="summary-icon bg-quaternary">
+                                    <i class="fas fa-file-invoice"></i>
+                                </div>
+                            </div>
+                            <div class="widget-summary-col">
+                                <div class="summary">
+                                    <h4 class="title">Recieveables</h4>
+                                    <div class="info">
+                                        <strong class="amount">@Model.DashboardObject.Total_Recievables</strong>
+                                    </div>
+                                </div>
+                                <div class="summary-footer">
+                                    <a class="text-muted text-uppercase" href="/Report/RecievableSummary">View</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+
+
+        </div>
+
+    </div>
+</div>
+
+
+
+<div class="row" @ViewBag.ShowGenInventoryDashboard>
+
+
+    <div class="col-sm-6 mb-6">
+        <div class="row m-2">
+            <div class="col-sm-5">
+                <div class="form-group">
+
+                    <label>&nbsp;</label>
+
+                </div>
+            </div>
+
+            <div class="col-sm-5">
+                <div class="form-group">
+                    <label>&nbsp;<</label>
+
+
+
+                </div>
+
+            </div>
+            <br />
+            <div class="col-sm-2 text-right">
+
+            </div>
+        </div>
+        <br />
+        <br />
+
+        <section class="card">
+            <div class="card-body">
+                <div class="x_title">
+                    <h4>Last 7 Day Sale</h4>
+
+                    <div class="clearfix"></div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <canvas id="mybarChart"></canvas>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <div class="col-sm-6 mb-6">
+        <div class="row m-2">
+            <div class="col-sm-5">
+                <div class="form-group">
+
+                    <label>Start Date </label>
+                    <div class="input-group date form_date col-md-13" data-date="" data-date-format="dd MM yyyy" data-link-field="dtp_input2" data-link-format="yyyy-mm-dd">
+                        <input id='StartDate' name="StartPurchaseDate" data-plugin-datepicker class="form-control" autocomplete="off" value="" size="16" type="text">
+                        <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-5">
+                <div class="form-group">
+                    <label>End Date</label>
+
+                    <div class="input-group date form_date col-md-13" data-date="" data-date-format="dd MM yyyy" data-link-field="dtp_input2" data-link-format="yyyy-mm-dd">
+                        <input id='EndDate' name="EndPurchaseDate" data-plugin-datepicker class="form-control" autocomplete="off" value="" size="16" type="text">
+                        <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                    </div>
+
+                </div>
+
+            </div>
+            <br />
+            <div class="col-sm-2 text-right" style="margin-top:30px">
+                <button type="submit" onclick="SearchDate()" class="btn btn-sm btn-primary">Search</button>
+            </div>
+        </div>
+        <section class="card">
+            <div class="card-body">
+                <div class="x_title">
+                    <h4>Top Sale by Item </h4>
+
+                    <div class="clearfix"></div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <canvas id="SaleChart"></canvas>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+</div>
+<div class="row" @ViewBag.ShowGenInventoryDashboard>
+
+    <div class="col-sm-6 mb-6">
+
+        <section class="card">
+            <div class="card-body">
+                <div class="x_title">
+                    <h4>Top Sale by Category </h4>
+
+                    <div class="clearfix"></div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <canvas id="TopByCatChart"></canvas>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div class="col-sm-6 mb-6">
+
+        <section class="card">
+            <div class="card-body">
+                <div class="x_title">
+                    <h4>Top Item by Cost </h4>
+
+                    <div class="clearfix"></div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <canvas id="TopItemByCost"></canvas>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+</div>
+
+<div class="row" @ViewBag.ShowGenInventoryDashboard>
+
+    <div class="col-sm-6 mb-6">
+
+        <section class="card">
+            <div class="card-body">
+                <div class="x_title">
+                    <h4> Month Wise Sale </h4>
+
+                    <div class="clearfix"></div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <canvas id="SaleByMonthChart"></canvas>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div class="col-sm-6 mb-6">
+
+        <section class="card">
+            <div class="card-body">
+                <div class="x_title">
+                    <h4>Top Payables </h4>
+
+                    <div class="clearfix"></div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <canvas id="TopPayablesChart"></canvas>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+</div>
+
+
+
+
+
+
+
+@section Scripts {
+    <!-- Chart.js -->
+    <script src="~/js/Chart.js/dist/Chart.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.min.js"></script>
+    <script>
+        var chartCustomer;
+        function getLAST_7DAYS_SALE_TRD() {
+
+            var months = [];
+            var Nettotal = [];
+
+            if (months.length != 0) {
+
+                months = [];
+
+            }
+            if (Nettotal.length != 0) {
+                Nettotal = [];
+
+            }
+            if (Nettotal.length != 0) {
+                Nettotal = [];
+
+            }
+
+
+
+            $.ajax({
+                data: "{ }",
+                type: "Get",
+                contentType: "application/json; charset=utf-8",
+                url: "/Sales/getLAST_7DAYS_SALE_TRD",
+                dataType: "json",
+                success: function (Result) {
+
+
+                    for (var i in Result) {
+                        serie = new Array();
+                        serie = Array(Result[i].month, Result[i].netTotal);
+                        var Monthname = [];
+                        Monthname = Result[i].month;
+                        months.push(Monthname);
+                        var Monthnameb = new Array();
+                        Monthnameb = Result[i].netTotal;
+                        Nettotal.push(Monthnameb);
+                    }
+                    var ctx = document.getElementById("mybarChart");
+                    if (chartCustomer) chartCustomer.destroy();
+                    window.chartCustomer = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: months,
+                            datasets: [{
+                                label: '# Top Sale Items',
+                                backgroundColor: [
+                                    "#f990a7",
+                                    "#aad2ed",
+                                    "#9966FF",
+                                    "#99e5e5",
+                                    "#f7bd83",
+                                ],
+                                borderColor: [
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)'
+                                ],
+                                data: Nettotal
+                            }]
+                        },
+
+                        options: {
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        beginAtZero: true
+                                    }
+                                }]
+                            }
+                        }
+                    });
+                    chartCustomer.update();
+                },
+                error: function (Result) {
+                    alert("Error");
+                }
+            });
+        }
+
+        var TopItemByCost;
+        function TopSaleCategory_trd() {
+
+            var category_Name = [];
+            var amount = [];
+
+            if (category_Name.length != 0) {
+
+                category_Name = [];
+
+            }
+            if (amount.length != 0) {
+                amount = [];
+
+            }
+            if (amount.length != 0) {
+                amount = [];
+
+            }
+
+
+
+            $.ajax({
+                data: {
+                    StartDate: $("#StartDate").val(),
+                    EndDate: $("#EndDate").val(),
+                },
+                type: "Get",
+                contentType: "application/json; charset=utf-8",
+                url: "/Sales/TopSaleCategory_trd",
+                dataType: "json",
+                success: function (Result) {
+
+
+                    for (var i in Result) {
+                        serie = new Array();
+                        serie = Array(Result[i].category_Name, Result[i].amount);
+                        var CategoryName = [];
+                        CategoryName = Result[i].category_Name;
+                        category_Name.push(CategoryName);
+                        var AmountValue = new Array();
+                        AmountValue = Result[i].amount;
+                        amount.push(AmountValue);
+                    }
+                    var ctx = document.getElementById("TopByCatChart");
+                    if (topSaleByCategory) topSaleByCategory.destroy();
+                    window.topSaleByCategory = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: category_Name,
+                            datasets: [{
+                                label: '# Top Sale by Category',
+                                backgroundColor: [
+                                    "#f990a7",
+                                    "#aad2ed",
+                                    "#9966FF",
+                                    "#99e5e5",
+                                    "#f7bd83",
+                                ],
+                                borderColor: [
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)'
+                                ],
+                                data: amount
+                            }]
+                        },
+
+                        options: {
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        beginAtZero: true
+                                    }
+                                }]
+                            }
+                        }
+                    });
+                    topSaleByCategory.update();
+                },
+                error: function (Result) {
+                    alert("Error");
+                }
+            });
+        }
+
+        var topSaleByCategory;
+        function TopItemByCost_trd() {
+
+            var itemName = [];
+            var amount = [];
+
+            if (itemName.length != 0) {
+
+                itemName = [];
+
+            }
+            if (amount.length != 0) {
+                amount = [];
+
+            }
+            if (amount.length != 0) {
+                amount = [];
+
+            }
+
+
+
+            $.ajax({
+                data: {
+                    StartDate: $("#StartDate").val(),
+                    EndDate: $("#EndDate").val(),
+                },
+                type: "Get",
+                contentType: "application/json; charset=utf-8",
+                url: "/Sales/TopItemByCost_trd",
+                dataType: "json",
+                success: function (Result) {
+
+                    for (var i in Result) {
+                        serie = new Array();
+                        serie = Array(Result[i].itemName, Result[i].amount);
+                        var ItemNameByCost = [];
+                        ItemNameByCost = Result[i].itemName;
+                        itemName.push(ItemNameByCost);
+                        var AmountValue = new Array();
+                        AmountValue = Result[i].amount;
+                        amount.push(AmountValue);
+                    }
+                    var ctx = document.getElementById("TopItemByCost");
+                    if (TopItemByCost) TopItemByCost.destroy();
+                    window.TopItemByCost = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: itemName,
+                            datasets: [{
+                                label: '# Top Item By Cost',
+                                backgroundColor: [
+                                    "#f990a7",
+                                    "#aad2ed",
+                                    "#9966FF",
+                                    "#99e5e5",
+                                    "#f7bd83",
+                                ],
+                                borderColor: [
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)'
+                                ],
+                                data: amount
+                            }]
+                        },
+
+                        options: {
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        beginAtZero: true
+                                    }
+                                }]
+                            }
+                        }
+                    });
+                    TopItemByCost.update();
+                },
+                error: function (Result) {
+                    alert("Error");
+                }
+            });
+        }
+
+        var check;
+        function getTopSaleValueItems_trd() {
+
+            var months = [];
+            var Nettotal = [];
+
+            if (months.length != 0) {
+
+                months = [];
+
+            }
+            if (Nettotal.length != 0) {
+                Nettotal = [];
+
+            }
+            if (Nettotal.length != 0) {
+                Nettotal = [];
+
+            }
+
+
+
+            $.ajax({
+                data: {
+                    StartDate: $("#StartDate").val(),
+                    EndDate: $("#EndDate").val(),
+                },
+                type: "Get",
+                contentType: "application/json; charset=utf-8",
+                url: "/Sales/GetTopSaleValueItems_trd",
+                dataType: "json",
+                success: function (Result) {
+
+                    for (var i in Result) {
+                        serie = new Array();
+                        serie = Array(Result[i].month, Result[i].netTotal);
+                        var Monthname = [];
+                        Monthname = Result[i].month;
+                        months.push(Monthname);
+                        var Monthnameb = new Array();
+                        Monthnameb = Result[i].netTotal;
+                        Nettotal.push(Monthnameb);
+                    }
+                    var ctx = document.getElementById("SaleChart");
+                    if (check) check.destroy();
+                    check = new Chart(ctx, {
+                        type: 'horizontalBar',
+                        data: {
+                            labels: months,
+                            datasets: [{
+                                label: '# Sale',
+                                backgroundColor: [
+                                    "#f990a7",
+                                    "#aad2ed",
+                                    "#9966FF",
+                                    "#99e5e5",
+                                    "#f7bd83",
+                                ],
+                                borderColor: [
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)'
+                                ],
+                                borderWidth: 1,
+                                data: Nettotal
+                            }]
+                        },
+
+                        options: {
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        beginAtZero: true
+                                    }
+                                }]
+                            }
+                        }
+                    });
+                    check.update();
+                },
+                error: function (Result) {
+                    alert("Error");
+                }
+            });
+        }
+
+
+        var Sale_By_Month;
+        function Sale_By_Month_trd() {
+
+            var months = [];
+            var Nettotal = [];
+
+            if (months.length != 0) {
+
+                months = [];
+
+            }
+            if (Nettotal.length != 0) {
+                Nettotal = [];
+
+            }
+            if (Nettotal.length != 0) {
+                Nettotal = [];
+
+            }
+
+
+
+            $.ajax({
+                data: "{ }",
+                type: "Get",
+                contentType: "application/json; charset=utf-8",
+                url: "/Sales/Sale_By_Month_trd",
+                dataType: "json",
+                success: function (Result) {
+                    debugger
+
+
+
+
+                    for (var i in Result) {
+                        serie = new Array();
+                        serie = Array(Result[i].month, Result[i].netTotal);
+                        var Monthname = [];
+                        Monthname = Result[i].month;
+                        months.push(Monthname);
+                        var Monthnameb = new Array();
+                        Monthnameb = Result[i].netTotal;
+                        Nettotal.push(Monthnameb);
+                    }
+                    var ctx = document.getElementById("SaleByMonthChart");
+                    if (Sale_By_Month) Sale_By_Month.destroy();
+                    window.Sale_By_Month = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: months,
+                            datasets: [{
+                                label: '# Top Sale by Month',
+                                backgroundColor: [
+                                    "#f990a7",
+                                    "#aad2ed",
+                                    "#9966FF",
+                                    "#99e5e5",
+                                    "#f7bd83",
+                                ],
+                                borderColor: [
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)'
+                                ],
+                                data: Nettotal
+                            }]
+                        },
+
+                        options: {
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        beginAtZero: true
+                                    }
+                                }]
+                            }
+                        }
+                    });
+                    Sale_By_Month.update();
+                },
+                error: function (Result) {
+                    alert("Error");
+                }
+            });
+        }
+
+
+        var topPayable;
+        function TopPayables_trd() {
+
+            var vendor_Name = [];
+            var amount = [];
+
+            if (vendor_Name.length != 0) {
+
+                vendor_Name = [];
+
+            }
+            if (amount.length != 0) {
+                amount = [];
+
+            }
+            if (amount.length != 0) {
+                amount = [];
+
+            }
+
+
+
+            $.ajax({
+                data: {
+                    StartDate: $("#StartDate").val(),
+                    EndDate: $("#EndDate").val(),
+                },
+                type: "Get",
+                contentType: "application/json; charset=utf-8",
+                url: "/Sales/TopPayables_trd",
+                dataType: "json",
+                success: function (Result) {
+
+                    for (var i in Result) {
+                        serie = new Array();
+                        serie = Array(Result[i].vendor_Name, Result[i].amount);
+                        var venName = [];
+                        venName = Result[i].vendor_Name;
+                        vendor_Name.push(venName);
+                        var AmountValue = new Array();
+                        AmountValue = Result[i].amount;
+                        amount.push(AmountValue);
+                    }
+                    var ctx = document.getElementById("TopPayablesChart");
+                    if (topPayable) topPayable.destroy();
+                    window.topPayable = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: vendor_Name,
+                            datasets: [{
+                                label: '# Top Payables',
+                                backgroundColor: [
+                                    "#f990a7",
+                                    "#aad2ed",
+                                    "#9966FF",
+                                    "#99e5e5",
+                                    "#f7bd83",
+                                ],
+                                borderColor: [
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)'
+                                ],
+                                data: amount
+                            }]
+                        },
+
+                        options: {
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        beginAtZero: true
+                                    }
+                                }]
+                            }
+                        }
+                    });
+                    topPayable.update();
+                },
+                error: function (Result) {
+                    alert("Error");
+                }
+            });
+        }
+
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            getTopSaleValueItems_trd();
+            getLAST_7DAYS_SALE_TRD();
+            TopSaleCategory_trd();
+            TopItemByCost_trd();
+            Sale_By_Month_trd();
+            TopPayables_trd();
+
+        });
+        function SearchDate() {
+
+
+            getTopSaleValueItems_trd();
+            TopSaleCategory_trd();
+            TopItemByCost_trd();
+        }
+    </script>
+}
+
+

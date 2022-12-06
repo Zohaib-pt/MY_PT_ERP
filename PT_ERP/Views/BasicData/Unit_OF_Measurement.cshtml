@@ -1,0 +1,321 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OBasicData
+
+@{ Layout = "~/Views/Shared/_LayoutTablePages.cshtml"; }
+
+
+
+
+
+<header class="page-header">
+    <h2>Basic Data</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+            <li><a asp-area="" asp-controller="BasicData" asp-action="Unit_OF_Measurement"><span>UOM List</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+
+<div class="row">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+<div class="col-lg-12">
+    @if (TempData["Success"] != null)
+    {
+<div class="alert alert-info">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+    <strong>Success!</strong> @TempData["Success"] <a href="" class="alert-link"></a>
+</div>}
+
+    @if (TempData["Error"] != null)
+    {
+<div class="alert alert-danger">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+    <strong>Error!</strong> @TempData["Error"] <a href="" class="alert-link"></a>
+</div>}
+</div>}
+
+
+</div>
+
+<div class="row">
+    <div class="col">
+        <section class="card">
+            <header class="card-header">
+
+                <div class="row">
+                    <div class="col-lg-6">
+                        <h2 class="card-title" style="line-height:normal;">Unit OF Measurement</h2>
+                    </div>
+                    <div class="col-lg-6" style="text-align:right;">
+                        <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#AddUOM">Add UOM &nbsp;<i class="fas fa-plus"></i></button>
+
+                        <button type="button" class="mb-1 mt-1 mr-1 btn btn-sm btn-info">Print &nbsp;<i class="fas fa-print"></i></button>
+                    </div>
+                </div>
+
+            </header>
+            <div class="card-body">
+
+
+
+                <table class="table table-bordered table-striped mb-0" id="datatable-default">
+                    <thead>
+                        <tr>
+
+
+                            <th>Edit/Delete</th>
+                            <th>UOM</th>
+                            <th>UOM_ID</th>
+
+
+                            <th>Create At</th>
+                            <th>Create By</th>
+                            <th>Updated At</th>
+                            <th>Updated By</th>
+
+
+
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @if (Model.UOMList != null)
+                        {
+                            foreach (Pa_UOM_DAL item in Model.UOMList)
+                            {
+
+            <tr>
+
+                <td>
+                    <a onclick="UpdateUOM('@item.UOM_ID', '@item.UOM')" data-toggle="modal"
+                       data-target="#UpdateUOM"><img style="width: 20px;" src="~/Img/Icons/edit.png" /></a>
+                    <a onclick="DeleteUOM('@item.UOM_ID', '@item.UOM')" data-toggle="modal" data-target="#DeleteUOM"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UOM)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UOM_ID)
+                </td>
+
+
+                <td> @Html.DisplayFor(modelItem => item.Created_at)</td>
+                <td> @Html.DisplayFor(modelItem => item.Created_by)</td>
+                <td> @Html.DisplayFor(modelItem => item.Modified_at)</td>
+                <td> @Html.DisplayFor(modelItem => item.Modified_by)</td>
+
+
+            </tr>}
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</div>
+
+
+<!-- Model Add UOM -->
+<div class="modal fade bs-modal" id="AddUOM" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Add </h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="BasicData" asp-action="AddUOM">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body">
+
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">UOM*</label>
+
+                                        <input type="text" class="form-control" id="UOM" name="UOM" required>
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-sm btn-primary">Save</button>
+                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal Delete Make -->
+<div class="modal fade bs-modal-lg" id="DeleteUOM" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Delete Make Description</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="BasicData" asp-action="DeleteUOM">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <h3>Do you want to delete this record?</h3>
+                                        @*yes we are also supposed to give same name of the values from database to get them as we did in old times in mvc*@
+                                        <input type="hidden" id="UOMID_Delete" name="UOM_ID" />
+                                        <input type="hidden" id="UOM_Delete" name="UOM" />
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Model udpate Make -->
+<div class="modal fade bs-modal-sm" id="UpdateUOM" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Update UOM</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="BasicData" asp-action="UpdateUOM">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body">
+
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">UOM*</label>
+
+                                        <input type="text" class="form-control" id="UOM_Update" name="UOM" required>
+                                        <input type="hidden" id="UOMID_Update" name="UOM_ID" />
+                                    </div>
+                                </div>
+
+
+
+                            </div>
+
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+
+@section Scripts {
+    <script type="text/javascript">function DeleteUOM(UOM_ID, UOM) {
+            debugger
+            $("#UOMID_Delete").val(UOM_ID);
+            $("#UOM_Delete").val(UOM);
+        }
+
+        function UpdateUOM(UOM_ID, UOM) {
+            debugger
+            $("#UOMID_Update").val(UOM_ID);
+            $("#UOM_Update").val(UOM);
+        }</script>
+}

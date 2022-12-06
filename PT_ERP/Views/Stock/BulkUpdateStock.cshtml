@@ -1,0 +1,266 @@
+﻿
+@{
+    ViewData["Title"] = "BulkUpdateStock";
+    Layout = "~/Views/Shared/_LayoutTablePages.cshtml";
+}
+
+<header class="page-header">
+    <h2>Bull Upload Stock</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+            <li><a asp-area="" asp-controller="Stock" asp-action="UploadStockBulk"><span>Update Stock</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+<div class="row" id="SuccessErrorSection">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+        <div class="col-lg-12">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-info">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Success!</strong> @TempData["Success"] <a Stockef="" class="alert-link"></a>
+                </div>
+            }
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Error!</strong> @TempData["Error"] <a Stockef="" class="alert-link"></a>
+                </div>
+            }
+        </div>
+    }
+
+</div>
+
+<section class="card">
+    <div class="card-body">
+        <div class="invoice">
+            <header class="clearfix">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <h2 class="card-title" style="line-height:normal;">Bulk Update</h2>
+                    </div>
+
+                </div>
+            </header>
+            <section class="card">
+
+                <div class="card-body">
+
+                    <div class="row form-group">
+
+
+
+
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <label class="col-form-label" for="TaskAttachment">Attach Correct Excel File Format</label>
+                                <input type="file" class="form-control" id="Attachment" name="Attachment" placeholder="">
+
+                            </div>
+                        </div>
+
+                        <div class="col-md-2" style="margin-top:30px">
+                            <label class="col-form-label" for="TaskAttachment">&nbsp;</label>
+                            <button type="button" id="ButtonAdd" class="mb-1 mt-1 mr-1 btn btn-primary">Upload</button>
+
+                        </div>
+
+                        <div class="col-md-2" style="margin-top:30px">
+                            <label class="col-form-label" for="TaskAttachment">&nbsp;</label>
+                            <button type="button" id="ButtonAdd" class="mb-1 mt-1 mr-1 btn btn-success">Update</button>
+
+                        </div>
+
+                    </div>
+                </div>
+                <div class="card-body">
+                    <h3 style="border-bottom:1px solid #e2e2e2; border-right:5px solid #333" class="box-title">
+                        Select Fields to Update
+                    </h3>
+                    <div class="form-group row">
+
+                        <div class="col-md-3" >
+
+                            <input id="chkLocation" type="checkbox" name="chkLocation">
+                            <label for="chkLocation">Location</label>
+                        </div>
+                        <div class="col-md-3" >
+
+                            <input id="chkBLNO" type="checkbox" name="chkBLNO">
+                            <label for="chkBLNO">BL_NO</label>
+                        </div>
+                        <div class="col-md-3" >
+
+
+                            <input id="chkShowroom" type="checkbox" name="chkShowroom">
+                            <label for="chkShowroom">Showroom</label>
+                        </div>
+                        <div class="col-md-3" >
+
+                            <input id="chkCompany" type="checkbox" name="chkCompany">
+                            <label for="chkCompany">Company</label>
+                        </div>
+                        <div class="col-md-3" >
+                            <input id="chkOrgPrice" type="checkbox" name="chkOrgPrice">
+                            <label for="chkOrgPrice">Org Price</label>
+                        </div>
+                        <div class="col-md-3" >
+                            <input id="chkPriceRate" type="checkbox" name="chkPriceRate">
+                            <label for="chkPriceRate">Price Rate</label>
+                        </div>
+                        <div class="col-md-3" >
+
+                            <input id="chkGST" type="checkbox" name="chkGST">
+                            <label for="chkGST">Tax (GST)</label>
+                        </div>
+                        <div class="col-md-3" >
+
+                            <input id="chkRiksu" type="checkbox" name="chkRiksu">
+                            <label for="chkRiksu">Riksu</label>
+                        </div>
+                        <div class="col-md-3" >
+
+                            <input id="chkauctionFee" type="checkbox" name="chkauctionFee">
+                            <label for="chkauctionFee">Auction Fee</label>
+                        </div>
+                        <div class="col-md-3" >
+
+                            <input id="chkRecycleFee" type="checkbox" name="chkRecycleFee">
+                            <label for="chkRecycleFee">Recycle Fee</label>
+                        </div>
+                        <div class="col-md-3" >
+
+                            <input id="chkLAPrice" type="checkbox" name="chkLAPrice">
+                            <label for="chkLAPrice">LA Price</label>
+                        </div>
+                        <div class="col-md-3" >
+
+                            <input id="chkFreightPrice" type="checkbox" name="chkFreightPrice">
+                            <label for="chkFreightPrice">Freight Price</label>
+                        </div>
+                        <div class="col-md-3" >
+
+                            <input id="chkFreightRate" type="checkbox" name="chkFreightRate">
+                            <label for="chkFreightRate">Freight Rate</label>
+                        </div>
+                        <div class="col-md-3" >
+
+
+                            <input id="chkClearance" type="checkbox" name="chkClearance">
+                            <label for="chkClearance">Clearance Exp</label>
+                        </div>
+                        <div class="col-md-3" >
+
+
+                            <input id="chkTransportExp" type="checkbox" name="chkTransportExp">
+                            <label for="chkTransportExp">Transport Exp</label>
+                        </div>
+                        <div class="col-md-3" >
+
+
+                            <input id="chkAgent_Comm" type="checkbox" name="chkAgent_Comm">
+                            <label for="chkAgent_Comm">Agent Comm</label>
+                        </div>
+                        <div class="col-md-3" >
+
+
+                            <input id="chkCustom_Duty" type="checkbox" name="chkCustom_Duty">
+                            <label for="chkCustom_Duty">Custom Duty</label>
+                        </div>
+                        <div class="col-md-3" >
+
+
+                            <input id="chkOTHEREXP" type="checkbox" name="chkOTHEREXP">
+                            <label for="chkOTHEREXP">OTHER EXP</label>
+                        </div>
+                        <div class="col-md-3" >
+                            <input id="chkMAINT_EXP" type="checkbox" name="chkMAINT_EXP">
+                            <label for="chkMAINT_EXP">MAINT_EXP</label>
+                        </div>
+                        <div class="col-md-3" >
+                            <input id="chkOTHER_COMM" type="checkbox" name="chkOTHER_COMM">
+                            <label for="chkOTHER_COMM">OTHER COMM</label>
+                        </div>
+                        <div class="col-md-3" >
+                            <input id="chkPAPEREXP" type="checkbox" name="chkPAPEREXP">
+                            <label for="chkPAPEREXP">PAPEREXP</label>
+                        </div>
+
+
+
+                    </div>
+                </div>
+                <div class="card-body">
+                    <h3 style="border-bottom:1px solid #e2e2e2; border-right:5px solid #333" class="box-title">
+                        Download Update Excel Format
+                    </h3>
+                    <div class="row form-group">
+                        <div class="col-lg-5">
+                            <div class="form-group">
+
+                                <a href="~/vendor/UpdateDataFormat.xls" download>
+                                    <img src="~/img/excel logo.png" alt="peace" width="70" height="70">
+                                </a>
+                            </div>
+                        </div>
+
+
+
+                    </div>
+                </div>
+
+            </section>
+        </div>
+        <div style="overflow-x:auto;">
+
+
+
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">CHASSIS_NO</th>
+                        <th scope="col">BL_NO</th>
+                        <th scope="col">LOCATION</th>
+                        <th scope="col">SHOWROOM</th>
+                        <th scope="col">COMPANY</th>
+                        <th scope="col">ORG_PRICE</th>
+                        <th scope="col">PRICE_RATE</th>
+                        <th scope="col">GST</th>
+                        <th scope="col">AUCTION_FEE</th>
+                        <th scope="col">RECYCLE_FEE</th>
+                        <th scope="col">LA_PRICE</th>
+                        <th scope="col">RIKSU</th>
+                        <th scope="col">FREIGHT_PRICE</th>
+                        <th scope="col">FR_RATE</th>
+                        <th scope="col">CLEARANCE_EXP</th>
+                        <th scope="col">TRANSPORT_EXP</th>
+                        <th scope="col">AGENT_COMMISSION</th>
+                        <th scope="col">CUSTOM_DUTY</th>
+                        <th scope="col">OTHEREXP</th>
+                        <th scope="col">MAINT_EXP</th>
+                        <th scope="col">OTHER_COMM</th>
+                        <th scope="col">PAPEREXP</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</section>
+

@@ -1,0 +1,140 @@
+﻿
+@using DAL
+@using DAL.Models
+@model DAL.oClasses.OPurchases
+
+
+@{
+    ViewData["Title"] = "StockInPO";
+    Layout = "~/Views/Shared/_LayoutTablePages.cshtml";
+}
+
+<header class="page-header">
+    <h2>Purchases</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+
+            <li><a><span>@ViewBag.BreadCumController</span></a></li>
+            <li><a asp-area="" asp-controller="@ViewBag.BreadCumController" asp-action="@ViewBag.BreadCumAction"><span>Stock in Puchase Order</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+
+<div class="row">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+        <div class="col-lg-12">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-info">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Success!</strong> @TempData["Success"] <a href="" class="alert-link"></a>
+                </div>
+            }
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Error!</strong> @TempData["Error"] <a href="" class="alert-link"></a>
+                </div>
+            }
+        </div>
+    }
+
+
+</div>
+
+
+
+<div class="row" style="padding-top:1px;">
+    <div class="col">
+        <section class="card">
+     
+            <div class="card-body">
+
+                <h3 style="color:#000">Stock in Purchase Order</h3>
+
+                <table class="table table-bordered table-striped mb-0" >
+                    <thead>
+                        <tr>
+
+
+
+
+                            <th>Make</th>
+
+                            <th>Model Desc</th>
+                            <th>Color</th>
+                            <th>Chassis No</th>
+                            <th>Purchase Ref</th>
+
+
+                            <th>Total Cost</th>
+                   
+             
+
+
+
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+
+
+                        @if (Model.StockInPoList != null)
+                        {
+                
+
+                            foreach (StockReport item in Model.StockInPoList)
+                            {
+
+
+
+
+
+
+                        <tr class="gradeX odd" role="row">
+
+
+                            <td>@Html.DisplayFor(modelItem => item.Make)</td>
+                            <td>@Html.DisplayFor(modelItem => item.ModelDesciption)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Color)</td>
+
+                            <td>@Html.DisplayFor(modelItem => item.Chassis_No)</td>
+
+
+
+
+                            <td>@Html.DisplayFor(modelItem => item.PurchaseRef)</td>
+
+
+
+
+                            <td>@Html.DisplayFor(modelItem => item.Total_Cost)</td>
+
+
+
+
+                        </tr>
+                            }
+                        }
+
+
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</div>

@@ -1,0 +1,232 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.oReports
+@using Microsoft.Extensions.Configuration
+    @inject IConfiguration Configuration
+@{ Layout = null; }
+
+<!DOCTYPE HTML>
+<HTML>
+<head>
+
+    <!-- Basic -->
+    <meta charset="UTF-8">
+
+
+    <title>@ViewBag.PageTitle</title>
+    <meta name="keywords" content="DearlerSol | Dealers Management System " />
+    <meta name="description" content="Vehicle Management System | Dealer Management System | Dealer ERP ">
+    <meta name="author" content="DealerSol.com">
+
+    <!-- Mobile Metas -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <!-- Favicon  -->
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+
+
+    <!-- Vendor CSS -->
+    <link rel="stylesheet" href="~/vendor/bootstrap/css/bootstrap.css" />
+
+
+
+
+
+
+
+
+
+
+
+
+    <style>
+        .moneycol {
+            text-align: right;
+        }
+
+        .controlheight {
+            height: 1px;
+            border: 1px solid #d3d3d3;
+            margin: 0px;
+        }
+
+            .controlheight table th, .table td {
+                padding: 5px;
+            }
+
+        .SumHeading {
+            background-color: #d3d3d3;
+            text-align: left;
+            font-weight: bold;
+            font-size: 16px
+        }
+
+        .ColHeading {
+            background-color: #d3d3d3;
+            font-size: 18px;
+            text-align: center
+        }
+    </style>
+
+
+</head>
+
+<BODY>
+
+
+    <div class="row">
+        <div class="col">
+            <section>
+                <header>
+                    <div class="row form-inline">
+
+                        @*<div class="col-md-12">
+
+            <h5 style="color:black;">
+                @Configuration.GetSection("AppSettings").GetSection("CompanyName").Value
+
+            </h5>
+            <p style="color:black;">
+                Phone No:
+
+
+            </p>
+        </div>*@
+                        @* Farzaib *@
+                        <div class="col-md-6 ">
+                            <div class="text-center">
+                                <h4 class="text-left" style="position:absolute; top:10%; left: 1.5%;">@Configuration.GetSection("AppSettings").GetSection("CompanyName").Value.ToString()</h4>
+                                <h3>Sale Report</h3>
+                            </div>
+                        </div>
+                        @*<div class="col-md-12" style="text-align:center">
+
+            <h3 style="color:black;">
+                Sale Report
+
+            </h3>
+
+        </div>*@
+
+
+                    </div>
+                    @*<div class="row form-group">
+                            <div class="col-xs-12">
+                                <h6 style="text-align:center">From   - To   </h6>
+                            </div>
+                        </div>*@
+                </header>
+                <div>
+                    <table class="table table-bordered" @*id="datatable-default"*@>
+                        <thead>
+                            <tr class="ColHeading">
+
+
+
+
+
+                                @*<th>Ref</P></th>
+        <th>Date</P></th>
+        <th>Customer Name</th>
+        <th>Total</th>
+        <th>Paid</th>
+        <th>Balance</th>
+        <th>Status</th>*@
+
+
+                                @*<th>Sale Date</th>
+        <th>Sale Ref</th>
+        <th>Sale Value</th>
+        <th>Comments</th>
+
+
+        <th>Total Cost</th>
+        <th>Profit/Lost</th>*@
+
+
+                                <th>Date</th>
+                                <th>Ref </th>
+                                <th>Sale Value </th>
+                                <th>VAT</th>
+                                <th>Cod</th>
+                                <th>Shipping Fee</th>
+                                <th>Total</th>
+                                <th>Tip</th>
+                                <th>Cost</th>
+                                <th>Expense</th>
+                                <th>Profit/Lost</th>
+                                <th>Seller</th>
+                                <th>Customer</th>
+
+
+
+                            </tr>
+                        </thead>
+                        <tbody>
+
+
+                            @if (Model.SaleReportPrint != null)
+                            {
+
+
+                                foreach (SaleReport item in Model.SaleReportPrint)
+                                {
+
+                            <tr>
+                                @*<TD class="controlheight text-nowrap">@item.Date</TD>
+        <TD class="controlheight">@item.SaleRef</TD>
+        <TD class="controlheight">@item.Sale_Value</TD>
+        <TD class="controlheight">@item.Remarks</TD>
+
+
+        <TD class="controlheight moneycol">@item.Total_Cost</TD>
+
+        <TD class="controlheight moneycol">@item.ProfitLost</TD>*@
+
+                                <TD class="controlheight text-nowrap">@item.Date</TD>
+                                <TD class="controlheight">@item.SaleRef</TD>
+                                <TD class="controlheight">@item.Sale_Value</TD>
+                                <TD class="controlheight text-nowrap">@item.VATExp</TD>
+                                <TD class="controlheight">@item.COD</TD>
+                                <TD class="controlheight">@item.ShipingFee</TD>
+
+                                <TD class="controlheight moneycol">@item.Total_Amt</TD>
+                                <TD class="controlheight moneycol">@item.Tip</TD>
+                                <TD class="controlheight moneycol">@item.Total_Sold_Cost</TD>
+                                <TD class="controlheight moneycol">@item.Total_Expense</TD>
+                                <TD class="controlheight moneycol">@item.ProfitLost</TD>
+                                <TD class="controlheight">@item.SellerName</TD>
+
+                                <TD class="controlheight">@item.Customer_Name</TD>
+
+
+                            </tr>}
+                            }
+
+
+                        <tr>
+
+                            <TD class="SumHeading">Total</TD>
+                            <TD class="controlheight"></TD>
+
+                    
+                            <TD class="controlheight moneycol">@Model.SaleReportTTLPrint.Sale_Value</TD>
+
+                            <TD class="controlheight"></TD>
+                            <TD class="controlheight moneycol">@Model.SaleReportTTLPrint.Total_Cost</TD>
+
+                            <TD class="controlheight moneycol">@Model.SaleReportTTLPrint.ProfitLost</TD>
+
+
+                        </tr>
+
+
+
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </div>
+</BODY>
+</HTML>

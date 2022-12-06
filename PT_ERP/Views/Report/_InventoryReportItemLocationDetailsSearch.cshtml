@@ -1,0 +1,154 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.oReports
+@using X.PagedList.Mvc.Core; @*//import this so we get our HTML Helper*@
+@using X.PagedList;  @*//import this so we can cast our list to IPagedList*@
+<table class="table table-bordered table-striped mb-0">
+    <thead>
+        <tr>
+
+
+
+            <td>TransDate </td>
+            <td>Ref</td>
+            <td>Name</td>
+
+            <td>Quantity </td>
+
+
+            <td>Location</td>
+            <td>ItemCode </td>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        </tr>
+    </thead>
+
+
+    <tbody>
+
+        @if (Model.ItemCardReportListParts != null)
+        {
+
+
+            foreach (ItemCard_DAL item in Model.ItemCardReportListParts)
+            {
+
+
+                <tr class="gradeX odd" role="row">
+
+                    <td>@Html.DisplayFor(modelItem => item.Trans_Date) </td>
+                    <td>@Html.DisplayFor(modelItem => item.Trans_Ref)</td>
+                    <td>@Html.DisplayFor(modelItem => item.ItemName) </td>
+
+
+                    <td>@Html.DisplayFor(modelItem => item.Qty) </td>
+
+
+
+
+                    <td>@Html.DisplayFor(modelItem => item.ItemLocationName) </td>
+                    <td>@Html.DisplayFor(modelItem => item.ItemCode) </td>
+
+
+
+
+
+
+
+
+
+
+
+                </tr>
+            }
+        }
+
+    </tbody>
+
+    <tfoot>
+        @if (Model.ItemCardReportList_TTL != null)
+        {
+
+
+            foreach (ItemCard_DAL item in Model.ItemCardReportList_TTL)
+            {
+
+                <tr role="row">
+                    <th>Total</th>
+
+
+
+
+                    <td></td>
+                    <td></td>
+                    <td><b>@item.Qty </b></td>
+                    <td></td>
+                    <td></td>
+
+
+
+
+
+
+                </tr>
+
+
+            }
+        }
+    </tfoot>
+
+
+</table>
+<div class="invoice-summary">
+
+    <div class="row">
+
+        <div class="col-lg-6 col-md-6">
+
+        </div>
+
+        <div class="col-lg-6 col-md-6 justify-content-end text-right">
+            @if (Model.ItemCardReportListParts.Count() != 0)
+            {
+
+                @Html.PagedListPager(Model.ItemCardReportListParts, page => Url.Action("InventoryReportItemLocationDetailsSearch", "Report", new
+                {
+               ItemCode = ViewBag.ItemCode,
+               Item_ID = ViewBag.Item_ID,
+               traditional = ViewBag.traditional,
+               Make = ViewBag.Make,
+               Fuel = ViewBag.Fuel,
+               Transmission = ViewBag.Transmission,
+               Drive = ViewBag.Drive,
+               ItemGroup_ID = ViewBag.ItemGroup_ID,
+               ItemCategory_ID = ViewBag.ItemCategory_ID,
+               Year = ViewBag.Year,
+               ItemSerialNO = ViewBag.ItemSerialNO,
+               StartDate = ViewBag.StartDate,
+               EndDate = ViewBag.EndDate,
+               Loc_ID = ViewBag.Loc_ID,
+               page
+                })
+
+ , X.PagedList.Mvc.Core.Common.PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new AjaxOptions()
+ {
+     HttpMethod = "get",
+     UpdateTargetId = "VendorReportSearch"
+ })
+                      )}
+        </div>
+    </div>
+
+</div>

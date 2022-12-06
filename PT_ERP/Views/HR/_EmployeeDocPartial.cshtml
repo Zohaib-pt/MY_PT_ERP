@@ -1,0 +1,40 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OHR
+
+
+@if (Model.EmpDocumentList != null)
+{
+    foreach (Pa_EmpDocument_DAL item in Model.EmpDocumentList)
+    {
+
+        <tr>
+
+            <td>
+
+                <a onclick="DeleteEmpDoc('@item.empDoc_ID', '@item.empDoc_FileName')" data-toggle="modal" data-target="#DeleteEmpDocModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.empDoc_Type)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.empDoc_ExpiryDate)
+            </td>
+            <td>
+             
+                <a href="~/CommonImages/OtherImages/@item.empDoc_FileName" target="_blank">View</a>
+
+
+            </td>
+
+
+
+
+
+        </tr>
+
+
+
+    }
+}

@@ -1,0 +1,64 @@
+﻿
+
+
+@using DAL
+@using DAL.Models
+@model DAL.oClasses.OSales
+
+
+<table class="table table-responsive-md table-bordered mb-0">
+    <thead>
+        <tr>
+
+
+            <th>Edit/Delete</th>
+            <th>VehicleDesc</th>
+            <th>Chassis #</th>
+            <th>Curr Location</th>
+            <th> Return Date</th>
+
+
+
+
+
+
+
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.VehicleDisplayDetailList != null)
+        {
+            foreach (pa_vehicle_display_details item in Model.VehicleDisplayDetailList)
+            {
+
+                <tr>
+
+                    <td>
+                        
+                        <a onclick="DeleteVehDetails('@item.vehicle_display_details_ID')" data-toggle="modal" data-target="#DeleteDetailModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.VehicleDesc)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.chassis_no)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Curr_Car_Location)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.return_Date)
+                    </td>
+
+
+
+
+                </tr>
+
+
+
+            }
+        }
+    </tbody>
+</table>

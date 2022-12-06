@@ -1,0 +1,114 @@
+﻿@using DAL
+@using DAL.Models
+@using X.PagedList.Mvc.Core; @*//import this so we get our HTML Helper*@
+@using X.PagedList;  @*//import this so we can cast our list to IPagedList *@
+@model DAL.oClasses.OSales
+
+
+
+
+<div class="invoice-summary mb-1">
+
+    <div class="row mb-1">
+
+        <div class="col-lg-6 col-md-6 mb-1">
+            <b>@ViewBag.RecordsPerPage</b> records per page
+        </div>
+
+        <div class="col-lg-6 col-md-6 mb-1 justify-content-end text-right">
+
+        </div>
+    </div>
+
+</div>
+
+<table class="table table-bordered table-striped mb-0 mt-1" @*id="datatable-default"*@>
+    <thead>
+        <tr>
+
+
+
+
+
+            <th>Sale Ref</th>
+
+            <th>Sale Date</th>
+            <th>Customer Name</th>
+            <th>Total Amount</th>
+            <th>Paid</th>
+            <th>Bal Due</th>
+            <th>Status</th>
+            <th>View</th>
+
+
+
+
+        </tr>
+    </thead>
+    <tbody>
+
+
+        @if (Model.SalesMasterIPagedList != null)
+        {
+
+
+            foreach (pa_SalesMaster_DAL item in Model.SalesMasterIPagedList)
+            {
+
+
+                <tr>
+
+                    <td> <a asp-controller="Sales" asp-action="NewSalesBooking" asp-route-SaleMaster_ID="@item.SaleMaster_ID">@Html.DisplayFor(modelItem => item.SaleRef)</a></td>
+                    <td>@Html.DisplayFor(modelItem => item.SaleDate)</td>
+
+                    <td>@Html.DisplayFor(modelItem => item.Customer_Name)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Total_Amt)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Paid_amt)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Bal_due)</td>
+
+                    <td>@Html.DisplayFor(modelItem => item.SaleStatus)</td>
+
+
+                    <td> <a asp-controller="Sales" asp-action="NewSalesBooking" asp-route-SaleMaster_ID="@item.SaleMaster_ID">View</a></td>
+                    @*<td>@Html.DisplayFor(modelItem => item.Modified_at)</td>*@
+
+
+
+
+                </tr>
+            }
+        }
+
+
+
+
+
+    </tbody>
+</table>
+
+<div class="invoice-summary">
+
+    <div class="row">
+
+        <div class="col-lg-6 col-md-6">
+
+        </div>
+
+        <div class="col-lg-6 col-md-6 justify-content-end text-right">
+            @if (Model.SalesMasterIPagedList.Count() != 0)
+            {
+
+                @Html.PagedListPager(Model.SalesMasterIPagedList, page => Url.Action("GetBookingListListBySearchFilters", "Sales", new { SaleRef = ViewBag.SaleRef_Booking, StartDate = ViewBag.StartDate_Booking, EndDate = ViewBag.EndDate_Booking, Customer_Name = ViewBag.Customer_Name_Booking, Chassis_No = ViewBag.Chassis_No_Booking, cID = ViewBag.c_ID_Booking, page })
+
+, X.PagedList.Mvc.Core.Common.PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new AjaxOptions()
+{
+HttpMethod = "get",
+UpdateTargetId = "SalesBookingListSearch"
+})
+                )
+            }
+        </div>
+    </div>
+
+</div>
+

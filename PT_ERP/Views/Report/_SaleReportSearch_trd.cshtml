@@ -1,0 +1,145 @@
+﻿
+
+@using DAL
+@using DAL.Models
+@model DAL.oClasses.oReports
+@using X.PagedList.Mvc.Core; @*//import this so we get our HTML Helper*@
+@using X.PagedList;  @*//import this so we can cast our list to IPagedList*@
+
+
+<table class="table table-bordered table-striped mb-0">
+    <thead>
+        <tr>
+
+
+
+            <th>Date</th>
+            <th>Ref </th>
+            <th>Sale Value </th>
+            <th>VAT</th>
+            <th>Cod</th>
+            <th>Shipping Fee</th>
+            <th>Total </th>
+            <th>Tip</th>
+            <th>Cost </th>
+            <th>Expense </th>
+            <th>Profit/Lost</th>
+            <th>Seller</th>
+            <th>Customer</th>
+
+        </tr>
+    </thead>
+
+
+    <tbody>
+        @if (Model.SaleReport != null)
+        {
+
+            foreach (SaleReport item in Model.SaleReport)
+            {
+
+
+
+
+
+    <tr class="gradeX odd" role="row">
+
+
+        <td>@Html.DisplayFor(modelItem => item.Date) </td>
+
+        <td>
+            <a asp-controller="Sales" asp-action="NewSalesInvoice__Onl_TRD" asp-route-SaleMaster_ID="@item.SaleMaster_ID">
+                @Html.DisplayFor(modelItem => item.SaleRef)
+                <br />
+                <strong>
+                    <small>
+                        @Html.DisplayFor(modelItem => item.Manualbook_ref)
+                    </small>
+                </strong>
+            </a>
+
+        </td>
+
+        <td>@Html.DisplayFor(modelItem => item.Sale_Value)</td>
+
+
+
+
+        <td>@Html.DisplayFor(modelItem => item.VATExp)</td>
+        <td>@Html.DisplayFor(modelItem => item.COD)</td>
+        <td>@Html.DisplayFor(modelItem => item.ShipingFee)</td>
+
+
+        <td>@Html.DisplayFor(modelItem => item.Total_Amt)</td>
+        <td>@Html.DisplayFor(modelItem => item.Tip)</td>
+
+
+        <td>@Html.DisplayFor(modelItem => item.Total_Sold_Cost)</td>
+
+
+        <td>@Html.DisplayFor(modelItem => item.Total_Expense)</td>
+        <td>@Html.DisplayFor(modelItem => item.ProfitLost)</td>
+        <td>@Html.DisplayFor(modelItem => item.SellerName)</td>
+        <td>@Html.DisplayFor(modelItem => item.Customer_Name)</td>
+
+
+
+
+
+
+    </tr>
+}
+}
+
+    </tbody>
+
+    <tfoot>
+
+
+
+        <tr role="row">
+            <th></th>
+            <th></th>
+            <th>@Model.SaleReportTTL.Sale_Value</th>
+
+            <th>@Model.SaleReportTTL.VATExp</th>
+            <th>@Model.SaleReportTTL.COD</th>
+            <th>@Model.SaleReportTTL.ShipingFee</th>
+            <th>@Model.SaleReportTTL.Total_Amt</th>
+            <th>@Model.SaleReportTTL.Tip</th>
+            <th>@Model.SaleReportTTL.Total_Sold_Cost</th>
+            <th>@Model.SaleReportTTL.Total_Expense</th>
+            <th>@Model.SaleReportTTL.ProfitLost</th>
+
+
+        </tr>
+
+
+    </tfoot>
+
+
+</table>
+<div class="invoice-summary">
+
+    <div class="row">
+
+        <div class="col-lg-6 col-md-6">
+
+        </div>
+
+        <div class="col-lg-6 col-md-6 justify-content-end text-right">
+            @if (Model.SaleReport.Count() != 0)
+            {
+
+@Html.PagedListPager(Model.SaleReport, page => Url.Action("SalesReport_Search_trd", "Report", new { StartDate = ViewBag.StartDate_SaleReport, EndDate = ViewBag.EndDate_SaleReport, Customer_ID = ViewBag.Customer_ID_SaleReport, Sale_Ref = ViewBag.Sale_Ref_SaleReport, Vendor_ID = ViewBag.Vendor_ID_SaleReport, page })
+
+, X.PagedList.Mvc.Core.Common.PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new AjaxOptions()
+{
+HttpMethod = "get",
+UpdateTargetId = "SaleReportSearch"
+})
+                )}
+        </div>
+    </div>
+
+</div>

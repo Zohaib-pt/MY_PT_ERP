@@ -1,0 +1,126 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OInventory
+
+
+
+<div class="modal-header" style="background: #f6f6f6;">
+
+
+    <h4 class="modal-title">Assembly Details</h4>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+
+</div>
+
+
+<div class="modal-body">
+    <form method="post" enctype="multipart/form-data" data-ajax="true" data-ajax-success="mySuccessAuctionDetail" data-ajax-failure="myFailureAuctionDetail"
+          asp-area="" id="FormInsertPaymentDetail">
+        <section class="card">
+
+            <div class="card-body">
+
+
+
+
+                <div class="row form-group">
+                    @if (Model.AssemblyMasterObj.Assembly_ID != 0)
+                    {
+                        <input id="HdAssembly_ID" name="HdAssembly_ID" type="hidden" value="@Model.AssemblyMasterObj.Assembly_ID" /> }
+                    else
+
+                    {
+
+                        <input id="HdAssembly_ID" name="HdAssembly_ID" type="hidden" value="0" />}
+                    <div class="col-lg-12">
+
+                        <table class="table table-responsive-md table-bordered mb-0 mt-2">
+                            <thead>
+                                <tr>
+                                    <th>Select</th>
+                                    <th>Item</th>
+
+                                    <th>Quantity</th>
+                                    <th>Cost</th>
+                                    <th>Remarks</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                @if (Model.FormulaDetailList != null)
+                                {
+                                    string value = "txtQuantity";
+                                    string value2 = "txtRemarks";
+                                    string value1 = "txtCost";
+                                    int counter = 0;
+                                    foreach (Pa_Dismental_Dtl item in Model.FormulaDetailList)
+                                    {
+
+                                        counter++;
+                                <tr>
+
+                                    <td>
+                                        <input type="checkbox" id="@counter" name="@item.Item_ID">
+
+
+                                    </td>
+
+
+                                    <td>
+
+                                        @item.ItemName
+                                        <br />
+                                        @item.ItemCode
+                                    </td>
+
+                                    <td>
+                                        <input type="text" id="@value@item.Item_ID" name="Quantity" value="0">
+
+
+                                    </td>
+                                    <td>
+                                        <input type="number" id="@value1@item.Item_ID" name="Cost" value="0">
+
+
+                                    </td>
+                                    <td>
+                                        <input type="text" id="@value2@item.Item_ID" name="Remarks" value="">
+
+
+                                    </td>
+
+                                </tr>
+                                    }
+                                }
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+
+                </div>
+
+
+
+
+
+            </div>
+
+
+
+        </section>
+
+
+
+    </form>
+
+</div>
+<div class="modal-footer">
+    <button type="button" onclick="SaveForm()" class="btn btn-sm btn-primary">Add</button>
+    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Cancel</button>
+</div>

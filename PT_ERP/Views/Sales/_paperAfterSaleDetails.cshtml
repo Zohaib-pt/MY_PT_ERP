@@ -1,0 +1,46 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OSales
+
+<table class="table table-responsive-md table-bordered mb-0">
+    <thead>
+        <tr>
+            <th style="width:100px">Delete</th>
+            <th>Chassis</th>
+            <th>Customer</th>
+            <th>Price</th>
+            <th>Amount</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.PaperAfterSalesDetailList != null)
+        {
+
+
+
+            foreach (PaperAfterSalesDetail_DAL item in Model.PaperAfterSalesDetailList)
+            {
+
+
+<tr>
+    <td>
+
+        <a onclick="DeleteSaleDetail('@item.ID');" data-toggle="modal" data-target="#DeleteSaleDetailModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+    </td>
+    <td>@Html.DisplayFor(modelItem => item.Chassis_No)</td>
+    <td>@Html.DisplayFor(modelItem => item.CustomerName)</td>
+    <td>@Html.DisplayFor(modelItem => item.Price)</td>
+    <td>@Html.DisplayFor(modelItem => item.Amount)</td>
+
+</tr>
+}
+}
+
+
+
+
+    </tbody>
+
+</table>

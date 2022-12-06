@@ -1,0 +1,104 @@
+﻿@using DAL
+@using DAL.Models
+@using X.PagedList.Mvc.Core; @*//import this so we get our HTML Helper*@
+@using X.PagedList;  @*//import this so we can cast our list to IPagedList *@
+@model DAL.oClasses.ODelivery
+
+
+    <div class="invoice-summary mb-1">
+
+        <div class="row mb-1">
+
+            <div class="col-lg-6 col-md-6 mb-1">
+                <b>@ViewBag.RecordsPerPage</b> records per page
+            </div>
+
+            <div class="col-lg-6 col-md-6 mb-1 justify-content-end text-right">
+
+            </div>
+        </div>
+
+    </div>
+
+    <table class="table table-bordered table-striped mb-0">
+        <thead>
+            <tr>
+
+
+
+                <th>Delivery Ref</th>
+                <th>Delivery Date</th>
+                <th>Created at</th>
+
+                <th>Created by</th>
+                <th @ViewBag.AttachmentVisibility>Attachments</th>
+                <th>View</th>
+
+
+
+
+
+            </tr>
+        </thead>
+        <tbody>
+
+            @if (Model.DeliveryOrderMasterList != null)
+            {
+                foreach (Pa_DeliveryOrder_Master item in Model.DeliveryOrderMasterList)
+                {
+
+            <tr>
+
+                <td>
+
+                    <a asp-controller="Delivery" asp-action="NewDelivery" asp-route-DeliveryMaster_ID="@item.DeliveryMaster_ID"> @Html.DisplayFor(modelItem => item.DeliveryRef)</a>
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.DeliveryDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Created_at)
+                </td>
+
+
+                <td> @Html.DisplayFor(modelItem => item.Created_by)</td>
+
+
+                <td @ViewBag.AttachmentVisibility><a href="#" onclick="ShowAttachmentMaster('@item.DeliveryMaster_ID');">Manage Attachment</a> </td>
+
+                <td><a asp-controller="Delivery" asp-action="NewDelivery" asp-route-DeliveryMaster_ID="@item.DeliveryMaster_ID"> View</a></td>
+
+            </tr>
+
+
+
+                }
+            }
+        </tbody>
+    </table>
+    <div class="invoice-summary">
+
+        <div class="row">
+
+            <div class="col-lg-6 col-md-6">
+
+            </div>
+
+            <div class="col-lg-6 col-md-6 justify-content-end text-right">
+                @if (Model.DeliveryOrderMasterList.Count() != 0)
+                {
+
+                    @Html.PagedListPager(Model.DeliveryOrderMasterList, page => Url.Action("NewDeliveryList_Search", "Delivery", new { DeliveryRef = ViewBag.DeliveryRef_Delivery, StartDate = ViewBag.StartDate_Delivery, EndDate = ViewBag.EndDate_Delivery, Chassis = ViewBag.Chassis_Delivery, Customer_ID = ViewBag.Customer_ID_Delivery, page })
+
+, X.PagedList.Mvc.Core.Common.PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new AjaxOptions()
+{
+HttpMethod = "get",
+UpdateTargetId = "TableDeliveryListSearch"
+})
+                    )
+                }
+            </div>
+                </div>
+
+    </div>

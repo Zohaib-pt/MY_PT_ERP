@@ -1,0 +1,113 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.oReports
+@using X.PagedList.Mvc.Core; @*//import this so we get our HTML Helper*@
+@using X.PagedList;  @*//import this so we can cast our list to IPagedList*@
+
+
+
+                    <table class="table table-bordered table-striped mb-0">
+                        <thead>
+                            <tr>
+
+
+
+                                <th>Date</th>
+                                <th>BLNO Ref </th>
+                                <th> Chassis </th>
+                                <th> Make </th>
+                                <th> Model </th>
+                                <th> Year </th>
+                                <th> BL Expense </th>
+                                <th> Total Expense </th>
+                                <th> Total Cost </th>
+
+
+                            </tr>
+                        </thead>
+
+
+                        <tbody>
+
+                            @if (Model.BLReport != null)
+                            {
+
+                                foreach (BLReport item in Model.BLReport)
+                                {
+
+
+
+
+
+                            <tr class="gradeX odd" role="row">
+
+
+
+                                <td>@Html.DisplayFor(modelItem => item.Date) </td>
+                                <td>@Html.DisplayFor(modelItem => item.BLNO_Ref)</td>
+                                <td>@Html.DisplayFor(modelItem => item.Chassis_no)</td>
+                                <td>@Html.DisplayFor(modelItem => item.make)</td>
+                                <td>@Html.DisplayFor(modelItem => item.model_description)</td>
+                                <td>@Html.DisplayFor(modelItem => item.Year)</td>
+                                <td>@Html.DisplayFor(modelItem => item.Bl_Exp)</td>
+                                <td>@Html.DisplayFor(modelItem => item.Total_Expense)</td>
+                                <td>@Html.DisplayFor(modelItem => item.Total_Cost)</td>
+
+
+                            </tr>
+}
+        }
+
+                        </tbody>
+
+                        @*<tfoot>
+
+
+
+                                <tr role="row">
+                                    <th></th>
+                                    <th></th>
+                                    <th>@Model.SaleReportTTL.Sale_Value</th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th>@Model.SaleReportTTL.Total_Expense</th>
+                                    <th>@Model.SaleReportTTL.Total_Cost</th>
+                                    <th>@Model.SaleReportTTL.ProfitLost</th>
+                                    <th></th>
+
+                                </tr>
+
+
+                            </tfoot>*@
+
+
+                    </table>
+                    <div class="invoice-summary">
+
+                        <div class="row">
+
+                            <div class="col-lg-6 col-md-6">
+
+                            </div>
+
+                            <div class="col-lg-6 col-md-6 justify-content-end text-right">
+                                @if (Model.BLReport.Count() != 0)
+                                {
+
+                    @Html.PagedListPager(Model.BLReport, page => Url.Action("BLReport_Search", "Report", new { StartDate = ViewBag.StartDate_BLReport, EndDate = ViewBag.EndDate_BLReport, BLNO_Ref = ViewBag.BLNO_Ref_BLReport, chassis = ViewBag.chassis_BLReport, page })
+
+                                        , X.PagedList.Mvc.Core.Common.PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new AjaxOptions()
+                                        {
+                                            HttpMethod = "get",
+                                            UpdateTargetId = "BLReportSearch"
+                                        })
+                                                                  )}
+                            </div>
+                        </div>
+
+                    </div>
+
+
+

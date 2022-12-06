@@ -1,0 +1,2936 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OAccounts
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+
+
+
+@{
+    ViewData["Title"] = "NewPaymentVouchersGeneral";
+    Layout = "~/Views/Shared/_LayoutTablePages.cshtml";
+}
+
+@{
+
+
+    ViewBag.Vat_ExpTotal = null;
+    ViewBag.AmountTotal = null;
+    ViewBag.Grand_Total = null;
+
+    string Form_PaymentMaster_ActionMethod = "";
+    int? PaymentMaster_ID = ViewBag.PaymentMaster_ID;
+
+
+
+    if (Model.paymentMasterObject != null && Model.paymentMasterObject.PaymentMaster_ID > 0)
+    {
+
+        Form_PaymentMaster_ActionMethod = "UdpatePaymentMaster_Vendor";
+
+
+    }
+    else
+    {
+        Form_PaymentMaster_ActionMethod = "InsertPaymentMaster_Vendor";
+
+
+    }
+    var IsChassisEnabled = Configuration.GetSection("AppSettings").GetSection("IsChassisEnabled").Value;
+    string DefaultCurrency_ID_Dropdown = Configuration.GetSection("AppSettings").GetSection("DefaultCurrency_ID_Dropdown").Value;
+}
+
+
+
+
+
+
+
+
+
+
+<header class="page-header">
+    <h2>@ViewBag.SectionHeaderTitle</h2>
+
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+            <li><a asp-area="" asp-controller="Accounts" asp-action="NewPaymentVouchersGeneral"><span>@ViewBag.SectionSub_HeaderTitle</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+
+
+
+
+
+<div class="row" id="SuccessErrorSection">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+        <div class="col-lg-12">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-info">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Success!</strong> @TempData["Success"] <a href="" class="alert-link"></a>
+                </div>
+            }
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Error!</strong> @TempData["Error"] <a href="" class="alert-link"></a>
+                </div>
+            }
+        </div>
+    }
+
+
+</div>
+
+<!-- start: page -->
+<section class="card">
+    <div class="card-body">
+        <div class="invoice">
+            <header class="clearfix">
+                <div class="row">
+                    <div class="col-sm-6 mt-0">
+                        <h2 class="h4 mt-0 mb-2 text-dark font-weight-bold">Payment Voucher (Vendor)</h2>
+
+                    </div>
+
+                    <div class="col-sm-6 mt-0 text-right">
+
+                        @if (String.IsNullOrEmpty(Model.paymentMasterObject.PaymentStatus))
+                        {
+                            <h4 class=" mt-0 mb-2 text-dark"><b>Status:</b> <label>Pending</label></h4>
+                        }
+                        else
+                        {
+                            <h4 class=" mt-0 mb-2 text-dark"><b>Status:</b> <label>@Model.paymentMasterObject.PaymentStatus</label></h4>
+                        }
+                    </div>
+
+                </div>
+            </header>
+
+            <div class="row">
+                <div class="col-lg-8">
+
+
+                    @if (Model.paymentMasterObject.PaymentMaster_ID != null)
+                    {
+                        if (Model.paymentMasterObject.PaymentMaster_ID > 0)
+                        {
+
+                            <button type="button" id="ButtonUpdateMaster" class="btn-sm btn btn-success">Update &nbsp;<i class="fas fa-save"></i></button>
+
+                            <button type="button" class="btn-sm btn btn-primary">Edit  &nbsp;<i class="fas fa-edit"></i></button>
+
+
+                            <button type="button" id="ChangeStatusMaster" class="btn-sm btn btn-warning" data-toggle="modal" data-target="#ChangeStatusPaymentModal" onclick="ChangeStatusPaymentMaster('@Model.paymentMasterObject.PaymentMaster_ID', '5');">Cancel &nbsp;<i class="fas fa-cross"></i></button>
+                            <button type="button" class="btn-sm btn btn-danger" data-toggle="modal" data-target="#DeletePaymentMasterModal" onclick="DeletePaymentMaster('@Model.paymentMasterObject.PaymentMaster_ID');">Delete &nbsp;<i class="fas fa-trash-alt"></i></button>
+                            <button type="button" id="btnApproval" @ViewBag.ApprovalVisibility class="btn-sm btn btn btn-dark" data-toggle="modal" data-target="#ChangeStatusPaymentModal" onclick="ChangeStatusPaymentMaster('@Model.paymentMasterObject.PaymentMaster_ID', '2');">Approve &nbsp;<i class="fa fa-check"></i></button>
+
+
+
+                            <button type="button" class="btn-sm btn btn-info" id="print-btn">Print &nbsp;<i class="fas fa-print"></i></button>
+                            <button type="button" id="btnAttachment" @ViewBag.AttachmentVisibility class="btn-sm btn btn btn-default" style="background-color: #68889E; color:white; border-color:#2F3E48" onclick="ShowAttachmentMaster('@Model.paymentMasterObject.PaymentMaster_ID');">Attachment &nbsp;<i class="fa fa-paperclip"></i></button>
+                            <a asp-controller="Accounts" asp-action="PaymentsList" class="btn-sm btn btn-default">List &nbsp;<i class="fas fa-list"></i></a>
+
+                        }
+                    }
+                    else
+                    {
+                        <button type="button" id="ButtonIssueMaster" class="btn-sm btn btn-success">Issue &nbsp;<i class="fas fa-save"></i></button>
+
+                        <button type="button" class="btn-sm btn btn-primary" disabled="disabled">Edit  &nbsp;<i class="fas fa-edit"></i></button>
+
+
+                        <button type="button" class="btn-sm btn btn-warning" disabled="disabled">Cancel &nbsp;<i class="fas fa-cross"></i></button>
+                        <button type="button" class="btn-sm btn btn-danger" disabled="disabled">Delete &nbsp;<i class="fas fa-trash-alt"></i></button>
+                        <button type="button" @ViewBag.ApprovalVisibility class="btn-sm btn btn btn btn-dark" disabled="disabled">Approve &nbsp;<i class="fa fa-check"></i></button>
+                        <button type="button" class="btn-sm btn btn-info" disabled="disabled">Print &nbsp;<i class="fas fa-print"></i></button>
+                        <a asp-controller="Accounts" asp-action="PaymentsList" class="btn-sm btn btn-default">List &nbsp;<i class="fas fa-list"></i></a>
+
+                    }
+
+
+
+
+
+
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div class="col">
+
+
+
+                    <form method="post" asp-area="" asp-controller="Accounts" asp-action="@Form_PaymentMaster_ActionMethod" id="formPaymentMaster">
+
+
+                        <section class="card">
+
+                            <div class="card-body">
+
+
+
+                                <div class="row form-group">
+                                    <div class="col-lg-6">
+
+                                        <div class="row MasterForm">
+                                            <label for="Vendor_ID" class="col-sm-3 col-form-label">Paid To</label>
+                                            <div class="col-sm-2" style="padding:0;">
+                                                <select class="form-control" id="party_type" asp-items="@(new SelectList( ViewBag.PartyType,"Party_Type_ID","Party_Type", Model.paymentMasterObject.party_type))" name="party_type" required>
+                                                </select>
+
+
+                                            </div>
+                                            <div class="col-sm-4" style="padding:0;">
+                                                <select class="form-control select2" id="Vendor_ID" name="Vendor_ID" asp-for="@(Model.paymentMasterObject.Party_ID)" required>
+                                                </select>
+
+                                                <input type="hidden" id="PaymentMaster_ID" name="PaymentMaster_ID" value="@PaymentMaster_ID" />
+                                                <input type="hidden" id="hdVendor_ID" name="hdVendor_ID" value="@Model.paymentMasterObject.Party_ID" />
+                                            </div>
+                                            <div class="col-sm-3">
+                                                <input type="text" class="form-control" id="NameText" name="NameText" value="@Model.paymentMasterObject.NameText" placeholder="Name">
+                                            </div>
+                                        </div>
+
+                                        <div class="row MasterForm">
+                                            <label for="Vendor_ID" class="col-sm-3 col-form-label">Explanation</label>
+                                            <div class="col-sm-9" style="padding:0;">
+                                                <textarea class="form-control" rows="2" id="Explanation" name="Explanation" placeholder="Enter Explanation">@Model.paymentMasterObject.Explanation</textarea>
+
+
+                                            </div>
+                                        </div>
+
+
+
+                                    </div>
+                                    <div class="col-lg-2">
+
+                                    </div>
+
+                                    <div class="col-lg-4 ">
+
+                                        <div class="row MasterForm">
+                                            <label for="PurchaseRef" class="col-sm-3 col-form-label">Ref No</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" id="PaymentMaster_ref" name="PaymentMaster_ref" value="@Model.paymentMasterObject.PaymentMaster_ref" readonly>
+                                            </div>
+                                        </div>
+
+
+                                        <div class="row MasterForm">
+                                            <label for="PurchaseDate" class="col-sm-3 col-form-label">Date</label>
+                                            <div class="col-sm-9">
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                        </span>
+                                                    </span>
+                                                    @if (Model.paymentMasterObject.Date != null)
+                                                    {
+                                                        <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="Date" name="Date" value="@Model.paymentMasterObject.Date" required>
+
+                                                    }
+                                                    else
+                                                    {
+                                                        <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="Date" name="Date" value="@DateTime.Now.ToString("dd-MMM-yyyy")" required>
+
+                                                    }
+
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+
+
+                                    </div>
+
+
+
+                                </div>
+
+                            </div>
+
+
+
+                        </section>
+                    </form>
+                </div>
+
+            </div>
+
+            <div class="row m-2">
+                <div class="col-lg-6">
+                    <h2 class="card-title" style="line-height:normal;">Payment Details </h2>
+                </div>
+                <div class="col-lg-6 text-right">
+                    <button class="btn btn-sm btn-primary" data-toggle="modal" id="btnSavePopUp" data-target="#AddNewPaymentDetailModal">Add New &nbsp;<i class="fas fa-plus"></i></button>
+
+
+                </div>
+            </div>
+
+            <div id="PaymentDetailSection">
+
+                <table class="table table-responsive-md table-bordered mb-0">
+                    <thead>
+                        <tr>
+                            <th>Edit/Delete</th>
+                            <th>On Account</th>
+                            <th>Amount</th>
+                            <th width="30%">Description</th>
+                            <th>Pay Via</th>
+
+
+                            <th>VAT</th>
+                            <th>Total</th>
+                            <th>Ref</th>
+                            <th>Cheque Details</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @if (Model.paymentDetailList != null)
+                        {
+
+
+                            foreach (Pa_PaymentDetails_DAL item in Model.paymentDetailList)
+                            {
+
+
+                                ViewBag.Vat_ExpTotal = item.VatExpTotal;
+                                ViewBag.AmountTotal = item.AmountTotal;
+                                ViewBag.Grand_Total = item.Grand_Total;
+
+
+                        <tr style='color: @(item.transaction_status == 0 ? "green" : "black");'>
+
+
+
+
+                            <td>
+                                <a onclick="UpdatePaymentDetailGeneral('@item.PaymentDetails_ID', '@item.DR_accountID', '@item.Amount', '@item.VAT_Rate', '@item.Currency_ID', '@item.Currency_Rate', '@item.Amount_Others',
+        '@item.CR_accountID', '@item.Description', '@item.trans_ref', '@item.cheque_bank_name', '@item.cheque_date', '@item.cheque_no', '@item.VAT_Exp', '@item.Total_Amount', '@item.stock_ID', '@item.ExtraChargesFee', '@item.ExtraChargesFeeTax', '@item.Chassis_No', '@item.PDC_Payable_Acc_ID');" data-toggle="modal" data-target="#UpdateNewPaymentDetailModal" id="btnUpdatePopUp"><img style="width: 20px;" src="~/Img/Icons/edit.png" /></a>
+                                <a onclick="DeletePaymentDetail('@item.PaymentDetails_ID');" data-toggle="modal" data-target="#DeletePaymentDetailModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+                            </td>
+
+
+                            <td>
+                                @Html.DisplayFor(modelItem => item.DR_AccountName)
+                                <br />
+                                <b>@Html.DisplayFor(modelItem => item.Chassis_No)</b>
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Amount)<br />
+                                @Html.DisplayFor(modelItem => item.curr_name) x @Html.DisplayFor(modelItem => item.Currency_Rate)
+
+                            </td>
+                            <td width="30">@Html.DisplayFor(modelItem => item.Description)</td>
+                            <td>@Html.DisplayFor(modelItem => item.CR_AcountName)</td>
+
+
+                            <td>
+                                @Html.DisplayFor(modelItem => item.VAT_Exp)
+                            </td>
+                            <td>@Html.DisplayFor(modelItem => item.Total_Amount)</td>
+                            <td>@Html.DisplayFor(modelItem => item.trans_ref)</td>
+
+
+                            <td>
+                                <b> @Html.DisplayFor(modelItem => item.cheque_bank_name)</b>
+                                <i>  @Html.DisplayFor(modelItem => item.cheque_no)</i>
+                                <b>  @Html.DisplayFor(modelItem => item.cheque_date)</b>
+
+                            </td>
+
+
+                        </tr>
+                            }
+                        }
+
+                    </tbody>
+
+                </table>
+
+
+                <br />
+                <div class="invoice-summary">
+
+                    <div class="row">
+
+                        <div class="col-lg-8 col-md-8">
+
+                        </div>
+
+                        <div class="col-lg-4 col-md-4 justify-content-end text-right">
+                            <table class="table h6 text-dark">
+                                <tbody>
+                                    <tr class="b-top-0">
+                                        <td colspan="2"> Sub Total:</td>
+                                        <td class="text-right" id="SubTotal">@ViewBag.AmountTotal</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2">VAT Charge</td>
+                                        <td class="text-right" id="VAT_ChargeTotal">@ViewBag.Vat_ExpTotal</td>
+                                    </tr>
+
+
+                                    <tr class="h5">
+                                        <td colspan="2">Total Paid:</td>
+                                        <td class="text-right" id="Total_Payable">@ViewBag.Grand_Total</td>
+                                    </tr>
+
+
+
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+            <hr />
+
+            <div class="row">
+                <div class="col-sm-3"><span class="show-grid-block">Created at : <b>@Model.paymentMasterObject.create_at </b></span></div>
+                <div class="col-sm-3"><span class="show-grid-block">Created by :</span><b>@Model.paymentMasterObject.create_by</b></div>
+                <div class="col-sm-3"><span class="show-grid-block">Modified at :<b>@Model.paymentMasterObject.last_updated_at </b></span></div>
+                <div class="col-sm-3"><span class="show-grid-block">Modified by : <b>@Model.paymentMasterObject.last_updated_by </b></span></div>
+            </div>
+
+
+
+
+
+
+        </div>
+
+
+    </div>
+</section>
+
+
+<!--Insert Payment detail model-->
+<div class="modal fade bs-modal-sm in" id="AddNewPaymentDetailModal" tabindex="-1" role="dialog" aria-hidden="true" style=" padding-right: 17px;">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Payment Details</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" data-ajax="true" data-ajax-success="mySuccessInsertPaymentDetail" data-ajax-failure="myFailureInsertPaymentDetail"
+                  asp-area="" id="FormInsertPaymentDetail" asp-controller="Accounts" asp-action="InsertPaymentDetail_Vendor" data-ajax-loading="">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body">
+
+
+
+                            <div class="form-body">
+                                <div class="row">
+                                    @if (Model.paymentMasterObject.PaymentMaster_ID != 0)
+                                    {
+                                        <input id="hdPaymentMaster_ID" name="hdPaymentMaster_ID" type="hidden" value="@Model.paymentMasterObject.PaymentMaster_ID" />
+                                    }
+                                    else
+
+                                    {
+
+                                        <input id="hdPaymentMaster_ID" name="hdPaymentMaster_ID" type="hidden" value="0" />
+                                    }
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Account</label>
+                                            <select class="form-control" id="DR_accountID" name="DR_accountID" Readonly>
+                                                <option value="40">A/P</option>
+                                            </select>
+
+
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+
+
+                                    @if (Configuration.GetSection("AppSettings").GetSection("IsJapanSpecsEnabled").Value == "true")
+                                    {
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label class="control-label">Amount*</label>
+                                       
+
+                                                        <input type="number" id="Amount" name="Amount" step="any" class="form-control" placeholder="Enter Amount" onblur="CalculateSumAmount()" required readonly>
+                                                
+
+                                                    @*<div class="col-md-5 col-sm-5" style="padding:0;">
+                                                        <input type="text" id="TaxAmount" name="TaxAmount" class="form-control" readonly>
+                                                    </div>*@
+
+                                            
+
+
+                                            </div>
+                                        </div>
+
+
+                                    }
+                                    else
+                                    {
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label class="control-label">Amount*</label>
+                                                <input type="number" id="Amount" name="Amount" step="any" class="form-control" placeholder="Enter Amount" onblur="CalculateSumAmount()" required readonly>
+
+                                            </div>
+                                        </div>
+                                    }
+
+
+
+
+
+
+
+                                    <!--/span-->
+
+                                    <div class="col-md-3">
+                                        <label class="control-label">Currency & Rate</label>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-5 col-sm-5" style="padding:0; padding-left:12px;">
+                                                    <select class="form-control" id="Currency_ID" name="Currency_ID" asp-items="@(new SelectList( ViewBag.CurrencyList,"Currency_ID","Currency_ShortName"))">
+                                                        @*<option>SELECT</option>*@
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-7 col-sm-7" style="padding:0;">
+                                                    <input type="number" id="Currency_Rate" name="Currency_Rate" step="any" onblur="CalculateSumAmount()" value="1" class="form-control" placeholder="Rate">
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Other Amount </label>
+                                            <input type="text" id="Amount_Others" name="Amount_Others" step="any" class="form-control" placeholder="Other Amount" readonly>
+
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Pay Via*</label>
+
+                                            <select class="form-control" id="CR_accountID" name="CR_accountID"  asp-items="@(new SelectList( ViewBag.CR_accountIDList,"Account_ID","AccountName"))" required>
+                                                <option value="0">Select</option>
+                                            </select>
+
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="control-label">Description</label>
+                                            <input type="text" id="Description" name="Description" class="form-control" placeholder="Enter Description here">
+
+                                        </div>
+                                    </div>
+
+                                    <!--/span-->
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Ref </label>
+
+                                            <input type="text" id="trans_ref" name="trans_ref" class="form-control" placeholder="Reference" readonly>
+
+
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+                                </div>
+                                <div class="row">
+
+                                    @*<div class="col-md-3">
+            <div class="form-group">
+                <label class="control-label">Bank</label>
+                <input type="text" id="cheque_bank_name" name="cheque_bank_name" class="form-control" placeholder="Bank">
+
+            </div>
+        </div>*@
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Bank</label>
+                                            <select class="form-control" id="PDC_Payable_Acc_ID" name="PDC_Payable_Acc_ID" onchange="changetextbox()" asp-items="@(new SelectList( ViewBag.DR_AccountsListBanks,"Account_ID","AccountName"))" required>
+                                                <option>Select</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+
+                                    <!--/span-->
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Cheque Date </label>
+
+                                            <div class="input-group">
+                                                <span class="input-group-prepend">
+                                                    <span class="input-group-text">
+                                                        <i class="fas fa-calendar-alt"></i>
+                                                    </span>
+                                                </span>
+
+                                                <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="cheque_date" name="cheque_date">
+
+                                            </div>
+
+
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Cheque # </label>
+                                            <input type="text" id="cheque_no" name="cheque_no" class="form-control" placeholder="Cheque #">
+
+                                        </div>
+                                    </div>
+
+
+
+
+                                    @if (Configuration.GetSection("AppSettings").GetSection("IsJapanSpecsEnabled").Value == "true")
+                                    {
+
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label class="control-label">Payment Transfer Exp (10%)*</label>
+                                                <div class="row">
+
+                                                    <div class="col-md-7 col-sm-7" style="padding:0; padding-left:12px;">
+                                                        <input type="number" id="ExtraCharges" name="ExtraCharges" step="any" class="form-control" placeholder="Payment Transfer Exp" onblur="CalcTaxForExtraCharges()" required>
+                                                    </div>
+
+                                                    <div class="col-md-5 col-sm-5" style="padding:0;">
+                                                        <input type="number" id="ExtraChargesTax" name="ExtraChargesTax" step="any" class="form-control" placeholder="TAX" readonly required>
+                                                    </div>
+
+                                                </div>
+
+
+                                            </div>
+                                        </div>
+
+
+
+
+                                    }
+                                    else
+                                    {
+                                        <div class="col-md-3 col-lg-3">
+                                            <label class="control-label">VAT Charges </label>
+                                            <div class="form-group">
+                                                <div class="row">
+                                                    <div class="col-md-5 col-sm-5" style="padding:0; padding-left:12px;">
+                                                        <select class="form-control" id="VAT_Rate" name="VAT_Rate" onchange="CalculateSumAmount()">
+                                                            <option value="0">0%</option>
+                                                            <option value="5">5%</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-7 col-sm-7" style="padding:0;">
+                                                        <input type="text" id="VAT_Exp" name="VAT_Exp" step="any" class="form-control" placeholder="total" readonly>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+
+
+
+
+                                    @if (Configuration.GetSection("AppSettings").GetSection("IsJapanSpecsEnabled").Value == "true")
+                                    {
+                                        <input type="hidden" id="VAT_Rate" name="VAT_Rate" value="10" />
+                                    }
+
+
+
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-3 col-lg-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Total </label>
+                                            <input type="text" id="Total_Amount" name="Total_Amount" step="any" class="form-control" placeholder="total" readonly>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row hide">
+
+                                    <div class="col-md-3" id="Chassisrow" @IsChassisEnabled>
+                                        <div class="form-group">
+                                            @*<label class="control-label">BL NO </label>
+                                                <input type="text" id="txtBLNO" class="form-control" placeholder="BL number">*@
+                                            <label class="control-label">Chassis1 # </label>
+                                            <input type="text" id="Chassis" name="Chassis" class="form-control" placeholder="Chassis">
+                                            <label id="ChassisValidationMessage"></label>
+                                            <input type="hidden" id="Stock_ID_Hidden" name="stock_ID">
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+                                    <div class="col-md-2" style="margin-top:30px" @IsChassisEnabled>
+                                        <div class="form-group">
+
+
+                                            <a onclick="ValidateChassis()" class="btn btn-sm btn-success">
+                                                <i class="fa fa-print"></i> Validate
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+
+                                    <div class="col-lg-7">
+                                        <div class="row">
+                                            <div class="col-lg-12">
+
+                                                @*style="overflow-y:auto; overflow:scroll; border:1px solid #ededed;"*@
+
+                                                <div style="overflow-y:auto;">
+
+                                                    <table @*id="dtHorizontalVerticalExample"*@ class="table table-striped table-bordered table-sm ">
+                                                        <thead style="        background-color: #000; color: white;">
+                                                            <tr>
+                                                                <th id="checktd">
+
+
+                                                                    <input id="chkselectAll" onclick="handleClick(this);" type="checkbox" name="chkselectAll"><label for="chkselectAll"></label>
+                                                                  <a style="color:white;" class="CheckAllAnchor" onclick="CheckAllCheckBox();">&nbsp; Select All</a>
+                                                                    <script>
+                                                                        function handleClick(cb) {
+
+                                                                            var parentValueToPush = new Array();
+
+                                                                            if (cb.checked == true) {
+                                                                                $("#datatable-default input[type=checkbox]").each(function () {
+                                                                                    $(this).prop("checked", true);
+
+                                                                                });
+
+                                                                            } else {
+                                                                                $("#datatable-default input[type=checkbox]").each(function () {
+                                                                                    $(this).prop("checked", false);
+                                                                                });
+                                                                            }
+
+                                                                            console.log(cb.checked)
+                                                                        }
+
+
+                                                                    </script>
+
+                                                                </th>
+                                                                <th>Ref</th>
+                                                                <th>Date</th>
+                                                                <th>Type</th>
+                                                                <th>Amount</th>
+                                                                <th>Paid</th>
+                                                                <th>Pay Now</th>
+                                                                <th>Balance</th>
+
+
+
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody id="dtHorizontalVerticalExample">
+
+                                                            @if (Model.PaymentBalanceList != null)
+                                                            {
+
+
+
+
+                                                                foreach (var item in Model.PaymentBalanceList)
+                                                                {
+                                                                    <tr class="gradeX odd" role="row">
+                                                                        <td><input type="checkbox" id="@item.Ref" name="@item.Ref" value="@item.Total_Amount" onChange="UpdateAmount(this.checked, '@item.Ref'  ,@Convert.ToDecimal((String.IsNullOrEmpty(item.Total_Amount) ? "0" : item.Total_Amount)))"></td>
+                                                                        @*<input type="hidden" id="@item.Enquiry_ID" value="@item.Enquiry_ID" />*@
+                                                                        <td>@item.Ref</td>
+                                                                        <td>@item.PurchaseDate</td>
+                                                                        <td>@item.Type</td>
+                                                                        <td>@item.Total_Amount</td>
+                                                                        <td>@item.Paid</td>
+                                                                        <td>
+                                                                            <input type="number" class="form-control" />
+                                                                        </td>
+                                                                        <td>@item.Balance</td>
+
+                                                                    </tr>
+
+
+                                                                }
+                                                            }
+
+
+                                                        </tbody>
+                                                    </table>
+
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <!--<div class="row" id="Chassisrow" style="display:none;">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Chassis # </label>
+                                            <input type="text" id="Chassis" name="Chassis" class="form-control" placeholder="Chassis">
+                                            <label id="ChassisValidationMessage"></label>
+                                            <input type="hidden" id="Stock_ID_Hidden" name="stock_ID">
+                                        </div>
+                                    </div>-->
+                                <!--/span-->
+                                <!--<div class="col-md-3" style="margin-top:30px">
+                                    <div class="form-group">
+
+
+                                        <a onclick="ValidateChassis()" class="btn btn-sm btn-success">
+                                            <i class="fa fa-print"></i> Validate
+                                        </a>
+                                    </div>
+                                </div>-->
+                                <!--/span-->
+                                <!--</div>-->
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" onclick="SaveForm()" class="btn btn-sm btn-primary">Add</button>
+                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modal Update Payment Details-->
+<div class="modal fade bs-modal-lg in" id="UpdateNewPaymentDetailModal" tabindex="-1" role="dialog" aria-hidden="true" style=" padding-right: 17px;">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Payment Details</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+         
+                <div class="modal-body">
+                    <form method="post" data-ajax="true" data-ajax-success="mySuccessUpdatePaymentDetail" data-ajax-failure="myFailureUpdatePaymentDetail"
+                          asp-area="" asp-controller="Accounts" asp-action="UpdatePaymentDetail_Vendor" data-ajax-loading="" id="PaymentDetailSectionUpdate">
+
+                        <section class="card">
+
+                            <div class="card-body">
+
+
+
+                                <div class="form-body">
+                                    <div class="row">
+                                        @if (Model.paymentMasterObject.PaymentMaster_ID != 0)
+                                        {
+                                            <input id="hdPaymentMaster_ID" name="hdPaymentMaster_ID" type="hidden" value="@Model.paymentMasterObject.PaymentMaster_ID" />
+                                        }
+                                        else
+
+                                        {
+
+                                            <input id="hdPaymentMaster_ID" name="hdPaymentMaster_ID" type="hidden" value="0" />
+                                        }
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label class="control-label">Account</label>
+                                                @*<select class="form-control" id="DR_accountID" name="DR_accountID" asp-items="@(new SelectList( ViewBag.DR_AccountsList,"Account_ID","AccountName",40))" disabled>
+                                    <option>Select</option>
+                                </select>*@
+
+                                                <select class="form-control" id="DR_accountID" name="DR_accountID" Readonly>
+                                                    <option value="40">A/P</option>
+                                                </select>
+
+                                                @*rafay 2*@
+
+                                                <!--payment detail id-->
+                                                <input type="hidden" id="PaymentDetails_IDUpdate" name="PaymentDetails_ID" />
+
+                                            </div>
+                                        </div>
+                                        <!--/span-->
+
+
+
+                                        @if (Configuration.GetSection("AppSettings").GetSection("IsJapanSpecsEnabled").Value == "true")
+                                        {
+                                            <div class="col-md-3">
+                                                <div class="form-group">
+                                                    <label class="control-label">Amount*</label>
+
+
+                                                    <input type="number" id="AmountUpdate" name="AmountUpdate" step="any" class="form-control" placeholder="Enter Amount" onblur="CalculateSumAmountUpdate()" required readonly>
+
+
+                                                    @*<div class="col-md-5 col-sm-5" style="padding:0;">
+                                        <input type="text" id="VAT_ExpUpdate" name="TaxAmount" class="form-control" readonly>
+                                    </div>*@
+
+
+
+                                                </div>
+                                            </div>
+
+
+                                        }
+                                        else
+                                        {
+                                            <div class="col-md-3">
+                                                <div class="form-group">
+                                                    <label class="control-label">Amount*</label>
+                                                    <input type="number" id="AmountUpdate" name="AmountUpdate" step="any" class="form-control" placeholder="Enter Amount" onblur="CalSumAmountsPaymentUdpate()" required readonly>
+
+                                                </div>
+                                            </div>
+                                        }
+
+
+
+
+                                        <!--/span-->
+
+                                        <div class="col-md-3">
+                                            <label class="control-label">Currency & Rate</label>
+                                            <div class="form-group">
+                                                <div class="row">
+                                                    <div class="col-md-5 col-sm-5" style="padding:0; padding-left:5px;">
+                                                        <select class="form-control" id="Currency_IDUpdate" name="Currency_ID" asp-items="@(new SelectList( ViewBag.CurrencyList,"Currency_ID","Currency_ShortName"))">
+                                                            @*<option>SELECT</option>*@
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-7 col-sm-7" style="padding:0;">
+                                                        <input type="number" id="Currency_RateUpdate" name="Currency_Rate" step="any" onblur="CalSumAmountsPaymentUdpate()" value="1" class="form-control" placeholder="Rate">
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!--/span-->
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label class="control-label">Other Amount </label>
+                                                <input type="text" id="Amount_OthersUpdate" name="Amount_Others" step="any" class="form-control" placeholder="Other Amount" readonly>
+
+                                            </div>
+                                        </div>
+                                        <!--/span-->
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label class="control-label">Pay Via*</label>
+
+                                                <select class="form-control" id="CR_accountIDUpdate" name="CR_accountID" asp-items="@(new SelectList( ViewBag.CR_accountIDList,"Account_ID","AccountName"))" required>
+                                                    <option>Select</option>
+                                                </select>
+
+                                            </div>
+                                        </div>
+                                        <!--/span-->
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="control-label">Description</label>
+                                                <input type="text" id="DescriptionUpdate" name="Description" class="form-control" placeholder="Enter Description here">
+
+                                            </div>
+                                        </div>
+
+                                        <!--/span-->
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label class="control-label">Ref </label>
+
+                                                <input type="text" id="trans_refUpdate" name="trans_ref" class="form-control" placeholder="Reference" readonly>
+
+
+                                            </div>
+                                        </div>
+                                        <!--/span-->
+                                    </div>
+                                    <div class="row">
+
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label class="control-label">Bank</label>
+                                                <select class="form-control" id="PDC_Payable_Acc_IDUpdate" name="PDC_Payable_Acc_ID" onchange="changetextbox()" asp-items="@(new SelectList( ViewBag.DR_AccountsListBanks,"Account_ID","AccountName"))" required>
+                                                    <option>Select</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <!--/span-->
+
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label class="control-label">Cheque Date </label>
+
+
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                        </span>
+                                                    </span>
+
+                                                    <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="cheque_dateUpdate" name="cheque_date">
+
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                        <!--/span-->
+
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label class="control-label">Cheque # </label>
+                                                <input type="text" id="cheque_noUpdate" name="cheque_no" class="form-control" placeholder="Cheque #">
+
+                                            </div>
+                                        </div>
+
+
+
+                                        @if (Configuration.GetSection("AppSettings").GetSection("IsJapanSpecsEnabled").Value == "true")
+                                        {
+
+                                            <div class="col-md-3">
+                                                <div class="form-group">
+                                                    <label class="control-label">Payment Transfer Exp (10%)*</label>
+                                                    <div class="row">
+
+                                                        <div class="col-md-7 col-sm-7" style="padding:0; padding-left:12px;">
+                                                            <input type="number" id="ExtraCharges_Update" name="ExtraCharges" step="any" class="form-control" placeholder="Payment Transfer Exp" onblur="CalcTaxForExtraChargesUpdate()" required>
+                                                        </div>
+
+                                                        <div class="col-md-5 col-sm-5" style="padding:0;">
+                                                            <input type="number" id="ExtraChargesTax_Update" name="ExtraChargesTax" step="any" class="form-control" placeholder="TAX" readonly required>
+                                                        </div>
+
+                                                    </div>
+
+
+                                                </div>
+                                            </div>
+
+
+
+
+                                        }
+                                        else
+                                        {
+                                            <div class="col-md-3 col-lg-3">
+                                                <label class="control-label">VAT Charges </label>
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-5 col-sm-5" style="padding:0; padding-left:12px;">
+                                                            <select class="form-control" id="VAT_RateUpdate" name="VAT_Rate" onchange="CalSumAmountsPaymentUdpate()">
+                                                                <option value="0">0%</option>
+                                                                <option value="5">5%</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-md-7 col-sm-7" style="padding:0;">
+                                                            <input type="text" id="VAT_ExpUpdate" name="VAT_Exp" step="any" class="form-control" placeholder="total" readonly>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+                                        }
+
+
+
+
+                                        @if (Configuration.GetSection("AppSettings").GetSection("IsJapanSpecsEnabled").Value == "true")
+                                        {
+                                            <input type="hidden" id="VAT_Rate" name="VAT_Rate" value="10" />
+                                        }
+
+
+
+
+
+
+
+
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-3 col-lg-3">
+                                            <div class="form-group">
+                                                <label class="control-label">Total </label>
+                                                <input type="text" id="Total_AmountUpdate" name="Total_Amount" step="any" class="form-control" placeholder="total" readonly>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row hide">
+                                        <div class="col-md-3" id="ChassisRowUpdate" @IsChassisEnabled>
+                                            <div class="form-group">
+                                                <label class="control-label">Chassis #  </label>
+                                                <input type="text" id="ChassisUpdate" name="Chassis" class="form-control" placeholder="Chassis">
+                                                <label id="ChassisValidationMessageUpdate"></label>
+
+                                                <input type="hidden" id="Stock_ID_HiddenUpdate" name="Stock_ID_HiddenUpdate" value="0">
+                                            </div>
+                                        </div>
+                                        <!--/span-->
+                                        <div class="col-md-2" style="margin-top:30px" @IsChassisEnabled>
+                                            <div class="form-group">
+
+
+                                                <a onclick="ValidateChassisUpdate()" class="btn btn-success">
+                                                    <i class="fa fa-print"></i> Validate
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <!--/span-->
+                                        <div class="col-lg-7">
+                                            <div class="row">
+                                                <div class="col-lg-12">
+
+                                                    @*style="overflow-y:auto; overflow:scroll; border:1px solid #ededed;"*@
+
+
+                                                    <div style="overflow-y:auto;" id="">
+
+                                                        <table @*id="dtHorizontalVerticalExample"*@ class="table table-striped table-bordered table-sm ">
+                                                            <thead style="        background-color: #000; color: white;">
+                                                                <tr>
+                                                                    <th><a style="color:white;" class="CheckAllAnchor" onclick="CheckAllCheckBox();">Select All</a></th>
+                                                                    <th>Ref</th>
+                                                                    <th>Date</th>
+                                                                    <th>Type</th>
+                                                                    <th>Amount</th>
+                                                                    <th>Paid</th>
+                                                                    <th>Pay Now</th>
+                                                                    <th>Balance</th>
+
+
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody id="dtHorizontalVerticalExampleUpdate">
+
+                                                                @if (Model.paymentMasterObject != null && Model.paymentMasterObject.PaymentMaster_ID > 0)
+                                                                {
+                                                                    string value = "txtPayNow";
+                                                                    string value1 = "txtBalance";
+                                               
+
+                                                                    @if (Model.PaymentBalanceList != null)
+                                                                    {
+
+
+
+
+                                                                        foreach (var item in Model.PaymentBalanceList)
+                                                                        {
+                                                                            <tr class="gradeX odd" role="row">
+                                                                                @if (item.Paid != null && item.Paid != "0.0000"&& item.PaymentMaster_ID== PaymentMaster_ID)
+                                                                                {
+                                                                                    <td><input type="checkbox" id="@item.Ref" name="@item.Ref" value="@item.Total_Amount" checked onChange="UpdateAmount(this.checked, '@item.Ref'  ,@Convert.ToDecimal((String.IsNullOrEmpty(item.Total_Amount) ? "0" : item.Total_Amount)))"></td>
+ }
+                                                                                else
+                                                                                {
+                                                                                    <td>
+                                                                                        <input type="checkbox" id="@item.Ref" name="@item.Ref" value="@item.Total_Amount"
+                                                                                               onChange="UpdateAmount(this,this.checked, '@item.Ref'  ,@Convert.ToDecimal((String.IsNullOrEmpty(item.Total_Amount) ? "0" : item.Total_Amount)))">
+                                                                                    </td>
+}
+                                                                                @*<input type="hidden" id="@item.Enquiry_ID" value="@item.Enquiry_ID" />*@
+                                                                                <td>@item.Ref</td>
+                                                                                <td>@item.PurchaseDate</td>
+                                                                                <td>@item.Type</td>
+                                                                                <td>@item.Total_Amount</td>
+                                                                                <td>@item.Paid</td>
+                                                                                @if (item.Paid != null && item.Paid != "0.0000" && item.PaymentMaster_ID == PaymentMaster_ID)
+                                                                                {
+                                                                                    <td><input name="userSelectID" type="number" onblur="InsertToAmount('@item.Ref')" class="form-control element-row" id="@value@item.Ref" value="@item.Paid" /></td>
+ }
+                                                                                else
+                                                                                {
+                                                                                    <td>
+                                                                                        <input name="userSelectID" type="number" onblur="InsertToAmount('@item.Ref','User')" class="form-control element-row" id="@value@item.Ref" value="0" disabled />
+                                                                                    </td>
+}
+
+                                                                                <td id="@value1@item.Ref">@item.Balance</td>
+
+                                                                            </tr>
+                                                                        }
+                                                                    }
+
+
+                                                                }
+                                                                else
+                                                                {
+                                                                    string value = "txtPayNow";
+                                                                    string value1 = "txtBalance";
+
+
+                                                                    @if (Model.PaymentBalanceList != null)
+                                                                    {
+
+
+
+
+                                                                        foreach (var item in Model.PaymentBalanceList)
+                                                                        {
+                                                                            <tr class="gradeX odd" role="row">
+
+                                                                                <td>
+                                                                                    <input type="checkbox" id="@item.Ref" name="@item.Ref" value="@item.Total_Amount"
+                                                                                           onChange="UpdateAmount(this,this.checked, '@item.Ref'  ,@Convert.ToDecimal((String.IsNullOrEmpty(item.Total_Amount) ? "0" : item.Total_Amount)))">
+                                                                                </td>
+                                                                                @*<input type="hidden" id="@item.Enquiry_ID" value="@item.Enquiry_ID" />*@
+                                                                                <td>@item.Ref</td>
+                                                                                <td>@item.PurchaseDate</td>
+                                                                                <td>@item.Type</td>
+                                                                                <td>@item.Total_Amount</td>
+                                                                                <td>@item.Paid</td>
+
+                                                                                <td>
+                                                                                    <input name="userSelectID" type="number" onblur="InsertToAmount('@item.Ref','User')" class="form-control element-row" id="@value@item.Ref" value="0" disabled />
+                                                                                </td>
+
+                                                                                <td id="@value1@item.Ref">@item.Balance</td>
+
+                                                                            </tr>
+                                                                        }
+                                                                    }
+
+
+
+                                                                }
+
+
+                                                            </tbody>
+                                                        </table>
+
+
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    @*<div class="row" id="ChassisRowUpdate" style="display:none;">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="control-label">Chassis # </label>
+                                <input type="text" id="" name="" class="form-control" placeholder="Chassis">
+
+
+                            </div>
+                        </div>
+
+
+                    </div>*@
+
+                                </div>
+
+
+                            </div>
+
+
+
+                        </section>
+                    </form>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" onclick="UpdateForm()" class="btn btn-primary">Update</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            
+
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- Modal Delete payment master -->
+<div class="modal fade bs-modal-lg" id="DeletePaymentMasterModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Delete payment Master</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="Accounts" asp-action="DeletePaymentMaster_Vendor">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <h3>Do you want to delete this record?</h3>
+
+                                        <input type="hidden" id="PaymentMaster_ID_Delete" name="PaymentMaster_ID" />
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- Modal Delete PaymentDetail -->
+<div class="modal fade bs-modal-lg" id="DeletePaymentDetailModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Delete Payment Detail</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" data-ajax="true" data-ajax-success="SuccessDeletePayment" data-ajax-failure="FailureDeletePayment"
+                  asp-area="" asp-controller="Accounts" asp-action="DeletePaymentDetail_Vendor" data-ajax-loading="">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <h3>Do you want to delete this record?</h3>
+
+                                        <input type="hidden" id="PaymentDetails_ID_Delete" name="PaymentDetails_ID" />
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal Change payment Master Status -->
+<div class="modal fade bs-modal-lg" id="ChangeStatusPaymentModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Change Payment Status</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="Accounts" asp-action="ChangePaymentMasterStatus" data-ajax-loading="">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <h3>Do you want to change status of this record?</h3>
+
+                                        <input type="hidden" id="PaymentMaster_IDStatus" name="PaymentMaster_ID" />
+                                        <input type="hidden" id="Payment_Status_ID" name="Status_ID" />
+                                        <input type="hidden" id="Trans_Type" name="Trans_Type" value="Payment_Voucher_Vendor" />
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<!-- Modal show attachment -->
+<div class="modal fade bs-modal-lg" id="ShowAttachmentMasterModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <!-- Following fields is for making a central purchase master id for attachments -->
+        <input type="hidden" id="PaymentMasterMain" name="PaymentMasterMain" />
+        <div class="modal-content" id="AttachmentsPaymentMaster">
+
+
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+
+
+    @*Please dont remove following script lib bcz it is for all ajaz and partial view calls*@
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
+
+
+    <script type="text/javascript">
+        function SaveForm() {
+            if ($("#CR_accountID").val() == 0) {
+                alert('Please select Pay Via')
+                return false;
+            }
+            else {
+                var form = document.getElementById("FormInsertPaymentDetail"),
+                    inputs = form.getElementsByTagName("input"),
+                    arr = [],
+                    selectAmounts = [];
+
+
+                for (var i = 0, len = inputs.length; i < len; i++) {
+                    if (inputs[i].type === "checkbox" && inputs[i].checked == true) {
+                        arr.push(inputs[i].name);
+                        selectAmounts.push(document.getElementById("txtPayNow" + inputs[i].name).value)
+                    }
+                }
+
+                console.log(arr);
+
+                console.log(selectAmounts);
+
+
+                return $.ajax({
+                    type: 'POST',
+                    url: "/Accounts/InsertPaymentDetail_Vendor",
+                    data: {
+
+                        DR_accountID: $("#DR_accountID").val(),
+                        Amount: $("#Amount").val(),
+                        Currency_ID: $("#Currency_ID").val(),
+                        Currency_Rate: $("#Currency_Rate").val(),
+                        Amount_Others: $("#Amount_Others").val(),
+                        CR_accountID: $("#CR_accountID").val(),
+                        Description: $("#Description").val(),
+                        trans_ref: $("#trans_ref").val(),
+                        cheque_bank_name: $("#cheque_bank_name").val(),
+                        cheque_date: $("#cheque_date").val(),
+                        cheque_no: $("#cheque_no").val(),
+                        VAT_Exp: $("#VAT_Exp").val(),
+                        Total_Amount: $("#Total_Amount").val(),
+                        stock_ID: $("#Stock_ID_Hidden").val(),
+                        hdPaymentMaster_ID: $("#hdPaymentMaster_ID").val(),
+                        TaxAmount: $("#TaxAmount").val(),
+                        ExtraCharges: $("#ExtraCharges").val(),
+                        ExtraChargesTax: $("#ExtraChargesTax").val(),
+                        PDC_Payable_Acc_ID: $("#PDC_Payable_Acc_ID").val(),
+
+                        selectedIds: arr,
+                        UserselectedAmounts: selectAmounts
+                    },
+                    success: function (result, status, xhr) {
+                        mySuccessUpdatePaymentDetail(result);
+
+                    }
+                });
+            }
+
+        }
+        function UpdateForm() {
+            if ($("#CR_accountIDUpdate").val() == 0) {
+                alert('Please select Pay Via')
+                return false;
+            }
+            else {
+                debugger
+                var form = document.getElementById("PaymentDetailSectionUpdate"),
+                    inputs = form.getElementsByTagName("input"),
+                    arr = [],
+                    selectAmounts = [];
+
+
+                for (var i = 0, len = inputs.length; i < len; i++) {
+                    if (inputs[i].type === "checkbox" && inputs[i].checked == true) {
+                        arr.push(inputs[i].name);
+                        selectAmounts.push(document.getElementById("txtPayNow" + inputs[i].name).value)
+                    }
+                }
+
+                console.log(arr);
+
+                console.log(selectAmounts);
+
+
+                return $.ajax({
+                    type: 'POST',
+                    url: "/Accounts/InsertPaymentDetail_Vendor",
+                    data: {
+
+                        DR_accountID: $("#DR_accountID").val(),
+                        //PaymentDetails_ID: $("#PaymentDetails_IDUpdate").val(),
+
+                        
+                        Amount: $("#AmountUpdate").val(),
+                        VAT_Rate: $("#VAT_Rate").val(),
+                        Currency_ID: $("#Currency_IDUpdate").val(),
+                        Currency_Rate: $("#Currency_RateUpdate").val(),
+                        Amount_Others: $("#Amount_OthersUpdate").val(),
+                        CR_accountID: $("#CR_accountIDUpdate").val(),
+                        Description: $("#DescriptionUpdate").val(),
+                        trans_ref: $("#trans_refUpdate").val(),
+                        cheque_bank_name: $("#cheque_bank_nameUpdate").val(),
+                        cheque_date: $("#cheque_dateUpdate").val(),
+                        cheque_no: $("#cheque_noUpdate").val(),
+                        VAT_Exp: $("#VAT_ExpUpdate").val(),
+                        Total_Amount: $("#Total_AmountUpdate").val(),
+                        stock_ID: $("#Stock_ID_HiddenUpdate").val(),
+                        hdPaymentMaster_ID: $("#hdPaymentMaster_ID").val(),
+                        TaxAmount: $("#TaxAmountUpdate").val(),
+                        ExtraCharges: $("#ExtraCharges_Update").val(),
+                        ExtraChargesTax: $("#ExtraChargesTax_Update").val(),
+                        PDC_Payable_Acc_ID: $("#PDC_Payable_Acc_IDUpdate").val(),
+
+                        selectedIds: arr,
+                        UserselectedAmounts: selectAmounts
+                    },
+                    success: function (result, status, xhr) {
+                        mySuccessUpdatePaymentDetail(result);
+
+                    }
+                });
+            }
+
+        }
+    </script>
+
+    <script>
+
+        $(function () {
+            $(".select2").select2({
+                theme: "bootstrap",
+
+            });
+        });
+         $("#Currency_ID").val(@DefaultCurrency_ID_Dropdown);
+
+    </script>
+
+    <script type="text/javascript">
+
+        //---show attachment popup
+        function ShowAttachmentMaster(PaymentMaster_ID) {
+            debugger
+            var TeamDetailPostBackURL = '/Accounts/GetPaymentMaster_Attachments';
+
+            //--assign value to PaymentMaster_ID hidden field in the main. Dont remove this fields
+            $("#PaymentMasterMain").val(PaymentMaster_ID);
+
+
+            if (!PaymentMaster_ID) {
+                alert("ID is null. Please try again!");
+            } else {
+                $.ajax({
+                    type: "GET",
+                    url: TeamDetailPostBackURL,
+                    contentType: "application/json; charset=utf-8",
+                    data: { "PaymentMaster_ID": PaymentMaster_ID },
+                    datatype: "json",
+                    success: function (data) {
+
+
+                        if (data.message == undefined) {
+                            $('#AttachmentsPaymentMaster').html(data);
+
+
+                            //--assign value to PaymentMaster_ID hidden field. this field is in partial view '_PurchaseListAttachment'
+                            $("#PaymentMaster_ID_Attachment").val(PaymentMaster_ID);
+
+                            $('#ShowAttachmentMasterModal').modal('show');
+
+                        } else {
+                            alert(data.message);
+                            $('#ShowAttachmentMasterModal').modal('hide');
+                        }
+
+                    },
+                    error: function () {
+                        alert("Dynamic content load failed.");
+                    }
+                });
+            }
+
+
+
+        }
+
+
+        //---after successfull submission of attachment
+        function mySuccessAttachment(data) {
+
+            debugger
+            if (data.message == undefined) {
+
+
+                $('#AttachmentsPaymentMaster').html(data);
+
+                //---assign id of purchase master to the hidden field PaymentMaster_ID_Attachment after partial view refresh
+                var PaymentMaster_ID = document.getElementById("PaymentMasterMain").value;
+                $("#PaymentMaster_ID_Attachment").val(PaymentMaster_ID);
+
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        //---if error occured in insertion of attachment
+        function myFailureAttachment() {
+
+            alert("Failured occured. Please try again!");
+
+        }
+
+        //---Delete Attachment
+        function DeleteAttachment(Attachment_ID, Master_ID, Type, File_Name) {
+            debugger
+            var TeamDetailPostBackURL = '/Accounts/DeleteAttachmentPayment';
+
+            //--in this function , the 'Type' is for the field in attachment table for specifying different voucher documents
+
+            var PaymentMaster_ID = Master_ID;
+            if (!Attachment_ID) {
+                alert("Attachment ID is null. Please try again!");
+            } else {
+                $.ajax({
+                    type: "GET",
+                    url: TeamDetailPostBackURL,
+                    contentType: "application/json; charset=utf-8",
+                    data: { "PaymentMaster_ID": PaymentMaster_ID, "Attachment_ID": Attachment_ID, "Type": Type, "File_Name": File_Name },
+                    datatype: "json",
+                    success: function (data) {
+
+
+                        if (data.message == undefined) {
+                            $('#AttachmentsPaymentMaster').html(data);
+
+
+                            //--assign value to PurchaseMaster_ID hidden field. this field is in partial view '_PaymentListAttachment'
+                            $("#PaymentMaster_ID_Attachment").val(PaymentMaster_ID);
+
+
+
+                        } else {
+                            alert(data.message);
+                            //$('#ShowAttachmentMasterModal').modal('hide');
+                        }
+
+                    },
+                    error: function () {
+                        alert("Dynamic content load failed.");
+                    }
+                });
+            }
+
+
+
+        }
+
+
+
+
+        function changetextbox() {
+
+            var x = document.getElementById("DR_accountID");
+            var i = x.selectedIndex;
+            var textContent = x.options[i].text;
+
+            var result = textContent.includes("VEH-EXP");
+            if (result) {
+                $("#Chassisrow").show();
+
+
+            } else {
+                $("#Chassisrow").hide();
+
+               
+
+            }
+
+        }
+
+        //function changetextboxUpdate() {
+
+        //    var x = document.getElementById("DR_accountIDUpdate");
+        //    var i = x.selectedIndex;
+        //    var textContent = x.options[i].text;
+
+        //    var result = textContent.includes("VEH-EXP");
+        //    if (result) {
+        //        $("#ChassisRowUpdate").show();
+
+
+        //    } else {
+        //        $("#ChassisRowUpdate").hide();
+
+        //        $
+
+        //    }
+
+        //}
+
+
+
+        //This function is for validation of chassis no
+        function ValidateChassis() {
+
+            debugger
+
+
+            var Chassis = document.getElementById("Chassis").value.toString();
+
+            $.ajax({
+
+                type: "Get",
+                url: "/Accounts/ValidateChassisNo",
+                data: { //Passing data
+                    ChassisNo: Chassis
+
+
+                },
+                datatype: "json",
+                success: function (response) {
+                    debugger
+                    if (response.message == 'Chassis is valid') {
+
+                        $("#ChassisValidationMessage").text(response.message);
+                        $("#ChassisValidationMessage").css("color", "green");
+                        $("#Stock_ID_Hidden").val(response.stock_ID);
+                    } else {
+                        $("#ChassisValidationMessage").text(response.message);
+                        $("#ChassisValidationMessage").css("color", "red");
+                    }
+
+                }
+            })
+        }
+
+
+        //This function is for validation of chassis no
+        function ValidateChassisUpdate() {
+
+            debugger
+
+
+            var Chassis = document.getElementById("ChassisUpdate").value.toString();
+
+            $.ajax({
+
+                type: "Get",
+                url: "/Accounts/ValidateChassisNo",
+                data: { //Passing data
+                    ChassisNo: Chassis
+
+
+                },
+                datatype: "json",
+                success: function (response) {
+                    console.log(response);
+                    debugger
+                    if (response.message == 'Chassis is valid') {
+                      
+                        $("#ChassisValidationMessageUpdate").text(response.message);
+                        $("#ChassisValidationMessageUpdate").css("color", "green");
+                        $("#Stock_ID_HiddenUpdate").val(response.stock_ID);
+                    } else {
+                      
+
+                        $("#ChassisValidationMessageUpdate").text(response.message);
+                        $("#ChassisValidationMessageUpdate").css("color", "red");
+                    }
+
+                }
+            })
+        }
+
+
+
+        //---this function will hit after success submission of insert paymnet detail form
+        function mySuccessInsertPaymentDetail(data) {
+
+            var SuccessDiv = " <div class='col-lg-12'><div class='alert alert-info'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button><strong>Success!</strong> Saved Successfully! <a href ='' class='alert-link'></a></div></div>";
+            debugger
+            if (data.message == undefined) {
+
+                //$('#AddNewPurchaseModal').modal('hide');
+                $('#PaymentDetailSection').html(data);
+                $('#SuccessErrorSection').html(SuccessDiv).show();
+
+                //reset form after success
+                $('#FormInsertPaymentDetail').trigger("reset");
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+        //---this function will hit when error occured in submission of payment detail
+        function myFailureInsertPaymentDetail() {
+
+            alert("Failured occured. Please try again!");
+        }
+
+        //---this function will hit after success submission of Update paymnet detail form
+        function mySuccessUpdatePaymentDetail(data) {
+
+            var SuccessDiv = " <div class='col-lg-12'><div class='alert alert-info'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button><strong>Success!</strong> Saved Successfully! <a href ='' class='alert-link'></a></div></div>";
+            debugger
+            if (data.message == undefined) {
+
+                //$('#AddNewPurchaseModal').modal('hide');
+                $('#PaymentDetailSection').html(data);
+                $('#SuccessErrorSection').html(SuccessDiv).show();
+
+                //reset form after success
+                $('#FormInsertPaymentDetail').trigger("reset");
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+        //---this function will hit when error occured in submission of payment detail
+        function myFailureUpdatePaymentDetail() {
+
+            alert("Failured occured. Please try again!");
+        }
+
+
+
+        //---function for calculating amounts in the payment detail pop up form insert
+        function CalculateSumAmount() {
+            debugger
+            var Amount = 0;
+            var VAT_Rate = 0;
+            var Currency_Rate = 1;
+
+
+            var Amount_Others = 0;
+            var VAT_Exp = 0;
+            var Total_Amount = 0;
+
+
+            Amount = document.getElementById("Amount").value;
+
+            if (document.getElementById("VAT_Rate") != null && document.getElementById("VAT_Rate") != "" && document.getElementById("VAT_Rate") != undefined) {
+                VAT_Rate = document.getElementById("VAT_Rate").value;
+            } else {
+                VAT_Rate = 0;
+            }
+
+
+            Currency_Rate = document.getElementById("Currency_Rate").value;
+
+            Amount_Others = document.getElementById("Amount_Others").value;
+
+            if (document.getElementById("VAT_Exp") != null && document.getElementById("VAT_Exp") != "" && document.getElementById("VAT_Exp") != undefined) {
+                VAT_Exp = document.getElementById("VAT_Exp").value;
+            } else {
+                VAT_Exp = 0;
+            }
+
+
+
+            Total_Amount = document.getElementById("Total_Amount").value;
+
+
+            if (!Amount) {
+                Amount = 0;
+            }
+            if (!VAT_Rate) {
+                VAT_Rate = 0;
+            }
+            if (!Currency_Rate) {
+                Currency_Rate = 1;
+            }
+            if (!Amount_Others) {
+                Amount_Others = 0;
+
+            }
+            if (!VAT_Exp) {
+                VAT_Exp = 0;
+            }
+            if (!Total_Amount) {
+                Total_Amount = 0;
+            }
+
+
+
+            //---calculate sum vat exp
+            VAT_Exp = Amount * (VAT_Rate / 100);
+            $("#VAT_Exp").val(VAT_Exp);
+
+            Total_Amount = ((Number(Amount) * Number(Currency_Rate)) + Number(VAT_Exp)).toFixed(5);
+            $("#Total_Amount").val(Total_Amount);
+
+
+            //---calculate Amount_Others
+            Amount_Others = (Amount * Currency_Rate).toFixed(5);
+            $("#Amount_Others").val(Amount_Others);
+
+
+
+
+            var TaxAmount = document.getElementById("TaxAmount");
+
+            if (TaxAmount != null && TaxAmount != undefined) {
+
+
+                num1 = 0;
+                result = 1;
+
+                num1 = document.getElementById("Amount").value;
+
+                result = 10 * num1 / 100;
+
+                $("#TaxAmount").val(result);
+
+            }
+
+
+
+            CalcTaxForExtraCharges();
+
+
+        }
+
+        function CalculateSumAmountUpdate() {
+            debugger
+            var Amount = 0;
+            var VAT_Rate = 0;
+            var Currency_Rate = 1;
+
+
+            var Amount_Others = 0;
+            var VAT_Exp = 0;
+            var Total_Amount = 0;
+
+
+            Amount = document.getElementById("AmountUpdate").value;
+
+            if (document.getElementById("VAT_Rate") != null && document.getElementById("VAT_Rate") != "" && document.getElementById("VAT_Rate") != undefined) {
+                VAT_Rate = document.getElementById("VAT_Rate").value;
+            } else {
+                VAT_Rate = 0;
+            }
+
+
+            Currency_Rate = document.getElementById("Currency_RateUpdate").value;
+
+            Amount_Others = document.getElementById("Amount_OthersUpdate").value;
+
+            if (document.getElementById("VAT_Exp") != null && document.getElementById("VAT_Exp") != "" && document.getElementById("VAT_Exp") != undefined) {
+                VAT_Exp = document.getElementById("VAT_Exp").value;
+            } else {
+                VAT_Exp = 0;
+            }
+
+
+
+            Total_Amount = document.getElementById("Total_AmountUpdate").value;
+
+
+            if (!Amount) {
+                Amount = 0;
+            }
+            if (!VAT_Rate) {
+                VAT_Rate = 0;
+            }
+            if (!Currency_Rate) {
+                Currency_Rate = 1;
+            }
+            if (!Amount_Others) {
+                Amount_Others = 0;
+
+            }
+            if (!VAT_Exp) {
+                VAT_Exp = 0;
+            }
+            if (!Total_Amount) {
+                Total_Amount = 0;
+            }
+
+
+
+            //---calculate sum vat exp
+            VAT_Exp = Amount * (VAT_Rate / 100);
+            $("#VAT_Exp").val(VAT_Exp);
+
+            Total_Amount = ((Number(Amount) * Number(Currency_Rate)) + Number(VAT_Exp)).toFixed(5);
+            $("#Total_AmountUpdate").val(Total_Amount);
+
+
+            //---calculate Amount_Others
+            Amount_Others = (Amount * Currency_Rate).toFixed(5);
+            $("#Amount_OthersUpdate").val(Amount_Others);
+
+
+
+
+            var TaxAmount = document.getElementById("TaxAmount");
+
+            if (TaxAmount != null && TaxAmount != undefined) {
+
+
+                num1 = 0;
+                result = 1;
+
+                num1 = document.getElementById("Amount").value;
+
+                result = 10 * num1 / 100;
+
+                $("#TaxAmount").val(result);
+
+            }
+
+
+
+            CalcTaxForExtraChargesUpdate();
+
+
+        }
+
+
+        function CalcTaxForExtraCharges() {
+            debugger;
+            num1 = 0;
+            result = 1;
+            num1 = document.getElementById("ExtraCharges").value;
+            result = 10 * num1 / 100;
+            document.getElementById("ExtraChargesTax").value = result;
+            document.getElementById("Total_Amount").value = Number(document.getElementById("Total_Amount").value) + Number(document.getElementById("ExtraCharges").value) + Number(document.getElementById("ExtraChargesTax").value);
+        }
+
+
+         function CalcTaxForExtraChargesUpdate() {
+
+            debugger;
+
+            num1 = 0;
+            result = 1;
+            num1 = document.getElementById("ExtraCharges_Update").value;
+            result = 10 * num1 / 100;
+            document.getElementById("ExtraChargesTax_Update").value = result;
+            document.getElementById("Total_Amount").value = Number(document.getElementById("Total_Amount").value) + Number(document.getElementById("ExtraCharges_Update").value) + Number(document.getElementById("ExtraChargesTax_Update").value);
+        }
+
+
+
+        //---function for calculating amounts in the payment detail pop up form Update
+        function CalSumAmountsPaymentUdpate() {
+            debugger
+            var AmountUpdate = 0;
+            var VAT_RateUpdate = 0;
+            var Currency_RateUpdate = 1;
+
+
+            var Amount_OthersUpdate = 0;
+            var VAT_ExpUpdate = 0;
+            var Total_AmountUpdate = 0;
+
+
+            AmountUpdate = document.getElementById("AmountUpdate").value;
+            VAT_RateUpdate = document.getElementById("VAT_RateUpdate").value;
+            Currency_RateUpdate = document.getElementById("Currency_RateUpdate").value;
+
+            Amount_OthersUpdate = document.getElementById("Amount_OthersUpdate").value;
+            VAT_ExpUpdate = document.getElementById("VAT_ExpUpdate").value;
+            Total_AmountUpdate = document.getElementById("Total_AmountUpdate").value;
+
+
+            if (!AmountUpdate) {
+                AmountUpdate = 0;
+            }
+            if (!VAT_RateUpdate) {
+                VAT_RateUpdate = 0;
+            }
+            if (!Currency_RateUpdate) {
+                Currency_RateUpdate = 1;
+            }
+            if (!Amount_OthersUpdate) {
+                Amount_OthersUpdate = 0;
+
+            }
+            if (!VAT_ExpUpdate) {
+                VAT_ExpUpdate = 0;
+            }
+            if (!Total_AmountUpdate) {
+                Total_AmountUpdate = 0;
+            }
+
+
+
+            //---calculate sum vat exp
+            VAT_ExpUpdate = AmountUpdate * (VAT_RateUpdate / 100);
+            $("#VAT_ExpUpdate").val(VAT_ExpUpdate);
+
+            Total_AmountUpdate = ((Number(AmountUpdate) * Number(Currency_RateUpdate)) + Number(VAT_ExpUpdate)).toFixed(5);
+            $("#Total_AmountUpdate").val(Total_AmountUpdate);
+
+            //---calculate Amount_Others
+            Amount_OthersUpdate = AmountUpdate * Currency_RateUpdate;
+            $("#Amount_OthersUpdate").val(Amount_OthersUpdate).toFixed(5);
+
+
+
+
+        }
+
+   
+        //----Assigning values to Update purchase detail form
+        function UpdatePaymentDetailGeneral(PaymentDetails_ID, DR_accountID, Amount, VAT_Rate, Currency_ID, Currency_Rate, Amount_Others,
+            CR_accountID, Description, trans_ref, cheque_bank_name, cheque_date, cheque_no, VAT_Exp, Total_Amount, stock_ID, ExtraChargesFee, ExtraChargesFeeTax, Chassis_No, PDC_Payable_Acc_ID) {
+
+            debugger
+            console.log(PaymentDetails_ID)
+
+
+
+            $("#PaymentDetails_IDUpdate").val(PaymentDetails_ID);
+            $("#DR_accountID").val(DR_accountID);
+
+            var Amountcurrency = Amount;
+            var Amountnumbers = Number(Amountcurrency.replace(/[^0-9.-]+/g, ""));
+
+            $("#AmountUpdate").val(Amountnumbers);
+            $("#VAT_RateUpdate").val(VAT_Rate);
+            $("#Currency_IDUpdate").val(Currency_ID);
+            $("#Currency_RateUpdate").val(Currency_Rate);
+            $("#Amount_OthersUpdate").val(Amount_Others);
+            $("#CR_accountIDUpdate").val(CR_accountID);
+            $("#DescriptionUpdate").val(Description);
+            $("#trans_refUpdate").val(trans_ref);
+            $("#cheque_bank_nameUpdate").val(cheque_bank_name);
+            $("#cheque_dateUpdate").val(cheque_date);
+            $("#cheque_noUpdate").val(cheque_no);
+            $("#VAT_ExpUpdate").val(VAT_Exp);
+            $("#Total_AmountUpdate").val(Total_Amount);
+            $("#ExtraCharges_Update").val(ExtraChargesFee);
+            $("#ExtraChargesTax_Update").val(ExtraChargesFeeTax);
+            $("#ChassisUpdate").val(Chassis_No);
+            $("#PDC_Payable_Acc_IDUpdate").val(PDC_Payable_Acc_ID);
+
+
+        }
+
+        //---delete payment detail
+        function DeletePaymentDetail(PaymentDetails_ID) {
+            $("#PaymentDetails_ID_Delete").val(PaymentDetails_ID);
+        }
+
+
+        //---delete payment master gen
+        function DeletePaymentMaster(PaymentMaster_ID) {
+            debugger
+            $("#PaymentMaster_ID_Delete").val(PaymentMaster_ID);
+
+        }
+
+    </script>
+
+    <script>
+        //---submit new master purchase voucher
+        $(document).ready(function () {
+
+                   if ("@Model.paymentMasterObject.PaymentStatus"=="Cancelled") {
+                    $('#ButtonUpdateMaster').attr('disabled', 'disabled');
+                    $('#ChangeStatusMaster').attr('disabled', 'disabled');
+
+                $('#btnApproval').attr('disabled', 'disabled');
+
+                $('#btnAttachment').attr('disabled', 'disabled');
+                       $('#btnSavePopUp').attr('disabled', 'disabled');
+
+            }
+
+            $("#ButtonIssueMaster").click(function () {
+
+                $("#formPaymentMaster").submit();
+            });
+        });
+        //---Update master purchase voucher
+        $(document).ready(function () {
+            $("#ButtonUpdateMaster").click(function () {
+                $("#formPaymentMaster").submit();
+            });
+        });
+
+
+        //---after successfull deleting of purchase detail
+        function SuccessDeletePayment(data) {
+
+            var SuccessDiv = " <div class='col-lg-12'><div class='alert alert-info'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button><strong>Success!</strong> Deleted Successfully! <a href='' class='alert-link'></a></div></div>";
+            debugger
+            if (data.message == undefined) {
+                //alert("Saved Successfully!");
+                $('#DeletePaymentDetailModal').modal('hide');
+                $('#PaymentDetailSection').html(data);
+                $('#SuccessErrorSection').html(SuccessDiv).show();;
+
+
+
+            } else {
+                alert(data.message);
+                $('#DeletePaymentDetailModal').modal('hide');
+            }
+
+
+        }
+
+        //---after failure deleting of purchase detail
+        function FailureDeletePayment() {
+
+            alert("Failured occured. Please try again!");
+            $('#DeletePaymentDetailModal').modal('hide');
+        }
+
+
+
+        //---change payment master status
+        function ChangeStatusPaymentMaster(PaymentMaster_ID, Status) {
+            debugger
+            $("#PaymentMaster_IDStatus").val(PaymentMaster_ID);
+            $("#Payment_Status_ID").val(Status);
+
+        }
+
+        $(document).ready(function(){
+    $("#print-btn").click(function(event){
+    event.preventDefault();
+
+    var win = window.open("@Url.Action("PaymentVoucher_Print", "Report")" + "?PaymentMaster_ID=" + $("#PaymentMaster_ID").val() , "_blank");
+    win.focus();
+    });
+    })
+
+
+       function UpdateAmount(value,ChekedOrNot, ref, TotalAmount) {
+           debugger
+
+            if (ChekedOrNot == true) {
+
+                var txtPayNow = document.getElementById('txtPayNow' + ref);
+                var balance = document.getElementById('txtBalance' + ref);
+                console.log(balance.innerText.replace(/,/g, ''));
+
+                var txtUserAmount = document.getElementById('txtPayNow' + ref);
+                if (!txtUserAmount) {
+                    txtUserAmount = 0;
+                }
+                txtUserAmount.value = Number(balance.innerText.replace(/,/g, ''));
+
+                txtPayNow.removeAttribute("disabled");
+
+                InsertToAmount(ref,'code');
+
+            } else {
+
+                var txtPayNow = document.getElementById('txtPayNow' + ref);
+                txtPayNow.setAttribute("disabled", "");
+
+
+                if (!txtPayNow) {
+                    txtUserAmount = 0;
+                }
+
+                var resultTotal = 0;
+
+                console.log(document.getElementById('Amount').value, txtPayNow.value)
+
+                var number1 = Number(document.getElementById('Amount').value);
+                var number2 = Number(txtPayNow.value);
+
+                console.log(resultTotal = number1 - number2);
+
+                txtPayNow.value = 0;
+
+                $("#Amount").val(resultTotal);
+
+
+                //updating total amount
+                UpdateSumTotal(resultTotal);
+
+
+
+            }
+
+
+
+
+
+
+
+        }
+        function UpdateAmountUP(value, ChekedOrNot, ref, TotalAmount) {
+
+
+            if (ChekedOrNot == true) {
+
+                var txtPayNow = document.getElementById('txtPayNowU' + ref);
+                var balance = document.getElementById('txtBalance' + ref);
+                console.log(balance.innerText.replace(/,/g, ''));
+
+                var txtUserAmount = document.getElementById('txtPayNowU' + ref);
+                if (!txtUserAmount) {
+                    txtUserAmount = 0;
+                }
+                txtUserAmount.value = Number(balance.innerText.replace(/,/g, ''));
+
+                txtPayNow.removeAttribute("disabled");
+
+                InsertToAmount(ref, 'code');
+
+            } else {
+
+                var txtPayNow = document.getElementById('txtPayNowU' + ref);
+                txtPayNow.setAttribute("disabled", "");
+
+
+                if (!txtPayNow) {
+                    txtUserAmount = 0;
+                }
+
+                var resultTotal = 0;
+
+                console.log(document.getElementById('Amount').value, txtPayNow.value)
+
+                var number1 = Number(document.getElementById('Amount').value);
+                var number2 = Number(txtPayNow.value);
+
+                console.log(resultTotal = number1 - number2);
+
+                txtPayNow.value = 0;
+
+                $("#Amount").val(resultTotal);
+
+
+                //updating total amount
+                UpdateSumTotal(resultTotal);
+
+
+
+            }
+
+
+
+        }
+        function InsertToAmount(Ref,Direction) {
+
+
+            var txtUserAmount =  document.getElementById('txtPayNow' + Ref);
+
+            console.log(txtUserAmount);
+
+            if (!txtUserAmount) {
+                txtUserAmount = 0;
+            }
+
+
+
+            var Amount = 0;
+            Amount = txtUserAmount.value;
+
+
+            var Balance = document.getElementById('txtBalance' + Ref);
+            var resultTotal = 0;
+
+
+
+           if (Amount == null || Amount == '' || Amount == ' ') {
+                    Amount = 0;
+           }
+
+
+            if (Direction == 'code') {
+
+                debugger;
+
+                if (txtUserAmount != null) {
+
+
+                    resultTotal = Number(Amount);
+
+
+
+                    var isUpdate = $('#UpdateNewPaymentDetailModal').hasClass('show');
+
+                    if (isUpdate == true) {
+
+
+                        console.log(resultTotal = Number(Amount) + Number(document.getElementById('AmountUpdate').value));
+                        $("#AmountUpdate").val(resultTotal);
+
+                        //updating total amount
+                        UpdateSumTotal(resultTotal);
+                    }
+                    else {
+
+                        console.log(resultTotal = Number(Amount) + Number(document.getElementById('Amount').value));
+                        $("#Amount").val(resultTotal);
+
+                        //updating total amount
+                        UpdateSumTotal(resultTotal);
+                    }
+
+                }
+
+
+
+
+
+            } else {
+
+                if (document.getElementsByName('userSelectID') != undefined &&
+                    document.getElementsByName('userSelectID') != "" &&
+                    document.getElementsByName('userSelectID') != null ) {
+
+                    var PaymentList = document.getElementsByName('userSelectID');
+
+                    if (PaymentList.length != 0) {
+
+                        var sum = 0;
+                        for (i = 0; i < PaymentList.length; i++) {
+                            if (document.getElementsByName('userSelectID')[i].value != "0") {
+                                sum += Number(document.getElementsByName('userSelectID')[i].value);
+                            } else {
+                                sum += 0;
+                            }
+
+                        };
+
+
+                        debugger;
+
+                        var isUpdate = $('#UpdateNewPaymentDetailModal').hasClass('show');
+
+                        if (isUpdate == true) {
+                            $("#AmountUpdate").val(sum);
+                            UpdateSumTotal(sum);
+                        }
+                        else {
+                            $("#Amount").val(sum);
+                            UpdateSumTotal(sum);
+                        }
+
+
+
+
+                    }
+
+
+                }
+            }
+
+
+
+
+        }
+
+        function InsertToAmountUpdate(Ref, Direction) {
+
+
+
+
+            var txtUserAmount = document.getElementById('txtPayNowU' + Ref);
+
+            console.log(txtUserAmount);
+
+            if (!txtUserAmount) {
+                txtUserAmount = 0;
+            }
+
+
+
+            var Amount = 0;
+            Amount = txtUserAmount.value;
+
+
+            var Balance = document.getElementById('txtBalance' + Ref);
+            var resultTotal = 0;
+
+
+
+            if (Amount == null || Amount == '' || Amount == ' ') {
+                Amount = 0;
+            }
+
+
+            if (Direction == 'code') {
+
+                debugger;
+
+                if (txtUserAmount != null) {
+
+
+                    resultTotal = Number(Amount);
+
+
+
+                    var isUpdate = $('#UpdateNewPaymentDetailModal').hasClass('show');
+
+                    if (isUpdate == true) {
+
+
+                        console.log(resultTotal = Number(Amount) + Number(document.getElementById('AmountUpdate').value));
+                        $("#AmountUpdate").val(resultTotal);
+
+                        //updating total amount
+                        UpdateSumTotal(resultTotal);
+                    }
+                    else {
+
+                        console.log(resultTotal = Number(Amount) + Number(document.getElementById('Amount').value));
+                        $("#Amount").val(resultTotal);
+
+                        //updating total amount
+                        UpdateSumTotal(resultTotal);
+                    }
+
+                }
+
+
+
+
+
+            } else {
+
+                if (document.getElementsByName('userSelectID') != undefined &&
+                    document.getElementsByName('userSelectID') != "" &&
+                    document.getElementsByName('userSelectID') != null) {
+
+                    var PaymentList = document.getElementsByName('userSelectID');
+
+                    if (PaymentList.length != 0) {
+
+                        var sum = 0;
+                        for (i = 0; i < PaymentList.length; i++) {
+                            if (document.getElementsByName('userSelectID')[i].value != "0") {
+                                sum += Number(document.getElementsByName('userSelectID')[i].value);
+                            } else {
+                                sum += 0;
+                            }
+
+                        };
+
+
+                        debugger;
+
+                        var isUpdate = $('#UpdateNewPaymentDetailModal').hasClass('show');
+
+                        if (isUpdate == true) {
+                            $("#AmountUpdate").val(sum);
+                            UpdateSumTotal(sum);
+                        }
+                        else {
+                            $("#Amount").val(sum);
+                            UpdateSumTotal(sum);
+                        }
+
+
+
+
+                    }
+
+
+                }
+            }
+
+
+
+
+        }
+        function UpdateSumTotal(Amount) {
+
+
+
+            var isUpdate = $('#UpdateNewPaymentDetailModal').hasClass('show');
+
+            if (isUpdate == true) {
+
+
+                var sum = 0;
+                var sum2 = 0;
+
+                num4 = 0;
+                num1 = document.getElementById("AmountUpdate").value;
+                num2 = document.getElementById("Currency_RateUpdate").value;
+                if (document.getElementById("VAT_Exp") != null) {
+                    num3 = document.getElementById("VAT_Exp").value;
+                } else {
+                    num3 = 0;
+                }
+
+                num4 = num1 * num2;
+                num5 = Number((num1 * num2)) + Number(num3);
+                sum = num4;
+                sum2 = num5;
+
+
+                $("#Amount_OthersUpdate").val(sum);
+                $("#Total_AmountUpdate").val(sum2);
+            }
+            else {
+
+                var sum = 0;
+                var sum2 = 0;
+
+                num4 = 0;
+                num1 = document.getElementById("Amount").value;
+                num2 = document.getElementById("Currency_Rate").value;
+                if (document.getElementById("VAT_Exp") != null) {
+                    num3 = document.getElementById("VAT_Exp").value;
+                } else {
+                    num3 = 0;
+                }
+
+                num4 = num1 * num2;
+                num5 = Number((num1 * num2)) + Number(num3);
+                sum = num4;
+                sum2 = num5;
+
+
+                $("#Amount_Others").val(sum);
+                $("#Total_Amount").val(sum2);
+            }
+
+
+        }
+
+
+
+
+        function CheckAllCheckBox() {
+
+            debugger;
+            var ChekedOrNot = false;
+            var TotalAmount = 0;
+            var ref = "";
+
+            //---Getting the text of anchor tag in table header
+            var anchorText = $(".CheckAllAnchor").text()
+            if (anchorText == 'Select All') {
+
+                //Now change the text of anchor tag in table header
+                $(".CheckAllAnchor").text("Deselect All");
+
+                //---Selecting all checkboxes of the table
+                $(".TableCheckBoxesPayment").prop('checked', true);
+
+                //---Getting all form elements of the form with id='formInsertPayment'
+                var form = document.getElementById("FormInsertPaymentDetail"),
+                    inputs = form.getElementsByTagName("input");
+
+                //---Running loop for sending the selected check boxes values to the function 'UpdateAmount' for updating the amount fields
+                for (var i = 0, len = inputs.length; i < len; i++) {
+                    if (inputs[i].type === "checkbox" && inputs[i].checked == true) {
+
+                        TotalAmount = inputs[i].value;
+                        ChekedOrNot = true;
+                        //---Calling function for updating values of total amout field
+                        UpdateAmount(ChekedOrNot, ref, TotalAmount);
+
+                    }
+                }
+
+                //---Else part of starts here
+            } else if (anchorText == 'Deselect All') {
+                $(".CheckAllAnchor").text("Select All");
+
+                $(".TableCheckBoxesPayment").prop('checked', false);
+              
+                var form = document.getElementById("FormInsertPaymentDetail"),
+                    inputs = form.getElementsByTagName("input");
+
+
+                for (var i = 0, len = inputs.length; i < len; i++) {
+                    if (inputs[i].type === "checkbox" && inputs[i].checked == false) {
+
+                        TotalAmount = inputs[i].value;
+                        ChekedOrNot = false;
+                        //---Calling function for updating values of total amout field
+                        UpdateAmount(ChekedOrNot, ref, TotalAmount);
+
+                    }
+                }
+            }
+
+
+
+
+        }
+    </script>
+    <script>
+
+
+
+        $('#btnSavePopUp').click(function () {
+
+             
+
+            var Vendor_ID = document.getElementById("Vendor_ID").value.toString();
+            var PaymentMaster_ID = document.getElementById("hdPaymentMaster_ID").value.toString();
+
+            $.ajax({
+
+                type: "Get",
+                url: "/Accounts/GetPartyBalance_By_VendorID?Vendor_ID=" + Vendor_ID + "&PaymentMaster_ID=" +  PaymentMaster_ID,
+                contentType: "application/json; charset=utf-8",
+                success: function (response) {
+                    // debugger
+                    $("#dtHorizontalVerticalExample").html(response);
+                }
+            })
+        })
+
+
+        $('#btnUpdatePopUp').click(function () {
+
+            //    debugger
+
+            var Vendor_ID = document.getElementById("Vendor_ID").value.toString();
+            var PaymentMaster_ID = document.getElementById("hdPaymentMaster_ID").value.toString();
+            var PaymentDetails_ID = document.getElementById("PaymentDetails_IDUpdate").value.toString();
+          
+
+
+            $.ajax({
+
+                type: "Get",
+                url: "/Accounts/GetPartyBalance_By_VendorID?Vendor_ID=" + Vendor_ID + "&PaymentMaster_ID=" + PaymentMaster_ID + "&PaymentDetails_ID=" + PaymentDetails_ID,
+
+                contentType: "application/json; charset=utf-8",
+                success: function (response) {
+                    // debugger
+                    $("#dtHorizontalVerticalExampleUpdate").html(response);
+                }
+            })
+        })
+
+        $(document).ready(function () {
+            $("#party_type").change(function () {
+                $.get("/Accounts/Get_VendorName_By_VendorCategory", { party_type: $("#party_type").val() }, function (data) {
+                    $("#Vendor_ID").empty();
+                    if (data["vendor"].length == 0)
+                        $("#Vendor_ID").append('<option value="">--No Record--</option>');
+
+
+                    $.each(data["vendor"], function (index, row) {
+                        $("#Vendor_ID").append("<option value='" + row.partner_ID + "'>" + row.partnerName + "</option>")
+                    });
+                });
+
+            });
+        });
+
+
+
+
+        GetVendorUpdate();
+        function GetVendorUpdate(party_type) {
+            debugger
+            if (party_type == undefined || party_type == null) {
+                party_type = $("#party_type").val();
+
+            }
+
+
+
+
+
+            $.ajax({
+
+                type: "GET",
+                url: "/Accounts/Get_VendorName_By_VendorCategory",
+                data: { //Passing data
+                    party_type: party_type
+
+
+                },
+                datatype: "json",
+                success: function (result) {
+                    debugger
+                    var secondDdl = $('#Vendor_ID');
+                    secondDdl.empty();
+                    $.each(result["vendor"], function (index, model) {
+                        secondDdl.append(
+                            "<option value='" + model.partner_ID + "'>" + model.partnerName + "</option>"
+
+                        );
+                    });
+
+                    var sected = $('#hdVendor_ID').val();
+                    if (sected > 0) {
+                        $("#Vendor_ID").val(sected);
+                    }
+                },
+            })
+
+        }
+
+    </script>
+
+
+
+
+}

@@ -1,0 +1,1872 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OStock
+@{
+    ViewData["Title"] = "shippinginfo";
+    Layout = "~/Views/Shared/_LayoutTablePages.cshtml";
+}
+
+@{
+    string Form_formShipping_infoMaster_ActionMethod = "";
+    int? Shipping_info_master_ID = ViewBag.Shipping_info_master_ID;
+
+
+    if (Model.Shipping_infoMasterObj != null && Model.Shipping_infoMasterObj.Shipping_info_ID > 0)
+    {
+
+        Form_formShipping_infoMaster_ActionMethod = "UpdateShipping_infoMaster";
+
+
+    }
+    else
+    {
+        Form_formShipping_infoMaster_ActionMethod = "InsertShipping_infoMaster";
+
+
+    }
+
+}
+<header class="page-header">
+    <h2>Shipping Info</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+            <li><a asp-area="" asp-controller="Stock" asp-action="Shipping_infoList"><span>Shipping_info List</span></a></li>
+            <li><a asp-area="" asp-controller="@ViewBag.BreadCumController" asp-action="@ViewBag.BreadCumAction"><span>New Shipping_info</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+
+
+
+
+
+<div class="row" id="SuccessErrorSection">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+        <div class="col-lg-12">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-info">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Success!</strong> @TempData["Success"] <a href="" class="alert-link"></a>
+                </div>
+            }
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Error!</strong> @TempData["Error"] <a href="" class="alert-link"></a>
+                </div>
+            }
+        </div>
+    }
+
+
+</div>
+
+<!-- start: page -->
+<section class="card">
+    <div class="card-body">
+        <div class="invoice">
+            <header class="clearfix">
+                <div class="row">
+                    <div class="col-sm-6 mt-0">
+                        <h2 class="h4 mt-0 mb-2 text-dark font-weight-bold">Shipping Info </h2>
+
+                    </div>
+
+
+
+                </div>
+            </header>
+
+            <div class="row">
+                <div class="col-lg-8">
+                   @{ 
+
+                       if (Model.Shipping_infoMasterObj.Shipping_info_ID > 0)
+                       {
+
+                    <button type="button" id="ButtonSaveMaster" class="btn-sm btn btn btn-success">Update &nbsp;<i class="fas fa-save"></i></button>
+
+                    <button type="button" class="btn btn-sm btn-primary">Edit  &nbsp;<i class="fas fa-edit"></i></button>
+
+
+                    <button type="button" class="btn-sm btn btn-danger" data-toggle="modal" data-target="#DeleteShipping_infoMasterNew" onclick="DeleteShipping_infoMaster('@Model.Shipping_infoMasterObj.Shipping_info_ID');">Delete &nbsp;<i class="fas fa-trash-alt"></i></button>
+                    <button class="btn-sm btn btn-warning" id="btnCancel" name="btnCancel" data-toggle="modal" data-target="#exampleModal3" onclick="CancelShipping_infoMaster('@Model.Shipping_infoMasterObj.Shipping_info_ID','5');">
+                        Cancel
+                        <i class="fas fa-cross"></i>
+                    </button>
+                    @*<button type="button" class="btn-sm btn btn-danger" data-toggle="modal" data-target="#exampleModal1" >Delete &nbsp;<i class="fas fa-trash-alt"></i></button>*@
+                    <button type="button" id="print-btn" class="btn-sm btn btn-info">Print &nbsp;<i class="fas fa-print"></i></button>
+
+
+                    <a asp-controller="Stock" asp-action="Shipping_infoList" class="btn-sm btn btn-default">List &nbsp;<i class="fas fa-list"></i></a>
+
+
+
+                       }
+                       else
+                       {
+                    <button type="button" id="ButtonIssue" class="btn-sm btn btn-success">Issue &nbsp;<i class="fas fa-save"></i></button>
+
+                    <button type="button" class="btn-sm btn btn-primary" disabled="disabled">Edit  &nbsp;<i class="fas fa-edit"></i></button>
+
+                    <button class="btn-sm btn btn-warning" id="btnCancel" name="btnCancel" data-toggle="modal" data-target="#exampleModal3" disabled="disabled">
+                        Cancel
+                        <i class="fas fa-cross"></i>
+                    </button>
+
+                    <button type="button" class="btn-sm btn btn-danger" data-toggle="modal" data-target="#exampleModal1" disabled="disabled">Delete &nbsp;<i class="fas fa-trash-alt"></i></button>
+                    <button type="button" class="btn-sm btn btn-info" disabled="disabled">Print &nbsp;<i class="fas fa-print"></i></button>
+
+
+
+
+                    <a asp-controller="Stock" asp-action="Shipping_infoList" class="btn-sm btn btn-default">List &nbsp;<i class="fas fa-list"></i></a>
+                           }
+
+                       }
+
+
+
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div class="col">
+
+
+
+                    <form method="post" asp-area="" asp-controller="Stock" asp-action="@Form_formShipping_infoMaster_ActionMethod" id="formShipping_infoMaster">
+                        @Html.AntiForgeryToken()
+
+                        <section class="card">
+
+                            <div class="card-body">
+
+
+
+                                <div class="row form-group">
+                                    <div class="col-lg-4">
+
+                                        <div class="row MasterForm">
+                                            <label for="Vendor_ID" class="col-sm-3 col-form-label">Shipping Agent</label>
+                                            <div class="col-sm-9">
+                                                <select class="form-control" id="Shipper_ID" name="Shipper_ID"  asp-items="@(new SelectList( ViewBag.VendorMaster,"Partner_ID","PartnerName", Model.Shipping_infoMasterObj.Shipper_ID))" required>
+                                                    <option value="0">Select Shipper</option>
+
+                                                </select>
+
+                                                <input type="hidden" id="Shipping_info_master_ID" name="shipinfoId" value="@Shipping_info_master_ID" />
+                                            </div>
+                                        </div>
+                                        <div class="row MasterForm">
+                                            <label for="Vendor_ID" class="col-sm-3 col-form-label">Destination</label>
+                                            <div class="col-sm-9">
+                                                @*<select class="form-control" id="Final_Destination_ID" name="Final_Destination_ID" asp-items="@(new SelectList( ViewBag.ExportDestinations,"Destinations_ID","Destinations", Model.Shipping_infoMasterObj.Final_Destination_ID))">
+                                                    <option>Select Destination</option>
+
+                                                </select>*@                   
+                                                
+                                                <select class="form-control" id="Final_Destination_ID" name="Final_Destination_ID" asp-items="@(new SelectList( ViewBag.ExportDestinations,"CarLocation_ID","CarLocation",Model.Shipping_infoMasterObj.Final_Destination_ID))">
+                                                    <option>Select Destination</option>
+
+                                                </select>
+
+
+                                            </div>
+                                        </div>
+                                        <div class="row MasterForm">
+                                            <label for="To" class="col-sm-3 col-form-label">BLNO</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" id="BL_no" name="BL_no" value="@Model.Shipping_infoMasterObj.BL_no">
+                                            </div>
+                                        </div>
+
+                                        <div class="row MasterForm">
+                                            <label for="Shipping_infoDate" class="col-sm-3 col-form-label">ETD</label>
+                                            <div class="col-sm-9">
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                        </span>
+                                                    </span>
+                                                    @if (Model.Shipping_infoMasterObj.ETD != null)
+                                                    {
+                                                        <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="ETD" name="ETD" value="@Model.Shipping_infoMasterObj.ETD">
+
+                                                    }
+                                                    else
+                                                    {
+                                                        <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="ETD" name="ETD" value="@DateTime.Now.ToString("dd-MMM-yyyy")">
+
+                                                    }
+
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+                                        <div class="row MasterForm">
+                                            <label for="Shipping_infoDate" class="col-sm-3 col-form-label">ETA</label>
+                                            <div class="col-sm-9">
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                        </span>
+                                                    </span>
+                                                    @if (Model.Shipping_infoMasterObj.ETA != null)
+                                                    {
+                                                        <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="ETA" name="ETA" value="@Model.Shipping_infoMasterObj.ETA">
+
+                                                    }
+                                                    else
+                                                    {
+                                                        <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="ETA" name="ETA" value="@DateTime.Now.ToString("dd-MMM-yyyy")">
+
+                                                    }
+
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+                                        <div class="row MasterForm">
+                                            <label for="To" class="col-sm-3 col-form-label">Notify Party</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" id="Notify_Party" name="Notify_Party" value="@Model.Shipping_infoMasterObj.Notify_Party">
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="row MasterForm">
+                                            <label for="Vendor_ID" class="col-sm-3 col-form-label">PortFrom</label>
+                                            <div class="col-sm-9">
+                          
+
+                                                <select class="form-control" id="Port_of_Discharge_ID" name="Port_of_Discharge_ID" asp-items="@(new SelectList( ViewBag.PortFrom,"CarLocation_ID","CarLocation",Model.Shipping_infoMasterObj.Port_of_Discharge_ID))">
+                                                    <option>Select PortFrom</option>
+
+                                                </select>
+
+
+                                            </div>
+                                        </div>
+                                        <div class="row MasterForm">
+                                            <label for="Vendor_ID" class="col-sm-3 col-form-label">PortTo</label>
+                                            <div class="col-sm-9">
+                                                @*<select class="form-control" id="Port_of_Loading_ID" name="Port_of_Loading_ID" asp-items="@(new SelectList(  ViewBag.PortTo,"Country_ID","CountryName", Model.Shipping_infoMasterObj.Port_of_Loading_ID))">
+                    <option>Select PortTo</option>
+                </select>*@
+
+                                                <select class="form-control" id="Port_of_Loading_ID" name="Port_of_Loading_ID" asp-items="@(new SelectList( ViewBag.PortTo,"CarLocation_ID","CarLocation",Model.Shipping_infoMasterObj.Port_of_Loading_ID))">
+                                                    <option>Select PortTo</option>
+                                                </select>
+
+
+                                            </div>
+                                        </div>
+                                        <div class="row MasterForm">
+                                            <label for="To" class="col-sm-3 col-form-label">
+                                                Vessel/Voy
+                                            </label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" id="Vessel_Name" name="Vessel_Name" value="@Model.Shipping_infoMasterObj.Vessel_Name">
+                                            </div>
+                                        </div>
+
+                                        <div class="row MasterForm">
+                                            <label for="To" class="col-sm-3 col-form-label">
+                                                Frieght
+                                            </label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" id="txtBerth" name="txtBerth" value="@Model.Shipping_infoMasterObj.Berth">
+                                            </div>
+                                        </div>
+                                        <div class="row MasterForm">
+                                            <label for="Shipping_infoDate" class="col-sm-3 col-form-label">BerthDT</label>
+                                            <div class="col-sm-9">
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                        </span>
+                                                    </span>
+                                                    @if (Model.Shipping_infoMasterObj.Berth_in_date != null)
+                                                    {
+                                        <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="Berth_in_date" name="Berth_in_date" value="@Model.Shipping_infoMasterObj.Berth_in_date"> }
+                                                    else
+                                                    {
+                                        <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="Berth_in_date" name="Berth_in_date" value="@DateTime.Now.ToString("dd-MMM-yyyy")">}
+
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+                                        <div class="row MasterForm">
+
+                                            <label for="Vendor_ID" class="col-sm-3 col-form-label">Shipping Type</label>
+                                            <div class="col-sm-9">
+                                                <div class="form-group">
+                                                    <div class="row">
+
+                                                        <div class="col-sm-5" style="padding:0; ">
+                                                            <select class="form-control" id="ContainerType" name="ContainerType" asp-for="@Model.Shipping_infoMasterObj.ContainerType">
+
+                                                                <option value="Roro">Roro</option>
+
+                                                                <option value="Container">Container</option>
+
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-sm-7" style="padding:0;">
+                                                            <input type="number" id="Container_Count" name="Container_Count" step="any" value="@Model.Shipping_infoMasterObj.Container_Count" class="form-control" placeholder="">
+
+
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            </div>
+                                        </div>
+
+                                    <div class="col-lg-4 ">
+
+                                        <div class="row MasterForm">
+                                            <label for="Shipping_infoRef" class="col-sm-3 col-form-label">Ref#</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" id="Shipping_info_ref" name="Shipping_info_ref" value="@Model.Shipping_infoMasterObj.Shipping_Info_Ref" readonly>
+                                                <input type="hidden" id="htemp_ID" name="htemp_ID" value="@ViewBag.Shipping_infoRef" />
+                                            </div>
+                                        </div>
+
+
+                                        <div class="row MasterForm">
+                                            <label for="Shipping_infoDate" class="col-sm-3 col-form-label">Invoice Date</label>
+                                            <div class="col-sm-9">
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                        </span>
+                                                    </span>
+                                                    @if (Model.Shipping_infoMasterObj.Invoice_Date != null)
+                                                    {
+                                                        <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="txtInvDate" name="txtInvDate" value="@Model.Shipping_infoMasterObj.trans_Date"  readonly>
+
+                                                    }
+                                                    else
+                                                    {
+                                                        <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="txtInvDate" name="txtInvDate" value="@DateTime.Now.ToString("dd-MMM-yyyy")"  readonly>
+
+                                                    }
+
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+
+
+
+
+
+                                        <div class="row MasterForm">
+                                            <label for="Discount" class="col-sm-3 col-form-label">Inv Ref</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" id="Invoice_ref" name="Invoice_ref" value="@Model.Shipping_infoMasterObj.Invoice_ref">
+                                            </div>
+                                        </div>
+
+                                        <div class="row MasterForm">
+                                            <label for="Discount" class="col-sm-3 col-form-label">Booking#</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" id="Booking_ref" name="Booking_ref" value="@Model.Shipping_infoMasterObj.Booking_ref">
+                                            </div>
+                                        </div>
+                                        <div class="row MasterForm">
+                                            <label for="Vendor_ID" class="col-sm-3 col-form-label">InspectType</label>
+                                            <div class="col-sm-9">
+                                                <select class="form-control" id="Inspection_Type" name="Inspection_Type">
+
+
+                                                    <option value="">CAA</option>
+                                                    <option value="">CHIBA</option>
+                                                    <option value="">LOCAL</option>
+                                                </select>
+
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+
+                            </div>
+
+
+
+                        </section>
+                    </form>
+                </div>
+
+            </div>
+
+            <div class="row m-1">
+                <div class="col-lg-3">
+                    <h2 class="card-title" style="line-height:normal;">Shipping_info Details </h2>
+                </div>
+
+
+                <div class="col-lg-9 col-md-9 text-right">
+                    <div class="row">
+                        <div class="col-lg-6 text-left">
+                            <label for="Sale_ID" class="col-sm-3 col-form-label">Sale Ref</label>
+                            <div class="col-sm-12">
+                                <select class="form-control" id="Sale_refDrop" name="Sale_refDrop" asp-items="@(new SelectList( ViewBag.SaleRefList,"SaleMaster_ID","SaleRef"))">
+                                </select>
+                            </div>
+
+                        </div>
+                        
+
+
+                    </div>
+                </div>
+            </div>
+
+            <div id="PaymentDetailSection">
+
+                <table class="table table-responsive-md table-bordered mb-0">
+                    <thead>
+                        <tr>
+                            <th>Edit/Delete</th>
+                            <th>Chassis</th>
+                            <th>Make</th>
+                            <th>Shipping</th>
+                            
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Shipping_infoDetailList != null)
+                        {
+
+                            ViewBag.SubTotal = 0;
+                            ViewBag.Vat_ExpTotal = 0;
+                            ViewBag.DiscountTotal = 0;
+                            ViewBag.Grand_Total = 0;
+
+
+                            foreach (pa_Shipping_Info_details item in Model.Shipping_infoDetailList)
+                            {
+
+
+
+                                <tr>
+                                    <td>
+                                        <a onclick="UpdateShipping_infoDetail('@item.ID', '@item.Chassis_no', '@item.make_ID', '@item.model_description','@item.Berth_Carry_Charges','@item.Berth_Carry_ChargesTax','@item.TotalCharges');"><img style="width: 20px;" src="~/Img/Icons/edit.png" /></a>
+                                        
+                                        <a onclick="DeleteShipping_infoDetail('@item.ID');" data-toggle="modal" data-target="#DeleteShipping_infoDetailModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+                                    </td>
+                                    <td>@Html.DisplayFor(modelItem => item.Chassis_no)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.make)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.TotalCharges)</td>
+                                 
+
+                                </tr>
+                            }
+                        }
+
+
+
+
+                    </tbody>
+
+                </table>
+
+
+                <div class="invoice-summary">
+
+                    <div class="row">
+
+                        <div class="col-lg-9 col-md-9">
+
+                        </div>
+
+                        <div class="col-lg-3 col-md-3 justify-content-end text-right">
+                            <table class="table h6 text-dark">
+                                <tbody>
+                                    @{
+                                        if (Model.Shipping_infoMasterObj != null)
+                                        {
+                                            <tr class="b-top-0">
+                                                <td colspan="2"> BerthCarry:</td>
+                                                <td class="text-right" id="Price">@Model.Shipping_infoMasterObj.Berth_Carry_Charges</td>
+                                            </tr>
+                                        }
+
+                                        else
+                                        {
+                                            <tr class="b-top-0">
+                                                <td colspan="2"> BerthCarry:</td>
+                                                <td class="text-right" id="Price">0</td>
+                                            </tr>
+                                        }
+                                        if (Model.Shipping_infoMasterObj != null)
+                                        {
+                                            <tr>
+                                                <td colspan="2">Total:</td>
+                                                <td class="text-right" id="TotalTax">@Model.Shipping_infoMasterObj.Berth_Carry_Charges</td>
+                                            </tr>
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td colspan="2">Total:</td>
+                                                <td class="text-right" id="TotalTax">0</td>
+                                            </tr>
+                                        }
+                                        if (Model.Shipping_infoMasterObj != null)
+                                        {
+                                            <tr>
+                                                <td colspan="2">Paid:</td>
+                                                <td class="text-right" id="Paid">@Model.Shipping_infoMasterObj.Paid</td>
+                                            </tr>
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td colspan="2">Paid:</td>
+                                                <td class="text-right" id="Paid">0</td>
+                                            </tr>
+                                        }
+                                        if (Model.Shipping_infoMasterObj != null)
+                                        {
+                                            <tr>
+                                                <td colspan="2">Balance:</td>
+                                                <td class="text-right" id="Balance">@Model.Shipping_infoMasterObj.Balance</td>
+                                            </tr>
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td colspan="2">Balance:</td>
+                                                <td class="text-right" id="Balance">0</td>
+                                            </tr>
+                                        }
+                                    }
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <hr />
+            <div class="row">
+                <div class="col-sm-3"><span class="show-grid-block">Created at : <b>@Model.Shipping_infoMasterObj.created_at </b></span></div>
+                <div class="col-sm-3"><span class="show-grid-block">Created by :</span><b>@Model.Shipping_infoMasterObj.created_by</b></div>
+                <div class="col-sm-3"><span class="show-grid-block">Modified at :<b>@Model.Shipping_infoMasterObj.last_updated_at</b></span></div>
+                <div class="col-sm-3"><span class="show-grid-block">Modified by : <b>@Model.Shipping_infoMasterObj.last_updated_by </b></span></div>
+            </div>
+
+
+
+
+
+
+        </div>
+
+
+    </div>
+</section>
+
+
+
+
+<!-- Modal Insert task -->
+<div class="modal fade bs-modal-lg" id="AddNewShipping_infoModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Shipping_Info Details</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+
+            </div>
+
+
+
+            <form method="post" data-ajax="true" data-ajax-complete="myComplete" data-ajax-success="mySuccess" data-ajax-failure="myFailure"
+                  asp-area="" asp-controller="Stock" asp-action="InsertShipping_infoDetail" data-ajax-loading="" id="FormInsertShipping_infoDetail">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body">
+
+
+
+                            <div class="row form-group">
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Make_ID">Chassis No*</label>
+
+
+
+                                        <input type="text" id="Chassis" name="Chassis" onblur="ValidateChassis()" class="form-control" placeholder="Enter chassis" required />
+                                        <label id="ChassisValidationMessage"></label>
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Make_ID">Make*</label>
+
+
+
+                                        <select class="form-control" id="Make_ID" name="Make_ID" asp-items="@(new SelectList( ViewBag.MakeList,"Make_ID","Make"))" onchange="GetSubModel(this);" required>
+                                            <option>Select Make</option>
+                                        </select>
+
+
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Model_ID">Model*</label>
+
+                                        <select class="form-control MakeModelClass" id="Model_ID" name="Model_ID" required>
+                                            <option value="">Select Model</option>
+
+                                        </select>
+
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="control-label">Berth (c) Charges & Tax </label>
+
+
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-8" style="padding:0;">
+                                                    <input type="number" id="txtShippingCharges" name="Berth_Carry_Charges" class="form-control" placeholder="Shipping" onblur="CalcTotalChargesInsert()">
+                                                </div>
+                                                <div class="col-md-4" style="padding:0;">
+                                                    <input type="number" id="txtShippingChargestax" name="Berth_Carry_ChargesTax" class="form-control" placeholder="Tax" onblur="CalcTotalChargesInsert()">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                 
+
+
+                                <div class="col-lg-4">
+
+                                    <div class="col-lg-12">
+                                        <div class="form-group">
+                                            <label class="control-label">Total </label>
+                                            <input type="text" id="txtTotalPrice" name="txtTotalPrice" class="form-control" placeholder="Total" readonly>
+
+                                        </div>
+                                    </div>
+
+
+
+
+
+
+
+                                </div>
+
+                            </div>
+
+
+
+
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Add</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+
+
+</div>
+<!-- Modal Update Shipping_info -->
+<div class="modal fade bs-modal-lg" id="UdpateNewShipping_infoModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content" id="ModalContentShipping_infoDetail">
+
+
+
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- Modal Delete Shipping_infoDetail -->
+<div class="modal fade bs-modal-lg" id="DeleteShipping_infoDetailModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Shipping_info Detail</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" data-ajax="true" data-ajax-complete="CompleteDelete" data-ajax-success="SuccessDelete" data-ajax-failure="FailureDelete"
+                  asp-area="" asp-controller="Stock" asp-action="DeleteShipping_infoDetail" data-ajax-loading="">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <h3>Do you want to delete this record?</h3>
+
+                                        <input type="hidden" id="Shipping_infoDetails_ID_Delete" name="Shipping_infoDetails_ID" />
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- Modal Delete Shipping_infoMaster -->
+<div class="modal fade bs-modal-lg" id="DeleteShipping_infoMasterNew" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Delete Shipping_info Master</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="Stock" asp-action="Delete_Shipping_info" data-ajax-loading="">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <h3>Do you want to delete this record?</h3>
+
+                                        <input type="hidden" id="Shipping_info_master_ID_Delete" name="Shipping_info_master_ID" />
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+<!-- Modal Insert Partner -->
+<div class="modal fade bs-modal-lg" id="AddPartnerModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Add Vendor</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="BasicData" asp-action="AddPartnersVendor" enctype="multipart/form-data">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body">
+
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Vendor Ref</label>
+
+                                        <input type="text" class="form-control" id="Partner_Ref" disabled="disabled" name="Partner_Ref">
+
+
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Vendor Name<span style="color: red; font-size: 15px; margin-left: 4px;">*</span></label>
+
+                                        <input type="text" class="form-control" id="PartnerName" name="PartnerName" required>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Contact Number</label>
+
+                                        <input type="text" class="form-control" id="ContactNumber" name="ContactNumber">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Mobile No</label>
+
+                                        <input type="text" class="form-control" id="MobileNo" name="MobileNo">
+                                    </div>
+                                </div>
+
+
+
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Contact Name</label>
+
+                                        <input type="text" class="form-control" id="ContactName" name="ContactName">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Contact Address</label>
+
+                                        <input type="text" class="form-control" id="ContactAddress" name="ContactAddress">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Email </label>
+
+                                        <input type="email" class="form-control" id="Email" name="Email">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Fax </label>
+
+                                        <input type="text" class="form-control" id="Fax" name="Fax">
+                                    </div>
+                                </div>
+
+
+
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">EmiratesID</label>
+
+                                        <input type="text" class="form-control" id="EmiratesID" name="EmiratesID">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">TradeLicenseNo</label>
+
+                                        <input type="text" class="form-control" id="TradeLicenseNo" name="TradeLicenseNo">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">TRN </label>
+
+                                        <input type="text" class="form-control" id="TRN" name="TRN">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Vendor Category</label>
+
+                                        <select class="form-control" id="VendorCat_ID" name="VendorCat_ID" asp-items="@(new SelectList( ViewBag.VendorCategoryList,"VendorCat_ID","VendorCatName"))">
+                                        </select>
+                                    </div>
+                                </div>
+
+
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Remarks</label>
+
+                                        <textarea type="text" class="form-control" id="Remarks" name="Remarks"></textarea>
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="exampleModal3" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Cancel Shipping_info Master</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="Stock" asp-action="Cancel_Shipping_info" data-ajax-loading="">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <h3>Do you want to cancel this record?</h3>
+
+                                        <input type="hidden" id="Shipping_info_master_ID_Cancel" name="Shipping_info_master_ID" />
+                                        <input type="hidden" id="Shipping_Status_ID" name="Status_ID" />
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+@section Scripts {
+
+
+    @*Please dont remove following script lib bcz it is for all ajaz and partial view calls*@
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
+
+    <script>
+        //---this function will hit after success submission of insert Shipping_info detail form
+        function mySuccess(data) {
+
+            var SuccessDiv = " <div class='col-lg-12'><div class='alert alert-info'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button><strong>Success!</strong> Saved Successfully! <a href ='' class='alert-link'></a></div></div>";
+            debugger
+            if (data.message == undefined) {
+
+                //$('#AddNewShipping_infoModal').modal('hide');
+                $('#PaymentDetailSection').html(data);
+                $('#SuccessErrorSection').html(SuccessDiv).show();
+
+                //reset form after success
+                $('#FormInsertShipping_infoDetail').trigger("reset");
+
+                //Calculate bottom total values
+
+
+
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        function myFailure() {
+
+            alert("Failured occured. Please try again!");
+        }
+
+        function myComplete() {
+
+            //alert("Complete");
+        }
+
+        function mySuccessShipping_infoUpdate(data) {
+
+            var SuccessDiv = " <div class='col-lg-12'><div class='alert alert-info'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button><strong>Success!</strong> Updated Successfully! <a href ='' class='alert-link'></a></div></div>";
+            debugger
+            if (data.message == undefined) {
+                //alert("Saved Successfully!");
+                $('#UdpateNewShipping_infoModal').modal('hide');
+                $('#PaymentDetailSection').html(data);
+                $('#SuccessErrorSection').html(SuccessDiv).show();
+
+                //reset form after success
+                $('#FormUpdateShipping_infoDetail').trigger("reset");
+
+                //Calculate bottom total values
+
+
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+            function Cancel_Shipping_info()
+    {
+                var id = $('#Shipping_info_master_ID').val;
+        var urlll = '/Stock/Cancel_Shipping_info?' + id;
+
+        debugger;
+        $.ajax({
+            type: "POST",
+            url: urlll,
+
+            success: function (data) {
+                //alert("Canceled Successfully");
+
+                if (data == "Canceled Successfully") {
+
+                    alert("Canceled Successfully");
+                    window.location = "@Url.Action("Shipping_infolist", "Stock")";
+                }
+            }
+        });
+    }
+            function Delete_Shipping_infoDetails()
+    {
+
+                var id = $('#Shipping_info_master_ID').val;
+        var urlll = '/Stock/Delete_Shipping_info?' + id;
+        //alert("Do You Want To Delete The Payment..........");
+
+        $.ajax({
+            type: "POST",
+            url: urlll,
+            //data: $("#add").serialize(),
+            success: function (data) {
+
+
+                if (data == "Deleted Successfully") {
+                    window.location = "@Url.Action("Shipping_infoList", "Stock")";
+                } else {
+                    alert(data);
+                }
+
+
+            }
+        });
+    }
+        function myFailureShipping_infoUpdate() {
+
+            alert("Failured occured. Please try again!");
+        }
+
+        function myCompleteShipping_infoUpdate() {
+
+            //alert("Complete");
+        }
+    </script>
+
+    <script>
+        //this function is for selecting model description on the basis of Make ID
+        function GetSubModel(Make_ID) {
+            //debugger
+            var ID = Make_ID.value;
+            var procemessage = "<option value='0'> Please wait...</option>";
+            $(".MakeModelClass").html(procemessage).show();
+
+
+            if (!ID) {
+                ID = 0;
+                var emptyAppend = "<option value=''>Select</option>";
+                $(".MakeModelClass").html(emptyAppend).show();
+
+            } else {
+                $.getJSON("/Stock/GetModelDescListByID", { Make_ID: ID }, function (data) {
+                    //first empty the model
+                    //debugger
+                    $(".MakeModelClass").empty();
+                    //Then append select
+                    $(".MakeModelClass").append("<option value=''>Select</option>");
+                    $.each(data, function (index, row) {
+                        debugger
+                        //Now here appending all options in the sub classification list
+                        //$(".MakeModelClass").append("<option value='" + row.modelDesc_ID + "'>" + row.modelDesciption + "</option>")
+                        var optionText = row.modelDesciption;
+                        $('.MakeModelClass').append($("<option></option>").attr("value", row.modelDesc_ID).text(optionText));
+                    });
+                });
+            }
+
+
+
+        }
+
+
+
+        //this function is for selecting model description on the basis of Make ID
+        function GetSubModelForUpdate(Make_ID) {
+            //debugger
+            var ID = Make_ID.value;
+            var procemessage = "<option value='0'> Please wait...</option>";
+            $(".MakeModelClassUpdate").html(procemessage).show();
+
+
+            if (!ID) {
+                ID = 0;
+                var emptyAppend = "<option value=''>Select</option>";
+                $(".MakeModelClassUpdate").html(emptyAppend).show();
+
+            } else {
+                $.getJSON("/Stock/GetModelDescListByID", { Make_ID: ID }, function (data) {
+                    //first empty the model
+                    //debugger
+                    $(".MakeModelClassUpdate").empty();
+                    //Then append select
+                    $(".MakeModelClassUpdate").append("<option value=''>Select</option>");
+                    $.each(data, function (index, row) {
+                        debugger
+                        //Now here appending all options in the sub classification list
+                        //$(".MakeModelClass").append("<option value='" + row.modelDesc_ID + "'>" + row.modelDesciption + "</option>")
+                        var optionText = row.modelDesciption;
+                        $('.MakeModelClassUpdate').append($("<option></option>").attr("value", row.modelDesc_ID).text(optionText));
+                    });
+                });
+            }
+
+
+
+        }
+
+
+    </script>
+
+    <script>
+        //---submit new master Shipping_info voucher
+        $(document).ready(function () {
+            $("#ButtonIssue").click(function () {
+                if ($("#formShipping_infoMaster").valid()) {
+                    $("#formShipping_infoMaster").submit();
+                }
+            });
+        });
+        //---Update master Shipping_info voucher
+        $(document).ready(function () {
+            $("#ButtonSaveMaster").click(function () {
+                if ($("#formShipping_infoMaster").valid()) {
+                    $("#formShipping_infoMaster").submit();
+                }
+            });
+        });
+
+
+    </script>
+
+    <script type="text/javascript">
+
+
+
+
+        function SuccessDelete(data) {
+
+            var SuccessDiv = " <div class='col-lg-12'><div class='alert alert-info'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button><strong>Success!</strong> Deleted Successfully! <a href='' class='alert-link'></a></div></div>";
+            debugger
+            if (data.message == undefined) {
+                //alert("Saved Successfully!");
+                $('#DeleteShipping_infoDetailModal').modal('hide');
+                $('#PaymentDetailSection').html(data);
+                $('#SuccessErrorSection').html(SuccessDiv).show();;
+
+
+
+
+
+            } else {
+                alert(data.message);
+                $('#DeleteShipping_infoDetailModal').modal('hide');
+            }
+
+
+        }
+
+        function FailureDelete() {
+
+            alert("Failured occured. Please try again!");
+            $('#DeleteShipping_infoDetailModal').modal('hide');
+        }
+
+
+
+    </script>
+
+    <script>
+
+        function DeleteShipping_infoDetail(Shipping_infoDetails_ID) {
+            debugger
+            $("#Shipping_infoDetails_ID_Delete").val(Shipping_infoDetails_ID);
+
+        }
+
+
+        //---delete Shipping_info master
+        function DeleteShipping_infoMaster(Shipping_info_master_ID) {
+            debugger
+            $("#Shipping_info_master_ID_Delete").val(Shipping_info_master_ID);
+
+        }
+
+        function CancelShipping_infoMaster(Shipping_info_master_ID,status) {
+            debugger
+            $("#Shipping_info_master_ID_Cancel").val(Shipping_info_master_ID);
+            $("#Shipping_Status_ID").val(status);
+
+        }
+
+
+
+        //--function call on click in the detail table and bring values in the update form
+
+        function UpdateShipping_infoDetail(ID, Chassis_no, make_ID, model_description, Berth_Carry_Charges, Berth_Carry_ChargesTax, TotalCharges ) {
+            var ID = ID;
+
+            if (!ID) {
+                alert("Shipping_info id is null!");
+            } else {
+
+
+
+                var Sale_ID = $("#Sale_refDrop").val();
+                var htemp_ID = $("#htemp_ID").val();
+
+                console.log(Sale_ID);
+
+                var TeamDetailPostBackURL = '/Stock/GetShipping_infoDetailByID';
+                $.ajax({
+                    type: "GET",
+                    url: TeamDetailPostBackURL,
+                    contentType: "application/json; charset=utf-8",
+                    data: { "ID": ID, "Sale_ID": Sale_ID },
+                    datatype: "json",
+                    success: function (data) {
+                        debugger
+
+                        if (data.message == undefined) {
+
+                            console.log(data);
+
+                            //alert("Saved Successfully!");
+                            $('#ModalContentShipping_infoDetail').html(data);
+                            $('#UdpateNewShipping_infoModal').modal('show');
+
+
+
+                            if (Chassis_no != null && Chassis_no != undefined && Chassis_no != '') {
+
+                                console.log(model_description);
+
+                                $("#ChassisUpdate").val(Chassis_no);
+                                $("#Make_IDUdpate").val(make_ID);
+                                $("#Model_IDUpdate").val(model_description);
+                                $("#txtShippingChargesUpdate").val(Berth_Carry_Charges);
+                                $("#txtShippingChargestaxUpdate").val(Berth_Carry_ChargesTax);
+                                $("#txtTotalPriceUpdate").val(TotalCharges);
+                                $("#Shipping_infoDetails_IDUpdate").val(ID);
+
+
+
+                            }
+
+
+
+                            console.log("worked");
+
+                        } else {
+                            alert(data.message);
+                            //$('#UdpateNewShipping_infoModal').modal('hide');
+                        }
+
+                    },
+                    error: function () {
+                        alert("Failured occured. Please try again!");
+
+                    }
+                });
+            }
+
+
+
+
+        }
+
+
+        //---function for calculating amounts in the puchase detail pop up form
+
+        function CalculateSumAmount() {
+
+            var Quanity = 0;
+            var UnitPrice = 0;
+            var Amount = 0;
+            var Amount_Others = 0;
+            var Currency_Rate = 0;
+
+            var resultTotalAmount = 0;
+            var resultTotalOtherAmount = 0;
+
+            Quanity = document.getElementById("Quantity").value;
+            UnitPrice = document.getElementById("Unit_Price").value;
+            Amount = document.getElementById("Amount").value;
+            Amount_Others = document.getElementById("Amount_Others").value;
+            Currency_Rate = document.getElementById("Currency_Rate").value;
+
+            if (!Quanity) {
+                Quanity = 0;
+            }
+            if (!UnitPrice) {
+                UnitPrice = 0;
+            }
+            if (!Amount) {
+                Amount = 0;
+            }
+            if (!Amount_Others) {
+                Amount_Others = 0;
+            }
+            if (!Currency_Rate) {
+                Currency_Rate = 1;
+            }
+
+            //---calculate Amount
+            resultTotalAmount = Quanity * UnitPrice;
+            $("#Amount").val(resultTotalAmount);
+
+            //--Calculate Other Amount
+
+            resultTotalOtherAmount = Currency_Rate * resultTotalAmount;
+            $("#Amount_Others").val(resultTotalOtherAmount);
+
+
+        }
+
+        //---function for calculating amounts in the puchase detail update pop up form
+
+        function CalcSumAmountShipping_infoUpdate() {
+
+            var Quanity = 0;
+            var UnitPrice = 0;
+            var Amount = 0;
+            var Amount_Others = 0;
+            var Currency_Rate = 0;
+
+            var resultTotalAmount = 0;
+            var resultTotalOtherAmount = 0;
+
+            Quanity = document.getElementById("QuantityUpdate").value;
+            UnitPrice = document.getElementById("Unit_PriceUpdate").value;
+            Amount = document.getElementById("AmountUpdate").value;
+            Amount_Others = document.getElementById("Amount_OthersUpdate").value;
+            Currency_Rate = document.getElementById("Currency_RateUpdate").value;
+
+            if (!Quanity) {
+                Quanity = 0;
+            }
+            if (!UnitPrice) {
+                UnitPrice = 0;
+            }
+            if (!Amount) {
+                Amount = 0;
+            }
+            if (!Amount_Others) {
+                Amount_Others = 0;
+            }
+            if (!Currency_Rate) {
+                Currency_Rate = 1;
+            }
+
+            //---calculate Amount
+            resultTotalAmount = Quanity * UnitPrice;
+            $("#AmountUpdate").val(resultTotalAmount);
+
+            //--Calculate Other Amount
+
+            resultTotalOtherAmount = Currency_Rate * resultTotalAmount;
+            $("#Amount_OthersUpdate").val(resultTotalOtherAmount);
+
+
+
+        }
+
+        function CalcTotalChargesInsert() {
+
+
+
+            txtShippingCharges = 0;
+            txtShippingChargestax = 0;
+            //txtInspectionCharges = 0;
+            //txtInspectionChargestax = 0;
+
+
+            resultTotal = 0;
+
+            txtShippingCharges = document.getElementById("txtShippingCharges").value;
+
+            //calling function for calculating total 10% tex for ShippingCharges
+            // CalculateTaxForInspectionCharges(txtShippingCharges);
+
+            txtShippingChargestax = document.getElementById("txtShippingChargestax").value;
+            //txtInspectionCharges = document.getElementById("txtInspectionCharges").value;
+            //txtInspectionChargestax = document.getElementById("txtInspectionChargestax").value;
+
+            resultTotal = Number(txtShippingCharges) + Number(txtShippingChargestax);
+
+            //result = 10 * num1 / 100;
+
+            $("#txtTotalPrice").val(resultTotal);
+
+
+        }
+        function CalcTotalChargesInsertUpdate() {
+
+
+
+            txtShippingCharges = 0;
+            txtShippingChargestax = 0;
+            //txtInspectionCharges = 0;
+            //txtInspectionChargestax = 0;
+
+
+            resultTotal = 0;
+
+            txtShippingCharges = document.getElementById("txtShippingChargesUpdate").value;
+
+            //calling function for calculating total 10% tex for ShippingCharges
+            // CalculateTaxForInspectionCharges(txtShippingCharges);
+
+            txtShippingChargestax = document.getElementById("txtShippingChargestaxUpdate").value;
+            //txtInspectionCharges = document.getElementById("txtInspectionCharges").value;
+            //txtInspectionChargestax = document.getElementById("txtInspectionChargestax").value;
+
+            resultTotal = Number(txtShippingCharges) + Number(txtShippingChargestax);
+
+            //result = 10 * num1 / 100;
+
+            $("#txtTotalPriceUpdate").val(resultTotal);
+
+
+        }
+        function ValidateChassis() {
+
+            //debugger
+
+
+            var Chassis = document.getElementById("Chassis").value.toString();
+
+            $.ajax({
+
+                type: "Get",
+                url: "/Accounts/ValidateChassisNo",
+                data: { //Passing data
+                    ChassisNo: Chassis
+
+
+                },
+                datatype: "json",
+                success: function (response) {
+                    debugger
+                    if (response.message == 'Chassis is valid') {
+                        //debugger
+                        $("#ChassisValidationMessage").text(response.message);
+                        $("#ChassisValidationMessage").css("color", "green");
+                        $("#Chassis").val(response.chassis_No);
+                        $("#Make_ID").val(response.make_ID);
+                        $("#Model_ID").val(response.makeModel_description_ID);
+
+                    } else {
+                        $("#ChassisValidationMessage").text(response.message);
+                        $("#ChassisValidationMessage").css("color", "red");
+                        $("#Chassis").val("");
+                        $("#Make_ID").val("");
+                        $("#Model_ID").val("");
+
+                    }
+
+                }
+            })
+        }
+
+        //This function is for validation of chassis no
+        function ValidateChassisUpdate() {
+
+            //debugger
+
+
+            var Chassis = document.getElementById("ChassisUpdate").value.toString();
+
+            $.ajax({
+
+                type: "Get",
+                url: "/Accounts/ValidateChassisNo",
+                data: { //Passing data
+                    ChassisNo: Chassis
+
+
+                },
+                datatype: "json",
+                success: function (response) {
+                    debugger
+                    if (response.message == 'Chassis is valid') {
+                        //debugger
+                        $("#ChassisValidationMessageUpdate").text(response.message);
+                        $("#ChassisValidationMessageUpdate").css("color", "green");
+                        $("#ChassisUpdate").val(response.chassis_No);
+                        $("#Make_IDUpdate").val(response.make_ID);
+                        $("#Model_IDUpdate").val(response.makeModel_description_ID);
+
+                    } else {
+                        $("#ChassisValidationMessageUpdate").text(response.message);
+                        $("#ChassisValidationMessageUpdate").css("color", "red");
+                        $("#ChassisUpdate").val("");
+                        $("#Make_IDUpdate").val("");
+                        $("#Model_IDUpdate").val("");
+
+                    }
+
+                }
+            })
+        }
+        function CalcTaxForInspectionCharges() {
+
+            num1 = 0;
+            result = 1;
+
+            num1 = document.getElementById("txtInspectionCharges").value;
+
+            result = 10 * num1 / 100;
+
+            $("#txtInspectionChargestax").val(result);
+
+            //calling sum function
+            CalculateSum();
+
+        }
+        function CalcTaxForAmount() {
+
+            num1 = 0;
+            result = 1;
+
+            num1 = document.getElementById("txtAmount").value;
+
+            result = 10 * num1 / 100;
+
+            $("#txtTaxAmount").val(result);
+
+            //calling sum function
+            CalculateSum();
+        }
+
+        //----method for opening vendor popup
+        function AddNewVendor(Vendor) {
+            vendorValue = Vendor.value;
+            if (vendorValue == 'NewVendor') {
+                $('#AddPartnerModal').modal('show');
+            }
+        }
+
+        function CalculateSum() {
+            var txtAmount = 0;
+            var txtTaxAmount = 0;
+            var txtInspectionCharges = 0;
+            var txtInspectionChargestaxUpdate = 0;
+
+            var resultTotal = 0;
+
+            txtAmount = document.getElementById("txtAmount").value;
+            txtTaxAmount = document.getElementById("txtTaxAmount").value;
+            txtInspectionCharges = document.getElementById("txtInspectionCharges").value;
+            txtInspectionChargestax = document.getElementById("txtInspectionChargestax").value;
+
+            resultTotal = Number(txtAmount) + Number(txtTaxAmount) + Number(txtInspectionCharges) + Number(txtInspectionChargestax);
+
+            //result = 10 * num1 / 100;
+
+            $("#txtTotal").val(resultTotal);
+        }
+
+
+        //---------------------------------------------------------------
+
+        function CalcTaxForAmountUpdate() {
+
+            num1 = 0;
+            result = 1;
+
+            num1 = document.getElementById("txtAmountUpdate").value;
+
+            result = 10 * num1 / 100;
+
+            $("#txtTaxAmountUpdate").val(result);
+
+            //calling sum function
+            CalculateSumUpdate();
+        }
+
+
+
+
+        function CalcTaxForInspectionChargesUpdate() {
+
+            num1 = 0;
+            result = 1;
+
+            num1 = document.getElementById("txtInspectionChargesUpdate").value;
+
+            result = 10 * num1 / 100;
+
+            $("#txtInspectionChargestaxUpdate").val(result);
+
+            //calling sum function
+            CalculateSumUpdate();
+
+        }
+
+
+        function CalculateSumUpdate() {
+            var txtAmount = 0;
+            var txtTaxAmount = 0;
+            var txtInspectionCharges = 0;
+            var txtInspectionChargestaxUpdate = 0;
+
+            var resultTotal = 0;
+
+            txtAmount = document.getElementById("txtAmountUpdate").value;
+            txtTaxAmount = document.getElementById("txtTaxAmountUpdate").value;
+            txtInspectionCharges = document.getElementById("txtInspectionChargesUpdate").value;
+            txtInspectionChargestax = document.getElementById("txtInspectionChargestaxUpdate").value;
+
+            resultTotal = Number(txtAmount) + Number(txtTaxAmount) + Number(txtInspectionCharges) + Number(txtInspectionChargestax);
+
+            //result = 10 * num1 / 100;
+
+            $("#txtTotalUpdate").val(resultTotal);
+        }
+        //method for getting search record when we click on drop down "Sale_refDrop" in this page
+        $(document).ready(function () {
+
+            //$("#Sale_refDrop").click(function () {
+
+            $("#Sale_refDrop").change(function () {
+
+                var Sale_ID = $(this).val();
+                var htemp_ID = $("#htemp_ID").val();
+                console.log(Sale_ID);
+
+                debugger;
+
+
+                $.ajax({
+
+                    type: "Post",
+                    url: "/Stock/GetShipping_infoChasisBySaleRef?Sale_ID=" + Sale_ID + "&temp_ID=" + htemp_ID,
+                    contentType: "html",
+                    success: function (response) {
+                        debugger;
+                        $("#PaymentDetailSection").html(response);
+                    }
+                })
+            })
+        })
+
+     function GetSubModel(Make_ID) {
+        //debugger
+         var ID = Make_ID;
+        var procemessage = "<option value='0'> Please wait...</option>";
+        $(".MakeModelClass").html(procemessage).show();
+
+
+        if (!ID) {
+            ID = 0;
+            var emptyAppend = "<option value=''>Select</option>";
+            $(".MakeModelClassUpdate").html(emptyAppend).show();
+
+        } else {
+            $.getJSON("/Stock/GetModelDescListByID", { Make_ID: ID }, function (data) {
+                //first empty the model
+                //debugger
+                $(".MakeModelClassUpdate").empty();
+                //Then append select
+                $(".MakeModelClassUpdate").append("<option value=''>Select</option>");
+                $.each(data, function (index, row) {
+
+                    //Now here appending all options in the sub classification list
+                    //$(".MakeModelClass").append("<option value='" + row.modelDesc_ID + "'>" + row.modelDesciption + "</option>")
+                    var optionText = row.modelDesciption;
+                    $('.MakeModelClassUpdate').append($("<option></option>").attr("value", row.modelDesc_ID).text(optionText));
+                });
+            });
+        }
+    }
+
+
+                      $(document).ready(function(){
+            $("#print-btn").click(function(event){
+                event.preventDefault();
+
+                var win = window.open("@Url.Action("ShippingInfo_JP_Print", "Report")" + "?ID=" + $("#Shipping_info_master_ID").val() , "_blank");
+                win.focus();
+            });
+        })
+    </script>
+
+
+ }
+
+
+
+
+ 

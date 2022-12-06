@@ -1,0 +1,35 @@
+﻿
+
+@using DAL
+@using DAL.Models
+@model DAL.oClasses.OSales
+
+@if (Model.SalesMaster_InvoiceReturnList != null)
+{
+    foreach (pa_SalesMaster_DAL item in Model.SalesMaster_InvoiceReturnList)
+    {
+
+
+
+        <tr>
+
+            <td> <a asp-controller="Sales" asp-action="NewSalesCancelReturn" asp-route-SaleMaster_ID="@item.SaleMaster_ID">@Html.DisplayFor(modelItem => item.SaleRef)</a></td>
+            <td>@Html.DisplayFor(modelItem => item.SaleDate)</td>
+
+            <td>@Html.DisplayFor(modelItem => item.Customer_Name)</td>
+            <td>@Html.DisplayFor(modelItem => item.Amount)</td>
+            <td>@Html.DisplayFor(modelItem => item.VATExp)</td>
+            <td>@Html.DisplayFor(modelItem => item.Total_Amt) </td>
+            <td>@Html.DisplayFor(modelItem => item.Status) </td>
+
+
+            <td> <a asp-controller="Sales" asp-action="NewSalesCancelReturn" asp-route-SaleMaster_ID="@item.SaleMaster_ID">View</a></td>
+
+
+
+
+        </tr>
+    }
+}
+
+

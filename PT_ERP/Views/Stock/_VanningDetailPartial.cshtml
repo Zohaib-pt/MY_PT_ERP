@@ -1,0 +1,97 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OStock
+
+<table class="table table-responsive-md table-bordered mb-0">
+    <thead>
+        <tr>
+            <th>Edit/Delete</th>
+            <th>Chassis</th>
+            <th>Make</th>
+            <th>Make Model</th>
+            <th>Amount</th>
+
+
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.VanningDetailList != null)
+        {
+
+            ViewBag.SubTotal = 0;
+            ViewBag.Vat_ExpTotal = 0;
+            ViewBag.DiscountTotal = 0;
+            ViewBag.Grand_Total = 0;
+
+
+            foreach (pa_Vanning_Details item in Model.VanningDetailList)
+            {
+
+
+
+
+        <tr>
+            <td>
+                <a onclick="UpdateVanningDetail('@item.ID');"><img style="width: 20px;" src="~/Img/Icons/edit.png" /></a>
+                <a onclick="DeleteVanningDetail('@item.ID');" data-toggle="modal" data-target="#DeleteVanningDetailModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+            </td>
+            <td>@Html.DisplayFor(modelItem => item.Chassis_no)</td>
+            <td>@Html.DisplayFor(modelItem => item.make)</td>
+            <td>@Html.DisplayFor(modelItem => item.model_description)</td>
+            <td>@Html.DisplayFor(modelItem => item.Total_Amount)</td>
+
+        </tr>
+            }
+        }
+
+
+
+
+    </tbody>
+
+</table>
+
+
+<div class="invoice-summary">
+
+    <div class="row">
+
+        <div class="col-lg-9 col-md-9">
+
+        </div>
+
+        <div class="col-lg-3 col-md-3 justify-content-end text-right">
+            <table class="table h6 text-dark">
+                <tbody>
+
+
+                    <tr class="b-top-0">
+                        <td colspan="2"> Price:</td>
+                        <td class="text-right" id="Price"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">Total Tax:</td>
+                        <td class="text-right" id="TotalTax"></td>
+                    </tr>
+
+                    <tr>
+                        <td colspan="2">Total:</td>
+                        <td class="text-right" id="Total"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">Paid:</td>
+                        <td class="text-right" id="Paid"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">Balance:</td>
+                        <td class="text-right" id="Balance"></td>
+                    </tr>
+
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>

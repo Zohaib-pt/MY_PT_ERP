@@ -1,0 +1,103 @@
+﻿
+@using DAL
+@using DAL.Models
+@model DAL.oClasses.OStock
+@using X.PagedList.Mvc.Core; @*//import this so we get our HTML Helper*@
+@using X.PagedList;  @*//import this so we can cast our list to IPagedList*@
+
+
+
+<table class="table table-bordered table-striped mb-0">
+    <thead>
+        <tr>
+
+
+
+            <th>Date</th>
+            <th>BLRef</th>
+            <th>BLNO </th>
+            <th>ShipName</th>
+            <th>ArrivalDate</th>
+            <th>Total</th>
+            <th>Paid(AED)</th>
+            <th>Balance(AED)</th>
+            <th @ViewBag.ApprovalVisibility>Status</th>
+            <th>View</th>
+
+
+        </tr>
+    </thead>
+
+
+    <tbody>
+
+        @if (Model.BLMasterPlist != null)
+        {
+            foreach (Pa_BL_Master item in Model.BLMasterPlist)
+            {
+
+                <tr>
+
+
+                    <td>@Html.DisplayFor(modelItem => item.BLNO_Date)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Ref)</td>
+
+                    @*<td> <a asp-controller="Stock" asp-action="AddBL" asp-route-BLNO_ID="@item.BLNO_ID">@Html.DisplayFor(modelItem => item.Ref)</a></td>*@
+
+                    <td>@Html.DisplayFor(modelItem => item.BlNO)</td>
+                    <td>@Html.DisplayFor(modelItem => item.ShipName)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Arrival_Date)</td>
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Total_With_Rate) (AED)
+                        <br />
+                        @Html.DisplayFor(modelItem => item.Total_BL_Charges) (YEN)
+                    </td>
+                    <td>@Html.DisplayFor(modelItem => item.Paid_AED)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Balance_AED)</td>
+                    <td @ViewBag.ApprovalVisibility> @Html.DisplayFor(modelItem => item.BLStatus)</td>
+                    <td> <a asp-controller="Stock" asp-action="AddBL" asp-route-BLNO_ID="@item.BLNO_ID">View</a></td>
+                    @*<td>@Html.DisplayFor(modelItem => item.Modified_at)</td>*@
+
+
+
+
+
+                </tr>
+            }
+        }
+
+
+    </tbody>
+
+
+</table>
+<div class="invoice-summary">
+
+    <div class="row">
+
+        <div class="col-lg-6 col-md-6">
+
+        </div>
+
+
+        <div class="col-lg-6 col-md-6 justify-content-end text-right">
+            @if (Model.BLMasterPlist.Count() != 0)
+            {
+
+                @Html.PagedListPager(Model.BLMasterPlist, page => Url.Action("BLList_Search", "Stock", new { StartDate = ViewBag.From_Date, EndDate = ViewBag.To_Date, BLNO = ViewBag.BLNO, page })
+
+                               , X.PagedList.Mvc.Core.Common.PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new AjaxOptions()
+                               {
+                                   HttpMethod = "get",
+                                   UpdateTargetId = "StockInvoiceListSearch"
+                               })
+                                                         )}
+        </div>
+    </div>
+
+</div>
+
+
+
+

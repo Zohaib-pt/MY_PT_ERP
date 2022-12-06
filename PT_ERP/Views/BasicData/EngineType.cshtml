@@ -1,0 +1,339 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OBasicData
+
+
+
+
+    ViewData["Title"] = "EngineType";
+    Layout = "~/Views/Shared/_LayoutTablePages.cshtml";
+}
+
+
+
+<header class="page-header">
+    <h2>@ViewBag.SectionHeaderTitle</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+            <li><a asp-area="" asp-controller="BasicData" asp-action="EngineType"><span>@ViewBag.SectionSub_HeaderTitle</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+
+<div class="row">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+        <div class="col-lg-12">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-info">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Success!</strong> @TempData["Success"] <a href="" class="alert-link"></a>
+                </div>
+            }
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Error!</strong> @TempData["Error"] <a href="" class="alert-link"></a>
+                </div>
+            }
+        </div>
+    }
+
+
+</div>
+
+<div class="row">
+    <div class="col">
+        <section class="card">
+            <header class="card-header">
+
+                <div class="row">
+                    <div class="col-lg-6">
+                        <h2 class="card-title" style="line-height:normal;">Engine Type List </h2>
+                    </div>
+                    <div class="col-lg-6" style="text-align:right;">
+                        <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#AddEngineTypeModal">Add Engine Type &nbsp;<i class="fas fa-plus"></i></button>
+
+                        <button type="button" class="mb-1 mt-1 mr-1 btn btn-sm btn-info">Print &nbsp;<i class="fas fa-print"></i></button>
+                    </div>
+                </div>
+
+            </header>
+            <div class="card-body">
+
+
+
+                <table class="table table-bordered table-striped mb-0" id="datatable-default">
+                    <thead>
+                        <tr>
+
+
+                            <th>Edit/Delete</th>
+
+                            <th>ID</th>
+                            <th>Engine Type</th>
+
+
+
+                            <th>Create At</th>
+                            <th>Create By</th>
+                            <th>Updated At</th>
+                            <th>Updated By</th>
+
+
+
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @if (Model.EngineTypeList != null)
+                        {
+                            foreach (EngineType_DAL item in Model.EngineTypeList)
+                            {
+
+                                <tr>
+
+                                    <td>
+                                        <a onclick="UpdateEngineType('@item.EngineType_ID', '@item.Engine_Power')" data-toggle="modal"
+                                           data-target="#UpdateEngineModal"><img style="width: 20px;" src="~/Img/Icons/edit.png" /></a>
+                                        <a onclick="DeleteEngineType('@item.EngineType_ID')" data-toggle="modal" data-target="#DeleteEngineModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+                                    </td>
+
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.EngineType_ID)
+                                    </td>
+
+                                    <td> @Html.DisplayFor(modelItem => item.Engine_Power)</td>
+                                    <td> @Html.DisplayFor(modelItem => item.Created_at)</td>
+                                    <td> @Html.DisplayFor(modelItem => item.Created_by)</td>
+                                    <td> @Html.DisplayFor(modelItem => item.Modified_at)</td>
+                                    <td> @Html.DisplayFor(modelItem => item.Modified_by)</td>
+
+
+                                </tr>
+
+                             
+
+
+                            }
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</div>
+
+
+<!-- Modal Insert Make -->
+<div class="modal fade" id="AddEngineTypeModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Add Engine Type</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="BasicData" asp-action="InsertEngineType" >
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body">
+
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Engine Type*</label>
+
+                                        <input type="text" class="form-control" id="Engine_Power" name="Engine_Power" required>
+                                    </div>
+                                </div>
+                              
+
+                            </div>
+
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-sm btn-primary">Save</button>
+                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal Delete Enigne type -->
+<div class="modal fade bs-modal-lg" id="DeleteEngineModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Delete Engine Type</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="BasicData" asp-action="DeleteEngineType">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <h3>Do you want to delete this record?</h3>
+
+                                        <input type="hidden" id="EngineType_ID_Delete" name="EngineType_ID" />
+                                      
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modal udpate Make -->
+<div class="modal fade bs-modal-sm" id="UpdateEngineModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Update Engine Type</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="BasicData" asp-action="UpdateEngineType" >
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body">
+
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Engine Type*</label>
+
+                                        <input type="text" class="form-control" id="Engine_Power_Update" name="Engine_Power" required>
+
+                                        <input type="hidden" id="EngineType_ID_update" name="EngineType_ID" />
+                                    </div>
+                                </div>
+                            
+
+                            </div>
+
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+
+@section Scripts {
+    <script type="text/javascript">
+
+        function DeleteEngineType(EngineType_ID) {
+            debugger
+            $("#EngineType_ID_Delete").val(EngineType_ID);
+           
+        }
+
+        function UpdateEngineType(EngineType_ID, Engine_Power) {
+            debugger
+            $("#EngineType_ID_update").val(EngineType_ID);
+            $("#Engine_Power_Update").val(Engine_Power);
+        }
+       
+
+    </script>
+}
+

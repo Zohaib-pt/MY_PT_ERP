@@ -1,0 +1,246 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OStock
+
+
+<div class="modal-header" style="background: #f6f6f6;">
+
+
+    <h4 class="modal-title">Shipping_Info Details</h4>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+
+</div>
+
+@{
+
+    string Chassis_no = "";
+    int? make_ID = 0;
+    int ID = 0;
+    string model_description = "";
+    string Berth_Carry_Charges = "";
+    string Berth_Carry_ChargesTax = "";
+    string TotalCharges = "";
+
+}
+
+
+
+<form method="post" data-ajax="true" data-ajax-complete="myCompleteShipping_infoUpdate" data-ajax-success="mySuccessShipping_infoUpdate" data-ajax-failure="myFailureShipping_infoUpdate"
+      asp-area="" asp-controller="Stock" asp-action="UpdateShipping_infoDetail" data-ajax-loading="" id="FormUpdateShipping_infoDetail">
+
+    <div class="modal-body">
+
+        <section class="card">
+
+            <div class="card-body">
+
+
+
+                <div class="row form-group">
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            <label class="col-form-label" for="ChassisUpdate">Chassis*</label>
+                            <input type="text" id="ChassisUpdate" name="Chassis" onblur="ValidateChassisUpdate()" class="form-control" placeholder="Enter chassis" value="@Model.Shipping_infoObject.Chassis_no" readonly />
+                            <label id="ChassisValidationMessageUpdate"></label>
+
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            <label class="col-form-label" for="Make_ID">Make*</label>
+
+
+
+                            <select class="form-control" id="Make_IDUdpate" name="Make_ID" autofocus asp-items="@(new SelectList( ViewBag.MakeList,"Make_ID","Make",Model.Shipping_infoObject.make_ID))" onchange="GetSubModelForUpdate(this);" readonly>
+                                <option>Select Make</option>
+                            </select>
+
+                          
+
+                            <input type="hidden" id="Shipping_infoDetails_IDUpdate" name="Shipping_infoDetails_ID" value="@Model.Shipping_infoObject.ID" />
+                           @*<input type="hidden" id="Shipping_Make_Model_By_Description" value="model_description" />*@
+ 
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            <label class="col-form-label" for="Model_ID">Model*</label>
+
+                            @*<select class="form-control MakeModelClassUpdate" id="Model_IDUdpate" name="Model_ID" value="@model_description" required>
+            <option value="@Model.Shipping_infoObject.model_description">@Model.Shipping_infoObject.model_description</option>
+
+        </select>*@
+                            <input type="text" id="Model_IDUpdate" name="Model_ID" onblur="ValidateChassisUpdate()" class="form-control" placeholder="Enter chassis" value="@Model.Shipping_infoObject.model_description" readonly />
+
+
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            <label class="control-label">Berth (c) Charges & Tax</label>
+
+
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-8" style="padding:0;">
+                                        <input type="number" id="txtShippingChargesUpdate" name="Berth_Carry_Charges" value="@Model.Shipping_infoObject.Berth_Carry_Charges" class="form-control" placeholder="Shipping" onblur="CalcTotalChargesInsertUpdate()">
+
+                                    </div>
+                                    <div class="col-md-4" style="padding:0;">
+                                        <input type="number" id="txtShippingChargestaxUpdate" name="Berth_Carry_ChargesTax" value="@Model.Shipping_infoObject.Berth_Carry_ChargesTax " class="form-control" placeholder="Tax" onblur="CalcTotalChargesInsertUpdate()">
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <div class="col-lg-4">
+
+                        <div class="col-lg-12">
+                            <div class="form-group">
+                                <label class="control-label">Total </label>
+                                <input type="text" id="txtTotalPriceUpdate" name="txtTotalPrice" class="form-control" value="@TotalCharges" placeholder="Total" readonly>
+
+                            </div>
+                        </div>
+
+
+
+
+
+
+
+                    </div>
+                </div>
+
+
+
+
+            </div>
+
+
+
+        </section>
+    </div>
+
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Update</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+    </div>
+</form>
+
+
+
+
+
+@*<form method="post" data-ajax="true" data-ajax-complete="myCompleteShipping_infoUpdate" data-ajax-success="mySuccessShipping_infoUpdate" data-ajax-failure="myFailureShipping_infoUpdate"
+      asp-area="" asp-controller="Stock" asp-action="UpdateShipping_infoDetail" data-ajax-loading="" id="FormUpdateShipping_infoDetail">
+
+    <div class="modal-body">
+
+        <section class="card">
+
+            <div class="card-body">
+
+
+
+                <div class="row form-group">
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            <label class="col-form-label" for="ChassisUpdate">Chassis*</label>
+                            <input type="text" id="ChassisUpdate" name="Chassis" onblur="ValidateChassisUpdate()" class="form-control" placeholder="Enter chassis" value="@Chassis_no " required />
+                            <label id="ChassisValidationMessageUpdate"></label>
+
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            <label class="col-form-label" for="Make_ID">Make*</label>
+
+
+
+                            <select class="form-control" id="Make_IDUdpate" name="Make_ID" autofocus asp-items="@(new SelectList( ViewBag.MakeList,"Make_ID","Make",Model.Shipping_infoObject.make_ID))" onchange="GetSubModelForUpdate(this);" required>
+                                <option>Select Make</option>
+                            </select>
+
+                            <input type="hidden" id="Shipping_infoDetails_IDUpdate" name="Shipping_infoDetails_ID" value="@Model.Shipping_infoObject.ID" />
+
+
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            <label class="col-form-label" for="Model_ID">Model*</label>
+
+                            <select class="form-control MakeModelClassUpdate" id="Model_IDUdpate" name="Model_ID" value="@Model.Shipping_infoObject.model_description" required>
+                                <option value="@Model.Shipping_infoObject.model_description">@Model.Shipping_infoObject.model_description</option>
+
+                            </select>
+
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            <label class="control-label">Berth (c) Charges & Tax</label>
+
+
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-8" style="padding:0;">
+                                        <input type="number" id="txtShippingChargesUpdate" name="Berth_Carry_Charges" value="@Model.Shipping_infoObject.Berth_Carry_Charges" class="form-control" placeholder="Shipping" onblur="CalcTotalChargesInsertUpdate()">
+
+                                    </div>
+                                    <div class="col-md-4" style="padding:0;">
+                                        <input type="number" id="txtShippingChargestaxUpdate" name="Berth_Carry_ChargesTax" value="@Model.Shipping_infoObject.Berth_Carry_ChargesTax" class="form-control" placeholder="Tax" onblur="CalcTotalChargesInsertUpdate()">
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <div class="col-lg-4">
+
+                        <div class="col-lg-12">
+                            <div class="form-group">
+                                <label class="control-label">Total </label>
+                                <input type="text" id="txtTotalPriceUpdate" name="txtTotalPrice" class="form-control" value="@Model.Shipping_infoObject.TotalCharges" placeholder="Total" readonly>
+
+                            </div>
+                        </div>
+
+
+
+
+
+
+
+                    </div>
+                </div>
+
+
+
+
+            </div>
+
+
+
+        </section>
+    </div>
+
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Update</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+    </div>
+</form>*@

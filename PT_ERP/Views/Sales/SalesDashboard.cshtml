@@ -1,0 +1,747 @@
+﻿@using DAL
+@using DAL.Models
+@using X.PagedList.Mvc.Core; @*//import this so we get our HTML Helper*@
+@using X.PagedList;  @*//import this so we can cast our list to IPagedList *@
+@model DAL.oClasses.OSales
+
+
+@{
+    ViewData["Title"] = "Sales SaleInvoice list";
+    Layout = "~/Views/Shared/_LayoutTablePages.cshtml";
+}
+
+
+<header class="page-header">
+    <h2>Sales</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+
+            <li><a><span>@ViewBag.BreadCumController</span></a></li>
+            <li><a asp-area="" asp-controller="@ViewBag.BreadCumController" asp-action="@ViewBag.BreadCumAction"><span>Sale Dashboard</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+
+<div class="row">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+        <div class="col-lg-12">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-info">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Success!</strong> @TempData["Success"] <a href="" class="alert-link"></a>
+                </div>
+            }
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Error!</strong> @TempData["Error"] <a href="" class="alert-link"></a>
+                </div>
+            }
+        </div>
+    }
+
+
+</div>
+
+<!--Following 'LoaderImage' div is for showing ajax loader before ajax call-->
+<div class="imageGIFLoader" id="LoaderImage">
+    <img src="~/img/projects/ajax-loader.gif" class="img-responsive" style="width:65px; height:65px;" />
+</div>
+
+<div class="row" style="padding-top:1px;">
+    <div class="col">
+        <section class="card">
+            <header class="card-header">
+
+                <div class="row">
+
+
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <section class="card">
+                            <div class="card-body">
+
+                                <form method="get" data-ajax="true" data-ajax-complete="myCompleteSearch" data-ajax-success="mySuccessSearch" data-ajax-failure="myFailureSearch"
+                                      data-ajax-begin="myBeginSearch" asp-area="" asp-controller="Sales" asp-action="GetSalesDashboardListBySearchFilers" data-ajax-loading="">
+
+                                    <div class="row form-group">
+                                        <div class="col-lg">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="Color">Make</label>
+
+                                                <select class="select2 form-control" id="make_ID" name="Make" asp-items="@(new SelectList( ViewBag.MakeList,"Make_ID","Make"))" onchange="GetSubModel(this);">
+                                                    <option value="0">Select Make</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="MakeModel_description_ID">Model Desc</label>
+
+
+
+                                                <select class="select2 form-control MakeModelClass" id="MakeModel_description_ID" name="Model_Desc">
+                                                    <option value="">Select Model</option>
+
+                                                </select>
+
+                                            </div>
+                                        </div>
+                                        <div class="col-lg">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="MakeModel_description_ID">Color</label>
+
+
+
+                                                <select class="select2 form-control MakeModelClass" asp-items="@(new SelectList( ViewBag.ColorsList,"Color_ID","ColorName"))" id="Color" name="Color">
+                                                    <option value="">Select Color</option>
+
+                                                </select>
+
+                                            </div>
+                                        </div>
+                                        
+
+                                        <div class="col-lg">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="From_Date">Production Date From</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                        </span>
+                                                    </span>
+
+                                                    <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="StartDate" name="StartDate">
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="col-lg">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="To_Date">Production Date From</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                        </span>
+                                                    </span>
+
+                                                    <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="EndDate" name="EndDate">
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                        @*<div class="col-lg">
+            <div class="form-group">
+                <label class="col-form-label" for="Color">Status</label>
+
+                <select class="select2 form-control" id="Status_ID" name="Status_ID" asp-items="@(new SelectList( ViewBag.ddlStatus,"Status_ID","Status"))">
+                </select>
+            </div>
+        </div>
+
+
+        <partial name="~/Views/Shared/_CompanyWise.cshtml" />*@
+
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-lg">
+
+
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="Search"> &nbsp; </label>
+
+                                                <button type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-info">Search&nbsp;<i class="fas fa-search"></i></button>
+                                                <a class="mb-1 mt-1 mr-1 btn btn-sm btn-primary" asp-area="" asp-controller="Sales" asp-action="NewSalesInvoice">Add New&nbsp;<i class="fas fa-plus"></i></a>
+
+                                                <a type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-info" href="" id="print-btn">Print &nbsp;<i class="fas fa-print"></i></a>
+                                                <a type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-success" href="" id="export-btn">Export &nbsp;<i class="fas fa-file-excel"></i></a>
+
+
+                                            </div>
+
+
+
+                                        </div>
+                                    </div>
+
+
+                                </form>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
+
+
+            </header>
+            <div class="card-body" id="SalesInvoiceListSearch">
+
+                
+
+                <table class="table table-bordered table-striped mb-0 mt-1" @*id="datatable-default"*@>
+                    <thead>
+                        <tr>
+
+
+
+                            <th>Action</th>
+                            <th>Make</th>
+
+                            <th>Model</th>
+                            <th>INT Color</th>
+                            <th>Model Year</th>
+                            <th>Qty</th>
+                            <th>EXT Color</th>
+                            @*<th>Unit Price</th>*@
+                            <th>Production Date</th>
+
+
+
+
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.SalesDashboardIPagedList != null)
+                        {
+
+                            foreach (pa_Select_SalesDashboardList item in Model.SalesDashboardIPagedList)
+                            {
+                        <tr>
+                            <td>
+
+
+
+
+
+
+                                <a  data-toggle="modal" id="btnedit" data-target="#UpdateMakeModal"><img style="width: 20px;" src="~/Img/Icons/edit.png" /></a>
+                                <a  data-toggle="modal" data-target="#deleteMakeModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+
+                            </td>
+                            <td>@Html.DisplayFor(modelItem => item.Make)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Model_Desc)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Color_Interior_Name)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Model_Year)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Qty)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Color_Exterior_Name)</td>
+                            @*<td>@Html.DisplayFor(modelItem => item.Total_Cost)</td>*@
+                            <td>@Html.DisplayFor(modelItem => item.Production_Date)</td>
+                        </tr>
+                        }
+
+
+                    }
+
+
+
+
+
+
+
+
+
+
+
+                        </tbody>
+                        <tfoot>
+
+
+
+                            @*<tr role="row">
+
+                    <th>Total</th>
+
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th>@string.Format("{0:0,0.00,0}", ViewBag.Total)</th>
+                    <th>@string.Format("{0:0,0.00,0}", ViewBag.TotalPaid)</th>
+                    <th>@string.Format("{0:0,0.00,0}", ViewBag.TotalBalance)</th>
+                    <th></th>
+                    <th @ViewBag.AttachmentVisibility></th>
+                    <th></th>
+
+                </tr>*@
+                        </tfoot>
+                    </table>
+
+                <div class="invoice-summary">
+
+                    <div class="row">
+
+                        <div class="col-lg-6 col-md-6">
+
+                        </div>
+                        <div class="col-lg-6 col-md-6 justify-content-end text-right">
+                            @if (Model.SalesDashboardIPagedList.Count() != 0)
+                            {
+
+                                @Html.PagedListPager(Model.SalesDashboardIPagedList, page => Url.Action("GetSalesDashboardListBySearchFilers", "Sales", new { Make = ViewBag.Make, Model_Desc = ViewBag.Model_Desc, StartDate = ViewBag.StartDate_SaleInvoice, EndDate = ViewBag.EndDate_SaleInvoice, Color = ViewBag.Color, Model_Year = ViewBag.Model_Year, c_IDs = ViewBag.c_IDs, page })
+
+                , X.PagedList.Mvc.Core.Common.PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new AjaxOptions()
+                {
+                    HttpMethod = "get",
+                    UpdateTargetId = "SalesInvoiceListSearch"
+                })
+                                )
+                            }
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+    </div>
+</div>
+
+<div class="modal fade  bs-modal-lg" id="UpdateMakeModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg ">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Vehical Details</h4>
+            </div>
+            <div class="modal-body">
+
+                <form method="post" asp-area="" asp-controller="Admin" asp-action="UpdateAdmin" enctype="multipart/form-data">
+
+                    <div class="form-body">
+                        <div class="row mb-1">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="Color">Make</label>
+
+                                    <select class="select2 form-control" id="make_ID" name="Make" asp-items="@(new SelectList( ViewBag.MakeList,"Make_ID","Make"))" onchange="GetSubModel(this);">
+                                        <option value="0">Select Make</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="MakeModel_description_ID">Model Desc</label>
+
+
+
+                                    <select class="select2 form-control MakeModelClass" id="MakeModel_description_ID" name="Model_Desc">
+                                        <option value="">Select Model</option>
+
+                                    </select>
+
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="MakeModel_description_ID">Int Color</label>
+
+
+
+                                    <select class="select2 form-control" id="intColor" asp-items="@(new SelectList( ViewBag.ColorsList,"Color_ID","ColorName"))" name="intColor">
+                                        <option value="">Select Color</option>
+
+                                    </select>
+
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+
+                                    <label>Model Year</label>
+                                    <input type="text" class="form-control" id="Model_Year" name="User_Mobile_NoUpdate" placeholder="">
+                                </div>
+                            </div>
+                            
+                            <!--/span-->
+                            <!--/span-->
+                            <!--/span-->
+                        </div>
+
+                        <div class="row" style="margin-bottom:20px;">
+                            <div class="col-md-3">
+                                <div class="form-group">
+
+                                    <label>Qty</label>
+                                    <input type="text" class="form-control" id="User_Mobile_NoUpdate" name="User_Mobile_NoUpdate" placeholder="">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="MakeModel_description_ID">Ext Color</label>
+
+
+
+                                    <select class="select2 form-control" id="extColor" asp-items="@(new SelectList( ViewBag.ColorsList,"Color_ID","ColorName"))" name="extColor">
+                                        <option value="">Select Color</option>
+
+                                    </select>
+
+                                </div>
+                            </div>
+                            <!--/span-->
+                            <!--/span-->
+                            <div class="col-md-3">
+
+                                <div class="form-group">
+
+                                    <label class="control-label">Unit Price</label>
+
+                                    <input type="text" class="form-control" id="User_OfficeNoUpdate" name="User_OfficeNoUpdate" placeholder="">
+
+
+
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+
+                                <div class="form-group">
+
+                                    <label class="control-label">Production Date</label>
+
+                                    <input type="date" class="form-control" id="Producttion_Date" name="User_OfficeNoUpdate" placeholder="">
+
+
+
+                                </div>
+                            </div>
+                            <!--/span-->
+                            
+                            @*<div class="col-md-3">
+            <div class="form-group">
+
+                <label class="control-label">Password</label>
+                <input type="password" class="form-control" id="passwordUpdate" name="passwordUpdate" placeholder="" required>
+
+
+
+            </div>
+        </div>
+
+
+        <div class="col-md-3">
+            <div class="form-group">
+
+                <label>Confirm Password</label>
+                <input type="password" class="form-control" id="confirm_passwordUpdate" name="confirm_passwordUpdate" placeholder="" required>
+            </div>
+        </div>*@
+
+
+
+                        </div>
+
+
+                        <div class="row">
+
+                        </div>
+
+
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn dark btn-outline" data-dismiss="modal">Close</button>
+                            @*<button type="submit" class="btn btn-primary" onclick="InsertStock();">Save changes</button>*@
+                            <input type="submit" value="Update" class="btn btn-primary" id="submit" />
+                        </div>
+
+                    </div>
+                </form>
+
+
+            </div>
+
+
+        </div>
+
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- Modal show attachment -->
+<div class="modal fade bs-modal-lg" id="ShowAttachmentMasterModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <!-- Following fields is for making a central sales master id for attachments -->
+        <input type="hidden" id="SalesMasterMain" name="SalesMasterMain" />
+
+        <div class="modal-content" id="AttachmentsSaleMaster">
+
+        </div>
+    </div>
+</div>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css" rel="stylesheet" />
+
+<style>
+    .swal-title {
+        margin: 0px;
+        font-size: 16px;
+        box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.21);
+        margin-bottom: 28px;
+    }
+</style>
+
+@section Scripts{
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
+
+
+
+
+    <script>
+        $(function () {
+            $(".select2").select2({
+                theme: "bootstrap",
+            });
+
+        });
+        //this function is for selecting model description on the basis of Make ID
+        function GetSubModel(Make_ID) {
+            //debugger
+            var ID = Make_ID.value;
+            var procemessage = "<option value='0'> Please wait...</option>";
+            $(".MakeModelClass").html(procemessage).show();
+
+
+            if (!ID) {
+                ID = 0;
+                var emptyAppend = "<option value=''>Select</option>";
+                $(".MakeModelClass").html(emptyAppend).show();
+
+            } else {
+                $.getJSON("/Stock/GetModelDescListByID", { Make_ID: ID }, function (data) {
+                    //first empty the model
+                    //debugger
+                    $(".MakeModelClass").empty();
+                    //Then append select
+                    $(".MakeModelClass").append("<option value=''>Select</option>");
+                    $.each(data, function (index, row) {
+                        debugger
+                        //Now here appending all options in the sub classification list
+                        //$(".MakeModelClass").append("<option value='" + row.modelDesc_ID + "'>" + row.modelDesciption + "</option>")
+                        var optionText = row.modelDesciption;
+                        $('.MakeModelClass').append($("<option></option>").attr("value", row.modelDesc_ID).text(optionText));
+                    });
+                });
+            }
+
+
+
+        }
+
+        function myBeginSearch() {
+            $("#LoaderImage").css("visibility", "visible");
+        }
+
+        function mySuccessSearch(data) {
+
+            debugger
+            if (data.message == undefined) {
+
+                $('#SalesInvoiceListSearch').html(data);
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        function myFailureSearch() {
+
+            alert("Failured occured. Please try again!");
+            $("#LoaderImage").css("visibility", "hidden");
+        }
+
+        function myCompleteSearch() {
+            $("#LoaderImage").css("visibility", "hidden");
+
+        }
+
+        
+
+        //---show attachment popup
+        function ShowAttachmentMaster(SaleMaster_ID) {
+            debugger
+            var TeamDetailPostBackURL = '/Sales/GetSalesMasterInvoice_Attachments';
+
+            //--assign value to SaleMaster_ID hidden field in the main. Dont remove this fields
+            $("#SalesMasterMain").val(SaleMaster_ID);
+
+
+            if (!SaleMaster_ID) {
+                alert("ID is null. Please try again!");
+            } else {
+                $.ajax({
+                    type: "GET",
+                    url: TeamDetailPostBackURL,
+                    contentType: "application/json; charset=utf-8",
+                    data: { "SaleMaster_ID": SaleMaster_ID },
+                    datatype: "json",
+                    success: function (data) {
+
+
+                        if (data.message == undefined) {
+                            $('#AttachmentsSaleMaster').html(data);
+
+
+                            //--assign value to SaleMaster_ID hidden field. this field is in partial view '_SalesInvoiceAttachment'
+                            $("#SaleMaster_ID_Attachment").val(SaleMaster_ID);
+
+                            $('#ShowAttachmentMasterModal').modal('show');
+
+                        } else {
+                            alert(data.message);
+                            $('#ShowAttachmentMasterModal').modal('hide');
+                        }
+
+                    },
+                    error: function () {
+                        alert("Dynamic content load failed.");
+                    }
+                });
+            }
+
+
+
+        }
+
+
+        //---after successfull submission of attachment
+        function mySuccessAttachment(data) {
+
+            debugger
+            if (data.message == undefined) {
+
+
+                $('#AttachmentsSaleMaster').html(data);
+
+                //---assign id of sales master to the hidden field SaleMaster_ID_Attachment after partial view refresh
+                var SaleMaster_ID = document.getElementById("SalesMasterMain").value;
+                $("#SaleMaster_ID_Attachment").val(SaleMaster_ID);
+
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        //---if error occured in insertion of attachment
+        function myFailureAttachment() {
+
+            alert("Failured occured. Please try again!");
+
+        }
+
+
+        //---Delete Attachment
+        function DeleteAttachment(Attachment_ID, Master_ID, Type, File_Name) {
+            debugger
+            var TeamDetailPostBackURL = '/Sales/DeleteAttachmentSalesInvoice';
+
+            //--in this function , the 'Type' is for the field in attachment table for specifying different voucher documents
+            swal({
+                title: "Delete Sale Invoice Attachment",
+
+                text: " Are you sure do you want to delete this Attachment? \n",
+
+                showCancelButton: true,
+                confirmButtonColor: "#0088CC",
+                confirmButtonText: "Confirm",
+
+                closeOnConfirm: true
+            },
+                function (isConfirm) {
+                    if (isConfirm) {
+                        var SaleMaster_ID = Master_ID;
+                        if (!SaleMaster_ID) {
+                            alert("Attachment ID is null. Please try again!");
+                        } else {
+                            $.ajax({
+                                type: "GET",
+                                url: TeamDetailPostBackURL,
+                                contentType: "application/json; charset=utf-8",
+                                data: { "SaleMaster_ID": SaleMaster_ID, "Attachment_ID": Attachment_ID, "Type": Type, "File_Name": File_Name },
+                                datatype: "json",
+                                success: function (data) {
+
+
+                                    if (data.message == undefined) {
+                                        $('#AttachmentsSaleMaster').html(data);
+
+
+                                        //--assign value to SaleMaster_ID hidden field. this field is in partial view '_SalesInvoiceAttachment'
+                                        $("#SaleMaster_ID_Attachment").val(SaleMaster_ID);
+
+
+
+                                    } else {
+                                        alert(data.message);
+                                        //$('#ShowAttachmentMasterModal').modal('hide');
+                                    }
+
+                                },
+                                error: function () {
+                                    alert("Dynamic content load failed.");
+                                }
+                            });
+                        }
+                    }
+                });
+
+
+
+
+        }
+
+
+        $(document).ready(function(){
+    $("#print-btn").click(function(event){
+        event.preventDefault();
+
+        var win = window.open("@Url.Action("SalesInvoiceList_print", "Report")" + "?SaleRef=" + $("#SaleRef").val() + "&StartDate=" + $("#StartDate").val() + "&EndDate=" + $("#EndDate").val() + "&Customer_Name=" + $("#Customer_Name").val() + "&Chassis_No=" + $("#Chassis_No").val() + "&Status_ID=" + $("#Status_ID").val() + "&c_ID=" + $("#c_ID").val() + "&Model_Year=" + $("#Modelyear").val() + "&Make=" + $("#make_ID").val() + "&Model_Desc=" + $("#MakeModel_description_ID").val(), "_blank");
+        win.focus();
+    });
+        })
+                $(document).ready(function(){
+                    $("#btnedit").click(function(event){
+       event.preventDefault();
+        window.location.href = "@Url.Action("GetSaleDetails", "Sales")" + "?Make=" + $("#SaleRef").val() + "&StartDate=" + $("#StartDate").val() + "&EndDate=" + $("#EndDate").val() + "&Customer_Name=" + $("#Customer_Name").val() + "&Chassis_No=" + $("#Chassis_No").val() + "&Status_ID=" + $("#Status_ID").val() + "&c_ID=" + $("#c_ID").val() + "&Model_Year=" + $("#Modelyear").val() + "&Make=" + $("#make_ID").val() + "&Model_Desc=" + $("#MakeModel_description_ID").val();
+    });
+})
+
+    </script>
+
+
+
+}

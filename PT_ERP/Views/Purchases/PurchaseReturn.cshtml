@@ -1,0 +1,772 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OPurchases
+
+@{
+    ViewData["Title"] = "NewPurchase";
+    Layout = "~/Views/Shared/_LayoutTablePages.cshtml";
+}
+
+
+@{
+
+    ViewBag.SubTotal = null;
+    ViewBag.Vat_ExpTotal = null;
+    ViewBag.DiscountTotal = null;
+    ViewBag.Grand_Total = null;
+
+
+    string Form_PurchaseMaster_ActionMethod = "";
+    int? PurchaseMaster_ID = ViewBag.PurchaseMaster_ID;
+
+
+    if (Model.purchaseMasterObj != null && Model.purchaseMasterObj.PurchaseMaster_ID > 0)
+    {
+
+        Form_PurchaseMaster_ActionMethod = "UpdatePurchaseMaster_Return";
+
+
+    }
+    else
+    {
+        Form_PurchaseMaster_ActionMethod = "InsertPurchaseMaster_Return";
+
+
+    }
+
+}
+
+
+
+
+<header class="page-header">
+    <h2>@ViewBag.SectionHeaderTitle</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+
+            <li><a asp-area="" asp-controller="@ViewBag.BreadCumController" asp-action="@ViewBag.BreadCumAction"><span>@ViewBag.SectionSub_HeaderTitle</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+
+
+
+
+
+<div class="row" id="SuccessErrorSection">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+        <div class="col-lg-12">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-info">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Success!</strong> @TempData["Success"] <a href="" class="alert-link"></a>
+                </div>
+            }
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Error!</strong> @TempData["Error"] <a href="" class="alert-link"></a>
+                </div>
+            }
+        </div>
+    }
+
+
+</div>
+
+<!-- start: page -->
+<section class="card">
+    <div class="card-body">
+        <div class="invoice">
+            <header class="clearfix">
+                <div class="row">
+                    <div class="col-sm-6 mt-0">
+                        <h2 class="h4 mt-0 mb-2 text-dark font-weight-bold"> Purchase Return</h2>
+
+                    </div>
+
+                    <div class="col-sm-6 mt-0 text-right">
+
+                        <h4 class=" mt-0 mb-2 text-dark"><b>Status:</b> <label>Pending</label></h4>
+
+
+
+                    </div>
+
+
+
+                </div>
+            </header>
+
+            <div class="row">
+                <div class="col-lg-8">
+
+
+
+                    @if (Model.purchaseMasterObj.PurchaseMaster_ID != null)
+                    {
+                        if (Model.purchaseMasterObj.PurchaseMaster_ID > 0)
+                        {
+
+
+
+                            <button type="button" id="ButtonMasterUpdate" class="btn-sm btn btn-success">Update &nbsp;<i class="fas fa-save"></i></button>
+
+                            <button type="button" class="btn-sm btn btn-primary" disabled="disabled">Edit  &nbsp;<i class="fas fa-edit"></i></button>
+
+
+                            <button type="button" class="btn-sm btn btn-warning" data-toggle="modal" data-target="#ChangeStatusPurchaseModal" onclick="ChangeStatusPurchaseMaster('@Model.purchaseMasterObj.PurchaseMaster_ID', '5');">Cancel &nbsp;<i class="fas fa-cross"></i></button>
+
+                            <button type="button" class="btn-sm btn btn-danger" data-toggle="modal" data-target="#DeletePurchaseMasterNew" onclick="DeletePurchaseMaster('@Model.purchaseMasterObj.PurchaseMaster_ID');">Delete &nbsp;<i class="fas fa-trash-alt"></i></button>
+
+                             <button type="button" id="print-btn" class="btn-sm btn btn-info">Print &nbsp;<i class="fas fa-print"></i></button>
+
+                            <a asp-controller="Purchases" asp-action="PurchaseReturnList" class="btn-sm btn btn-default">List &nbsp;<i class="fas fa-list"></i></a>
+
+                        }
+
+                    }
+                    else
+                    {
+                        <button type="button" id="ButtonMasterIssue" class="btn-sm btn btn-success">Issue &nbsp;<i class="fas fa-save"></i></button>
+
+                        <button type="button" class="btn-sm btn btn-primary" disabled="disabled">Edit  &nbsp;<i class="fas fa-edit"></i></button>
+
+
+                        <button type="button" class="btn-sm btn btn-warning" disabled="disabled">Cancel &nbsp;<i class="fas fa-cross"></i></button>
+                        <button type="button" class="btn-sm btn btn-danger" disabled="disabled">Delete &nbsp;<i class="fas fa-trash-alt"></i></button>
+                        <button type="button" class="btn-sm btn btn-info" disabled="disabled">Print &nbsp;<i class="fas fa-print"></i></button>
+                        <a asp-controller="Purchases" asp-action="PurchaseReturnList" class="btn-sm btn btn-default">List &nbsp;<i class="fas fa-list"></i></a>
+                    }
+
+
+
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div class="col">
+
+
+
+                    <form method="post" asp-area="" asp-controller="Purchases" asp-action="@Form_PurchaseMaster_ActionMethod" id="formPurchaseMaster">
+                        @Html.AntiForgeryToken()
+
+                        <section class="card">
+
+                            <div class="card-body">
+
+
+
+                                <div class="row form-group">
+                                    <div class="col-lg-4">
+
+                                        <div class="row MasterForm">
+                                            <label for="Vendor_ID" class="col-sm-3 col-form-label">Vendor</label>
+                                            <div class="col-sm-9">
+                                                <select class="form-control select2" id="Vendor_ID" name="Vendor_ID" asp-items="@(new SelectList( ViewBag.VendorMaster,"Partner_ID","PartnerName", Model.purchaseMasterObj.Vendor_ID))" required>
+                                                    <option>Select Vendor</option>
+
+                                                </select>
+                                                <input type="hidden" id="PurchaseMaster_ID" name="PurchaseMaster_ID" value="@PurchaseMaster_ID" />
+                                            </div>
+                                        </div>
+                                        <div class="row MasterForm">
+                                            <label for="To" class="col-sm-3 col-form-label">To</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" id="Vendor_PruchaseTo" name="Vendor_PruchaseTo" value="@Model.purchaseMasterObj.Vendor_PruchaseTo">
+                                            </div>
+                                        </div>
+                                        <div class="row MasterForm">
+                                            <label for="Address" class="col-sm-3 col-form-label">Address</label>
+                                            <div class="col-sm-9">
+                                                <textarea class="form-control" rows="2" id="Vendor_Address" name="Vendor_Address" placeholder="">@Model.purchaseMasterObj.Vendor_Address</textarea>
+                                            </div>
+                                        </div>
+
+
+
+                                    </div>
+                                    <div class="col-lg-4">
+
+                                    </div>
+
+                                    <div class="col-lg-4 ">
+
+                                        <div class="row MasterForm">
+                                            <label for="PurchaseRef" class="col-sm-3 col-form-label">Ref No</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" id="PurchaseRef" name="PurchaseRef" value="@Model.purchaseMasterObj.PurchaseRef" readonly>
+                                            </div>
+                                        </div>
+
+
+                                        <div class="row MasterForm">
+                                            <label for="PurchaseDate" class="col-sm-3 col-form-label">Date</label>
+                                            <div class="col-sm-9">
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                        </span>
+                                                    </span>
+
+                                                    @if (Model.purchaseMasterObj.PurchaseDate != null)
+                                                    {
+                                                        <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="PurchaseDate" name="PurchaseDate" value="@Model.purchaseMasterObj.PurchaseDate" required>
+
+                                                    }
+                                                    else
+                                                    {
+                                                        <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="PurchaseDate" name="PurchaseDate" value="@DateTime.Now.ToString("dd-MMM-yyyy")" required>
+
+                                                    }
+
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+
+                                        <div class="row MasterForm">
+                                            <label for="PurchaseRef" class="col-sm-3 col-form-label">PR Ref</label>
+                                            <div class="col-sm-5" style="padding-right:1px;">
+                                                <input type="text" class="form-control" id="PurchaseRef_Number" name="PurchaseRef_Number" >
+                                            </div>
+                                            <div class="col-sm-4" style="padding-left:1px; ">
+                                                <button type="button" onclick="GetPurchaseDetailListByRef()" class=" btn btn-primary" style="width:100%;">Get &nbsp; <i class="fa fa-search"></i></button>
+                                            </div>
+                                        </div>
+
+
+
+
+
+                                    </div>
+
+
+                                </div>
+
+                            </div>
+
+
+
+                        </section>
+                    </form>
+                </div>
+
+            </div>
+
+
+
+            <div class="row m-2">
+                <div class="col-lg-6">
+                    <h2 class="card-title" style="line-height:normal;">Stock List </h2>
+                </div>
+
+            </div>
+
+            <div id="PurchaseDetailSection">
+
+
+                <table class="table table-responsive-md table-bordered mb-0">
+                    <thead>
+                        <tr>
+                            <th>Edit/Delete</th>
+                            <th>Make</th>
+                            <th>Make Model</th>
+                            <th>Color</th>
+                            <th>Qty</th>
+                            @*<th>ItemDesc</th>*@
+                            <th>Curr</th>
+                            <th>Unit Price</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.purchaseDetailList != null)
+                        {
+                          
+
+
+                            foreach (Pa_PurchaseDetails_DAL item in Model.purchaseDetailList.Where(m =>m.Make!="" && m.Make!=" " && String.IsNullOrEmpty(m.item_Description) ))
+                            {
+                                ViewBag.SubTotal = item.SubTotal;
+                                ViewBag.Vat_ExpTotal = item.Vat_ExpTotal;
+                                ViewBag.DiscountTotal = item.DiscountTotal;
+                                ViewBag.Grand_Total = item.Grand_Total;
+
+                                <tr>
+                                    <td>
+                                        <a onclick="UpdatePurchaseDetail('@item.PurchaseDetails_ID');"><img style="width: 20px;" src="~/Img/Icons/edit.png" /></a>
+                                        <a onclick="DeletePurchaseDetail('@item.PurchaseDetails_ID');" data-toggle="modal" data-target="#DeletePurchaseDetailModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+                                    </td>
+                                    <td>@Html.DisplayFor(modelItem => item.Make)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.ModelDesciption)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.ColorName)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Quantity)</td>
+                                    @*<td></td>*@
+                                    <td>@Html.DisplayFor(modelItem => item.Currency_Name)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Unit_Price)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Amount)</td>
+                                </tr>
+                            }
+                        }
+
+
+
+
+                    </tbody>
+
+                </table>
+
+
+
+                <table class="table table-responsive-md table-bordered mb-0 mt-3">
+                    <thead>
+                        <tr>
+                            <th>Delete</th>
+                            <th>Item</th>
+                            @*<th>Description</th>*@
+
+                            <th>Quantity</th>
+                            <th>Price</th>
+                            <th>VAT</th>
+                            <th>Discount</th>
+                            <th>Total Amount</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.purchaseDetailList != null)
+                        {
+
+
+                            foreach (Pa_PurchaseDetails_DAL item in Model.purchaseDetailList.Where(m => m.Make == ""  && !String.IsNullOrEmpty(m.item_Description)))
+                            {
+
+
+
+
+
+                                <tr>
+
+
+                                    <td>
+
+                                        <a onclick="DeletePurchaseDetail('@item.PurchaseDetails_ID');" data-toggle="modal" data-target="#DeletePurchaseDetailModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+                                    </td>
+                                    <td>@Html.DisplayFor(modelItem => item.item_ID)</td>
+                                    @*<td>@Html.DisplayFor(modelItem => item.item_Description)</td>*@
+                                    <td>@Html.DisplayFor(modelItem => item.Quantity)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Unit_Price)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.VAT_Exp)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Discount)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Amount)</td>
+
+                                </tr>
+                            }
+                        }
+                    </tbody>
+
+                </table>
+
+
+
+                <div class="invoice-summary">
+
+                    <div class="row">
+
+                        <div class="col-lg-9 col-md-9">
+
+                        </div>
+
+                        <div class="col-lg-3 col-md-3 justify-content-end text-right">
+                            <table class="table h6 text-dark">
+                                <tbody>
+
+
+
+                                    <tr class="b-top-0">
+                                        <td colspan="2"> Sub Total:</td>
+                                        <td class="text-right" id="SubTotal">@ViewBag.SubTotal</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2">VAT Charge:</td>
+                                        <td class="text-right" id="VAT_ChargeTotal">@ViewBag.Vat_ExpTotal</td>
+                                    </tr>
+
+                                    <tr>
+                                        <td colspan="2">Discount:</td>
+                                        <td class="text-right" id="DiscountTotal">@ViewBag.DiscountTotal</td>
+                                    </tr>
+                                    <tr class="h5">
+                                        <td colspan="2">Total Payable:</td>
+                                        <td class="text-right" id="Total_Payable">@ViewBag.Grand_Total</td>
+                                    </tr>
+
+
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+
+
+
+            </div>
+            <hr />
+            <div class="row">
+                <div class="col-sm-3"><span class="show-grid-block">Created at : <b>@Model.purchaseMasterObj.Created_at </b></span></div>
+                <div class="col-sm-3"><span class="show-grid-block">Created by :</span><b>@Model.purchaseMasterObj.Created_by</b></div>
+                <div class="col-sm-3"><span class="show-grid-block">Modified at :<b>@Model.purchaseMasterObj.Modified_at </b></span></div>
+                <div class="col-sm-3"><span class="show-grid-block">Modified by : <b>@Model.purchaseMasterObj.Modified_by </b></span></div>
+            </div>
+
+
+
+
+
+
+        </div>
+
+
+    </div>
+</section>
+
+
+
+
+
+<!-- Modal Delete PurchaseDetail -->
+<div class="modal fade bs-modal-lg" id="DeletePurchaseDetailModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Delete Stock</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" data-ajax="true" data-ajax-success="SuccessDeletePurchaseDetail" data-ajax-failure="FailureDeletePurchaseDetail"
+                  asp-area="" asp-controller="Purchases" asp-action="DeletePurchaseDetail_Return" data-ajax-loading="">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <h3>Do you want to delete this record?</h3>
+
+                                        <input type="hidden" id="PurchaseDetails_ID_Delete" name="PurchaseDetails_ID" />
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modal Delete PurchaseMaster -->
+<div class="modal fade bs-modal-lg" id="DeletePurchaseMasterNew" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Delete Purchase Master</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="Purchases" asp-action="DeletePurchaseMaster_Return" data-ajax-loading="">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <h3>Do you want to delete this record?</h3>
+
+                                        <input type="hidden" id="PurchaseMaster_ID_Delete" name="PurchaseMaster_ID" />
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modal Change Purchase Master Status -->
+<div class="modal fade bs-modal-lg" id="ChangeStatusPurchaseModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Change Purchase Master Status</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="Purchases" asp-action="Change_Status_PurchaseMasterReturn" data-ajax-loading="">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <h3>Do you want to change status of this record?</h3>
+
+                                        <input type="hidden" id="PurchaseMaster_ID_Status" name="PurchaseMaster_ID" />
+                                        <input type="hidden" id="Purchase_Status_ID" name="Status_ID" />
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+@section Scripts {
+
+
+    @*Please never removed following scripts bcz these scripts are used in all ajax calls*@
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
+
+
+    <script>
+
+        $(function () {
+            $(".select2").select2({
+                theme: "bootstrap",
+
+            });
+        });
+
+
+    </script>
+
+
+
+    <script type="text/javascript">
+        //---submit new master purchase voucher
+        $(document).ready(function () {
+            $("#ButtonMasterIssue").click(function () {
+
+                $("#formPurchaseMaster").submit();
+            });
+        });
+        //---Update master purchase voucher
+        $(document).ready(function () {
+            $("#ButtonMasterUpdate").click(function () {
+                $("#formPurchaseMaster").submit();
+            });
+        });
+
+
+
+        //This function is inserting purchase detail record against ref and then picking record on the basis of this
+        function GetPurchaseDetailListByRef() {
+            debugger
+            var PurchaseRef = document.getElementById("PurchaseRef_Number").value.toString();
+
+            $.ajax({
+
+                type: "Get",
+                url: "/Purchases/Insert_And_GetPurhaseReturnDetail",
+                data: { //Passing data
+                    PurchaseRef: PurchaseRef
+
+
+                },
+                datatype: "json",
+                success: function (data) {
+
+                    debugger
+                    if (data.message == undefined) {
+                        //alert("Saved Successfully!");
+
+                        $('#PurchaseDetailSection').html(data);
+
+
+                    } else {
+                        alert(data.message);
+
+                    }
+
+
+                }, error: function (jqXHR, status, err) {
+                    alert("An error occured. Please try again!");
+                }
+
+            })
+        }
+
+
+
+        function SuccessDeletePurchaseDetail(data) {
+
+            var SuccessDiv = " <div class='col-lg-12'><div class='alert alert-info'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button><strong>Success!</strong> Deleted Successfully! <a href='' class='alert-link'></a></div></div>";
+            debugger
+            if (data.message == undefined) {
+                //alert("Saved Successfully!");
+                $('#DeletePurchaseDetailModal').modal('hide');
+                $('#PaymentDetailSection').html(data);
+                $('#SuccessErrorSection').html(SuccessDiv).show();;
+
+
+
+            } else {
+                alert(data.message);
+                $('#DeletePurchaseDetailModal').modal('hide');
+            }
+
+
+        }
+
+        function FailureDeletePurchaseDetail() {
+
+            alert("Failured occured. Please try again!");
+            $('#DeletePurchaseDetailModal').modal('hide');
+        }
+
+        //---delete purchase master
+        function DeletePurchaseMaster(PurchaseMaster_ID) {
+            debugger
+            $("#PurchaseMaster_ID_Delete").val(PurchaseMaster_ID);
+
+        }
+
+        //---change purchase master status
+        function ChangeStatusPurchaseMaster(PurchaseMaster_ID, Status) {
+            debugger
+            $("#PurchaseMaster_ID_Status").val(PurchaseMaster_ID);
+            $("#Purchase_Status_ID").val(Status);
+
+        }
+
+               $(document).ready(function () {
+
+
+
+            $("#print-btn").click(function(event){
+                event.preventDefault();
+                var win = window.open("@Url.Action("PurchaseReturn_Print", "Report")" + "?PurchaseMaster_ID=" + $("#PurchaseMaster_ID").val() , "_blank");
+                win.focus();
+            });
+
+
+        })
+    </script>
+
+
+}

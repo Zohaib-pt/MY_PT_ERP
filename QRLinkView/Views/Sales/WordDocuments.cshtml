@@ -1,0 +1,61 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OBasicData
+@{ ViewData["Title"] = "WordManagement";
+    Layout = null; }
+
+
+<header class="page-header">
+    <h2>Word Document</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="index.html">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+            <li><a asp-area="" asp-controller="BasicData" asp-action="WordDocuments"><span>WordsManagement</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+
+<div class="row">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+<div class="col-lg-12">
+    @if (TempData["Success"] != null)
+    {
+<div class="alert alert-info">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+    <strong>Success!</strong> @TempData["Success"] <a href="" class="alert-link"></a>
+</div>}
+
+    @if (TempData["Error"] != null)
+    {
+<div class="alert alert-danger">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+    <strong>Error!</strong> @TempData["Error"] <a href="" class="alert-link"></a>
+</div>}
+</div>}
+
+
+</div>
+
+<a style="color:white;" target="_self"  href="http://localhost:2591/CommonImages/OtherImages/@Html.DisplayFor(modelItem => Model.WordListById.PDFName)"> Attachment Here </a>
+
+
+
+
+@section Scripts {
+    <script>
+        var link = document.getElementById("link");
+        link.click()
+    </script>
+
+
+}

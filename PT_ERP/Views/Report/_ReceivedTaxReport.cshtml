@@ -1,0 +1,116 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.oReports
+@using X.PagedList.Mvc.Core; @*//import this so we get our HTML Helper*@
+@using X.PagedList;  @*//import this so we can cast our list to IPagedList*@
+
+<table class="table table-bordered table-striped mb-0">
+    <thead>
+        <tr>
+
+
+
+            <th> Chassis</th>
+            <th>Date </th>
+            <th> Price Tax </th>
+            <th> Auction Fee Tax </th>
+            <th> Office Charges Tax </th>
+
+            <th> Total</th>
+
+
+
+
+
+        </tr>
+    </thead>
+
+
+    <tbody>
+
+        @if (Model.ReceivedTax != null)
+        {
+
+
+            foreach (TaxReport item in Model.ReceivedTax)
+            {
+
+
+
+
+
+
+<tr class="gradeX odd" role="row">
+
+
+
+
+    <td>@Html.DisplayFor(modelItem => item.Chassis_No) </td>
+
+    <td>@Html.DisplayFor(modelItem => item.SaleDate) </td>
+
+    <td>@Html.DisplayFor(modelItem => item.PriceTax) </td>
+
+    <td>@Html.DisplayFor(modelItem => item.AuctionFeeTax) </td>
+
+    <td>@Html.DisplayFor(modelItem => item.OfficeChargesTax) </td>
+
+    <td>@Html.DisplayFor(modelItem => item.Total) </td>
+
+
+
+</tr>}
+            }
+
+    </tbody>
+
+    <tfoot>
+        @if (Model.ReceivedTax_TTL != null)
+        {
+
+
+            foreach (TaxReport item in Model.ReceivedTax_TTL)
+            {
+<tr role="row">
+    <th>Total</th>
+    <th> </th>
+    <th>@item.PriceTax_ttl</th>
+    <th>@item.AuctionFeeTax_ttl</th>
+    <th>@item.OfficeChargesTax_ttl</th>
+
+    <th>@item.Total_ttl</th>
+
+
+
+
+</tr>}
+            }
+    </tfoot>
+
+
+</table>
+
+<div class="invoice-summary">
+
+    <div class="row">
+
+        <div class="col-lg-6 col-md-6">
+
+        </div>
+
+        <div class="col-lg-6 col-md-6 justify-content-end text-right">
+            @if (Model.ReceivedTax.Count() != 0)
+            {
+
+@Html.PagedListPager(Model.ReceivedTax, page => Url.Action("ReceivedTaxReport_Search", "Report", new { StartDate = ViewBag.StartDate_ReceivedReport, EndDate = ViewBag.EndDate_ReceivedReport, page })
+
+, X.PagedList.Mvc.Core.Common.PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new AjaxOptions()
+{
+    HttpMethod = "get",
+    UpdateTargetId = "ReceivedTaxReportSearch"
+})
+                )}
+        </div>
+    </div>
+
+</div>

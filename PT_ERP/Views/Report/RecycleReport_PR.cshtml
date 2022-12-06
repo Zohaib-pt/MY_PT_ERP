@@ -1,0 +1,161 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.oReports
+
+@{ Layout = null; }
+
+<!DOCTYPE HTML>
+<HTML>
+<head>
+
+    <!-- Basic -->
+    <meta charset="UTF-8">
+
+    <title>DealerSol | Dealers Management System</title>
+    <meta name="keywords" content="DearlerSol | Dealers Management System " />
+    <meta name="description" content="Vehicle Management System | Dealer Management System | Dealer ERP ">
+    <meta name="author" content="DealerSol.com">
+
+    <!-- Mobile Metas -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <!-- Favicon  -->
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+
+
+    <!-- Vendor CSS -->
+    <link rel="stylesheet" href="~/vendor/bootstrap/css/bootstrap.css" />
+
+
+    <style>
+        .moneycol {
+            text-align: right;
+        }
+
+        .controlheight {
+            height: 1px;
+            border: 1px solid #d3d3d3;
+            margin: 0px;
+        }
+
+            .controlheight table th, .table td {
+                padding: 5px;
+            }
+
+        .SumHeading {
+            background-color: #d3d3d3;
+            text-align: left;
+            font-weight: bold;
+            font-size: 16px
+        }
+
+        .ColHeading {
+            background-color: #d3d3d3;
+            font-size: 18px;
+            text-align: center
+        }
+    </style>
+
+
+</head>
+
+<BODY>
+
+
+    <div class="row">
+        <div class="col">
+            <section>
+                <header>
+                    <div class="row form-inline">
+                        <div class="col-md-12" style="text-align:center">
+
+                            <h3 style="color:black;">
+                                Recycle Report Print
+
+                            </h3>
+
+                        </div>
+
+
+                    </div>
+
+                </header>
+                <div>
+                    <table class="table table-bordered" @*id="datatable-default"*@>
+                        <thead>
+                            <tr class="ColHeading">
+
+                                <th>  Chassis_No </th>
+                                <th>Purchase Date </th>
+                                <th>Sale Date </th>
+                                <th>  Ref </th>
+                                <th>  RecycleFee_Out   </th>
+                                <th>  RecycleFee_In </th>
+
+
+
+                            </tr>
+                        </thead>
+                        <tbody>
+
+
+                            @if (Model.Recycle_PR != null)
+                            {
+
+
+                                foreach (RecycleReport item in Model.Recycle_PR)
+                                {
+                                    var Date = new string[4];
+                                    if (item.Date != "" && item.Date != null)
+                                    {
+                                        Date = item.Date.Split('/');
+
+                                    }
+
+
+                                    <tr>
+
+                                        <td class="controlheight ">@Html.DisplayFor(modelItem => item.Chassis_No) </td>
+                                        <td class="controlheight text-nowrap">@Html.DisplayFor(modelItem => @Date[0]) </td>
+                                        <td class="controlheight text-nowrap">@Html.DisplayFor(modelItem => @Date[1]) </td>
+                                        <td class="controlheight">@Html.DisplayFor(modelItem => item.Ref)</td>
+                                        <td class="controlheight moneycol">@Html.DisplayFor(modelItem => item.RecycleFee_Out) </td>
+                                        <td class="controlheight moneycol">@Html.DisplayFor(modelItem => item.RecycleFee_In) </td>
+
+
+                                    </tr>
+                                }
+
+
+
+                            }
+
+
+                        </tbody>
+
+                           <tfoot>
+
+
+                            @foreach (RecycleReport item in Model.Recycle_TTL_PR)
+                            {
+                               <tr>
+                                   <td class="ColHeading"><b>Total</b></td>
+                                   <td></td>
+                                   <td></td>
+                                   <td></td>
+                                   <td class="controlheight moneycol"><b>@Html.DisplayFor(modelItem => item.RecycleFee_Out_ttl)</b> </td>
+                                   <td class="controlheight moneycol"><b>@Html.DisplayFor(modelItem => item.RecycleFee_In_ttl)</b> </td>
+                               </tr>
+                            }
+
+                            </tfoot>
+
+
+
+                    </table>
+                </div>
+            </section>
+        </div>
+    </div>
+</BODY>
+</HTML>

@@ -1,0 +1,664 @@
+﻿@using DAL
+@using DAL.Models
+@using X.PagedList.Mvc.Core; @*//import this so we get our HTML Helper*@
+@using X.PagedList;  @*//import this so we can cast our list to IPagedList *@
+@model DAL.oClasses.OPurchases
+
+
+
+@{
+    ViewData["Title"] = "PurchaseList";
+    Layout = "~/Views/Shared/_LayoutTablePages.cshtml";
+}
+
+<header class="page-header">
+    <h2>Purchases</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+
+            <li><a><span>@ViewBag.BreadCumController</span></a></li>
+            <li><a asp-area="" asp-controller="@ViewBag.BreadCumController" asp-action="@ViewBag.BreadCumAction"><span>Purchase List</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+
+<div class="row">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+        <div class="col-lg-12">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-info">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Success!</strong> @TempData["Success"] <a href="" class="alert-link"></a>
+                </div>
+            }
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Error!</strong> @TempData["Error"] <a href="" class="alert-link"></a>
+                </div>
+            }
+        </div>
+    }
+
+
+</div>
+
+
+<!--Following 'LoaderImage' div is for showing ajax loader before ajax call-->
+<div class="imageGIFLoader" id="LoaderImage">
+    <img src="~/img/projects/ajax-loader.gif" class="img-responsive" style="width:65px; height:65px;" />
+</div>
+
+
+<div class="row">
+    <div class="col">
+        <section class="card">
+            <header class="card-header">
+
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <section class="card">
+                            <div class="card-body">
+                                <form method="get" data-ajax="true" data-ajax-complete="myCompleteSearch" data-ajax-success="mySuccessSearch" data-ajax-failure="myFailureSearch"
+                                      data-ajax-begin="myBeginSearch" asp-area="" asp-controller="Purchases" asp-action="GetPurchaseListBySearchFilers" data-ajax-loading="">
+
+
+                                    <div class="row form-group">
+
+                                        <div class="col-lg-2">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="From_Date">From Date</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                        </span>
+                                                    </span>
+
+                                                    <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="From_Date" name="From_Date">
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="col-lg-2">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="To_Date">To Date</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                        </span>
+                                                    </span>
+
+                                                    <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="To_Date" name="To_Date">
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                        <div class="col-lg-2">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="Project_ID">Ref</label>
+                                                <input type="text" id="PurchaseRef" name="PurchaseRef" class="form-control" placeholder="Ref" />
+
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-2">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="Vendor_ID">Vendor</label>
+                                                <select class="form-control" id="Vendor_ID" name="Vendor_ID" asp-items="@(new SelectList( ViewBag.VendorMaster,"Partner_ID","PartnerName"))">
+                                                    <option>Select</option>
+
+                                                </select>
+                                            </div>
+                                        </div>
+
+
+                                        <div class="col-lg-2">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="Color">Status</label>
+
+                                                <select class="form-control" id="Status_ID" name="Status_ID" asp-items="@(new SelectList( ViewBag.PurchaseStatus,"Status_ID","Status"))">
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                       
+
+                                        <partial name="~/Views/Shared/_CompanyWise.cshtml" />
+
+                                    </div>
+
+                                    <div class="row ">
+                                        <div class="col-lg">
+
+
+
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="Search"> &nbsp; </label>
+
+                                                <button type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-info">Search&nbsp;<i class="fas fa-search"></i></button>
+                                                <a class="mb-1 mt-1 mr-1 btn btn-sm btn-primary" asp-area="" asp-controller="Purchases" asp-action="NewPurchase">Add New&nbsp;<i class="fas fa-plus"></i></a>
+
+                                                <a type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-info" href="" id="print-btn">Print &nbsp;<i class="fas fa-print"></i></a>
+                                                <a type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-success" href="" id="export-btn">Export &nbsp;<i class="fas fa-file-excel"></i></a>
+
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                </form>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
+            </header>
+            <div class="card-body" id="TablePurchaseListSearch">
+
+
+                <div class="invoice-summary mb-1">
+
+                    <div class="row mb-1">
+
+                        <div class="col-lg-6 col-md-6 mb-1">
+                            <b>@ViewBag.RecordsPerPage</b> records per page
+                        </div>
+
+                        <div class="col-lg-6 col-md-6 mb-1 justify-content-end text-right">
+
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <table class="table table-bordered table-striped mb-0 mt-1" @*id="datatable-default"*@>
+                    <thead>
+                        <tr>
+
+
+
+
+                            <th>Ref</th>
+
+                            <th>Vendor</th>
+
+                            <th>Date</th>
+                            <th>Amount</th>
+                            <th>Tax</th>
+                            <th>Discount</th>
+                            <th>Total</th>
+
+                            <th>Paid</th>
+                            <th>Balance</th>
+                            <th @ViewBag.ApprovalVisibility>Status</th>
+                            <th @ViewBag.AttachmentVisibility>Attachments</th>
+                            <th>View</th>
+
+
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @if (Model.purchaseMasterIPagedList != null)
+                        {
+                            foreach (Pa_PurchaseMaster_DAL item in Model.purchaseMasterIPagedList)
+                            {
+
+                                //double Total = Convert.ToDouble(string.IsNullOrEmpty(item.BeforeVATTotal) == true ? "0" : item.BeforeVATTotal);
+                                //ViewBag.Total = Total;
+
+                                //double TotalVAT_Exp = Convert.ToDouble(string.IsNullOrEmpty(item.TotalVAT_Exp) == true ? "0" : item.TotalVAT_Exp);
+                                //ViewBag.vTotalVAT_Exp = TotalVAT_Exp;
+
+                                //double SumTotal_Amount = Convert.ToDouble(string.IsNullOrEmpty(item.AfterVATTotal) == true ? "0" : item.AfterVATTotal);
+                                //ViewBag.vSumTotal_Amount = SumTotal_Amount;
+
+                                //double Total_Paid = Convert.ToDouble(string.IsNullOrEmpty(item.TotalPaid) == true ? "0" : item.TotalPaid);
+                                //ViewBag.vTotal_Paid = Total_Paid;
+
+                                //double Total_Bal_Due = Convert.ToDouble(string.IsNullOrEmpty(item.TotalBal_due) == true ? "0" : item.TotalBal_due);
+                                //ViewBag.vTotal_Bal_Due = Total_Bal_Due;
+
+                                //double TotalDiscount = Convert.ToDouble(string.IsNullOrEmpty(item.TotalDiscount) == true ? "0" : item.TotalDiscount);
+                                //ViewBag.TotalDiscount = TotalDiscount;
+
+                        <tr>
+
+
+                            <td> <a asp-controller="Purchases" asp-action="NewPurchase" asp-route-PurchaseMaster_ID="@item.PurchaseMaster_ID"> @Html.DisplayFor(modelItem => item.PurchaseRef)</a></td>
+                            <td> <a asp-controller="Report" asp-action="VendorReport" asp-route-VendorID="@item.Vendor_ID"> @Html.DisplayFor(modelItem => item.Vendor_Name)</a></td>
+
+                            @*<td> @Html.DisplayFor(modelItem => item.Vendor_Name)</td>*@
+                           
+                            <td>
+                                @Html.DisplayFor(modelItem => item.PurchaseDate)
+
+                            </td>
+                            <td>@Html.DisplayFor(modelItem => item.Total)</td>
+
+
+                            <td>@Html.DisplayFor(modelItem => item.VAT_Exp)</td>
+
+                            <td>@Html.DisplayFor(modelItem => item.Discount) </td>
+
+                            <td>@Html.DisplayFor(modelItem => item.Total_Amount) </td>
+
+
+
+                            <td>@Html.DisplayFor(modelItem => item.Paid)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Bal_Due)</td>
+
+
+
+
+
+
+                            <td @ViewBag.ApprovalVisibility> @Html.DisplayFor(modelItem => item.PurchaseStatus)</td>
+                            <td @ViewBag.AttachmentVisibility> <a href="#" onclick="ShowAttachmentMaster('@item.PurchaseMaster_ID');">Manage Attachment</a> </td>
+                            <td> <a asp-controller="Purchases" asp-action="NewPurchase" asp-route-PurchaseMaster_ID="@item.PurchaseMaster_ID">View (@item.CountCars)</a></td>
+
+
+
+                        </tr>
+                            }
+                        }
+
+
+
+
+                    </tbody>
+
+                    <tfoot>
+                        @if (Model.purchaseMasterTotal != null)
+                        {
+                            foreach (Pa_PurchaseMaster_DAL item in Model.purchaseMasterTotal)
+                            {
+                                <tr role="row">
+
+
+                                    <th>Total</th>
+
+                                    <th></th>
+
+                                    <th></th>
+                                    <th>@item.Total</th>
+
+                                    <th>@item.TotalVAT_Exp</th>
+                                    <th>@item.TotalDiscount</th>
+
+                                    <th>@item.Total_Amount</th>
+
+
+                                    <th>@item.TotalPaid</th>
+                                    <th>@item.TotalBal_due</th>
+
+
+                                    <th @ViewBag.ApprovalVisibility></th>
+                                    <th @ViewBag.AttachmentVisibility></th>
+                                    <th></th>
+
+                                </tr>
+
+                              
+
+                            }
+                        }
+                    </tfoot>
+
+
+                </table>
+
+
+                <div class="invoice-summary">
+
+                    <div class="row">
+
+                        <div class="col-lg-6 col-md-6">
+
+                        </div>
+
+                        <div class="col-lg-6 col-md-6 justify-content-end text-right">
+
+                            @if (Model.purchaseMasterIPagedList.Count() != 0)
+                            {
+
+                                @Html.PagedListPager(Model.purchaseMasterIPagedList, page => Url.Action("GetPurchaseListBySearchFilers", "Purchases", new { PurchaseRef = ViewBag.PurchaseRef_PurchaseList, Vendor_ID = ViewBag.Vendor_ID_PurchaseList, From_Date = ViewBag.From_Date_PurchaseList, To_Date = ViewBag.To_Date_PurchaseList, Status_ID = ViewBag.Status_ID_PurchaseList,  ChassisNo = ViewBag.ChassisNo_PurchaseList , c_ID = ViewBag.c_ID_PurchaseList, page })
+
+    , X.PagedList.Mvc.Core.Common.PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new AjaxOptions()
+    {
+        HttpMethod = "get",
+        UpdateTargetId = "TablePurchaseListSearch"
+    })
+                                )
+                            }
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+    </div>
+</div>
+
+
+
+<!-- Modal show attachment -->
+<div class="modal fade bs-modal-lg" id="ShowAttachmentMasterModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <!-- Following fields is for making a central purchase master id for attachments -->
+        <input type="hidden" id="PurchaseMasterMain" name="PurchaseMasterMain" />
+
+        <div class="modal-content" id="AttachmentsPurchaseMaster">
+
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                Delete Attachment
+            </div>
+            <div class="modal-body">
+                Are you sure do you want to delete this Attachment?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Cancel</button>
+                <a class="btn btn-danger btn-sm btn-ok">Delete</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+@section Scripts{
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
+
+    <script src="~/js/Swal/swal.js"></script>
+    <link href="~/css/Swal/Swal.css" rel="stylesheet" />
+
+
+
+
+    <script>
+
+        function myBeginSearch() {
+            $("#LoaderImage").css("visibility", "visible");
+        }
+
+        function mySuccessSearch(data) {
+
+            debugger
+            if (data.message == undefined) {
+
+                $('#TablePurchaseListSearch').html(data);
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        function myFailureSearch() {
+
+            alert("Failured occured. Please try again!");
+            $("#LoaderImage").css("visibility", "hidden");
+        }
+
+        function myCompleteSearch() {
+            $("#LoaderImage").css("visibility", "hidden");
+
+        }
+
+
+    </script>
+
+    <script>
+    //---show attachment popup
+    function ShowAttachmentMaster(PurchaseMaster_ID) {
+        debugger
+        var TeamDetailPostBackURL = '/Purchases/GetPurchaseMasterNew_Attachments';
+
+        //--assign value to PurchaseMaster_ID hidden field in the main. Dont remove this fields
+        $("#PurchaseMasterMain").val(PurchaseMaster_ID);
+
+
+        if (!PurchaseMaster_ID) {
+            alert("ID is null. Please try again!");
+        } else {
+            $.ajax({
+                type: "GET",
+                url: TeamDetailPostBackURL,
+                contentType: "application/json; charset=utf-8",
+                data: { "PurchaseMaster_ID": PurchaseMaster_ID },
+                datatype: "json",
+                success: function (data) {
+
+
+                    if (data.message == undefined) {
+                        $('#AttachmentsPurchaseMaster').html(data);
+
+
+                        //--assign value to PurchaseMaster_ID hidden field. this field is in partial view '_PurchaseListAttachment'
+                        $("#PurchaseMaster_ID_Attachment").val(PurchaseMaster_ID);
+
+                        $('#ShowAttachmentMasterModal').modal('show');
+
+                    } else {
+                        alert(data.message);
+                        $('#ShowAttachmentMasterModal').modal('hide');
+                    }
+
+                },
+                error: function () {
+                    alert("Dynamic content load failed.");
+                }
+            });
+        }
+
+
+
+    }
+
+
+    //---after successfull submission of attachment
+    function mySuccessAttachment(data) {
+
+        debugger
+        if (data.message == undefined) {
+
+
+            $('#AttachmentsPurchaseMaster').html(data);
+
+            //---assign id of purchase master to the hidden field PurchaseMaster_ID_Attachment after partial view refresh
+            var PurchaseMaster_ID = document.getElementById("PurchaseMasterMain").value;
+            $("#PurchaseMaster_ID_Attachment").val(PurchaseMaster_ID);
+
+
+
+        } else {
+            alert(data.message);
+
+        }
+
+
+    }
+
+    //---if error occured in insertion of attachment
+    function myFailureAttachment() {
+
+        alert("Failured occured. Please try again!");
+
+    }
+
+
+
+
+        function DeleteAttachment(Attachment_ID, Master_ID, Type, File_Name) {
+
+            swal({
+                title: "Delete Purchase Attachment",
+
+                text: " Are you sure do you want to delete this Attachment? \n",
+
+                showCancelButton: true,
+                confirmButtonColor: "#0088CC",
+                confirmButtonText: "Confirm",
+
+                closeOnConfirm: true
+            },
+                function (isConfirm) {
+                    if (isConfirm) {
+                        var TeamDetailPostBackURL = '/Purchases/DeleteAttachmentPurchaseNew';
+
+                        //--in this function , the 'Type' is for the field in attachment table for specifying different voucher documents
+
+                        var PurchaseMaster_ID = Master_ID;
+                        if (!PurchaseMaster_ID) {
+                            alert("Attachment ID is null. Please try again!");
+                        } else {
+                            $.ajax({
+                                type: "GET",
+                                url: TeamDetailPostBackURL,
+                                contentType: "application/json; charset=utf-8",
+                                data: { "PurchaseMaster_ID": PurchaseMaster_ID, "Attachment_ID": Attachment_ID, "Type": Type, "File_Name": File_Name },
+                                datatype: "json",
+                                success: function (data) {
+
+
+                                    if (data.message == undefined) {
+                                        $('#AttachmentsPurchaseMaster').html(data);
+
+
+                                        //--assign value to PurchaseMaster_ID hidden field. this field is in partial view '_SalesInvoiceAttachment'
+                                        $("#PurchaseMaster_ID_Attachment").val(PurchaseMaster_ID);
+
+
+
+                                    } else {
+                                        alert(data.message);
+                                        //$('#ShowAttachmentMasterModal').modal('hide');
+                                    }
+
+                                },
+                                error: function () {
+                                    alert("Dynamic content load failed.");
+                                }
+                            });
+                        }
+                    }
+                });
+
+
+
+
+
+
+
+
+
+
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    $(document).ready(function(){
+    $("#print-btn").click(function(event){
+        event.preventDefault();
+
+        var win = window.open("@Url.Action("PurchaseList_print", "Report")" + "?From_Date=" + $("#From_Date").val() + "&To_Date=" + $("#To_Date").val()  + "&PurchaseRef=" + $("#PurchaseRef").val() + "&Vendor_ID=" + $("#Vendor_ID").val() + "&Status_ID=" + $("#Status_ID").val() + "&c_ID=" + $("#c_ID").val() , "_blank");
+        win.focus();
+    });
+        })
+$(document).ready(function(){
+    $("#export-btn").click(function(event){
+       event.preventDefault();
+        window.location.href = "@Url.Action("PurchaseList_Excel", "Report")" + "?From_Date=" + $("#From_Date").val() + "&To_Date=" + $("#To_Date").val()  +"&PurchaseRef=" + $("#PurchaseRef").val() + "&Vendor_ID=" + $("#Vendor_ID").val() + "&Status_ID=" + $("#Status_ID").val() + "&c_ID=" + $("#c_ID").val();
+    });
+})
+
+    </script>
+    <script type="text/javascript">
+
+
+
+
+        function SuccessDelete(data) {
+
+            var SuccessDiv = " <div class='col-lg-12'><div class='alert alert-info'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button><strong>Success!</strong> Deleted Successfully! <a href='' class='alert-link'></a></div></div>";
+            debugger
+            if (data.message == undefined) {
+                //alert("Saved Successfully!");
+                $('#confirm-delete').modal('hide');
+                $('#AttachmentsPurchaseMaster').html(data);
+                $('#SuccessErrorSection').html(SuccessDiv).show();;
+
+
+                CalculateSumTotalOfStock();
+
+
+            } else {
+                alert(data.message);
+                $('#confirm-delete').modal('hide');
+            }
+
+
+        }
+
+        function FailureDelete() {
+
+            alert("Failured occured. Please try again!");
+            $('#confirm-delete').modal('hide');
+        }
+
+
+
+    </script>
+
+
+
+}

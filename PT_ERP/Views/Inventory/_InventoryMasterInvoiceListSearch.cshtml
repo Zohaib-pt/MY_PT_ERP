@@ -1,0 +1,110 @@
+﻿@using DAL
+@using DAL.Models
+@using X.PagedList.Mvc.Core; @*//import this so we get our HTML Helper*@
+@using X.PagedList;  @*//import this so we can cast our list to IPagedList *@
+
+
+
+
+
+
+
+<div class="invoice-summary mb-1">
+
+    <div class="row mb-1">
+
+        <div class="col-lg-6 col-md-6 mb-1">
+            <b>@ViewBag.RecordsPerPage</b> records per page
+        </div>
+
+        <div class="col-lg-6 col-md-6 mb-1 justify-content-end text-right">
+
+        </div>
+    </div>
+
+</div>
+
+<table class="table table-bordered table-striped mb-0 mt-1" @*id="datatable-default"*@>
+    <thead>
+        <tr>
+
+
+
+
+            <th>Ref</th>
+
+            <th>P_Date</th>
+            <th>FormulaName</th>
+            <th>ItemID</th>
+            <th>Created_At</th>
+
+            <th>View</th>
+
+
+
+
+
+        </tr>
+    </thead>
+    <tbody>
+
+
+        @if (Model.ProductFormulaMasterList != null)
+        {
+            foreach (pa_ProductFormulaMaster_DAL item in Model.ProductFormulaMasterList)
+            {
+
+                <tr>
+
+
+
+                    <td> <a asp-controller="Inventory" asp-action="NewProductFormula" asp-route-Formula_ID="@item.Formula_ID">@Html.DisplayFor(modelItem => item.Ref)</a></td>
+                    <td>@Html.DisplayFor(modelItem => item.P_Date)</td>
+
+                    <td>@Html.DisplayFor(modelItem => item.FormulaName)</td>
+                    <td>@Html.DisplayFor(modelItem => item.ItemID)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Created_At)</td>
+
+                    <td> <a asp-controller="Inventory" asp-action="NewProductFormula" asp-route-Formula_ID="@item.Formula_ID">View</a></td>
+                    @*<td>@Html.DisplayFor(modelItem => item.Modified_at)</td>*@
+
+
+
+
+
+                </tr>
+            }
+        }
+
+
+
+
+
+    </tbody>
+
+</table>
+
+<div class="invoice-summary">
+
+    <div class="row">
+
+        <div class="col-lg-6 col-md-6">
+
+        </div>
+        <div class="col-lg-6 col-md-6 justify-content-end text-right">
+            @*@if (Model.ProductFormulaMasterList.Count() != 0)
+            {
+
+                @Html.PagedListPager(Model.ProductFormulaMasterList, page => Url.Action("GetInventoryMasterInvoiceListBySearchFilers", "Inventory", new { Ref = ViewBag.Ref_ProductFormula, StartDate = ViewBag.StartDate_ProductFormula, EndDate = ViewBag.EndDate_ProductFormula, cID = ViewBag.c_ID_ProductFormula, page })
+              , X.PagedList.Mvc.Core.Common.PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new AjaxOptions()
+{
+    HttpMethod = "get",
+    UpdateTargetId = "InventoryInvoiceListSearch"
+})
+                )
+            }*@
+
+        </div>
+    </div>
+
+</div>

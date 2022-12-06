@@ -1,0 +1,148 @@
+﻿
+@using DAL
+@using DAL.Models
+@using X.PagedList.Mvc.Core; @*//import this so we get our HTML Helper*@
+@using X.PagedList;  @*//import this so we can cast our list to IPagedList *@
+@model DAL.oClasses.OStock
+
+
+<div class="invoice-summary mb-1">
+
+    <div class="row mb-1">
+
+        <div class="col-lg-6 col-md-6 mb-1">
+            <b>@ViewBag.RecordsPerPage</b> records per page
+        </div>
+
+        <div class="col-lg-6 col-md-6 mb-1 justify-content-end text-right">
+
+        </div>
+    </div>
+
+</div>
+
+
+<table class="table table-bordered table-striped mb-0 mt-1" @*id="datatable-default"*@>
+    <thead>
+        <tr>
+
+            <th> Ref </th>
+            <th> Date </th>
+            <th> Vendor Name </th>
+            <th> Total </th>
+            <th> Paid </th>
+            <th> Balance </th>
+
+       
+
+            <th>View</th>
+
+
+
+
+        </tr>
+    </thead>
+    <tbody>
+
+        @if (Model.PurchaseMasterList != null)
+        {
+            foreach (Pa_PurchaseMaster_DAL item in Model.PurchaseMasterList)
+            {
+
+                //double vTotalAmount = Convert.ToDouble(item.Total_Amount);
+
+                //ViewBag.VTotalAmount = vTotalAmount;
+
+                //double vpaid = Convert.ToDouble(item.Paid);
+
+                //ViewBag.VPaid = vpaid;
+
+                //double vBalance = Convert.ToDouble(item.Bal_Due);
+
+                //if (vBalance != 0)
+                //{
+                //    if (ViewBag.VBalance != null)
+                //    {
+                //        ViewBag.VBalance = vBalance + Convert.ToDouble(ViewBag.VBalance);
+                //    }
+                //    else
+                //    {
+                //        ViewBag.VBalance = vBalance;
+                //    }
+
+
+
+                //}
+        <tr style='color: @(item.PurchaseStatus_ID == "5" ? "red" : "black");'>
+
+
+            <td> <a asp-controller="Stock" asp-action="NewPurchaseMasterJP" asp-route-PurchaseMaster_ID="@item.PurchaseMaster_ID"> @Html.DisplayFor(modelItem => item.PurchaseRef)</a></td>
+
+
+            <td>@Html.DisplayFor(modelItem => item.PurchaseDate)</td>
+            <td>@Html.DisplayFor(modelItem => item.Vendor_Name)</td>
+            <td>@Html.DisplayFor(modelItem => item.Total_Amount)</td>
+            <td>@Html.DisplayFor(modelItem => item.Paid)</td>
+
+            <td>@Html.DisplayFor(modelItem => item.Bal_Due)</td>
+                       <td> <a asp-controller="Stock" asp-action="NewPurchaseMasterJP" asp-route-PurchaseMaster_ID="@item.PurchaseMaster_ID">View (@item.CountCars)</a></td>
+        </tr>
+            }
+        }
+
+
+
+
+    </tbody>
+
+    <tfoot>
+        <tr role="row">
+
+            @if (Model.purchaseMasterTotal != null)
+            {
+                foreach (Pa_PurchaseMaster_DAL item in Model.purchaseMasterTotal)
+                {
+
+                    <th>Total</th>
+                    <th></th>
+                    <th></th>
+                   <th>@item.Total_Amount</th>
+                            <th>@item.Paid</th>
+                            <th>@item.Bal_Due</th>
+
+                    <th></th>
+                }
+            }
+
+
+        </tr>
+    </tfoot>
+
+
+</table>
+
+
+<div class="invoice-summary">
+
+    <div class="row">
+
+        <div class="col-lg-6 col-md-6">
+
+        </div>
+
+        <div class="col-lg-6 col-md-6 justify-content-end text-right">
+
+            @if (Model.PurchaseMasterList.Count() != 0)
+            {
+                @Html.PagedListPager(Model.PurchaseMasterList, page => Url.Action("PurchaseListJP_BySearchFilers", "Stock", new { PurchaseRef = ViewBag.PurchaseRef_PurchaseList, Vendor_ID = ViewBag.Vendor_ID_PurchaseList, From_Date = ViewBag.From_Date_PurchaseList, To_Date = ViewBag.To_Date_PurchaseList, ChassisNo = ViewBag.ChassisNo_PurchaseList, Status_ID = ViewBag.Status_ID_PurchaseList, c_ID = ViewBag.c_ID_PurchaseList, page })
+
+                                   , X.PagedList.Mvc.Core.Common.PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new AjaxOptions()
+                                   {
+                                       HttpMethod = "get",
+                                       UpdateTargetId = "TablePurchaseListSearch"
+                                   })
+                                   )}
+        </div>
+    </div>
+
+</div>

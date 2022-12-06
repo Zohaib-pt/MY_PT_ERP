@@ -1,0 +1,1339 @@
+﻿
+
+
+@using DAL
+@using DAL.Models
+@model DAL.oClasses.OBasicData
+
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+
+@{ Layout = "~/Views/Shared/_LayoutTablePages.cshtml";
+    string Show = @Configuration.GetSection("AppSettings").GetSection("ItemCode_Readonly").Value; }
+
+
+
+<style>
+
+    /* line 1, ../scss/core.scss */
+    .select2-selection--multiple {
+        overflow: hidden !important;
+        height: auto !important;
+    }
+
+    .select2-container {
+        box-sizing: border-box;
+        display: inline-block;
+        margin: 0;
+        position: relative;
+        vertical-align: middle;
+    }
+        /* line 1, ../scss/_single.scss */
+        .select2-container .select2-selection--single {
+            box-sizing: border-box;
+            cursor: pointer;
+            display: block;
+            height: 38px;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+            /* line 12, ../scss/_single.scss */
+            .select2-container .select2-selection--single .select2-selection__rendered {
+                display: block;
+                padding-left: 8px;
+                padding-right: 20px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+        /* line 25, ../scss/_single.scss */
+        .select2-container[dir="rtl"] .select2-selection--single .select2-selection__rendered {
+            padding-right: 8px;
+            padding-left: 20px;
+        }
+        /* line 1, ../scss/_multiple.scss */
+
+        .select2-container .select2-selection--multiple {
+            box-sizing: border-box;
+            cursor: pointer;
+            display: block;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+            /* line 12, ../scss/_multiple.scss */
+            .select2-container .select2-selection--multiple .select2-selection__rendered {
+                display: inline-block;
+                overflow: hidden;
+                padding-left: 8px;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+        /* line 21, ../scss/_multiple.scss */
+        .select2-container .select2-search--inline {
+            float: left;
+        }
+            /* line 24, ../scss/_multiple.scss */
+            .select2-container .select2-search--inline .select2-search__field {
+                box-sizing: border-box;
+                border: none;
+                font-size: 100%;
+                margin-top: 3px;
+                margin-left: 3px;
+            }
+                /* line 31, ../scss/_multiple.scss */
+                .select2-container .select2-search--inline .select2-search__field::-webkit-search-cancel-button {
+                    -webkit-appearance: none;
+                }
+
+    /* line 1, ../scss/_dropdown.scss */
+    .select2-dropdown {
+        background-color: white;
+        border: 1px solid #DDD;
+        border-radius: 4px;
+        box-sizing: border-box;
+        display: block;
+        position: absolute;
+        left: -100000px;
+        width: 100%;
+        z-index: 1051;
+    }
+
+    /* line 18, ../scss/_dropdown.scss */
+    .select2-results {
+        display: block;
+    }
+
+    /* line 22, ../scss/_dropdown.scss */
+    .select2-results__options {
+        list-style: none;
+        list-style-type: none !important;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* line 28, ../scss/_dropdown.scss */
+    .select2-results__option {
+        padding: 6px;
+        user-select: none;
+        -webkit-user-select: none;
+    }
+        /* line 34, ../scss/_dropdown.scss */
+        .select2-results__option[aria-selected] {
+            cursor: pointer;
+        }
+
+    /* line 39, ../scss/_dropdown.scss */
+    .select2-container--open .select2-dropdown {
+        left: 0;
+    }
+
+    /* line 43, ../scss/_dropdown.scss */
+    .select2-container--open .select2-dropdown--above {
+        border-bottom: none;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+
+    /* line 49, ../scss/_dropdown.scss */
+    .select2-container--open .select2-dropdown--below {
+        border-top: none;
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+    }
+
+    /* line 55, ../scss/_dropdown.scss */
+    .select2-search--dropdown {
+        display: block;
+        padding: 7px;
+    }
+        /* line 59, ../scss/_dropdown.scss */
+        .select2-search--dropdown .select2-search__field {
+            padding: 4px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+            /* line 64, ../scss/_dropdown.scss */
+            .select2-search--dropdown .select2-search__field::-webkit-search-cancel-button {
+                -webkit-appearance: none;
+            }
+        /* line 69, ../scss/_dropdown.scss */
+        .select2-search--dropdown.select2-search--hide {
+            display: none;
+        }
+
+    /* line 15, ../scss/core.scss */
+    .select2-close-mask {
+        border: 0;
+        margin: 0;
+        padding: 0;
+        display: block;
+        position: fixed;
+        left: 0;
+        top: 0;
+        min-height: 100%;
+        min-width: 100%;
+        height: auto;
+        width: auto;
+        opacity: 0;
+        z-index: 99;
+        background-color: #fff;
+        filter: alpha(opacity=0);
+    }
+
+    /* line 1, ../scss/theme/default/_single.scss */
+    .select2-container--default .select2-selection--single {
+        background-color: #f0f0f0;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 2px;
+    }
+        /* line 6, ../scss/theme/default/_single.scss */
+        .select2-container--default .select2-selection--single:focus {
+            outline: 0;
+        }
+        /* line 10, ../scss/theme/default/_single.scss */
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            color: #444;
+            line-height: 34px;
+        }
+        /* line 15, ../scss/theme/default/_single.scss */
+        .select2-container--default .select2-selection--single .select2-selection__clear {
+            cursor: pointer;
+            float: right;
+            font-weight: bold;
+        }
+        /* line 21, ../scss/theme/default/_single.scss */
+        .select2-container--default .select2-selection--single .select2-selection__placeholder {
+            color: #999;
+        }
+        /* line 25, ../scss/theme/default/_single.scss */
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 36px;
+            position: absolute;
+            top: 1px;
+            right: 1px;
+            width: 20px;
+        }
+            /* line 35, ../scss/theme/default/_single.scss */
+            .select2-container--default .select2-selection--single .select2-selection__arrow b {
+                border-color: #888 transparent transparent transparent;
+                border-style: solid;
+                border-width: 5px 4px 0 4px;
+                height: 0;
+                left: 50%;
+                margin-left: -4px;
+                margin-top: -2px;
+                position: absolute;
+                top: 50%;
+                width: 0;
+            }
+    /* line 56, ../scss/theme/default/_single.scss */
+    .select2-container--default[dir="rtl"] .select2-selection--single .select2-selection__clear {
+        float: left;
+    }
+    /* line 60, ../scss/theme/default/_single.scss */
+    .select2-container--default[dir="rtl"] .select2-selection--single .select2-selection__arrow {
+        left: 1px;
+        right: auto;
+    }
+    /* line 68, ../scss/theme/default/_single.scss */
+    .select2-container--default.select2-container--disabled .select2-selection--single {
+        background-color: #eee;
+        cursor: default;
+    }
+        /* line 72, ../scss/theme/default/_single.scss */
+        .select2-container--default.select2-container--disabled .select2-selection--single .select2-selection__clear {
+            display: none;
+        }
+    /* line 81, ../scss/theme/default/_single.scss */
+    .select2-container--default.select2-container--open .select2-selection--single .select2-selection__arrow b {
+        border-color: transparent transparent #888 transparent;
+        border-width: 0 4px 5px 4px;
+    }
+    /* line 1, ../scss/theme/default/_multiple.scss */
+    .select2-container--default .select2-selection--multiple {
+        background-color: #ffffff;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        -webkit-border-radius: 2px;
+        border-radius: 2px;
+        cursor: text;
+        height: 22px;
+    }
+        /* line 7, ../scss/theme/default/_multiple.scss */
+        .select2-container--default .select2-selection--multiple .select2-selection__rendered {
+            box-sizing: border-box;
+            list-style: none;
+            list-style-type: none !important;
+            padding: 0 0 0 4px !important;
+            margin: 0;
+            padding: 0 5px;
+            width: 100%;
+        }
+        /* line 15, ../scss/theme/default/_multiple.scss */
+        .select2-container--default .select2-selection--multiple .select2-selection__placeholder {
+            color: #999;
+            margin-top: 5px;
+            float: left;
+        }
+        /* line 23, ../scss/theme/default/_multiple.scss */
+        .select2-container--default .select2-selection--multiple .select2-selection__clear {
+            cursor: pointer;
+            float: right;
+            font-weight: bold;
+            margin-top: px;
+            margin-right: 2px;
+        }
+        /* line 31, ../scss/theme/default/_multiple.scss */
+        .select2-container--default .select2-selection--multiple .select2-selection__choice {
+            color: #ffffff;
+            background-color: #4a89dc;
+            // border: 1px solid #ddd;
+            border-radius: 2px;
+            cursor: default;
+            float: left;
+            margin-right: 5px;
+            margin-top: 1px;
+            padding: 1px 2px 2px !important;
+        }
+        /* line 46, ../scss/theme/default/_multiple.scss */
+        .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+            color: #fff;
+            cursor: pointer;
+            display: inline-block;
+            font-weight: bold;
+            margin-right: 2px;
+        }
+            /* line 55, ../scss/theme/default/_multiple.scss */
+            .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+                color: #333;
+            }
+    /* line 63, ../scss/theme/default/_multiple.scss */
+    .select2-container--default[dir="rtl"] .select2-selection--multiple .select2-selection__choice, .select2-container--default[dir="rtl"] .select2-selection--multiple .select2-selection__placeholder {
+        float: right;
+    }
+    /* line 67, ../scss/theme/default/_multiple.scss */
+    .select2-container--default[dir="rtl"] .select2-selection--multiple .select2-selection__choice {
+        margin-left: 5px;
+        margin-right: auto;
+    }
+    /* line 72, ../scss/theme/default/_multiple.scss */
+    .select2-container--default[dir="rtl"] .select2-selection--multiple .select2-selection__choice__remove {
+        margin-left: 2px;
+        margin-right: auto;
+    }
+    /* line 80, ../scss/theme/default/_multiple.scss */
+    .select2-container--default.select2-container--focus .select2-selection--multiple {
+        border: 1px solid #CCC;
+        outline: 0;
+    }
+    /* line 87, ../scss/theme/default/_multiple.scss */
+    .select2-container--default.select2-container--disabled .select2-selection--multiple {
+        background-color: #eee;
+        cursor: default;
+    }
+    /* line 92, ../scss/theme/default/_multiple.scss */
+    .select2-container--default.select2-container--disabled .select2-selection__choice__remove {
+        display: none;
+    }
+    /* line 6, ../scss/theme/default/layout.scss */
+    .select2-container--default.select2-container--open.select2-container--above .select2-selection--single, .select2-container--default.select2-container--open.select2-container--above .select2-selection--multiple {
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+    }
+    /* line 13, ../scss/theme/default/layout.scss */
+    .select2-container--default.select2-container--open.select2-container--below .select2-selection--single, .select2-container--default.select2-container--open.select2-container--below .select2-selection--multiple {
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+    /* line 20, ../scss/theme/default/layout.scss */
+    .select2-container--default .select2-search--dropdown .select2-search__field {
+        border: 1px solid #DDD;
+    }
+        /* line 22, ../scss/theme/default/layout.scss */
+        .select2-container--default .select2-search--dropdown .select2-search__field:focus {
+            outline: 0;
+        }
+    /* line 29, ../scss/theme/default/layout.scss */
+    .select2-container--default .select2-search--inline .select2-search__field {
+        background: transparent;
+        border: none;
+        outline: 0;
+    }
+    /* line 36, ../scss/theme/default/layout.scss */
+    .select2-container--default .select2-results > .select2-results__options {
+        max-height: 200px;
+        overflow-y: auto;
+        padding: 2px !important;
+    }
+    /* line 42, ../scss/theme/default/layout.scss */
+    .select2-container--default .select2-results__option[role=group] {
+        padding: 0;
+    }
+    /* line 46, ../scss/theme/default/layout.scss */
+    .select2-container--default .select2-results__option[aria-disabled=true] {
+        color: #999;
+    }
+    /* line 50, ../scss/theme/default/layout.scss */
+    .select2-container--default .select2-results__option[aria-selected=true] {
+        background-color: #EEE;
+    }
+    /* line 54, ../scss/theme/default/layout.scss */
+    .select2-container--default .select2-results__option .select2-results__option {
+        padding-left: 1em;
+    }
+        /* line 57, ../scss/theme/default/layout.scss */
+        .select2-container--default .select2-results__option .select2-results__option .select2-results__group {
+            padding-left: 0;
+        }
+        /* line 61, ../scss/theme/default/layout.scss */
+        .select2-container--default .select2-results__option .select2-results__option .select2-results__option {
+            margin-left: -1em;
+            padding-left: 2em;
+        }
+            /* line 65, ../scss/theme/default/layout.scss */
+            .select2-container--default .select2-results__option .select2-results__option .select2-results__option .select2-results__option {
+                margin-left: -2em;
+                padding-left: 3em;
+            }
+                /* line 69, ../scss/theme/default/layout.scss */
+                .select2-container--default .select2-results__option .select2-results__option .select2-results__option .select2-results__option .select2-results__option {
+                    margin-left: -3em;
+                    padding-left: 4em;
+                }
+                    /* line 73, ../scss/theme/default/layout.scss */
+                    .select2-container--default .select2-results__option .select2-results__option .select2-results__option .select2-results__option .select2-results__option .select2-results__option {
+                        margin-left: -4em;
+                        padding-left: 5em;
+                    }
+                        /* line 77, ../scss/theme/default/layout.scss */
+                        .select2-container--default .select2-results__option .select2-results__option .select2-results__option .select2-results__option .select2-results__option .select2-results__option .select2-results__option {
+                            margin-left: -5em;
+                            padding-left: 6em;
+                        }
+    /* line 88, ../scss/theme/default/layout.scss */
+    .select2-container--default .select2-results__option--highlighted[aria-selected] {
+        background-color: #4a89dc;
+        color: white;
+    }
+    /* line 93, ../scss/theme/default/layout.scss */
+    .select2-container--default .select2-results__group {
+        cursor: default;
+        display: block;
+        padding: 6px;
+    }
+</style>
+
+<header class="page-header">
+    <h2>Basic Data</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+            <li><a asp-area="" asp-controller="BasicData" asp-action="Make"><span>Inventory List</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+
+<div class="row">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+<div class="col-lg-12">
+    @if (TempData["Success"] != null)
+    {
+<div class="alert alert-info">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+    <strong>Success!</strong> @TempData["Success"] <a href="" class="alert-link"></a>
+</div>}
+
+    @if (TempData["Error"] != null)
+    {
+<div class="alert alert-danger">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+    <strong>Error!</strong> @TempData["Error"] <a href="" class="alert-link"></a>
+</div>}
+</div>}
+
+
+</div>
+
+<div class="row">
+    <div class="col">
+        <section class="card">
+            <header class="card-header">
+
+                <div class="row">
+                    <div class="col-lg-6">
+                        <h2 class="card-title" style="line-height:normal;">Inventory</h2>
+                    </div>
+                    <div class="col-lg-6" style="text-align:right;">
+                        <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#AddMakeModal">Add Inventory &nbsp;<i class="fas fa-plus"></i></button>
+                        <button type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-info" id="print-btn">Print &nbsp;<i class="fas fa-print"></i></button>
+                        <button type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-success" id="export-btn">Export &nbsp;<i class="fas fa-file-excel"></i></button>
+
+
+                    </div>
+                </div>
+
+            </header>
+            <div class="card-body">
+
+
+
+                <table class="table table-bordered table-striped mb-0" id="datatable-default">
+                    <thead>
+                        <tr>
+
+
+                            <th>Edit/Delete</th>
+                            <th>Item Code</th>
+
+                            <th>ItemName</th>
+
+
+                            <th>Compatible Years</th>
+                            <th>Engine Specs</th>
+
+                            <th>PO(Qty)</th>
+                            <th>PR(Qty)</th>
+                            <th>Sale(Qty)</th>
+                            <th>Delivered(Qty)</th>
+                            <th>Return(Qty)</th>
+                            <th>Avaible(Qty)</th>
+                            <th>UnitPrice</th>
+                            <th>ItemGroup</th>
+                            <th>ItemCategory</th>
+
+
+
+
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @if (Model.InventryMasterList != null)
+                        {
+                            foreach (Pa_Inventry_DAL item in Model.InventryMasterList)
+                            {
+
+            <tr>
+
+                <td>
+                    <a onclick="UpdateInventory('@item.Item_ID','@item.ItemCode','@item.Group_ID','@item.Category_ID','@item.UOM', '@item.ItemName', '@item.ItemDescription', '@item.IsSerializable', '@item.BarCode', '@item.UnitPrice', '@item.SalePrice', '@item.CostMethod', '@item.Comment', '@item.Traditional', '@item.Transmission', '@item.FUEL_TYPE', '@item.Drive', '@item.StartYear', '@item.EndYear', '@item.OpeningBal')" data-toggle="modal"
+                       data-target="#UpdateMakeModal"><img style="width: 20px;" src="~/Img/Icons/edit.png" /></a>
+                    <a onclick="DeleteInventory('@item.Item_ID')" data-toggle="modal" data-target="#DeleteMakeModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.ItemCode)
+                </td>
+
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.ItemName)
+                </td>
+
+
+
+
+
+
+
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.Year)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EngineSpecsCode)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Purchase_Qty)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Received_Qty)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Sold_Qty)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Delivered_Qty)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Return_Qty)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.InHand_Qty)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UnitPrice)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.GroupName)
+
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CategoryName)
+                </td>
+
+            </tr>
+}
+    }
+
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</div>
+
+
+
+<!-- Model Add Inventory -->
+<div class="modal fade bs-modal-sm in" id="AddMakeModal" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Add </h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="BasicData" asp-action="AddInventryParts">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body">
+
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+
+
+                                        <label class="col-form-label" for="Project_ID">Item Code</label>
+                                        <input type="text" class="form-control" id="ItemCode" name="ItemCode" @Show>
+                                    </div>
+                                </div>
+
+
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">ItemName</label>
+
+                                        <input type="text" class="form-control" id="ItemName" name="ItemName">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+
+
+                                        <label class="col-form-label" for="Project_ID">Traditional</label>
+                                        <input type="text" class="form-control" id="Traditional" name="Traditional">
+
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">ItemDescription</label>
+
+
+                                        <textarea class="form-control" id="ItemDescription" name="ItemDescription" rows="2"></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Group">Item Group</label>
+
+                                        <select class="form-control" id="Group_ID" name="Group_ID" asp-items="@(new SelectList( ViewBag.ItemGroupList,"Group_ID","Group_Name"))" required >
+
+                                            <option value=""></option>
+
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Category">Item Category</label>
+
+                                        <select class="form-control" id="Category_ID" name="Category_ID" asp-items="@(new SelectList( ViewBag.ItemCategoryList,"Category_ID","Category_Name"))" required>
+
+                                            <option value=""></option>
+
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="FUEL_TYPE">Fuel</label>
+
+                                        <select class="form-control" name="FUEL_TYPE" id="FUEL_TYPE">
+                                            <option value=""></option>
+                                            <option value="PETROL">PETROL</option>
+                                            <option value="DEISEL">DEISEL</option>
+
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Transmission">Transmission</label>
+
+                                        <select class="form-control" name="Transmission" id="Transmission">
+                                            <option value=""></option>
+                                            <option value="A/T">A/T</option>
+                                            <option value="M/T">M/T</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Drive">Drive</label>
+
+                                        <select class="form-control" name="Drive" id="Drive">
+                                            <option value=""></option>
+                                            <option value="2WD">2WD</option>
+                                            <option value="4WD">4WD</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 hidden">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">IsSerializable</label>
+
+                                        <input type="text" class="form-control" id="IsSerializable" name="IsSerializable">
+
+
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="make_ID">Make Model</label>
+
+                                        <br />
+                                        <select class="form-control select2" id="make_ID" name="make_ID" data-placeholder="Select Make Model"
+                                                asp-items="@(new SelectList(ViewBag.MakeList, "Make_ID", "Make"))" multiple>
+                                        </select>
+
+
+
+
+                                    </div>
+                                </div>
+
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="EngineSpecsCode_ID">EngineSpecsCode</label>
+
+                                        <br />
+                                        <select class="form-control select2" id="EngineSpecsCode_ID" name="EngineSpecsCode_ID" data-placeholder="Select EngineSpecsCode"
+                                                asp-items="@(new SelectList(ViewBag.EngineSpecsCodeList, "EngineSpecsCode_ID", "EngineSpecsCode"))" multiple>
+                                        </select>
+
+
+
+
+                                    </div>
+                                </div>
+
+
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="StartYear">Start Year</label>
+
+
+
+                                        <input type="text" class="form-control" id="StartYear" name="StartYear">
+
+
+
+
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="EndYear">End Year</label>
+
+
+
+                                        <input type="text" class="form-control" id="EndYear" name="EndYear">
+
+
+
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">BarCode</label>
+
+                                        <input type="text" class="form-control" id="BarCode" name="BarCode">
+
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="UOM">UOM</label>
+
+                                        <select class="form-control" id="UOM" name="UOM" asp-items="@(new SelectList( ViewBag.UOMList,"UOM","UOM"))">
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Opening Balance</label>
+
+                                        <input type="text" class="form-control" id="OpeningBal" name="OpeningBal">
+                                    </div>
+                                </div>
+                                <div class="col-lg-2">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">UnitPrice</label>
+
+                                        <input type="text" class="form-control" id="UnitPrice" name="UnitPrice">
+                                    </div>
+                                </div>
+
+
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">SalePrice</label>
+
+                                        <input type="text" class="form-control" id="SalePrice" name="SalePrice">
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">CostMethod</label>
+
+                                        <select type="text" class="form-control" id="CostMethod" name="CostMethod">
+                                            <option value="Average">Average</option>
+
+                                        </select>
+                                    </div>
+                                </div>
+
+
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Comment</label>
+
+                                        <input type="text" class="form-control" id="Comment" name="Comment">
+
+
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-sm btn-primary">Save</button>
+                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- Model Delete Inventory -->
+<div class="modal fade bs-modal-sm" id="DeleteMakeModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Delete Inventory</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="BasicData" asp-action="DeleteInventryParts">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <h3>Do you want to delete this record?</h3>
+                                        @*yes we are also supposed to give same name of the values from database to get them as we did in old times in mvc*@
+                                        <input type="hidden" id="Item_ID_Delete" name="Item_ID" />
+                                        @*<input type="hidden" id="ItemName_Delete" name="ColorName" />*@
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Model udpate Make -->
+<div class="modal fade bs-modal-sm in" id="UpdateMakeModal" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Update Inventory</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="BasicData" asp-action="UpdateInventryParts">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body">
+
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+
+
+                                        <label class="col-form-label" for="Project_ID">Item Code</label>
+                                        <input type="text" class="form-control" id="ItemCode_Update" name="ItemCode" @Show required>
+                                        <input type="hidden" id="Item_ID_Update" name="Item_ID" />
+                                    </div>
+                                </div>
+
+
+
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+
+
+                                        <label class="col-form-label" for="Project_ID">Item Name</label>
+                                        <input type="text" class="form-control" id="ItemName_Update" name="ItemName">
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+
+
+                                        <label class="col-form-label" for="Project_ID">Traditional</label>
+                                        <input type="text" class="form-control" id="Traditional_Update" name="Traditional">
+
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+
+
+                                        <label class="col-form-label" for="Project_ID">Item Description</label>
+
+                                        <textarea class="form-control" id="ItemDescription_Update" name="ItemDescription" rows="2"></textarea>
+
+                                        @*<input type="text" class="form-control" id="ItemDescription_Update" name="ItemDescription">*@
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Group">Item Group</label>
+
+                                        <select class="form-control" id="Group_ID_Update" name="Group_ID" asp-items="@(new SelectList( ViewBag.ItemGroupList,"Group_ID","Group_Name"))" required >
+                                            <option value=""></option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Category">Item Category</label>
+
+                                        <select class="form-control" id="Category_ID_Update" name="Category_ID" asp-items="@(new SelectList( ViewBag.ItemCategoryList,"Category_ID","Category_Name"))" required>
+                                            <option value=""></option>
+                                        </select>
+                                    </div>
+                                </div>
+
+
+
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="FUEL_TYPE">Fuel</label>
+
+                                        <select class="form-control" name="FUEL_TYPE" id="FUEL_TYPE_Update">
+                                            <option value="PETROL">PETROL</option>
+                                            <option value="DEISEL">DEISEL</option>
+
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Transmission">Transmission</label>
+
+                                        <select class="form-control" name="Transmission" id="Transmission_Update">
+                                            <option value="A/T">A/T</option>
+                                            <option value="M/T">M/T</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Drive">Drive</label>
+
+                                        <select class="form-control" name="Drive" id="Drive_Update">
+                                            <option value="2WD">2WD</option>
+                                            <option value="4WD">4WD</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-6 hidden">
+                                    <div class="form-group">
+
+
+                                        <label class="col-form-label" for="Project_ID">Is Serializable</label>
+                                        <input type="text" class="form-control" id="IsSerializable_Update" name="IsSerializable">
+
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="make_ID">Make Model</label>
+
+
+                                        <br />
+                                        <select class="form-control select2" id="make_ID_Update" name="make_ID" data-placeholder="Select"
+                                                asp-items="@(new SelectList(ViewBag.MakeList, "Make_ID", "Make"))" multiple>
+                                        </select>
+
+
+
+
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="EngineSpecsCode_ID">Engine Specs Code</label>
+
+                                        <br />
+                                        <select class="form-control select2" id="EngineSpecsCode_ID_Update" name="EngineSpecsCode_ID" data-placeholder="Select"
+                                                asp-items="@(new SelectList(ViewBag.EngineSpecsCodeList, "EngineSpecsCode_ID", "EngineSpecsCode"))" multiple>
+                                        </select>
+
+
+
+
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="StartYear">Start Year</label>
+
+
+
+                                        <input type="text" class="form-control" id="StartYear_Update" name="StartYear">
+
+
+
+
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="EndYear">End Year</label>
+
+
+
+                                        <input type="text" class="form-control" id="EndYear_Update" name="EndYear">
+
+
+
+
+                                    </div>
+                                </div>
+
+
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+
+
+                                        <label class="col-form-label" for="Project_ID">Bar Code</label>
+                                        <input type="text" class="form-control" id="BarCode_Update" name="BarCode">
+
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="UOM">UOM</label>
+
+                                        <select class="form-control" id="UOM_Update" name="UOM" asp-items="@(new SelectList( ViewBag.UOMList,"UOM","UOM"))">
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Opening Balance</label>
+
+                                        <input type="text" class="form-control" id="OpeningBal_Update" name="OpeningBal">
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Unit Price</label>
+                                        <input type="text" class="form-control" id="UnitPrice_Update" name="UnitPrice">
+
+                                    </div>
+                                </div>
+
+
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+
+
+                                        <label class="col-form-label" for="Project_ID">Sale Price</label>
+                                        <input type="text" class="form-control" id="SalePrice_Update" name="SalePrice">
+
+                                    </div>
+                                </div>
+
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+
+
+                                        <label class="col-form-label" for="Project_ID">Cost Method</label>
+
+
+                                        <select type="text" class="form-control" id="CostMethod_Update" name="CostMethod">
+                                            <option value="Average">Average</option>
+
+                                        </select>
+
+                                    </div>
+                                </div>
+
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+
+
+                                        <label class="col-form-label" for="Project_ID">Comment</label>
+                                        <input type="text" class="form-control" id="Comment_Update" name="Comment">
+
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+@section Scripts {
+    <script>
+
+        $(function () {
+            $(".select2").select2({
+                theme: "bootstrap",
+
+            });
+        });
+
+
+    </script>
+    <script type="text/javascript">
+        function DeleteInventory(Item_ID) {
+
+            $("#Item_ID_Delete").val(Item_ID);
+            // $("#ItemName_Delete").val(ItemName);
+        }
+
+
+
+
+        function MultipleEngineSpecsCode(Item_ID) {
+
+
+            $.ajax({
+
+                type: "Get",
+                url: "/BasicData/Get_MultipleEngineSpecsCode",
+                data: { //Passing data
+                    Item_ID: Item_ID
+                },
+                datatype: "json",
+                success: function (response) {
+                    debugger
+                    $('#EngineSpecsCode_ID_Update').val(response.enginespecscode).trigger('change');
+
+                }
+            })
+        }
+
+
+        function MultipleMakeLoad(Item_ID) {
+
+            $.ajax({
+
+                type: "Get",
+                url: "/BasicData/Get_MultipleMake",
+                data: { //Passing data
+                    Item_ID: Item_ID
+
+
+                },
+
+
+                datatype: "json",
+                success: function (response) {
+
+                    debugger
+                    //debugger
+
+
+                    $('#make_ID_Update').val(response.make_ID).trigger('change');
+
+
+
+
+
+                }
+            })
+        }
+        function UpdateInventory(Item_ID, ItemCode, Group_ID, Category_ID, UOM, ItemName, ItemDescription, IsSerializable, BarCode, UnitPrice, SalePrice, CostMethod, Comment,
+            Traditional, Transmission, FUEL_TYPE, Drive, StartYear, EndYear, OpeningBal
+        ) {
+
+
+
+            $("#Item_ID_Update").val(Item_ID);
+            $("#ItemCode_Update").val(ItemCode);
+            $("#UOM_Update").val(UOM);
+            $("#Group_ID_Update").val(Group_ID);
+            $("#Category_ID_Update").val(Category_ID);
+            $("#ItemName_Update").val(ItemName);
+            $("#ItemDescription_Update").val(ItemDescription);
+
+            $("#IsSerializable_Update").val(IsSerializable);
+            $("#BarCode_Update").val(BarCode);
+
+            $("#UnitPrice_Update").val(UnitPrice);
+            $("#SalePrice_Update").val(SalePrice);
+
+            $("#CostMethod_Update").val(CostMethod);
+            $("#Comment_Update").val(Comment);
+            $("#Traditional_Update").val(Traditional);
+            $("#FUEL_TYPE_Update").val(FUEL_TYPE);
+            $("#Transmission_Update").val(Transmission);
+            $("#Drive_Update").val(Drive);
+            $("#StartYear_Update").val(StartYear);
+            $("#EndYear_Update").val(EndYear);
+            $("#OpeningBal_Update").val(OpeningBal);
+
+            MultipleMakeLoad(Item_ID);
+
+            MultipleEngineSpecsCode(Item_ID);
+
+        }
+
+
+
+    $(document).ready(function(){
+        $("#print-btn").click(function(event){
+        event.preventDefault();
+            var win = window.open("@Url.Action("InventoryPrintForm", "Report")" + "?Item_ID=" + $("#Item_ID").val()  , "_blank");
+        win.focus();
+            });
+        })
+    $(document).ready(function(){
+                    $("#export-btn").click(function(event){
+                        event.preventDefault();
+                        window.location.href = "@Url.Action("InventoryPrintFormExcel", "Report")" + "?Item_ID=" + $("#Item_ID").val();
+                    });
+                })
+
+    </script>
+}

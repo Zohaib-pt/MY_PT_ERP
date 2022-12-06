@@ -1,0 +1,120 @@
+﻿
+@using DAL
+@using DAL.Models
+@model DAL.oClasses.OBasicData
+
+
+
+<div class="modal-header" style="background: #f6f6f6;">
+
+
+    <h4 class="modal-title">Attachment Details</h4>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+
+</div>
+
+
+<div class="modal-body">
+
+    <section class="card">
+
+        <div class="card-body">
+
+
+            <form method="post" enctype="multipart/form-data" data-ajax="true" data-ajax-success="mySuccessAttachment" data-ajax-failure="myFailureAttachment"
+                  asp-area="" asp-controller="BasicData" asp-action="InsertAttachments_ShippingMaster" data-ajax-loading="" id="FormInsertAttachmentDetail">
+
+                <div class="row form-group">
+
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            <label class="col-form-label" for="Document_Type">Attachment Type</label>
+                            <input type="text" id="Document_Type" name="Document_Type" class="form-control" placeholder="Enter doc type" required />
+                            <input type="hidden" id="Type" name="Type" value="BasicData_Shipping" />
+                            <input type="hidden" id="Partner_ID_Attachment" name="Partner_ID" />
+
+
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            <label class="col-form-label" for="Attachment">Choose Attachment</label>
+                            <input type="file" id="Attachment" name="Attachment" class="form-control" required />
+
+                        </div>
+                    </div>
+
+                    <div class="col-lg-2">
+                        <div class="form-group">
+                            <label class="col-form-label" for="tt">&nbsp;</label>
+
+                            <button type="submit" class="form-control btn btn-primary">Add</button>
+
+                        </div>
+                    </div>
+
+
+                </div>
+            </form>
+
+            <div class="row form-group">
+
+                <div class="col-lg-12">
+
+                    <table class="table table-responsive-md table-bordered mb-0 mt-2">
+                        <thead>
+                            <tr>
+                                <th>Delete</th>
+
+
+                                <th>Attachment Type</th>
+
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            @if (Model.attachmentList != null)
+                            {
+                                foreach (Pa_Attachments_DAL item in Model.attachmentList)
+                                {
+
+
+                                    <tr>
+                                        <td>
+
+                                            <a onclick="DeleteAttachment('@item.Attachment_ID', '@item.Master_ID', '@item.Type', '@item.File_Name')"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+                                        </td>
+                                        <td>
+                                            <a href="~/CommonImages/OtherImages/@item.File_Name" target="_blank">@item.Document_Type</a>
+
+
+                                        </td>
+
+                                    </tr>
+                                }
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+            </div>
+
+
+
+
+
+        </div>
+
+
+
+    </section>
+</div>

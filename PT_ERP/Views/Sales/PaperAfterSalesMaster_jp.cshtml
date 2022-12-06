@@ -1,0 +1,740 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OSales
+
+@{ ViewData["Title"] = "NewSale";
+                Layout = "~/Views/Shared/_LayoutTablePages.cshtml"; }
+
+
+@{ ViewBag.SubTotal = null;
+                ViewBag.Vat_ExpTotal = null;
+                ViewBag.DiscountTotal = null;
+                ViewBag.Grand_Total = null;
+
+
+                string Form_SaleMaster_ActionMethod = "";
+                int? papers_ID = ViewBag.papers_ID;
+
+
+                if (Model.PaperAfterSalesMasterObj != null && Model.PaperAfterSalesMasterObj.papers_ID > 0)
+                {
+
+                    Form_SaleMaster_ActionMethod = "UpdatepaperAfterSaleMaster";
+
+
+                }
+                else
+                {
+                    Form_SaleMaster_ActionMethod = "InsertpaperAfterSaleMaster";
+
+
+                } }
+
+
+
+
+<header class="page-header">
+    <h2>@ViewBag.SectionHeaderTitle</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+
+            <li><a asp-area="" asp-controller="@ViewBag.BreadCumController" asp-action="@ViewBag.BreadCumAction"><span>@ViewBag.SectionSub_HeaderTitle</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+
+
+
+
+
+<div class="row" id="SuccessErrorSection">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+<div class="col-lg-12">
+    @if (TempData["Success"] != null)
+    {
+<div class="alert alert-info">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+    <strong>Success!</strong> @TempData["Success"] <a href="" class="alert-link"></a>
+</div>}
+
+    @if (TempData["Error"] != null)
+    {
+<div class="alert alert-danger">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+    <strong>Error!</strong> @TempData["Error"] <a href="" class="alert-link"></a>
+</div>}
+</div>}
+
+
+</div>
+
+<!-- start: page -->
+<section class="card">
+    <div class="card-body">
+        <div class="invoice">
+            <header class="clearfix">
+                <div class="row">
+                    <div class="col-sm-6 mt-0">
+                        <h2 class="h4 mt-0 mb-2 text-dark font-weight-bold"> Paper After Sale</h2>
+
+                    </div>
+
+             
+
+
+
+                </div>
+            </header>
+
+            <div class="row">
+                <div class="col-lg-8">
+
+
+
+                    @if (Model.PaperAfterSalesMasterObj.papers_ID != 0)
+                    {
+                        if (Model.PaperAfterSalesMasterObj.papers_ID > 0)
+                        {
+
+
+
+                <button type="button" id="ButtonMasterUpdate" class="btn-sm btn btn-success">Update &nbsp;<i class="fas fa-save"></i></button>
+
+
+
+
+                                    <button type="button" id="print-btn" class="btn-sm btn btn-info">Paper1 &nbsp;<i class="fas fa-print"></i></button>
+                                    
+                                    <button type="button" id="print-btn1" class="btn-sm btn btn-info">Paper2 &nbsp;<i class="fas fa-print"></i></button>
+                             
+                                    <button type="button" id="print-btn2" class="btn-sm btn btn-info">Paper3 &nbsp;<i class="fas fa-print"></i></button>
+
+                                                        <a asp-controller="Sales" asp-action="PaperAfterSalesMasterList" class="btn-sm btn btn-default">List &nbsp;<i class="fas fa-list"></i></a> }
+
+                                                }
+                                                else
+                                                {
+                                    <button type="button" id="ButtonMasterIssue" class="btn-sm btn btn-success">Issue &nbsp;<i class="fas fa-save"></i></button>
+                                     <button type="button" disabled="disabled" class="btn-sm btn btn-info">Paper1 &nbsp;<i class="fas fa-print"></i></button>
+                                    
+                                    <button type="button" disabled="disabled"  class="btn-sm btn btn-info">Paper2 &nbsp;<i class="fas fa-print"></i></button>
+                             
+                                    <button type="button" disabled="disabled"  class="btn-sm btn btn-info">Paper3 &nbsp;<i class="fas fa-print"></i></button>
+                                                    <a asp-controller="Sales" asp-action="PaperAfterSalesMasterList" class="btn-sm btn btn-default">List &nbsp;<i class="fas fa-list"></i></a>}
+
+
+
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div class="col">
+
+
+
+                    <form method="post" asp-area="" asp-controller="Sales" asp-action="@Form_SaleMaster_ActionMethod" id="formSaleMaster">
+                        @Html.AntiForgeryToken()
+
+                        <section class="card">
+
+                            <div class="card-body">
+
+
+
+                                <div class="row form-group">
+                                    <div class="col-lg-4">
+
+
+                                        <div class="row MasterForm">
+                                            <label for="SaleDate" class="col-sm-3 col-form-label">Submission Date</label>
+                                            <div class="col-sm-9">
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                        </span>
+                                                    </span>
+
+                                                    @if (Model.PaperAfterSalesMasterObj.DateSubmission != null)
+                                                    {
+                                                <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="DateSubmission" name="DateSubmission" value="@Model.PaperAfterSalesMasterObj.DateSubmission" required>
+                                                                <input type="hidden" id="papers_ID" name="papers_ID" value="@papers_ID" /> }
+                                                                            else
+                                                                            {
+                                                                <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="DateSubmission" name="DateSubmission" value="" required>}
+
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+                                        <div class="row MasterForm">
+                                            <label for="SaleDate" class="col-sm-3 col-form-label">Validity Date</label>
+                                            <div class="col-sm-9">
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                        </span>
+                                                    </span>
+
+                                                    @if (Model.PaperAfterSalesMasterObj.DateValid != null)
+                                                    {
+                                        <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="DateValid" name="DateValid" value="@Model.PaperAfterSalesMasterObj.DateValid" required> }
+                                    else
+                                    {
+                                    <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="DateValid" name="DateValid" value="" required>}
+
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+                                        <div class="row MasterForm">
+                                            <label for="To" class="col-sm-4 col-form-label">Remarks</label>
+                                            <div class="col-sm-8">
+                                                <textarea type="text" class="form-control" id="Remarks" name="Remarks" placeholder="Remarks">@Model.PaperAfterSalesMasterObj.Remarks</textarea>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-lg-4">
+
+                                    </div>
+
+                                    <div class="col-lg-4 ">
+
+                                        <div class="row MasterForm">
+                                            <label for="SaleRef" class="col-sm-3 col-form-label">Ref No</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" id="paperRef" name="paperRef" value="@Model.PaperAfterSalesMasterObj.paperRef" readonly>
+                                            </div>
+                                        </div>
+
+
+                                        <div class="row MasterForm">
+                                            <label for="SaleDate" class="col-sm-3 col-form-label">Date Created</label>
+                                            <div class="col-sm-9">
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                        </span>
+                                                    </span>
+
+                                                    @if (Model.PaperAfterSalesMasterObj.DateCreated != null)
+                                                    {
+                                        <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="DateCreated" name="DateCreated" value="@Model.PaperAfterSalesMasterObj.DateCreated" required> }
+                                    else
+                                    {
+                                    <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="DateCreated" name="DateCreated" value="@DateTime.Now.ToString("dd-MMM-yyyy")" required>}
+
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+
+                                        <div class="row MasterForm">
+                                            @if (papers_ID != null && papers_ID > 0)
+                                            {
+                                    <input id="hdpapers_ID" name="hdpapers_ID" type="hidden" value="@papers_ID" /> }
+                                                else
+
+                                                {
+
+                                    <input id="hdpapers_ID" name="hdpapers_ID" type="hidden" value="0" />}
+
+                                            <label for="SaleRef" class="col-sm-3 col-form-label">Sale Ref</label>
+                                            <div class="col-sm-5" style="padding-right:1px;">
+                                                <input type="text" class="form-control" id="SaleRef_Number" name="SaleRef_Number">
+                                            </div>
+                                            <div class="col-sm-4" style="padding-left:1px; ">
+                                                <button type="button" onclick="GetSaleDetailListByRef()" class=" btn btn-primary" style="width:100%;">Get &nbsp; <i class="fa fa-search"></i></button>
+                                            </div>
+                                        </div>
+                                        <div class="row MasterForm">
+                                            
+
+                                            <label for="SaleRef" class="col-sm-3 col-form-label">Chassis</label>
+                                            <div class="col-sm-5" style="padding-right:1px;">
+                                                <input type="text" class="form-control" id="Chassis" name="Chassis">
+                                            </div>
+                                            <div class="col-sm-4" style="padding-left:1px; ">
+                                                <button type="button" onclick="GetSaleDetailListByChassis()" class=" btn btn-primary" style="width:100%;">Get &nbsp; <i class="fa fa-search"></i></button>
+                                            </div>
+                                        </div>
+
+
+
+
+                                    </div>
+
+
+                                </div>
+
+                            </div>
+
+
+
+                        </section>
+                    </form>
+                </div>
+
+            </div>
+
+
+
+            <div class="row m-2">
+                <div class="col-lg-6">
+                    <h2 class="card-title" style="line-height:normal;">List </h2>
+                </div>
+
+            </div>
+
+            <div id="SaleDetailSection">
+
+
+                <table class="table table-responsive-md table-bordered mb-0">
+                    <thead>
+                        <tr>
+                            <th style="width:100px">Delete</th>
+                            <th>Chassis</th>
+                            <th>Customer</th>
+                            <th>Price</th>
+                            <th>Amount</th>
+                       
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.PaperAfterSalesDetailList != null)
+                        {
+
+
+
+                            foreach (PaperAfterSalesDetail_DAL item in Model.PaperAfterSalesDetailList)
+                            {
+                          
+
+            <tr>
+                <td>
+              
+                    <a onclick="DeleteSaleDetail('@item.ID');" data-toggle="modal" data-target="#DeleteSaleDetailModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+                </td>
+                <td>@Html.DisplayFor(modelItem => item.Chassis_No)</td>
+                <td>@Html.DisplayFor(modelItem => item.CustomerName)</td>
+                <td>@Html.DisplayFor(modelItem => item.Price)</td>
+                <td>@Html.DisplayFor(modelItem => item.Amount)</td>
+    
+            </tr>}
+                        }
+
+
+
+
+                    </tbody>
+
+                </table>
+
+
+
+              
+
+
+
+     
+
+
+
+            </div>
+     
+
+
+
+
+
+
+        </div>
+
+
+    </div>
+</section>
+
+
+
+
+
+<!-- Modal Delete SaleDetail -->
+<div class="modal fade bs-modal-lg" id="DeleteSaleDetailModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Delete Stock</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" data-ajax="true" data-ajax-success="SuccessDeleteSaleDetail" data-ajax-failure="FailureDeleteSaleDetail"
+                  asp-area="" asp-controller="Sales" asp-action="DeleteAfterSaleDetail_Return" data-ajax-loading="">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <h3>Do you want to delete this record?</h3>
+
+                                        <input type="hidden" id="papers_ID_Delete" name="papers_ID" />
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modal Delete SaleMaster -->
+<div class="modal fade bs-modal-lg" id="DeleteSaleMasterNew" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Delete Sale Master</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="Sales" asp-action="DeleteSaleMaster_Return" data-ajax-loading="">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <h3>Do you want to delete this record?</h3>
+
+                                        <input type="hidden" id="SaleMaster_ID_Delete" name="papers_ID" />
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modal Change Sale Master Status -->
+<div class="modal fade bs-modal-lg" id="ChangeStatusSaleModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Change Sale Master Status</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="Sales" asp-action="Change_Status_SaleMasterReturn" data-ajax-loading="">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <h3>Do you want to change status of this record?</h3>
+
+                                        <input type="hidden" id="SaleMaster_ID_Status" name="papers_ID" />
+                                        <input type="hidden" id="Sale_Status_ID" name="Status_ID" />
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+@section Scripts {
+
+
+    @*Please never removed following scripts bcz these scripts are used in all ajax calls*@
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
+
+
+    <script>$(function () {
+            $(".select2").select2({
+                theme: "bootstrap",
+
+            });
+        });</script>
+
+
+
+    <script type="text/javascript">
+        //---submit new master Sale voucher
+        $(document).ready(function () {
+            $("#ButtonMasterIssue").click(function () {
+
+                $("#formSaleMaster").submit();
+            });
+        });
+        //---Update master Sale voucher
+        $(document).ready(function () {
+            $("#ButtonMasterUpdate").click(function () {
+                $("#formSaleMaster").submit();
+            });
+        });
+
+
+
+        //This function is inserting Sale detail record against ref and then picking record on the basis of this
+        function GetSaleDetailListByRef() {
+            debugger
+            var SaleRef = document.getElementById("SaleRef_Number").value.toString();
+            var Chassis = "";
+            var hdpapers_ID = document.getElementById("hdpapers_ID").value.toString();
+
+            $.ajax({
+
+                type: "Get",
+                url: "/Sales/Insert_And_GetpaperAfterSaleDetails",
+                data: { //Passing data
+                    SaleRef: SaleRef,
+                    Chassis: Chassis,
+                    hdpapers_ID: hdpapers_ID
+
+
+                },
+                datatype: "json",
+                success: function (data) {
+
+                    debugger
+                    if (data.message == undefined) {
+                        //alert("Saved Successfully!");
+                        $('#SaleRef_Number').val('');
+                        $('#SaleDetailSection').html(data);
+                       
+                      
+
+
+                    } else {
+                        alert(data.message);
+
+                    }
+
+
+                }, error: function (jqXHR, status, err) {
+                    alert("An error occured. Please try again!");
+                }
+
+            })
+        }
+
+        function GetSaleDetailListByChassis() {
+            debugger
+            var SaleRef = "";
+            var Chassis = document.getElementById("Chassis").value.toString();
+            var hdpapers_ID = document.getElementById("hdpapers_ID").value.toString();
+
+            $.ajax({
+
+                type: "Get",
+                url: "/Sales/Insert_And_GetpaperAfterSaleDetails",
+                data: { //Passing data
+                    SaleRef: SaleRef,
+                    Chassis: Chassis,
+                    hdpapers_ID: hdpapers_ID
+
+
+                },
+                datatype: "json",
+                success: function (data) {
+
+                    debugger
+                    if (data.message == undefined) {
+                        //alert("Saved Successfully!");
+                        $('#Chassis').val('');
+                        $('#SaleDetailSection').html(data);
+                        
+
+                    } else {
+                        alert(data.message);
+
+                    }
+
+
+                }, error: function (jqXHR, status, err) {
+                    alert("An error occured. Please try again!");
+                }
+
+            })
+        }
+
+
+        function SuccessDeleteSaleDetail(data) {
+
+            var SuccessDiv = " <div class='col-lg-12'><div class='alert alert-info'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button><strong>Success!</strong> Deleted Successfully! <a href='' class='alert-link'></a></div></div>";
+            debugger
+            if (data.message == undefined) {
+                //alert("Saved Successfully!");
+                $('#DeleteSaleDetailModal').modal('hide');
+                $('#SaleDetailSection').html(data);
+                $('#SuccessErrorSection').html(SuccessDiv).show();;
+
+
+
+            } else {
+                alert(data.message);
+                $('#DeleteSaleDetailModal').modal('hide');
+            }
+
+
+        }
+
+        function FailureDeleteSaleDetail() {
+
+            alert("Failured occured. Please try again!");
+            $('#DeleteSaleDetailModal').modal('hide');
+        }
+
+        //---delete Sale master
+        function DeleteSaleDetail(papers_ID) {
+            debugger
+            $("#papers_ID_Delete").val(papers_ID);
+
+        }
+
+        //---change Sale master status
+        function ChangeStatusSaleMaster(papers_ID, Status) {
+            debugger
+            $("#SaleMaster_ID_Status").val(papers_ID);
+            $("#Sale_Status_ID").val(Status);
+
+        }
+
+               $(document).ready(function () {
+
+
+
+            $("#print-btn").click(function(event){
+                event.preventDefault();
+                var win = window.open("@Url.Action("Paper1", "Report")" + "?papers_ID=" + $("#papers_ID").val() , "_blank");
+                win.focus();
+            });
+            $("#print-btn1").click(function(event){
+                event.preventDefault();
+                var win = window.open("@Url.Action("Paper2", "Report")" + "?papers_ID=" + $("#papers_ID").val() , "_blank");
+                win.focus();
+            });
+            $("#print-btn2").click(function(event){
+                event.preventDefault();
+                var win = window.open("@Url.Action("Paper3", "Report")" + "?papers_ID=" + $("#papers_ID").val() , "_blank");
+                win.focus();
+            });
+        })
+    </script>
+
+
+}

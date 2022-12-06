@@ -1,0 +1,172 @@
+﻿
+@using DAL
+@using DAL.Models
+@model DAL.oClasses.OPurchases
+
+
+
+<div class="modal-header" style="background: #f6f6f6;">
+
+
+    <h4 class="modal-title">Received Details</h4>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+
+</div>
+
+
+<div class="modal-body" style="overflow-y: auto;">
+    <form method="post" enctype="multipart/form-data" data-ajax="true" data-ajax-success="mySuccessAuctionDetail" data-ajax-failure="myFailureAuctionDetail"
+          asp-area="" id="FormInsertPaymentDetail">
+        <section class="card">
+
+            <div class="card-body">
+
+
+
+
+                <div class="row form-group">
+           
+                    <div class="col-lg-12">
+
+                        <table class="table table-responsive-md table-bordered mb-0 mt-2">
+                            <thead>
+                                <tr>
+                                    <th>Select</th>
+                                    <th>Item</th>
+                                    <th style="width:200px">Description</th>
+                                    <th style="width:250px">Qty</th>
+
+                                    <th style="width:250px">Balance</th>
+                                    <th style="width:50px">Received Qty</th>
+
+                                    <th style="width:10px">UnitPrice</th>
+                               
+                                    <th style="width:10px">Total Amount</th>
+                       
+
+
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                @if (Model.PurchaseDetailList != null)
+                                {
+                                    string value = "txtitem_ID";
+                                    string value1 = "txtitem_Description";
+                                    string value2 = "txtReceivedQty";
+                                    string value3 = "txtUOM";
+                                    string value4 = "txtUnitPrice";
+                                    string value5 = "txtCurrency_ID";
+                                    string value6 = "txtCurrency_Rate";
+                                    string value7 = "txtLoc_ID";
+                                    string value8 = "txtVAT_Rate";
+                                    string value9 = "txtVAT_Exp";
+                                    string value10 = "txtDiscount";
+                                    string value11 = "txtAmount";
+                                    string value12 = "txtTTLAmount";
+                                    string value13 = "txtAmount_Others";
+                                    string value14 = "txtPurchaseMaster_Id";
+                                    string value15 = "txtBalanceQty";
+                        
+                                    int counter = 0;
+                                    foreach (Pa_PurchaseDetails_DAL item in Model.PurchaseDetailList)
+                                    {
+
+                                        counter++;
+                                        <tr>
+
+                                            <td>
+                                                <input type="checkbox" id="@counter" onchange="CalculateSumAmount_Check()" name="@item.PurchaseDetails_ID">
+                                                <input  id="@value14@item.PurchaseDetails_ID" name="hdGRVMaster_ID" type="hidden" value="@item.PurchaseMaster_ID" />
+
+                                            </td>
+
+
+
+                                            <td>
+                                                @item.ItemCode
+                                                <input type="hidden" id="@value@item.PurchaseDetails_ID" name="Quantity" value="@item.item_ID">
+
+
+                                            </td>
+                                            <td>
+                                                <input type="text" style="border:none" id="@value1@item.PurchaseDetails_ID" name="item_Description" value="@item.item_Description" readonly>
+
+
+                                            </td>
+                                            <td>
+                                                Purchase : @item.PURQty
+                                                <br />
+                                                Received : @item.GRVQty
+                                            </td>
+                                            <td>
+                                                <input style="border:none;width:30px" type="text" id="@value15@item.PurchaseDetails_ID" name="Quantity" value=" @item.Quantity" readonly>x&nbsp;&nbsp;<input style="border: none; width: 40px" type="text" id="@value3@item.PurchaseDetails_ID" name="UOM" value="@item.UOM" readonly>
+
+                                            </td>
+                                            <td>
+                                                <input type="text" style="width: 100px" id="@value2@item.PurchaseDetails_ID" onblur="CalculateSumAmount()" name="ReceivedQty" value="0">
+
+
+                                            </td>
+                                          
+                                            <td>
+                                                <input type="number" style="border: none; width: 100px" id="@value4@item.PurchaseDetails_ID" name="Unit_Price" value="@item.Unit_Price" readonly>
+                                            </td>
+
+
+                             
+
+                                          
+
+                                            <td>
+                                                <input type="number" style="border: none; width:100px" id="@value11@item.PurchaseDetails_ID" name="Amount" value="0" readonly>
+                                                <input type="hidden" style="border:none" id="@value12@item.PurchaseDetails_ID" name="TTLAmount" value="0" readonly>
+                                                <input type="hidden" style="border:none" id="@value13@item.PurchaseDetails_ID" name="Amount_Others" value="0" readonly>
+
+                                                <input type="hidden" id="@value6@item.PurchaseDetails_ID" name="Currency_Rate" value="@item.Currency_Rate">
+
+                                                <input type="hidden" id="@value5@item.PurchaseDetails_ID" name="Currency_ID" value="@item.Currency_ID">
+                                                <input type="hidden" style="border:none" id="@value9@item.PurchaseDetails_ID" name="VAT_Exp" value="0">
+                                                <input type="hidden" id="@value8@item.PurchaseDetails_ID" name="VAT_Rate" value="@item.VAT_Rate">
+
+                                                <input type="hidden" id="@value10@item.PurchaseDetails_ID" name="Discount" value="@item.Discount">
+
+                                                <input type="hidden" id="@value7@item.PurchaseDetails_ID" name="location_ID" value="@item.location_ID">
+
+                                            </td>
+                                    
+                                        </tr>
+                                    }
+                                }
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+
+                </div>
+
+
+
+
+
+            </div>
+
+
+
+        </section>
+
+
+
+    </form>
+
+</div>
+<div class="modal-footer">
+    <button type="button" onclick="SaveForm()" class="btn btn-sm btn-primary">Add</button>
+    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Cancel</button>
+</div>

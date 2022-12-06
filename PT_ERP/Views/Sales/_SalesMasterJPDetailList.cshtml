@@ -1,0 +1,118 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OSales
+<table class="table table-responsive-md table-bordered mb-0">
+    <thead>
+        <tr>
+            <th>Edit/Delete</th>
+            <th>Chassis</th>
+
+
+            <th>Price</th>
+
+            <th>Recylcle</th>
+            <th>Plate Fee</th>
+            <th>Auction Fee</th>
+            <th>Off. Charges</th>
+            <th>Total</th>
+
+
+        </tr>
+    </thead>
+    <tbody>
+
+
+
+        @if (Model.SalesDetailListJP != null)
+        {
+
+
+            ViewBag.TotalAmount = 0;
+
+            foreach (SaleDetailJP item in Model.SalesDetailListJP)
+            {
+
+
+                decimal TotalAmount = item.Amount;
+                ViewBag.TotalAmount = Convert.ToDecimal(ViewBag.TotalAmount) + TotalAmount;
+
+        <tr>
+
+
+            <td>
+
+                <a onclick="UpdateStockmasterDetail('@item.SalesDetails_ID','@item.Chassis_no','@item.Sale_Ref', '@item.Price', '@item.PriceTax', '@item.PriceRate','@item.RecycleFee','@item.PlateFee','@item.AuctionFee','@item.AuctionFeeTax','@item.Amount','@item.OfficeCharges','@item.OfficeChargesTax');" data-toggle="modal" data-target="#UdpateSaleDetailModal"><img style="width: 20px;" src="~/Img/Icons/edit.png" /></a>
+                <a onclick="DeleteStockDetail(@item.SalesDetails_ID);" data-toggle="modal" data-target="#DeleteStockDetailModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+            </td>
+
+            <td>@Html.DisplayFor(modelItem => item.Chassis_no)</td>
+
+            <td>
+                @Html.DisplayFor(modelItem => item.Price)<br />
+                <span style="font-size:10px;">   @Html.DisplayFor(modelItem => item.PriceTax)</span>
+            </td>
+            <td>@Html.DisplayFor(modelItem => item.RecycleFee)</td>
+
+            <td>@Html.DisplayFor(modelItem => item.PlateFee)</td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AuctionFee)<br />
+                <span style="font-size:10px;">  @Html.DisplayFor(modelItem => item.AuctionFeeTax) </span>
+            </td>
+
+            <td>
+                @Html.DisplayFor(modelItem => item.OfficeCharges)<br />
+                <span style="font-size:10px;">  @Html.DisplayFor(modelItem => item.OfficeChargesTax) </span>
+            </td>
+
+            <td>@Html.DisplayFor(modelItem => item.Amount)</td>
+
+
+
+
+        </tr>
+
+
+            }
+        }
+
+
+
+    </tbody>
+
+</table>
+
+<div class="invoice-summary">
+
+    <div class="row">
+
+        <div class="col-lg-7 col-md-7">
+        </div>
+
+        <div class="col-lg-2 col-md-2">
+
+        </div>
+
+        <div class="col-lg-3 col-md-3 justify-content-end text-right">
+            <table class="table h6 text-dark">
+                <tbody>
+
+
+
+
+
+
+
+                    <tr class="h5">
+                        <td colspan="2">Total Amount :</td>
+                        <td class="text-right" id="Total_Payable">@ViewBag.TotalAmount</td>
+                    </tr>
+
+
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>

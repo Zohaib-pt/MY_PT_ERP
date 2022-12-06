@@ -1,0 +1,144 @@
+﻿@using DAL
+@using DAL.Models
+@using X.PagedList.Mvc.Core; @*//import this so we get our HTML Helper*@
+@using X.PagedList;  @*//import this so we can cast our list to IPagedList *@
+@model DAL.oClasses.OSales
+
+
+
+
+
+
+<div class="invoice-summary mb-1">
+
+    <div class="row mb-1">
+
+        <div class="col-lg-6 col-md-6 mb-1">
+            <b>@ViewBag.RecordsPerPage</b> records per page
+        </div>
+
+        <div class="col-lg-6 col-md-6 mb-1 justify-content-end text-right">
+
+        </div>
+    </div>
+
+</div>
+
+<table class="table table-bordered table-striped mb-0 mt-1" @*id="datatable-default"*@>
+    <thead>
+        <tr>
+
+
+
+            <th>Action</th>
+            <th>Make</th>
+
+            <th>Model</th>
+            <th>INT Color</th>
+            <th>Model Year</th>
+            <th>Qty</th>
+            <th>EXT Color</th>
+            <th>Unit Price</th>
+            <th>Production Date</th>
+
+
+
+
+
+
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.SalesDashboardIPagedList != null)
+        {
+
+            foreach (pa_Select_SalesDashboardList item in Model.SalesDashboardIPagedList)
+            {
+                <tr>
+                    <td>
+
+
+
+
+
+
+                        <a data-toggle="modal" data-target="#UpdateMakeModal"><img style="width: 20px;" src="~/Img/Icons/edit.png" /></a>
+                        <a data-toggle="modal" data-target="#deleteMakeModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+
+                    </td>
+                    <td>@Html.DisplayFor(modelItem => item.Make)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Model_Desc)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Color_Interior_Name)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Model_Year)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Qty)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Color_Exterior_Name)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Total_Cost)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Production_Date)</td>
+                </tr>
+            }
+
+
+        }
+
+
+
+
+
+
+
+
+
+
+
+    </tbody>
+    <tfoot>
+
+
+
+        @*<tr role="row">
+
+                <th>Total</th>
+
+                <th></th>
+                <th></th>
+                <th></th>
+                <th>@string.Format("{0:0,0.00,0}", ViewBag.Total)</th>
+                <th>@string.Format("{0:0,0.00,0}", ViewBag.TotalPaid)</th>
+                <th>@string.Format("{0:0,0.00,0}", ViewBag.TotalBalance)</th>
+                <th></th>
+                <th @ViewBag.AttachmentVisibility></th>
+                <th></th>
+
+            </tr>*@
+    </tfoot>
+</table>
+
+<div class="invoice-summary">
+
+    <div class="row">
+
+        <div class="col-lg-6 col-md-6">
+
+        </div>
+        <div class="col-lg-6 col-md-6 justify-content-end text-right">
+            @if (Model.SalesDashboardIPagedList.Count() != 0)
+            {
+
+@Html.PagedListPager(Model.SalesDashboardIPagedList, page => Url.Action("GetSalesDashboardListBySearchFilers", "Sales", new { Make = ViewBag.Make, Model_Desc = ViewBag.Model_Desc, StartDate = ViewBag.StartDate_SaleInvoice, EndDate = ViewBag.EndDate_SaleInvoice, Color = ViewBag.Color, Model_Year = ViewBag.Model_Year, c_IDs = ViewBag.c_IDs, page })
+
+, X.PagedList.Mvc.Core.Common.PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new AjaxOptions()
+{
+HttpMethod = "get",
+UpdateTargetId = "SalesInvoiceListSearch"
+})
+          )            }
+
+        </div>
+    </div>
+
+</div>
+
+
+
+

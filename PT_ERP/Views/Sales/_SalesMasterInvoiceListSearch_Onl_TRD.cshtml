@@ -1,0 +1,203 @@
+﻿
+@using DAL
+@using DAL.Models
+@using X.PagedList.Mvc.Core; @*//import this so we get our HTML Helper*@
+@using X.PagedList;  @*//import this so we can cast our list to IPagedList *@
+@model DAL.oClasses.OSales
+
+
+
+
+
+
+
+<div class="invoice-summary mb-1">
+
+    <div class="row mb-1">
+
+        <div class="col-lg-6 col-md-6 mb-1">
+            <b>@ViewBag.RecordsPerPage</b> records per page
+        </div>
+
+        <div class="col-lg-6 col-md-6 mb-1 justify-content-end text-right">
+
+        </div>
+    </div>
+
+</div>
+
+<table class="table table-bordered table-striped mb-0 mt-1" @*id="datatable-default"*@>
+    <thead>
+        <tr>
+
+
+
+
+            <th>Sale Ref</th>
+
+            <th>Sale Date</th>
+            <th>Customer Name</th>
+            <th>Total Amount</th>
+            <th>Paid</th>
+            <th>Bal Due</th>
+            <th>Status</th>
+            <th @ViewBag.AttachmentVisibility>Attachments</th>
+            <th>View</th>
+
+
+
+
+
+        </tr>
+    </thead>
+    <tbody>
+
+
+        @if (Model.SalesMasterIPagedList != null)
+        {
+            foreach (pa_SalesMaster_DAL item in Model.SalesMasterIPagedList)
+            {
+                //double Total = Convert.ToDouble(string.IsNullOrEmpty(item.Total_Amount) == true ? "0" : item.Total_Amount);
+                //ViewBag.Total = Total;
+                //double TotalPaid = Convert.ToDouble(string.IsNullOrEmpty(item.TotalPaid_amt) == true ? "0" : item.TotalPaid_amt);
+                //ViewBag.TotalPaid = TotalPaid;
+                //double TotalBalance = Convert.ToDouble(string.IsNullOrEmpty(item.TotalBal_due) == true ? "0" : item.TotalBal_due);
+                //ViewBag.TotalBalance = TotalBalance;
+
+                <tr>
+
+
+
+                    <td>
+                        <a asp-controller="Sales" asp-action="NewSalesInvoice__Onl_TRD" asp-route-SaleMaster_ID="@item.SaleMaster_ID">
+
+                            @Html.DisplayFor(modelItem => item.SaleRef)
+                            <br />
+                            <strong>
+                                <small>
+                                    @Html.DisplayFor(modelItem => item.Manualbook_ref)
+                                </small>
+                            </strong>
+
+                        </a>
+                    </td>
+                    <td>@Html.DisplayFor(modelItem => item.SaleDate)</td>
+
+                    <td>@Html.DisplayFor(modelItem => item.Customer_Name)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Total_Amt)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Paid_amt)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Bal_due)</td>
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.SaleStatus)
+                        <br /> <strong><small>@Html.DisplayFor(modelItem => item.Other_Status)</small></strong>
+                    </td>
+
+                    @*@{ if (item.ApprovalStatus == "2")
+                            {
+                                <td>@(item.SaleStatus) <br /> <span style="font-size:12px"> (Approved)</span></td>
+
+                            }
+                            else
+                            {
+                                <td>
+                                    @(item.SaleStatus) <br /> <span style="font-size:12px"> (Pending) </span>
+                                </td>
+                            }
+
+                        }*@
+
+                    <td @ViewBag.AttachmentVisibility><a href="#" onclick="ShowAttachmentMaster('@item.SaleMaster_ID');">Manage Attachment</a> </td>
+                    <td> <a asp-controller="Sales" asp-action="NewSalesInvoice__Onl_TRD" asp-route-SaleMaster_ID="@item.SaleMaster_ID">View</a></td>
+                    @*<td>@Html.DisplayFor(modelItem => item.Modified_at)</td>*@
+
+
+
+
+
+                </tr>
+           }
+        }
+
+
+
+
+
+    </tbody>
+    <tfoot>
+        @if (Model.SalesMasterListTOTAL != null)
+        {
+            foreach (pa_SalesMaster_DAL item in Model.SalesMasterListTOTAL)
+            {
+                //double Total = Convert.ToDouble(string.IsNullOrEmpty(item.Total_Master_Amount) == true ? "0" : item.Total_Master_Amount);
+                //ViewBag.Total = Total;
+                //double TotalPaid = Convert.ToDouble(string.IsNullOrEmpty(item.Total_Paid) == true ? "0" : item.Total_Paid);
+                //ViewBag.TotalPaid = TotalPaid;
+                //double TotalBalance = Convert.ToDouble(string.IsNullOrEmpty(item.Total_Bal_Due) == true ? "0" : item.Total_Bal_Due);
+                //ViewBag.TotalBalance = TotalBalance;
+
+                <tr role="row">
+
+                    <th>Total</th>
+
+                    <th></th>
+
+                    <th></th>
+                    <th>@item.Total_Master_Amount</th>
+                    <th>@item.Total_Paid</th>
+                    <th>@item.Total_Bal_Due</th>
+                    <th></th>
+                    <th @ViewBag.AttachmentVisibility></th>
+                    <th></th>
+
+
+                </tr>
+            }
+        } @*<tr role="row">
+
+                <th>Total</th>
+
+                <th></th>
+
+                <th></th>
+                <th>@ViewBag.Total</th>
+                <th>@ViewBag.TotalPaid</th>
+                <th>@ViewBag.TotalBalance</th>
+                <th></th>
+                <th @ViewBag.AttachmentVisibility></th>
+                <th></th>
+
+
+            </tr>*@
+    </tfoot>
+</table>
+
+<div class="invoice-summary">
+
+    <div class="row">
+
+        <div class="col-lg-6 col-md-6">
+
+        </div>
+        <div class="col-lg-6 col-md-6 justify-content-end text-right">
+            @if (Model.SalesMasterIPagedList.Count() != 0)
+            {
+
+                @Html.PagedListPager(Model.SalesMasterIPagedList, page => Url.Action("GetSalesMasterInvoiceListBySearchFilers_Onl_TRD", "Sales", new { SaleRef = ViewBag.SaleRef_SaleInvoice, StartDate = ViewBag.StartDate_SaleInvoice, EndDate = ViewBag.EndDate_SaleInvoice, Customer_Name = ViewBag.Customer_Name_SaleInvoice, ItemId = ViewBag.ItemId_SaleInvoice, MNumber = ViewBag.MNumber_SaleInvoice, Status_ID = ViewBag.Status_ID_SaleInvoice, cID = ViewBag.c_ID_SaleInvoice, OrderStatus = ViewBag.OrderStatus_SaleInvoice, page })
+
+     , X.PagedList.Mvc.Core.Common.PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new AjaxOptions()
+     {
+         HttpMethod = "get",
+         UpdateTargetId = "SalesInvoiceListSearch"
+     })
+                     )}
+
+        </div>
+    </div>
+
+</div>
+
+
+
+
+

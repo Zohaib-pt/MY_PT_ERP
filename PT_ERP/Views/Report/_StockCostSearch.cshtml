@@ -1,0 +1,162 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.oReports
+@using X.PagedList.Mvc.Core; @*//import this so we get our HTML Helper*@
+@using X.PagedList;  @*//import this so we can cast our list to IPagedList*@
+
+
+<table class="table table-bordered table-striped mb-0">
+    <thead>
+        <tr>
+
+
+
+            <th>Chassis_No</th>
+            <th>Purchase Date</th>
+            <th>ModelYear</th>
+
+            <th>Price</th>
+            <th>Price Rate</th>
+            <th>Price Tax</th>
+            <th>Freight Charges</th>
+            <th>Auction Fee</th>
+            <th>Rekso</th>
+            <th>Recycle Fee</th>
+
+            <th>Loading Charges</th>
+            <th>Others</th>
+            <th>JP Charges</th>
+            <th>Total Cost</th>
+            <th>Total Cost Others</th>
+
+
+
+
+
+        </tr>
+    </thead>
+
+
+    <tbody>
+
+        @if (Model.StockCostList != null)
+        {
+            //ViewBag.Price = 0;
+            //ViewBag.PriceTax = 0;
+            //ViewBag.Auction = 0;
+            //ViewBag.Rekso = 0;
+            //ViewBag.Recycle = 0;
+
+            //ViewBag.Total_Cost = 0;
+            //ViewBag.Total_Cost_Others = 0;
+            foreach (StockReport item in Model.StockCostList)
+            {
+                //decimal Price = Convert.ToDecimal(item.Price);
+                //ViewBag.Price = Convert.ToDecimal(ViewBag.Price) + Price;
+
+                //decimal PriceTax = Convert.ToDecimal(item.PriceTax);
+                //ViewBag.PriceTax = Convert.ToDecimal(ViewBag.PriceTax) + PriceTax;
+
+                //decimal Auction = Convert.ToDecimal(item.Auction);
+                //ViewBag.Auction = Convert.ToDecimal(ViewBag.Auction) + Auction;
+
+                //decimal Rekso = Convert.ToDecimal(item.Rekso);
+                //ViewBag.Rekso = Convert.ToDecimal(ViewBag.Rekso) + Rekso;
+
+                //decimal Recycle = Convert.ToDecimal(item.Recycle);
+                //ViewBag.Recycle = Convert.ToDecimal(ViewBag.Recycle) + Recycle;
+
+                //decimal Total_Cost = Convert.ToDecimal(item.Total_Cost);
+                //ViewBag.Total_Cost = Convert.ToDecimal(ViewBag.Total_Cost) + Total_Cost;
+
+                //decimal Total_Cost_Others = Convert.ToDecimal(item.Total_Cost_Others);
+                //ViewBag.Total_Cost_Others = Convert.ToDecimal(ViewBag.Total_Cost_Others) + Total_Cost_Others;
+<tr class="gradeX odd" role="row">
+
+
+
+    <td>@Html.DisplayFor(modelItem => item.Chassis_No)</td>
+    <td>@Html.DisplayFor(modelItem => item.PurchaseDate)</td>
+
+
+
+    <td>@Html.DisplayFor(modelItem => item.ModelYear)</td>
+
+    <td>@Html.DisplayFor(modelItem => item.Price)</td>
+    <td>@Html.DisplayFor(modelItem => item.PriceRate)</td>
+    <td>@Html.DisplayFor(modelItem => item.PriceTax)</td>
+    <td>@Html.DisplayFor(modelItem => item.Freight)</td>
+    <td>@Html.DisplayFor(modelItem => item.Auction)</td>
+    <td>@Html.DisplayFor(modelItem => item.Rekso)</td>
+    <td>@Html.DisplayFor(modelItem => item.Recycle)</td>
+
+    <td>@Html.DisplayFor(modelItem => item.Loading)</td>
+
+    <td>@Html.DisplayFor(modelItem => item.OtherCharges_JP)</td>
+    <td>@Html.DisplayFor(modelItem => item.JP_Charges)</td>
+
+
+    <td>@Html.DisplayFor(modelItem => item.Total_Cost)</td>
+    <td>@Html.DisplayFor(modelItem => item.Total_Cost_Others)</td>
+
+
+</tr>}
+            }
+
+    </tbody>
+    @if (Model.StockCostList_ttl != null)
+    {
+        foreach (StockReport item in Model.StockCostList_ttl)
+        {
+<tfoot>
+    <tr role="row">
+
+
+        <th>Total </th>
+        <th> </th>
+        <th> </th>
+
+
+        <th>@Html.DisplayFor(modelItem => item.Price) </th>
+        <th> </th>
+        <th>@Html.DisplayFor(modelItem => item.PriceTax) </th>
+        <th>@Html.DisplayFor(modelItem => item.Freight) </th>
+        <th> @Html.DisplayFor(modelItem => item.Auction)</th>
+        <th> @Html.DisplayFor(modelItem => item.Rekso)</th>
+        <th>@Html.DisplayFor(modelItem => item.Recycle) </th>
+        <th>@Html.DisplayFor(modelItem => item.Loading) </th>
+        <th>@Html.DisplayFor(modelItem => item.OtherCharges_JP) </th>
+        <th>@Html.DisplayFor(modelItem => item.JP_Charges) </th>
+        <th>@Html.DisplayFor(modelItem => item.Total_Cost) </th>
+        <th>@Html.DisplayFor(modelItem => item.Total_Cost_Others) </th>
+
+
+    </tr>
+</tfoot>}
+            }
+
+</table>
+<div class="invoice-summary">
+
+    <div class="row">
+
+        <div class="col-lg-6 col-md-6">
+
+        </div>
+
+        <div class="col-lg-6 col-md-6 justify-content-end text-right">
+            @if (Model.StockCostList.Count() != 0)
+            {
+
+@Html.PagedListPager(Model.StockCostList, page => Url.Action("StockCostSearch", "Report", new { StartPurchaseDate = ViewBag.StartDate_StockCost, EndPurchaseDate = ViewBag.EndDate_StockCost, Container_No = ViewBag.Container_No_StockList, page })
+
+, X.PagedList.Mvc.Core.Common.PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new AjaxOptions()
+{
+HttpMethod = "get",
+UpdateTargetId = "StockCostSearch"
+})
+           )}
+        </div>
+    </div>
+
+</div>

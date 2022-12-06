@@ -1,0 +1,148 @@
+﻿
+
+@using DAL
+@using DAL.Models
+@using X.PagedList.Mvc.Core; @*//import this so we get our HTML Helper*@
+@using X.PagedList;  @*//import this so we can cast our list to IPagedList *@
+@model DAL.oClasses.OPurchases
+
+
+
+<div class="invoice-summary mb-1">
+
+    <div class="row mb-1">
+
+        <div class="col-lg-6 col-md-6 mb-1">
+            <b>@ViewBag.RecordsPerPage</b> records per page
+        </div>
+
+        <div class="col-lg-6 col-md-6 mb-1 justify-content-end text-right">
+
+        </div>
+    </div>
+
+</div>
+
+<table class="table table-bordered table-striped mb-0">
+    <thead>
+        <tr>
+            <th>Ref</th>
+
+            <th>Vendor</th>
+
+            <th>Date</th>
+            <th>Amt</th>
+            <th>VAT</th>
+            <th>Total</th>
+            <th>Paid</th>
+            <th>Balance</th>
+            <th>Status</th>
+            <th @ViewBag.AttachmentVisibility>Attachments</th>
+            <th>View</th>
+
+
+
+
+        </tr>
+    </thead>
+    <tbody>
+
+        @if (Model.purchaseOtherMasterList != null)
+        {
+            foreach (Pa_PurchaseMaster_DAL item in Model.purchaseOtherMasterList)
+            {
+
+
+
+                double Total = Convert.ToDouble(string.IsNullOrEmpty(item.Total) == true ? "0" : item.Total);
+                ViewBag.Total = Convert.ToDouble(ViewBag.Total) + Total;
+
+                double TotalVAT_Exp = Convert.ToDouble(string.IsNullOrEmpty(item.VAT_Exp) == true ? "0" : item.VAT_Exp);
+                ViewBag.vTotalVAT_Exp = Convert.ToDouble(ViewBag.vTotalVAT_Exp) + TotalVAT_Exp;
+
+                double SumTotal_Amount = Convert.ToDouble(string.IsNullOrEmpty(item.Total_Amount) == true ? "0" : item.Total_Amount);
+                ViewBag.vSumTotal_Amount = Convert.ToDouble(ViewBag.vSumTotal_Amount) + SumTotal_Amount;
+
+                double Total_Paid = Convert.ToDouble(string.IsNullOrEmpty(item.Paid) == true ? "0" : item.Paid);
+                ViewBag.vTotal_Paid = Convert.ToDouble(ViewBag.vTotal_Paid) + Total_Paid;
+
+                double Total_Bal_Due = Convert.ToDouble(string.IsNullOrEmpty(item.Bal_Due) == true ? "0" : item.Bal_Due);
+                ViewBag.vTotal_Bal_Due = Convert.ToDouble(ViewBag.vTotal_Bal_Due) + Total_Bal_Due;
+
+
+                <tr>
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PurchaseRef)
+                    </td>
+                    <td> @Html.DisplayFor(modelItem => item.Vendor_Name)</td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PurchaseDate)
+                    </td>
+
+                    <td>@Html.DisplayFor(modelItem => item.Total)</td>
+                    <td>@Html.DisplayFor(modelItem => item.VAT_Exp)</td>
+
+                    <td>@Html.DisplayFor(modelItem => item.Total_Amount) </td>
+                    <td>@Html.DisplayFor(modelItem => item.Paid)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Bal_Due)</td>
+
+
+                    <td> @Html.DisplayFor(modelItem => item.PurchaseStatus)</td>
+                    <td @ViewBag.AttachmentVisibility><a href="#" onclick="ShowAttachmentMaster('@item.PurchaseMaster_ID');">Manage Attachment</a> </td>
+                    <td> <a asp-controller="Purchases" asp-action="OtherPurchase" asp-route-PurchaseMaster_ID="@item.PurchaseMaster_ID">View</a></td>
+
+
+                </tr>
+            }
+        }
+
+    </tbody>
+    <tfoot>
+        <tr role="row">
+
+            <th>Total</th>
+
+            <th></th>
+
+            <th></th>
+            <th>@ViewBag.Total</th>
+            <th>@ViewBag.vTotalVAT_Exp</th>
+            <th>@ViewBag.vSumTotal_Amount</th>
+            <th>@ViewBag.vTotal_Paid</th>
+            <th>@ViewBag.vTotal_Bal_Due</th>
+            <th></th>
+            <th @ViewBag.AttachmentVisibility></th>
+            <th></th>
+
+        </tr>
+    </tfoot>
+
+
+</table>
+
+<div class="invoice-summary">
+
+    <div class="row">
+
+        <div class="col-lg-6 col-md-6">
+
+        </div>
+
+        <div class="col-lg-6 col-md-6 justify-content-end text-right">
+            @if (Model.purchaseOtherMasterList.Count() != 0)
+            {
+
+                @Html.PagedListPager(Model.purchaseOtherMasterList, page => Url.Action("GetPurchaseList_OthersBySearchFitlers", "Purchases", new { PurchaseRef = ViewBag.PurchaseRef_PurchaseOther, Vendor_ID = ViewBag.Vendor_ID_PurchaseOther, From_Date = ViewBag.From_Date_PurchaseOther, To_Date = ViewBag.To_Date_PurchaseOther, Status_ID = ViewBag.Status_ID_PurchaseOther, c_ID = ViewBag.c_ID_PurchaseOther, page })
+
+, X.PagedList.Mvc.Core.Common.PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new AjaxOptions()
+{
+HttpMethod = "get",
+UpdateTargetId = "TablePurchaseOtherListSearch"
+})
+                )
+            }
+        </div>
+    </div>
+
+</div>

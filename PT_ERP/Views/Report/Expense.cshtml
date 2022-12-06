@@ -1,0 +1,475 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+
+
+@using DAL
+@using DAL.Models
+@model DAL.oClasses.oReports
+@using X.PagedList.Mvc.Core; @*//import this so we get our HTML Helper*@
+@using X.PagedList;  @*//import this so we can cast our list to IPagedList*@
+
+
+
+@{
+    ViewData["Title"] = "Expense";
+    Layout = "~/Views/Shared/_LayoutTablePages.cshtml";
+}
+
+
+<header class="page-header">
+    <h2>Reports</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+
+            <li><a><span>@ViewBag.BreadCumController</span></a></li>
+            <li><a asp-area="" asp-controller="@ViewBag.BreadCumController" asp-action="@ViewBag.BreadCumAction"><span>Expense Report</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+
+<div class="row">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+        <div class="col-lg-12">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-info">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Success!</strong> @TempData["Success"] <a href="" class="alert-link"></a>
+                </div>
+            }
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Error!</strong> @TempData["Error"] <a href="" class="alert-link"></a>
+                </div>
+            }
+        </div>
+    }
+
+
+</div>
+
+
+
+<div class="row" style="padding-top:1px;">
+    <div class="col">
+        <section class="card">
+            <header class="card-header">
+
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <section class="card">
+                            <div class="card-body">
+
+                                <form method="get" data-ajax="true" data-ajax-complete="myCompleteSearch" data-ajax-success="mySuccessSearch" data-ajax-failure="myFailureSearch"
+                                      data-ajax-begin="myBeginSearch" asp-area="" asp-controller="Report" asp-action="ExpenseReport_Search" data-ajax-loading="">
+
+                                    <div class="row form-group">
+
+                                        @*@{
+                                                DateTime date = DateTime.Now;
+                                                var firstDayOfMonth = new DateTime(date.Year, date.Month, 1);
+                                                var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
+
+                                            }*@
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="From_Date">Start Date</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                        </span>
+                                                    </span>
+
+                                                    <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="StartDate" name="StartDate">
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="To_Date">End Date</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                        </span>
+                                                    </span>
+
+                                                    <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="EndDate" name="EndDate">
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+
+
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label>Expense Account</label>
+
+
+
+
+                                                <select class="form-control" id="DR_accountID" name="DR_accountID" onchange="changetextbox()" asp-items="@(new SelectList( ViewBag.DR_AccountsList,"Account_ID","AccountName"))" required>
+                                                    <option>Select</option>
+                                                </select>
+
+
+                                            </div>
+                                        </div>
+
+                                        @*<div class="col-lg-2">
+                                                <div class="form-group">
+                                                    <label>DR_accountID</label>
+                                                    <input type="text" class="form-control" placeholder="" id="DR_accountID" name="DR_accountID">
+
+                                                </div>
+                                            </div>*@
+
+
+
+
+
+
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label>Chasis No</label>
+                                                <input type="text" class="form-control" placeholder="" id="Chassis_No" name="Chassis_No">
+
+                                            </div>
+                                        </div>
+
+
+
+                                        @*<div class="col-lg-2">
+                                                <div class="form-group">
+                                                    <label>Expense Account</label>
+
+
+
+
+                                                    <select class="form-control" id="DR_accountID" name="DR_accountID" asp-items="@(new SelectList( ViewBag.AllCustomers,"DR_accountID","CustomerName"))">
+                                                        <option>Select Account</option>
+
+                                                    </select>
+
+
+                                                </div>
+                                            </div>*@
+
+
+
+                                        <div class="col-lg-4">
+
+
+
+
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="Search"> &nbsp; </label>
+                                                <br />
+                                                <button type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-primary">Search&nbsp;<i class="fas fa-search"></i></button>
+
+
+
+                                                <a type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-info" href="" id="print-btn">Print &nbsp;<i class="fas fa-print"></i></a>
+                                                <a type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-success" href="" id="export-btn">Export &nbsp;<i class="fas fa-file-excel"></i></a>
+
+                                            </div>
+
+
+                                        </div>
+
+                                    </div>
+
+                                </form>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
+
+
+            </header>
+
+
+
+
+            <div class="card-body" id="ExpenseReportSearch">
+
+
+
+                <table class="table table-bordered table-striped mb-0">
+                    <thead>
+                        <tr>
+
+
+
+                            <th>PayVia</></th>
+
+                            <th>Description</th>
+                            <th>PaymentDate</th>
+                            <th>Currency_Rate</th>
+                            <th>Amount</th>
+                            <th>VAT_Exp</th>
+                            <th>Total_Amount</th>
+
+
+
+
+                        </tr>
+                    </thead>
+
+
+                    <tbody id="PayableSummarySearch">
+                        @if (Model.ExpenseLedger != null)
+                        {
+
+
+                            foreach (var item in Model.ExpenseLedger.GroupBy(item => new
+                            {
+                                item.ExpenseAccount,
+
+
+
+                            }))
+
+                            {
+
+                                <tr class="gradeX odd" role="row">
+                                    <th>@Html.DisplayFor(modelItem => item.Key.ExpenseAccount)</th>
+                                </tr>
+                                ViewBag.Total = 0;
+                                foreach (var item1 in item)
+                                {
+
+                                    double Total = Convert.ToDouble(string.IsNullOrEmpty(item1.Total_Amount) == true ? "0" : item1.Total_Amount);
+                                    ViewBag.Total = Total + ViewBag.Total;
+
+                                    <tr class="gradeX odd" role="row">
+
+
+
+
+
+                                        <td>@Html.DisplayFor(modelItem => item1.PayVia)</td>
+
+                                        <td>@Html.DisplayFor(modelItem => item1.Description) </td>
+
+                                        <td>@Html.DisplayFor(modelItem => item1.PaymentDate) </td>
+
+                                        <td>@Html.DisplayFor(modelItem => item1.Currency_Rate) </td>
+
+                                        <td>@Html.DisplayFor(modelItem => item1.Amount) </td>
+
+                                        <td>@Html.DisplayFor(modelItem => item1.VAT_Exp) </td>
+
+                                        <td>@Html.DisplayFor(modelItem => item1.Total_Amount) </td>
+
+                                    </tr>
+
+                                }
+                                <tr class="gradeX odd" role="row">
+                                    <th>SubTotal</th>
+                                    <th></th>
+                                    <th></th>
+
+
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    @if (ViewBag.Total != null)
+                                    {
+                                        <th>@string.Format("{0:0,0.00,0}", ViewBag.Total)</th>
+                                    }
+                                    else
+                                    {
+                                        <th>@ViewBag.Total</th>
+                                    }
+
+                                </tr>
+                            }
+                        }
+
+                    </tbody>
+
+                    <tfoot>
+                        <tr role="row">
+
+                            <th>Total</th>
+                            <th></th>
+                            <th></th>
+
+                            <th></th>
+
+                            <th></th>
+                            <th></th>
+
+                            <th>@Model.ExpenseReport_TTL.Total_Amount </th>
+
+
+
+
+
+
+                        </tr>
+                    </tfoot>
+
+
+                </table>
+
+                <div class="invoice-summary">
+
+                    <div class="row">
+
+                        <div class="col-lg-6 col-md-6">
+
+                        </div>
+
+                        <div class="col-lg-6 col-md-6 justify-content-end text-right">
+                            @if(Model.ExpenseLedger.Count() != 0)
+                            {
+
+                                @Html.PagedListPager(Model.ExpenseLedger, page => Url.Action("ExpenseReport_Search", "Report", new { StartDate = ViewBag.StartDate_ExpenseReport, EndDate = ViewBag.EndDate_ExpenseReport, DR_accountID = ViewBag.DR_accountID_ExpenseReport, Chassis_No = ViewBag.Chassis_No_ExpenseReport, page })
+
+                                    , X.PagedList.Mvc.Core.Common.PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new AjaxOptions()
+                                    {
+                                        HttpMethod = "get",
+                                        UpdateTargetId = "ExpenseReportSearch"
+                                    })
+                              )
+
+                            }
+                        </div>
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+    </div>
+</div>
+
+
+
+
+@section Scripts{
+
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
+
+
+    <script>
+
+
+        function changetextbox() {
+
+            var x = document.getElementById("DR_accountID");
+            var i = x.selectedIndex;
+            var textContent = x.options[i].text;
+
+            var result = textContent.includes("OFFICE EXPENSE");
+            if (result) {
+                $("#Chassisrow").show();
+
+
+            } else {
+                $("#Chassisrow").hide();
+
+                $
+
+            }
+
+        }
+
+        function myBeginSearch() {
+            $("#LoaderImage").css("visibility", "visible");
+        }
+
+        function mySuccessSearch(data) {
+
+            debugger
+            if (data.message == undefined) {
+
+                $('#ExpenseReportSearch').html(data);
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        function myFailureSearch() {
+
+            alert("Failured occured. Please try again!");
+            $("#LoaderImage").css("visibility", "hidden");
+        }
+
+        function myCompleteSearch() {
+            $("#LoaderImage").css("visibility", "hidden");
+
+        }
+
+
+    </script>
+
+
+    <script>
+                    $(document).ready(function(){
+                    $("#print-btn").click(function(event){
+                    event.preventDefault();
+
+                        var win = window.open("@Url.Action("ExpenseReport_Print", "Report")" + "?StartDate=" + $("#StartDate").val() + "&EndDate=" + $("#EndDate").val() + "&DR_accountID=" + $("#DR_accountID").val() + "&Chassis_No=" + $("#Chassis_No").val() + "&c_IDs=" + $("#c_IDs").val(), "_blank");
+                    win.focus();
+                    });
+                    })
+         $(document).ready(function(){
+                    $("#export-btn").click(function(event){
+                    event.preventDefault();
+
+                        var win = window.open("@Url.Action("ExpenseReport_Excel", "Report")" + "?StartDate=" + $("#StartDate").val() + "&EndDate=" + $("#EndDate").val() + "&DR_accountID=" + $("#DR_accountID").val() + "&Chassis_No=" + $("#Chassis_No").val() + "&c_IDs=" + $("#c_IDs").val(), "_blank");
+                    win.focus();
+                    });
+                    })
+
+
+    </script>
+
+}
+
+@*<script>
+                $(document).ready(function(){
+                $("#print-btn").click(function(event){
+                event.preventDefault();
+
+                var win = window.open("@Url.Action("ExpenseReport_Print", "Report")" + "?From_Date=" + $("#From_Date").val() + "&To_Date=" + $("#To_Date").val() + "&PurchaseRef=" + $("#PurchaseRef").val() + "&Vendor_ID=" + $("#Vendor_ID").val() + "&Status_ID=" + $("#Status_ID").val() + "&c_ID=" + $("#c_ID").val() , "_blank");
+                win.focus();
+                });
+                })
+    </script>*@

@@ -1,0 +1,365 @@
+﻿@using DAL
+@using DAL.Models
+@using X.PagedList.Mvc.Core; @*//import this so we get our HTML Helper*@
+@using X.PagedList;  @*//import this so we can cast our list to IPagedList *@
+@model DAL.oClasses.OStock
+@{
+    ViewData["Title"] = "Shipping_infoList";
+    Layout = "~/Views/Shared/_LayoutTablePages.cshtml";
+}
+
+<header class="page-header">
+    <h2>@ViewBag.BreadCumAction</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+
+            <li><a><span>@ViewBag.BreadCumController</span></a></li>
+            <li><a asp-area="" asp-controller="@ViewBag.BreadCumController" asp-action="@ViewBag.BreadCumAction"><span>Shipping_Info List</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+
+<div class="row">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+        <div class="col-lg-12">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-info">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Success!</strong> @TempData["Success"] <a href="" class="alert-link"></a>
+                </div>
+            }
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Error!</strong> @TempData["Error"] <a href="" class="alert-link"></a>
+                </div>
+            }
+        </div>
+    }
+
+
+</div>
+
+
+<!--Following 'LoaderImage' div is for showing ajax loader before ajax call-->
+<div class="imageGIFLoader" id="LoaderImage">
+    <img src="~/img/projects/ajax-loader.gif" class="img-responsive" style="width:65px; height:65px;" />
+</div>
+
+
+<div class="row">
+    <div class="col">
+        <section class="card">
+            <header class="card-header">
+
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <section class="card">
+                            <div class="card-body">
+                                <form method="get" data-ajax="true" data-ajax-complete="myCompleteSearch" data-ajax-success="mySuccessSearch" data-ajax-failure="myFailureSearch"
+                                      data-ajax-begin="myBeginSearch" asp-area="" asp-controller="Stock" asp-action="Shipping_infoList_SearchFilter" data-ajax-loading="">
+
+
+                                    <div class="row form-group">
+
+                                        <div class="col-lg-2">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="From_Date">From Date</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                        </span>
+                                                    </span>
+
+                                                    <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="StartDate" name="StartDate">
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="col-lg-2">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="To_Date">To Date</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                        </span>
+                                                    </span>
+
+                                                    <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="EndDate" name="EndDate">
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                        <div class="col-lg-2">
+                                            <div class="form-group">
+                                                <label>Trans Ref </label>
+                                                <input type="text" id="trans_ref" name="trans_ref" class="form-control" placeholder="Trans Ref">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-2">
+                                            <div class="form-group">
+                                                <label>Shipper Name </label>
+                                                <input type="text"  name="Shipper_Name" id="Shipper_Name" class="form-control" placeholder="Shipper Name">
+                                            </div>
+                                        </div>
+
+
+
+
+
+
+                                    </div>
+
+                                    <div class="row ">
+                                        <div class="col-lg">
+
+
+
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="Search"> &nbsp; </label>
+
+                                                <button type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-info">Search&nbsp;<i class="fas fa-search"></i></button>
+                                                <a class="mb-1 mt-1 mr-1 btn btn-sm btn-primary" asp-area="" asp-controller="Stock" asp-action="Shippinginfo">Add New&nbsp;<i class="fas fa-plus"></i></a>
+
+                                                <a type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-info" href="" id="print-btn">Print &nbsp;<i class="fas fa-print"></i></a>
+                                                <a type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-success" href="" id="export-btn">Export &nbsp;<i class="fas fa-file-excel"></i></a>
+
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                </form>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
+            </header>
+            <div class="card-body" id="TableShipping_infoListSearch">
+
+
+                <div class="invoice-summary mb-1">
+
+                    <div class="row mb-1">
+
+                        <div class="col-lg-6 col-md-6 mb-1">
+                            <b>@ViewBag.RecordsPerPage</b> records per page
+                        </div>
+
+                        <div class="col-lg-6 col-md-6 mb-1 justify-content-end text-right">
+
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <table class="table table-bordered table-striped mb-0 mt-1" @*id="datatable-default"*@>
+                    <thead>
+                        <tr>
+
+
+                            <th>Trans Ref </th>
+                            <th>Shipper Name </th>
+                            <th>Invoice_Date </th>
+                            <th>Total </th>
+                            <th>Paid </th>
+                            <th>Balance </th>
+                            <th>Status </th>
+                            <th>View</th>
+
+
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @if (Model.Shipping_infoListPagedObject != null)
+                        {
+                            foreach (pa_Shipping_Info item in Model.Shipping_infoListPagedObject)
+                            {
+
+                                //double vTotalAmount = Convert.ToDouble(item.Total_Amount);
+                                //ViewBag.VpAmount = vTotalAmount;
+
+                                //double vPaid = Convert.ToDouble(item.Paid);
+                                //ViewBag.VPaid = vPaid;
+
+                                //double vBalance = Convert.ToDouble(item.Balance);
+                                //ViewBag.vBalance = vBalance;
+                        <tr>
+
+
+                            <td> <a asp-controller="Stock" asp-action="shippinginfo" asp-route-Shipping_info_ID="@item.Shipping_info_ID"> @Html.DisplayFor(modelItem => item.Shipping_Info_Ref)</a></td>
+
+                           
+                            <td>@Html.DisplayFor(modelItem => item.Shipper_Name)</td>
+                            <td>@Html.DisplayFor(modelItem => item.trans_Date)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Total_Amount)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Paid)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Balance)</td>
+                            <td>@Html.DisplayFor(modelItem => item.PaymentStatus)</td>
+                            <td> <a asp-controller="Stock" asp-action="shippinginfo" asp-route-Shipping_info_ID="@item.Shipping_info_ID">View</a></td>
+
+
+
+                        </tr>
+                            }
+                        }
+
+
+
+
+                    </tbody>
+
+                    <tfoot>
+                        <tr role="row">
+                             @if (Model.Shipping_infoListTotal != null)
+                             {
+                                 foreach (pa_Shipping_Info item in Model.Shipping_infoListTotal)
+                                 {
+                            <th>Total</th>
+                            <th></th>
+                            <th></th>
+                            <th>@item.Total_Amount</th>
+                            <th>@item.Paid</th>
+                            <th>@item.Balance</th>
+
+                            <th></th>
+                            <th></th>
+                                 }
+                             }
+                        </tr>
+                    </tfoot>
+
+
+                </table>
+
+
+                <div class="invoice-summary">
+
+                    <div class="row">
+
+                        <div class="col-lg-6 col-md-6">
+
+                        </div>
+
+                        <div class="col-lg-6 col-md-6 justify-content-end text-right">
+
+                            @if (Model.Shipping_infoListPagedObject.Count() != 0)
+                            {
+
+                                @Html.PagedListPager(Model.Shipping_infoListPagedObject, page => Url.Action("Shipping_infoList_SearchFilter", "Stock", new { trans_ref = ViewBag.trans_ref_Shipping_infoList, StartDate = ViewBag.StartDate_infoList, EndDate = ViewBag.EndDate_infoList, Shipper_Name = ViewBag.Shipper_Name_Shipping_infoList, page })
+                                     , X.PagedList.Mvc.Core.Common.PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new AjaxOptions()
+                                     {
+                                         HttpMethod = "get",
+                                         UpdateTargetId = "TableShipping_infoListSearch"
+                                     })
+                                     )}
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+    </div>
+</div>
+
+
+
+<!-- Modal show attachment -->
+
+
+
+
+
+
+
+@section Scripts{
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
+
+
+    <script>
+
+        function myBeginSearch() {
+            $("#LoaderImage").css("visibility", "visible");
+        }
+
+        function mySuccessSearch(data) {
+
+            debugger
+            if (data.message == undefined) {
+
+                $('#TableShipping_infoListSearch').html(data);
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        function myFailureSearch() {
+
+            alert("Failured occured. Please try again!");
+            $("#LoaderImage").css("visibility", "hidden");
+        }
+
+        function myCompleteSearch() {
+            $("#LoaderImage").css("visibility", "hidden");
+
+        }
+
+          $(document).ready(function(){
+    $("#print-btn").click(function(event){
+        event.preventDefault();
+
+        var win = window.open("@Url.Action("Shipping_infoList_print", "Report")" + "?trans_ref=" + $("#trans_ref").val() + "&StartDate=" + $("#StartDate").val() + "&EndDate=" + $("#EndDate").val() + "&Shipper_Name=" + $("#Shipper_Name").val(), "_blank");
+        win.focus();
+    });
+        })
+
+          $(document).ready(function(){
+              $("#export-btn").click(function(event){
+        event.preventDefault();
+
+        var win = window.open("@Url.Action("Shipping_infoList_Excel", "Report")" + "?trans_ref=" + $("#trans_ref").val() + "&StartDate=" + $("#StartDate").val() + "&EndDate=" + $("#EndDate").val() + "&Shipper_Name=" + $("#Shipper_Name").val(), "_blank");
+        win.focus();
+    });
+        })
+
+    </script>
+
+
+
+}
+
+
+

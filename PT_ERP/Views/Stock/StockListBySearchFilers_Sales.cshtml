@@ -1,0 +1,192 @@
+﻿@using DAL
+@using DAL.Models
+@using X.PagedList.Mvc.Core; @*//import this so we get our HTML Helper*@
+@using X.PagedList;  @*//import this so we can cast our list to IPagedList *@
+
+@model DAL.oClasses.OStock
+
+
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+
+
+@if (Model.StockListStats != null)
+{
+
+<div class="row">
+
+
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label class="col-form-label">UNSOLD</label>
+            <b>  <label class="col-form-label" for="UNSOLD">@Model.StockListStats.StockStatus_UNSOLD</label></b>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label class="col-form-label">BOOKING</label>
+            <b>  <label class="col-form-label" for="BOOKING">@Model.StockListStats.StockStatus_BOOKING</label></b>
+        </div>
+    </div>
+
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label class="col-form-label">SOLD</label>
+            <b>   <label class="col-form-label" for="SOLD">@Model.StockListStats.StockStatus_SOLD</label></b>
+        </div>
+    </div>
+
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label class="col-form-label">CXX</label>
+            <b>   <label class="col-form-label" for="CXX">@Model.StockListStats.StockStatus_CXX</label></b>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label class="col-form-label">TOTAL STOCK</label>
+            <b>   <label class="col-form-label" for="TOTALSTOCK">@Model.StockListStats.StockStatus_TOTALSTOCK</label></b>
+        </div>
+    </div>
+
+
+
+</div>}
+
+<table class="table table-bordered table-striped mb-0" @*id="datatable-default"*@>
+    <thead>
+        <tr>
+
+
+            @*stock_ID, Chassis_No,  Make, ModelDesciption, Color, StockType,Transmission, CarLocation, Total_Cost, PurchaseRef, Stock_Status,Vendor_Name,ModelYear*@
+
+            <th>Chassis</th>
+
+            <th>Make</th>
+
+            <th>MakeModel</th>
+            <th>Color</th>
+            <th>ModelYear</th>
+            <th>StockType</th>
+            <th>Location</th>
+            <th>Vendor</th>
+            <th>Pur Date</th>
+            <th>Interior Color</th>
+            <th>Selling Price</th>
+            @if (@Configuration.GetSection("AppSettings").GetSection("IsDirectStockPurEnabled").Value == "true")
+            {
+       
+                        <th>Mileage</th>}
+
+        
+            <th>Status</th>
+
+            <th>Attachments</th>
+            <th>View</th>
+
+
+
+        </tr>
+    </thead>
+    <tbody id="TableStockListSearch">
+
+        @if (Model.StockListPagedObject != null)
+        {
+            foreach (StockDetails item in Model.StockListPagedObject)
+            {
+
+                double Total = Convert.ToDouble(string.IsNullOrEmpty(item.Total_All_Cost) == true ? "0" : item.Total_All_Cost);
+                ViewBag.Total = Total;
+        <tr>
+
+            <td> <a asp-controller="Stock" asp-action="AddNewStock" asp-route-Stock_ID="@item.stock_ID"> @Html.DisplayFor(modelItem => item.Chassis_No)</a></td>
+            <td> @Html.DisplayFor(modelItem => item.Make)</td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ModelDesciption)
+            </td>
+
+            <td>@Html.DisplayFor(modelItem => item.Color)</td>
+            <td>@Html.DisplayFor(modelItem => item.ModelYear)</td>
+            <td>@Html.DisplayFor(modelItem => item.StockTypeName) </td>
+            <td>@Html.DisplayFor(modelItem => item.CarLocation) </td>
+            <td>@Html.DisplayFor(modelItem => item.Vendor_Name) </td>
+            <td>@Html.DisplayFor(modelItem => item.PurchaseDate) </td>
+            <td> @Html.DisplayFor(modelItem => item.InteriorColor)</td>
+            <td> @Html.DisplayFor(modelItem => item.Selling_Price)</td>
+            @if (@Configuration.GetSection("AppSettings").GetSection("IsDirectStockPurEnabled").Value == "true")
+            {
+     
+                                <td> @Html.DisplayFor(modelItem => item.mileage)</td>}
+       
+            <td> @Html.DisplayFor(modelItem => item.Stock_Status)</td>
+
+            <td> <a href="#" onclick="ShowAttachmentMaster('@item.stock_ID');">Manage Attachment &nbsp; (@item.CountAttach)</a> </td>
+            <td> <a asp-controller="Stock" asp-action="AddNewStock" asp-route-Stock_ID="@item.stock_ID">View</a><br />
+                                                                                                                <span> <a href="@item.AD_Link" target="_blank">AD Link</a></span>
+            </td>
+
+
+
+        </tr>
+}
+}
+
+
+    </tbody>
+    <tfoot>
+        <tr role="row">
+
+            @if (Model.StockList_TTL != null)
+            {
+                foreach (StockDetails item in Model.StockList_TTL)
+                {
+
+        <th></th>
+                            <th></th>
+                                                <th></th>
+                                                                    <th></th>
+                                                                                        <th></th>
+                                                                                                            <th></th>
+                                                                                                                                <th></th>
+                                                                                                                                                    <th></th>
+                                                                                                                                                                        <th></th>
+                                                                                                                                                                                            <th></th>
+                                                                                                                                                                                                                <th></th>
+                                                                                                                                                                                                                                    @if (@Configuration.GetSection("AppSettings").GetSection("IsDirectStockPurEnabled").Value == "true")
+                                                                                                                                                                                                                                    {
+                                                                                                                                                                                                  
+                                                                                                                                                                                                                                        <th></th>}
+                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                            <th></th>
+                                                                                                                                                                                                                                                                                                <th></th>
+                                                                                                                                                                                                                                                                                                                    <th></th>}
+                                                                                                                                                                                                                                                                                                                                }
+        </tr>
+    </tfoot>
+</table>
+
+<div class="invoice-summary">
+
+    <div class="row">
+
+        <div class="col-lg-6 col-md-6">
+
+        </div>
+
+        <div class="col-lg-6 col-md-6 justify-content-end text-right">
+            @if (Model.StockListPagedObject.Count() != 0)
+            {
+@Html.PagedListPager(Model.StockListPagedObject, page => Url.Action("StockListBySearchFilers_Sales", "Stock", new { ChassisNo = ViewBag.ChassisNo_StockList, Make_ID = ViewBag.Make_ID_StockList, MakeModel_description_ID = ViewBag.MakeModel_description_ID_StockList, Color_Exterior_ID = ViewBag.Color_Exterior_ID_StockList, PurchaseStartDate = ViewBag.PurchaseStartDate_StockList, PurchaseEndDate = ViewBag.PurchaseEndDate_StockList, BL_NO = ViewBag.BL_NO_StockList, BOE = ViewBag.BOE_StockList, PurchaseRef = ViewBag.PurchaseRef_StockList, SaleRef = ViewBag.SaleRef_StockList, c_ID = ViewBag.c_ID_StockList, Stock_Status = ViewBag.Stock_Status_StockList, loc_ID = ViewBag.loc_ID_StockList, VendorName = ViewBag.VendorName_StockList, ModelYear = ViewBag.ModelYear_StockList, Container_No = ViewBag.Container_No_StockList, page })
+
+
+                     , X.PagedList.Mvc.Core.Common.PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new AjaxOptions()
+                     {
+                         HttpMethod = "get",
+                         UpdateTargetId = "stockListtable"
+                     })
+                                   )}
+        </div>
+    </div>
+
+</div>
+

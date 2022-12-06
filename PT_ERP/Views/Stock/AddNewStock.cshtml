@@ -1,0 +1,2223 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OStock
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+
+@{
+    ViewData["Title"] = "AddNewStock";
+    Layout = "~/Views/Shared/_LayoutTablePages.cshtml";
+}
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+<style>
+    .float {
+        position: fixed;
+        width: 60px;
+        height: 60px;
+        bottom: 40px;
+        right: 40px;
+        background-color: #25d366;
+        color: #FFF;
+        border-radius: 50px;
+        text-align: center;
+        font-size: 30px;
+        box-shadow: 2px 2px 3px #999;
+        z-index: 100;
+    }
+
+    .my-float {
+        margin-top: 16px;
+    }
+</style>
+@{
+    IEnumerable<DAL.Models.AdminRights> ListRights = ViewBag.AdminRolesRights;
+
+
+
+    string StockForm_ActionMethod = "";
+    int? Stock_ID = ViewBag.Stock_ID;
+
+
+
+
+
+    //if (Model.purchaseMasterObj != null && Model.purchaseMasterObj.PurchaseMaster_ID > 0)
+    if (Stock_ID != 0)
+    {
+        StockForm_ActionMethod = "UpdateStock";
+    }
+    else
+    {
+        StockForm_ActionMethod = "InsertStock";
+    }
+    bool Add = false;
+    bool Edit = false;
+    bool Delete = false;
+    bool IsAdmin = false;
+    bool Print = false;
+    bool Excel = false;
+    bool View = false;
+    var ValAdd = "";
+    var ValEdit = "";
+    var ValDelete = "";
+    var ValIsAdmin = "";
+    var ValPrint = "";
+    var ValExcel = "";
+    var ValView = "";//disabled
+    if (ListRights != null)
+    {
+        foreach (AdminRights items in ListRights.Where(x => x.MenuID == 50))
+        {
+
+            Add = items.Add;
+            Edit = items.Edit;
+            Delete = items.Delete;
+            IsAdmin = items.IsAdmin;
+            Print = items.Print;
+            Excel = items.Excel;
+            View = items.View;
+
+        }
+        if (Add == true)
+        {
+            ValAdd = "";
+        }
+
+        if (Edit == true)
+        {
+            ValEdit = "";
+        }
+
+        if (Delete == true)
+        {
+            ValDelete = "";
+        }
+
+        if (Print == true)
+        {
+            ValPrint = "";
+        }
+
+        if (Excel == true)
+        {
+            ValExcel = "";
+        }
+
+        if (View == true)
+        {
+            ValView = "";
+        }
+
+    }
+
+
+    string NAME = "";
+    if (Model.attachmentList !=null)
+    {
+        if (Model.attachmentList.Count() > 0)
+        {
+            foreach (Pa_Attachments_DAL item in Model.attachmentList)
+            {
+                NAME = item.File_Name;
+            }
+        }
+    }
+    string WhatsApp_Enabled = Configuration.GetSection("AppSettings").GetSection("WhatsApp_Enabled").Value;
+    string PDF_Enabled = Configuration.GetSection("AppSettings").GetSection("PDF_Enabled").Value;
+    string Stock_Setting = Configuration.GetSection("AppSettings").GetSection("IsStockList_Name").Value;
+    string SecondCurrency = Configuration.GetSection("AppSettings").GetSection("SecondCurrency").Value;
+    string Drive_LEFT_Dropdown = Configuration.GetSection("AppSettings").GetSection("Drive_LEFT_Dropdown").Value;
+    string Drive_RIGHT_Dropdown = Configuration.GetSection("AppSettings").GetSection("Drive_RIGHT_Dropdown").Value;
+    string make_country_ID_Dropdown = Configuration.GetSection("AppSettings").GetSection("make_country_ID_Dropdown").Value;
+}
+
+<header class="page-header">
+    <h2>@ViewBag.SectionHeaderTitle</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+            <li><a asp-area="" asp-controller="Stock" asp-action="AddNewStock"><span>@ViewBag.SectionSub_HeaderTitle</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+
+
+
+
+
+<div class="row" id="SuccessErrorSection">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+        <div class="col-lg-12">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-info">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Success!</strong> @TempData["Success"] <a href="" class="alert-link"></a>
+                </div>
+            }
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Error!</strong> @TempData["Error"] <a href="" class="alert-link"></a>
+                </div>
+            }
+        </div>
+    }
+
+</div>
+
+
+<section class="card">
+    <div class="card-body">
+        <div class="invoice">
+
+            <form method="post" asp-area="" asp-controller="Stock" asp-action="@StockForm_ActionMethod"
+                  id="formStockMaster" onclick="RemoveAtt()">
+                @Html.AntiForgeryToken()
+                <header class="clearfix">
+                    <div class="row">
+                        <div class="col-lg-2">
+                            <h2 class="card-title" style="line-height:normal;">Vehicle Details</h2>
+                        </div>
+
+                        <div class="col-lg-7">
+
+
+
+
+                            <div class="wizard-progress">
+                                <div class="steps-progress">
+                                    <div class="progress-indicator"></div>
+                                </div>
+                                <ul class="nav wizard-steps">
+                                    <li class="nav-item active">
+                                        <a class="nav-link" href="#w3-account" data-toggle="tab"><span>1</span>Purchase</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#w3-profile" data-toggle="tab"><span>2</span>Booking</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#w3-billing" data-toggle="tab"><span>3</span>Sold</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#w3-confirm" data-toggle="tab"><span>4</span>In-PapersWork</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#w3-confirm" data-toggle="tab"><span>5</span>Delivered</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#w3-confirm" data-toggle="tab"><span>6</span>In-Claim</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#w3-confirm" data-toggle="tab"><span>7</span>Complete</a>
+                                    </li>
+                                </ul>
+                            </div>
+
+
+
+
+                        </div>
+
+                        <div class="col-lg-3" style="text-align:right;">
+                            <button type="submit" id="ButtonIssue" @ValAdd @ValEdit class="mb-1 mt-1 mr-1 btn btn-sm btn-success">Save &nbsp;<i class="fas fa-save"></i></button>
+                            @if (Configuration.GetSection("AppSettings").GetSection("IsDirectStockPurEnabled").Value == "true")
+                            {
+                                <button type="button" class="btn-sm btn btn-danger" data-toggle="modal" data-target="#DeleteStockMasterModal" @ValDelete onclick="DeleteStockMaster('@Model.StockObject.stock_ID');">Delete &nbsp;<i class="fas fa-trash-alt"></i></button>}
+                            <button type="button" class="mb-1 mt-1 mr-1 btn btn-sm btn-warning" data-toggle="modal" data-target="#ChangeStockStatustoCancel">Cancel &nbsp;<i class="fas fa-cross"></i></button>
+                            <a type="submit" @PDF_Enabled class="mb-1 mt-1 mr-1 btn btn-sm btn-info" id="print-btn" href="">PDF&nbsp;<i class="fas fa-print"></i></a>
+                            <a href="/Stock/@Stock_Setting" class="mb-1 mt-1 mr-1 btn btn-sm btn-default @ValView">List &nbsp;<i class="fas fa-list"></i></a>
+                            <a  @WhatsApp_Enabled data-toggle="modal" data-target="#AddMakeModal" class="float" target="_blank">
+                                <i class="fa fa-whatsapp my-float"></i>
+                            </a>
+                        </div>
+                    </div>
+                </header>
+
+
+                <div class="row">
+                    <div class="col">
+                        <div class="tabs tabs-dark">
+                            <ul class="nav nav-tabs">
+                                <li class="nav-item active">
+                                    <a class="nav-link" href="#Specification6" data-toggle="tab"> Specification</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#Purchase6" data-toggle="tab">Purchase</a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#Sale6" data-toggle="tab">Sale</a>
+                                </li>
+                                <li class="nav-item" @ViewBag.IsDubaiSpecsEnabled>
+                                    <a class="nav-link" href="#Deposit6" data-toggle="tab">Deposit & Papers</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#Delivery6" data-toggle="tab" @ViewBag.IsDubaiSpecsEnabled>Delivery</a>
+                                </li>
+                                <li class="nav-item" @ViewBag.IsDubaiSpecsEnabled>
+                                    <a class="nav-link" href="#Attachments6" data-toggle="tab" hidden>Attachments</a>
+                                </li>
+                            </ul>
+                            <div class="tab-content">
+
+                                <div id="Specification6" class="tab-pane active">
+
+                                    <section class="card">
+
+                                        <div class="card-body">
+
+                                            <div class="row form-group">
+
+
+
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="CHASSIS_NO">Chassis_No</label>
+
+                                                        <input type="text" class="form-control" id="CHASSIS_NO" name="CHASSIS_NO" value="@Model.StockObject.Chassis_No" @ViewBag.JapanSpecsdisabled required>
+
+                                                        <input type="hidden" id="Stock_ID" name="Stock_ID" value="@Model.StockObject.stock_ID" />
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="ModelYear">Year</label>
+
+                                                        <input type="text" class="form-control" id="ModelYear" name="ModelYear" value="@Model.StockObject.ModelYear" @ViewBag.JapanSpecsdisabled>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="color_exterior_ID">Color</label>
+
+
+                                                        <select class="form-control" id="color_exterior_ID" name="color_exterior_ID" asp-items="@(new SelectList(ViewBag.ColorsList, "Color_ID", "ColorName", Model.StockObject.Color_Exterior_ID))">
+                                                            <option>Select Color</option>
+                                                        </select>
+
+
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="color_exterior_ID">Color(Int)</label>
+
+
+                                                        <select class="form-control" id="color_interior_ID" name="color_interior_ID" asp-items="@(new SelectList(ViewBag.ColorsList, "Color_ID", "ColorName", Model.StockObject.Color_Interior_ID))">
+                                                            <option value="0">Select Color(Int)</option>
+                                                        </select>
+
+
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="Make_category_ID">Category</label>
+
+
+
+                                                        <select class="form-control" id="Make_category_ID" name="Make_category_ID" asp-items="@(new SelectList(ViewBag.VehicleCategory, "VehCategory_ID", "VehCategoryName", Model.StockObject.Make_category_ID))"
+                                                                required>
+                                                            <option>Select Category</option>
+                                                        </select>
+
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="make_ID">Make</label>
+
+
+
+                                                        <select class="form-control" id="make_ID" name="make_ID"
+                                                                asp-items="@(new SelectList(ViewBag.MakeList, "Make_ID", "Make", Model.StockObject.Make_ID))"
+                                                                onchange="GetSubModel(this);">
+                                                            <option>Select Make</option>
+                                                        </select>
+
+
+
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="MakeModel_description_ID">Model Desc</label>
+
+
+
+                                                        <select class="form-control MakeModelClass" id="MakeModel_description_ID"
+                                                                asp-items="@(new SelectList(ViewBag.ModelDesc, "ModelDesc_ID", "ModelDesciption", Model.StockObject.MakeModel_description_ID))"
+                                                                name="MakeModel_description_ID">
+                                                            <option value="">Select Model</option>
+
+                                                        </select>
+
+
+
+
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="Transmission">Transmission</label>
+
+                                                        <select class="form-control" name="Transmission" id="Transmission" asp-for="@Model.StockObject.Transmission">
+                                                            <option value="A/T">A/T</option>
+                                                            <option value="M/T">M/T</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="WEIGHT">Weight</label>
+                                                        <input type="text" class="form-control" name="WEIGHT" id="WEIGHT" value="@Model.StockObject.Weight">
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="Drive">Drive</label>
+                                                        @if (!string.IsNullOrEmpty(Model.StockObject.Drive))
+                                                        {
+                                                            <select class="form-control" name="Drive" id="Drive" asp-for="@Model.StockObject.Drive">
+
+                                                                <option value="R">Right</option>
+                                                                <option value="L">Left</option>
+                                                            </select>
+                                                        }
+                                                        else
+                                                        {
+                                                            <select class="form-control" name="Drive" id="Drive" asp-for="@Model.StockObject.Drive">
+
+                                                                <option value="R" selected="@Drive_RIGHT_Dropdown">Right</option>
+                                                                <option value="L" selected="@Drive_LEFT_Dropdown">Left</option>
+                                                            </select>
+
+                                                        }
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="Used_New">New/Used</label>
+
+                                                        <select class="form-control" name="Used_New" id="Used_New" asp-for="@Model.StockObject.Used_New">
+                                                            <option value="N">New</option>
+                                                            <option value="U">Used</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <!--<div class="col-md-3">
+    <div class="form-group">
+        <label class="col-form-label" for="DRIVE">Drive</label>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-lg-6">-->
+                                                @*<input type="radio" name="DRIVE" id="Right">*@
+                                                <!--<label class="col-form-label" value="R" for="Project_ID">Right</label>
+
+    </div>
+    <div class="col-lg-6">-->
+                                                @*<input type="radio" name="DRIVE" value="L" id="Left">*@
+                                                <!--
+                        <label class="col-form-label" for="Project_ID">Left</label>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>-->
+                                                @*<div class="col-md-3">
+            <div class="form-group">
+                <label class="col-form-label" for="USED_NEW">Used / New</label>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <input type="radio" name="USED_NEW" value="U" id="USED_NEW">
+                            <label class="col-form-label" for="USED_NEW">Used</label>
+
+                        </div>
+                        <div class="col-lg-6">
+                            <input type="radio" name="USED_NEW" value="N" id="USED_NEW">
+                            <label class="col-form-label" for="USED_NEW">New</label>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>*@
+
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="Door">Door</label>
+
+                                                        <select class="form-control" name="Door" id="Door" asp-for="@Model.StockObject.Door">
+                                                            <option value="2">2</option>
+                                                            <option value="3">3</option>
+                                                            <option value="4">4</option>
+                                                            <option value="5">5</option>
+                                                            <option value="6">6</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="make_country_ID">Make Country</label>
+
+                                                        <select class="form-control" name="make_country_ID" id="make_country_ID"
+                                                                asp-items="@(new SelectList(ViewBag.MakeCountryList, "MakeCountry_ID", "CountryName", Model.StockObject.Make_country_ID))">
+                                                            <option value=""></option>
+                                                        </select>
+
+
+
+
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="EngineType">Engine Type</label>
+                                                        <select class="form-control" name="EngineType" id="EngineType"
+                                                                asp-items="@(new SelectList(ViewBag.EngineType, "EngineType_ID", "Engine_Power", Model.StockObject.Engine_Type))">
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="FUEL_TYPE">Fuel</label>
+
+                                                        <select class="form-control" name="FUEL_TYPE" id="FUEL_TYPE" asp-for="@Model.StockObject.Fuel_Type">
+                                                            <option value="PETROL">PETROL</option>
+                                                            <option value="DEISEL">DEISEL</option>
+
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="Engine_No">Engine No</label>
+
+                                                        <input type="text" class="form-control" id="Engine_No" name="Engine_No" value="@Model.StockObject.Engine_No">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="HS_CODE">@Configuration.GetSection("AppSettings").GetSection("IsLabelHsCode").Value</label>
+
+                                                        <input type="text" class="form-control" id="HS_CODE" name="HS_CODE" value="@Model.StockObject.HS_Code">
+                                                    </div>
+                                                </div>
+
+                                                @if (Configuration.GetSection("AppSettings").GetSection("IsJapanSpecsEnabled").Value == "true")
+                                                
+                                                {
+
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            <label class="col-form-label" for="StockType_ID">StockType</label>
+
+                                                            <select class="form-control" name="StockType_ID" id="StockType_ID"
+                                                                    asp-items="@(new SelectList( ViewBag.StockType,"StockType_ID","StockTypeName",Model.StockObject.StockType_ID))">
+                                                            </select>
+
+                                                        </div>
+                                                    </div>
+
+                                                }
+                                                else
+                                                {
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            <label class="col-form-label" for="loc_ID">Location</label>
+
+                                                            <select class="form-control" name="loc_ID" id="loc_ID"
+                                                                    asp-items="@(new SelectList(ViewBag.CarLocations, "CarLocation_ID", "CarLocation", Model.StockObject.Loc_ID))">
+                                                                <option value="0">Select Location</option>
+                                                            </select>
+
+
+                                                        </div>
+                                                    </div>
+
+
+                                                }
+
+
+
+
+
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="Showroom_ID">Showroom</label>
+                                                        <select class="form-control" name="Showroom_ID" id="Showroom_ID"
+                                                                asp-items="@(new SelectList(ViewBag.Showroom, "ShowRoom_ID", "ShowRoomName", Model.StockObject.Showroom_ID))">
+                                                        </select>
+
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="SellingPrice">Selling Price</label>
+
+                                                        <input type="text" class="form-control" id="SellingPrice" name="SellingPrice" value="@Model.StockObject.Selling_Price">
+                                                    </div>
+                                                </div>
+
+
+
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="OPTIONS">@Configuration.GetSection("AppSettings").GetSection("IsLabelOptions").Value</label>
+
+                                                        <input type="text" class="form-control" id="OPTIONS" name="OPTIONS" value="@Model.StockObject.Options">
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="ManufacturingDate">Production Date</label>
+                                                        <input type="text" data-plugin-datepicker placeholder="dd-MMM-yyyy" autocomplete="off" class="form-control" id="ManufacturingDate" name="ManufacturingDate" value="@Model.StockObject.ManufacturingDate">
+                                                    </div>
+                                                </div>
+
+
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="txtCancelDate">Cancel Date</label>
+
+                                                        <input type="text" class="form-control" id="txtCancelDate" name="txtCancelDate" value="@Model.StockObject.StatusCancel_Date" disabled>
+                                                    </div>
+                                                </div>
+                                                @if (Configuration.GetSection("AppSettings").GetSection("IsDirectStockPurEnabled").Value == "true")
+                                                {
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            <label class="col-form-label" for="Mileage">Mileage</label>
+
+                                                            <input type="text" class="form-control" id="mileage" name="mileage" value="@Model.StockObject.mileage">
+                                                        </div>
+                                                    </div>}
+
+                                                @if (Configuration.GetSection("AppSettings").GetSection("IsJapanSpecsEnabled").Value == "true")
+                                                {
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            <label class="col-form-label" for="Registration">Registration</label>
+
+                                                            <input type="text" class="form-control" id="Registration" name="Registration" value="@Model.StockObject.Registration" readonly>
+                                                        </div>
+                                                    </div>}
+
+                                                @{
+
+
+
+                                                    @if (Configuration.GetSection("AppSettings").GetSection("IsJapanSpecsEnabled").Value == "true")
+                                                    {
+
+                                                        <div class="col-md-3">
+                                                            <div class="form-group">
+                                                                <label class="col-form-label" for="FirstRegistrationDate">Registration Date</label>
+                                                                @if (!string.IsNullOrEmpty(Model.StockObject.FirstRegistrationDate))
+                                                                {
+                                                                    var TEMP = Model.StockObject.FirstRegistrationDate.Split('-')[2];
+                                                                    <input type="text" class="form-control" id="FirstRegistrationDate" name="FirstRegistrationDate" value="@TEMP" readonly> }
+                                                                else
+                                                                {
+                                                                    <input type="text" class="form-control" id="FirstRegistrationDate" name="FirstRegistrationDate" readonly>}
+
+
+                                                            </div>
+                                                        </div>}}
+                                                @if (Configuration.GetSection("AppSettings").GetSection("IsJapanSpecsEnabled").Value == "true")
+                                                {
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            <label class="col-form-label" for="cc">Vehicle CC</label>
+
+                                                            <input type="text" class="form-control" id="cc" name="cc" value="@Model.StockObject.cc" readonly>
+                                                        </div>
+                                                    </div>}
+                                                @if (Configuration.GetSection("AppSettings").GetSection("IsJapanSpecsEnabled").Value == "true")
+                                                {
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            <label class="col-form-label" for="Length">Length</label>
+
+                                                            <input type="text" class="form-control" id="Length" name="Length" value="@Model.StockObject.Length" readonly>
+                                                        </div>
+                                                    </div>}
+                                                @if (Configuration.GetSection("AppSettings").GetSection("IsJapanSpecsEnabled").Value == "true")
+                                                {
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            <label class="col-form-label" for="Width">Width</label>
+
+                                                            <input type="text" class="form-control" id="Width" name="Width" value="@Model.StockObject.Width" readonly>
+                                                        </div>
+                                                    </div>}
+                                                @if (Configuration.GetSection("AppSettings").GetSection("IsJapanSpecsEnabled").Value == "true")
+                                                {
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            <label class="col-form-label" for="Height">Height</label>
+
+                                                            <input type="text" class="form-control" id="Height" name="Height" value="@Model.StockObject.Height" readonly>
+                                                        </div>
+                                                    </div>}
+                                                @if (Configuration.GetSection("AppSettings").GetSection("IsJapanSpecsEnabled").Value == "true")
+                                                {
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            <label class="col-form-label" for="G_weight">G weight</label>
+
+                                                            <input type="text" class="form-control" id="G_weight" name="G_weight" value="@Model.StockObject.G_weight" readonly>
+                                                        </div>
+                                                    </div>}
+                                                <div class="col-md-12" @ViewBag.ShowAds_Link>
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="ADLink">AD Link</label>
+
+                                                        <input type="text" class="form-control" id="AD_Link" name="AD_Link" value="@Model.StockObject.AD_Link">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </section>
+
+                                </div>
+                                <div id="Purchase6" class="tab-pane">
+                                    <section class="card">
+
+                                        <div class="card-body">
+
+                                            <div class="row">
+
+                                                <div class="col-md-3">
+                                                    <label class="control-label">Pur. Price </label>
+                                                    <div class="form-group">
+                                                        <div class="row">
+                                                            <div class="col-md-7">
+                                                                <input type="text" id="PriceOrignal" name="PriceOrignal" class="form-control" placeholder="" value="@Model.StockObject.PriceOrignal" @ViewBag.JapanSpecsdisabled>
+                                                            </div>
+                                                            <div class="col-md-4" style="padding:0px;">
+                                                                <input type="text" id="PriceRate" name="PriceRate" class="form-control" onkeyup="CalculatePurchaseSumAmount()" placeholder="" value="@Model.StockObject.PriceRate" @ViewBag.JapanSpecsdisabled>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-lg-3 col-md-3" @ViewBag.IsPurchaseCost_JP_Enabled>
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="Unit Price">Tax(10%)</label>
+
+                                                        <input type="text" id="PriceTaxUpdate" name="PriceTax" step="any" class="form-control" value="@Model.StockObject.PriceTax" placeholder="PriceTax" readonly />
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-lg-3 col-md-3" @ViewBag.IsPurchaseCost_JP_Enabled>
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="Unit Price">Auction Fee</label>
+
+                                                        <input type="number" id="AuctionFeeUpdate" name="AuctionFee" step="any" class="form-control" value="@Model.StockObject.AuctionFee" placeholder="Auction Fee" readonly />
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-lg-3 col-md-3" @ViewBag.IsPurchaseCost_JP_Enabled>
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="Unit Price">Rekso</label>
+
+                                                        <input type="number" id="ReksoFeeUpdate" name="ReksoFee" step="any" class="form-control" value="@Model.StockObject.ReksoFee" placeholder="Rekso" readonly />
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-lg-3 col-md-3" @ViewBag.IsPurchaseCost_JP_Enabled>
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="Unit Price">Recycle Fee</label>
+
+                                                        <input type="number" id="RecycleFeeUpdate" name="RecycleFee" step="any" class="form-control" value="@Model.StockObject.RecycleFee" placeholder="Recycle Fee" readonly />
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-lg-3 col-md-3" @ViewBag.IsPurchaseCost_JP_Enabled>
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="Unit Price">LA</label>
+
+                                                        <input type="text" id="Vanning_ChargesUpdate" name="Vanning_Charges" step="any" class="form-control" value="@Model.StockObject.LoadingCharges" placeholder="LA" readonly />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3" @ViewBag.IsDubaiSpecsEnabled>
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="FreightCharges">Freight</label>
+
+                                                        <div class="form-group">
+                                                            <div class="row">
+                                                                <div class="col-md-8">
+                                                                    <input type="text" id="FreightCharges" name="FreightCharges" class="form-control" onkeyup="CalculatePurchaseSumAmount()" placeholder="" value="@Model.StockObject.FreightCharges">
+                                                                </div>
+                                                                <div class="col-md-4" style="padding:0px;">
+                                                                    <input type="text" id="FreightRate" name="FreightRate" class="form-control" onkeyup="CalculatePurchaseSumAmount()" placeholder="" value="@Model.StockObject.FreightRate">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3" @ViewBag.IsPurchaseCost_JP_Enabled>
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="Buying">Other Charges</label>
+
+                                                        <input type="text" class="form-control" id="OtherCharges" name="OtherCharges" value="@Model.StockObject.OtherCharges" readonly>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-3" @ViewBag.IsPurchaseCost_JP_Enabled>
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="Buying">JP Charges</label>
+
+                                                        <input type="text" class="form-control" id="JP_Charges" name="JP_Charges" value="@Model.StockObject.JP_Charges" readonly>
+                                                    </div>
+                                                </div>
+
+
+                                                <div class="col-md-3 hidden">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="Buying">Buying</label>
+
+                                                        <input type="text" onkeyup="CalculatePurchaseSumAmount()" class="form-control" id="Buying" name="Buying" disabled>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-3" @ViewBag.IsDubaiSpecsEnabled>
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="TotalPrice">Total Price (@ViewBag.DefaultCurrencyDisplay)</label>
+                                                        <input type="text" class="form-control" name="TotalPrice" id="TotalPrice" value="@Model.StockObject.TotalPrice" readonly>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3" @ViewBag.IsPurchaseCost_JP_Enabled>
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="Buying">Total Price (@SecondCurrency)</label>
+
+                                                        <input type="text" class="form-control" id="TotalPrice_Other" name="TotalPrice_Other" value="@Model.StockObject.TotalPrice_Other" readonly>
+
+                                                    </div>
+                                                </div>
+
+                                                @*<div class="clearfix"></div>*@
+
+
+                                                @if (Configuration.GetSection("AppSettings").GetSection("IsJapanSpecsEnabled").Value == "true")
+                                                {
+                                                    <div class="col-md-3" @ViewBag.IsPurchaseCost_JP_Enabled>
+                                                        <div class="form-group">
+                                                            <label class="col-form-label" for="Vendor_ID">Vendor Name</label>
+
+                                                            <select class="form-control" id="DisbleVendor_ID" name="Vendor_ID" onchange="AddNewVendor(this)"
+                                                                    asp-items="@(new SelectList(ViewBag.VendorMaster, "Partner_ID", "PartnerName", Model.StockObject.Vendor_ID))" disabled>
+                                                            </select>
+
+
+                                                        </div>
+                                                    </div>
+                                                }
+
+
+
+                                                else
+                                                {
+
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            <label class="col-form-label" for="Vendor_ID">Vendor Name</label>
+
+                                                            <select class="form-control" id="Vendor_ID" name="Vendor_ID" onchange="AddNewVendor(this)"
+                                                                    asp-items="@(new SelectList(ViewBag.VendorMaster, "Partner_ID", "PartnerName", Model.StockObject.Vendor_ID))">
+                                                                <option value="0">Select Vendor</option>
+                                                                <option value="NewVendor">New Vendor A/C</option>
+                                                            </select>
+
+
+                                                        </div>
+                                                    </div>
+
+                                                }
+
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="PurchaseRef">Purchase Ref #</label>
+                                                        <input type="text" class="form-control" name="PurchaseRef" id="PurchaseRef" required value="@Model.StockObject.PurchaseRef" @ViewBag.JapanSpecsdisabled>
+
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="PurchaseDate">Purchase Date</label>
+                                                        <input type="text" data-plugin-datepicker placeholder="dd-MMM-yyyy" class="form-control" autocomplete="off" id="PurchaseDate" name="PurchaseDate" value="@Model.StockObject.PurchaseDate" @ViewBag.JapanSpecsdisabled required>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3" @ViewBag.IsDubaiSpecsEnabled>
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="Arrival_Date">Arrival_Date</label>
+
+                                                        <input type="text" data-plugin-datepicker placeholder="dd-MMM-yyyy" autocomplete="off" value="@Model.StockObject.Arrival_Date" class="form-control" id="Arrival_Date" name="Arrival_Date" @ViewBag.JapanSpecsdisabled>
+                                                    </div>
+                                                </div>
+
+
+                                                <div class="col-md-3" @ViewBag.Japan_Specs_for_Dubai_Company_Enabled>
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="ContNO">JB No</label>
+                                                        <input type="text" class="form-control" name="ContNO" id="ContNO" value="@Model.StockObject.ContNO">
+
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-3" @ViewBag.Japan_Specs_for_Dubai_Company_Enabled>
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="AuctionName">Auction Name</label>
+                                                        <input type="text" class="form-control" name="AuctionName" id="AuctionName" value="@Model.StockObject.AuctionName">
+
+                                                    </div>
+                                                </div>
+
+                                                @if (Configuration.GetSection("AppSettings").GetSection("CompanyReportFolderCode").Value == "AM")
+
+                                                {
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            <label class="col-form-label" for="LotNumber">C Code</label>
+                                                            <input type="text" class="form-control" name="LotNumber" id="LotNumber" value="@Model.StockObject.LotNumber">
+
+                                                        </div>
+                                                    </div>
+
+                                                }
+                                                else
+                                                 {
+
+                                                    <div class="col-md-3" @ViewBag.Japan_Specs_for_Dubai_Company_Enabled>
+                                                        <div class="form-group">
+                                                            <label class="col-form-label" for="LotNumber">Lot #</label>
+                                                            <input type="text" class="form-control" name="LotNumber" id="LotNumber" value="@Model.StockObject.LotNumber">
+
+                                                        </div>
+                                                    </div>
+                                                }
+
+
+
+
+                                                <div class="col-md-3" @ViewBag.JapanSpecsVisible>
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="loc_ID">Location</label>
+
+                                                        <select class="form-control" name="loc_ID" id="Disbleloc_ID"
+                                                                asp-items="@(new SelectList(ViewBag.CarLocations, "CarLocation_ID", "CarLocation", Model.StockObject.Loc_ID))" disabled>
+                                                            <option value="0">Select Location</option>
+                                                        </select>
+
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3" @ViewBag.JapanSpecsVisible>
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="LotNumber">Going Locastion </label>
+                                                        <input type="text" class="form-control" name="LotNumber" id="LotNumber" value="@Model.StockObject.GoingLoc" readonly>
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3" @ViewBag.JapanSpecsVisible>
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="LotNumber">Rikso Party </label>
+                                                        <input type="text" class="form-control" name="LotNumber" id="LotNumber" value="@Model.StockObject.ReksoName" readonly>
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3" @ViewBag.JapanSpecsVisible>
+                                                    <label class="control-label">Auction Fee and Tax </label>
+                                                    <div class="form-group">
+                                                        <div class="row">
+                                                            <div class="col-md-7">
+                                                                <input type="text" id="AuctionFee" name="AuctionFee" class="form-control" onkeyup="CalculatePurchaseSumAmount()" placeholder="" value="@Model.StockObject.AuctionFee" readonly>
+                                                            </div>
+                                                            <div class="col-md-4" style="padding:0px;">
+                                                                <input type="text" id="AuctionFeeTax" name="AuctionFeeTax" class="form-control" onkeyup="CalculatePurchaseSumAmount()" placeholder="" value="@Model.StockObject.AuctionFeeTax" readonly>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+
+                                                <div class="col-md-3" @ViewBag.JapanSpecsVisible>
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="RecycleFee">Recycle</label>
+                                                        <input type="text" class="form-control" name="RecycleFee" id="RecycleFee" value="@Model.StockObject.RecycleFee" readonly>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-3" @ViewBag.JapanSpecsVisible>
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="PlatNumberFee">Shakeen Fee</label>
+                                                        <input type="text" class="form-control" name="PlatNumberFee" id="PlatNumberFee" value="@Model.StockObject.PlatNumberFee" readonly>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-3" @ViewBag.JapanSpecsVisible>
+                                                    <label class="control-label">Risko and Tax </label>
+                                                    <div class="form-group">
+                                                        <div class="row">
+                                                            <div class="col-md-7">
+                                                                <input type="text" id="ReksoFee" name="ReksoFee" class="form-control" onkeyup="CalculatePurchaseSumAmount()" placeholder="" value="@Model.StockObject.ReksoFee" readonly>
+                                                            </div>
+                                                            <div class="col-md-4" style="padding:0px;">
+                                                                <input type="text" id="PriceRate" name="PriceRate" class="form-control" onkeyup="CalculatePurchaseSumAmount()" placeholder="" value="@Model.StockObject.ReksoFeeTax" readonly>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-3" @ViewBag.JapanSpecsVisible>
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="PlatNumberFee">Total</label>
+                                                        <input type="text" class="form-control" name="PlatNumberFee" id="PlatNumberFee" value="@Model.StockObject.TotalPrice" readonly>
+                                                    </div>
+                                                </div>
+
+
+                                                <div class="col-md-3" @ViewBag.JapanSpecsVisible>
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="Vanning_Charges">Vanning</label>
+                                                        <input type="text" class="form-control" name="Vanning_Charges" id="Vanning_Charges" value="@Model.StockObject.Vanning_Charges" readonly>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-3" @ViewBag.JapanSpecsVisible>
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="Inspection_Charges">Inspection</label>
+                                                        <input type="text" class="form-control" name="Inspection_Charges" id="Inspection_Charges" value="@Model.StockObject.Inspection_Charges" readonly>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-3" @ViewBag.JapanSpecsVisible>
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="Shipping_Charges">Shipping</label>
+                                                        <input type="text" class="form-control" name="Shipping_Charges" id="Shipping_Charges" value="@Model.StockObject.Shipping_Charges" readonly>
+                                                    </div>
+                                                </div>
+
+
+
+
+                                                @if (Configuration.GetSection("AppSettings").GetSection("IsJapanSpecsEnabled").Value == "false")
+                                                {
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            <label class="col-form-label" for="Leave_Date">Leave Date</label>
+
+                                                            <input type="text" data-plugin-datepicker placeholder="dd-MMM-yyyy" autocomplete="off" value="@Model.StockObject.Leave_Date" class="form-control" name="Leave_Date" id="Leave_Date">
+
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            <label class="col-form-label" for="ShipName">Ship Name</label>
+
+                                                            <input type="text" class="form-control" id="ShipName" name="ShipName" value="@Model.StockObject.ShipName">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            <label class="col-form-label" for="BL_NO">BL No</label>
+
+                                                            <input type="text" class="form-control" id="BL_NO" name="BL_NO" value="@Model.StockObject.BL_NO">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            <label class="col-form-label" for="txtContNo">Cont. No</label>
+
+                                                            <input type="text" class="form-control" name="txtContNo" id="txtContNo">
+
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            <label class="col-form-label" for="txtBOE1">BOE(M1)</label>
+
+                                                            <input type="text" class="form-control" id="txtBOE1" name="txtBOE1" value="@Model.StockObject.Master_BOE">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            <label class="col-form-label" for="txtBOE_m2">BOE(M2)</label>
+
+                                                            <input type="text" class="form-control" id="txtBOE_m2" name="txtBOE_m2">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            <label class="col-form-label" for="StockType_ID">StockType</label>
+
+                                                            <select class="form-control" name="StockType_ID" id="StockType_ID"
+                                                                    asp-items="@(new SelectList( ViewBag.StockType,"StockType_ID","StockTypeName",Model.StockObject.StockType_ID))">
+                                                            </select>
+
+
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            <label class="col-form-label" for="txtDUCAMZvalue">DUCAMZ Value</label>
+
+                                                            <input type="text" class="form-control" id="txtDUCAMZvalue" name="txtDUCAMZvalue">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            <label class="col-form-label" for="Transport_Exp">Transport Exp</label>
+
+                                                            <input type="number" onkeyup="CalculatePurchaseSumAmount()" class="form-control" value="@Model.StockObject.Transport_Exp" id="Transport_Exp"
+                                                                   name="Transport_Exp">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            <label class="col-form-label" for="AgentComm_Exp">Agent Comm.</label>
+
+                                                            <input type="number" onkeyup="CalculatePurchaseSumAmount()" class="form-control" placeholder="0" value="@Model.StockObject.AgentComm_Exp" name="AgentComm_Exp" id="AgentComm_Exp">
+
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            <label class="col-form-label" for="Exp_Custom_Duty">Custom Duty</label>
+
+                                                            <input type="number" onkeyup="CalculatePurchaseSumAmount()" class="form-control" placeholder="0" id="Exp_Custom_Duty" name="Exp_Custom_Duty" value="@Model.StockObject.Exp_Custom_Duty">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            <label class="col-form-label" for="OtherCharges_Exp">Other Exp</label>
+
+                                                            <input type="number" onkeyup="CalculatePurchaseSumAmount()" class="form-control" placeholder="0" id="OtherCharges_Exp" value="@Model.StockObject.OtherCharges_Exp" name="OtherCharges_Exp">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            <label class="col-form-label" for="CC_Exp">CC</label>
+
+                                                            <input type="number" onkeyup="CalculatePurchaseSumAmount()" class="form-control" placeholder="0" name="CC_Exp" value="@Model.StockObject.CC_Exp" id="CC_Exp">
+
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            <label class="col-form-label" for="ME_Exp">ME</label>
+
+                                                            <input type="number" onkeyup="CalculatePurchaseSumAmount()" class="form-control" placeholder="0" id="ME_Exp" name="ME_Exp" value="@Model.StockObject.ME_Exp">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            <label class="col-form-label" for="Comm_Exp">COMM</label>
+                                                            <input type="number" onkeyup="CalculatePurchaseSumAmount()" class="form-control" placeholder="0" id="Comm_Exp" name="Comm_Exp" value="@Model.StockObject.Comm_Exp">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            <label class="col-form-label" for="Paper_Exp">Paper Exp</label>
+
+                                                            <input type="number" onkeyup="CalculatePurchaseSumAmount()" class="form-control" placeholder="0" name="Paper_Exp" id="Paper_Exp" value="@Model.StockObject.Paper_Exp">
+
+                                                        </div>
+                                                    </div>
+
+                                                }
+
+
+
+
+
+
+                                            </div>
+                                        </div>
+                                        <div class="card-body">
+                                            <h3 style="border-bottom:1px solid #e2e2e2" class="box-title">
+                                                Expenses
+                                            </h3>
+
+                                            <div class="row">
+
+
+                                                <table class="table table-responsive-sm border-0">
+                                                    <thead>
+                                                        <tr>
+
+                                                            <th>A/C</th>
+                                                            <th>Amount</th>
+                                                            <th>Description</th>
+                                                            <th>Pay Via</th>
+                                                            <th>Date</th>
+                                                            <th>Status</th>
+
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+
+                                                        @if (Model.objStock_Exp_Details != null)
+                                                        {
+
+
+                                                            foreach (Pa_PaymentDetails_DAL item in Model.objStock_Exp_Details)
+                                                            {
+
+                                                                <tr>
+
+
+                                                                    <td>@Html.DisplayFor(modelItem => item.DR_AccountName)</td>
+                                                                    <td>@Html.DisplayFor(modelItem => item.Total_Amount)</td>
+                                                                    <td>@Html.DisplayFor(modelItem => item.Description)</td>
+                                                                    <td>@Html.DisplayFor(modelItem => item.CR_AcountName)</td>
+                                                                    <td>@Html.DisplayFor(modelItem => item.PaymentDate)</td>
+                                                                    <td>@Html.DisplayFor(modelItem => item.Status)</td>
+
+                                                                </tr>
+                                                            }
+                                                        }
+
+                                                    </tbody>
+
+                                                </table>
+
+
+                                            </div>
+
+                                            <div class="row">
+
+
+
+                                                <div class="col-md-3">
+                                                    <label class="control-label" for="txtTotalExp">Total Exp </label>
+                                                    <input type="text" class="form-control" id="txtTotalExp" name="txtTotalExp" value="@Model.StockObject.Total_Expense" readonly>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="txtTotalCost">Total Cost (@ViewBag.DefaultCurrencyDisplay)</label>
+
+                                                        <input type="text" class="form-control" id="txtTotalCost" name="txtTotalCost" value="@Model.StockObject.Total_Cost" readonly>
+                                                    </div>
+                                                </div>
+
+
+
+
+
+                                            </div>
+
+
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="ddlAgent">Agent</label>
+
+                                                        <select type="text" class="form-control" id="ddlAgent" name="ddlAgent"></select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="Project_ID">Commission %</label>
+
+                                                        <input type="text" class="form-control" id="txtAgCommPer" name="txtAgCommPer">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="Comments">Comments</label>
+
+                                                        <input type="text" class="form-control" name="Comments" id="Comments">
+
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+                                    </section>
+                                </div>
+                                <div id="Sale6" class="tab-pane">
+                                    <section class="card">
+
+                                        <div class="card-body">
+
+                                            <div class="row">
+
+
+                                                <div class="col-md-3">
+                                                    <label class="control-label" for="txtCustomerName">Customer Name </label>
+                                                    <input type="text" class="form-control" id="txtCustomerName" name="txtCustomerName">
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="txtCustomerNumber">Customer No</label>
+
+                                                        <input type="text" class="form-control" id="txtCustomerNumber" name="txtCustomerNumber" disabled>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="txtSoldDate">Sold Date</label>
+
+                                                        <input type="text" class="form-control" id="txtSoldDate" name="txtSoldDate" disabled>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="txtSoldPrice">Sold Price</label>
+
+                                                        <input type="text" class="form-control" name="txtSoldPrice" id="txtSoldPrice" disabled>
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label class="control-label" for="txtBalDue">Bal Due</label>
+                                                    <input type="text" class="form-control" id="txtBalDue" name="txtBalDue" disabled>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="txtPaid">Paid</label>
+
+                                                        <input type="text" class="form-control" id="txtPaid" name="txtPaid" disabled>
+                                                    </div>
+                                                </div>
+                                                @if (Configuration.GetSection("AppSettings").GetSection("IsJapanSpecsEnabled").Value == "true")
+                                                {
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            <label class="col-form-label" for="PortFrom">PortFrom</label>
+
+                                                            <select class="form-control" name="PortFrom" id="PortFrom"
+                                                                    asp-items="@(new SelectList( ViewBag.PortFrom,"CarLocation_ID","CarLocation"))">
+                                                            </select>
+
+                                                        </div>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            <label class="col-form-label" for="ddlDestination_ExportTo">Export To</label>
+
+                                                            <select class="form-control" name="ddlDestination_ExportTo" id="ddlDestination_ExportTo"
+                                                                    asp-items="@(new SelectList(ViewBag.Destinations,"Destinations_ID","Destinations"))">
+                                                            </select>
+
+                                                        </div>
+                                                    </div>
+                                                }
+
+                                                @if (Configuration.GetSection("AppSettings").GetSection("IsJapanSpecsEnabled").Value == "true")
+                                                {
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            <label class="col-form-label" for="PortFrom">PortTo</label>
+
+                                                            <select class="form-control" name="PortTo" id="PortTo"
+                                                                    asp-items="@(new SelectList( ViewBag.PortTo,"CarLocation_ID","CarLocation"))">
+                                                                <option value="0"></option>
+                                                            </select>
+
+                                                        </div>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            <label class="col-form-label" for="ddlPortofDisc">Port-of-Disc</label>
+                                                            <select class="form-control" name="ddlPortofDisc" id="ddlPortofDisc"
+                                                                    asp-items="@(new SelectList(ViewBag.PortofExit,"PortOfExit_ID","PortOfExit"))">
+                                                            </select>
+
+                                                        </div>
+                                                    </div>
+                                                }
+
+                                                @if (Configuration.GetSection("AppSettings").GetSection("IsJapanSpecsEnabled").Value == "true")
+                                                {
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            <label class="col-form-label" for="Destination">Destination</label>
+                                                            <select class="form-control" name="Destination" id="Destination"
+                                                                    asp-items="@(new SelectList( ViewBag.ExportDestinations,"CarLocation_ID","CarLocation"))">
+                                                            </select>
+
+                                                        </div>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="col-md-3">
+                                                        <div class="form-group">
+                                                            <label class="col-form-label" for="ddlExitPoint">Exit Point</label>
+                                                            <select class="form-control" name="ddlExitPoint" id="ddlExitPoint"
+                                                                    asp-items="@(new SelectList(ViewBag.PortofExit,"PortOfExit_ID","PortOfExit"))">
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                }
+
+
+
+                                            </div>
+                                        </div>
+                                    </section>
+                                </div>
+                                <div id="Deposit6" class="tab-pane">
+                                    <section class="card">
+
+                                        <div class="card-body">
+
+                                            <div class="row">
+
+
+                                                <div class="col-md-3">
+                                                    <label class="control-label" for="txtDeposit">Deposit</label>
+                                                    <input type="text" class="form-control" id="txtDeposit" name="txtDeposit">
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="Project_ID">Paper Mode</label>
+                                                        <div class="form-group">
+                                                            <div class="row">
+                                                                <div class="col-md-3">
+                                                                    <input type="checkbox" name="chkExport" id="chkExport">
+                                                                    <label class="col-form-label" for="chkExport">Export</label>
+
+                                                                </div>
+                                                                <div class="col-md-3">
+                                                                    <input type="checkbox" name="chkTemp" id="chkTemp">
+                                                                    <label class="col-form-label" for="chkTemp">Temp</label>
+
+                                                                </div>
+                                                                <div class="col-md-3">
+                                                                    <input type="checkbox" name="chkTransfer" id="chkTransfer">
+                                                                    <label class="col-form-label" for="chkTransfer">Transfer</label>
+
+                                                                </div>
+                                                                <div class="col-md-3">
+                                                                    <input type="checkbox" name="chkImport" id="chkImport">
+                                                                    <label class="col-form-label" for="chkImport">Import</label>
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="txtOnBehalf">On Behalf</label>
+
+                                                        <input type="text" class="form-control" id="txtOnBehalf" name="txtOnBehalf">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="txtExp_BOEDate">Exp. BOE Date</label>
+
+                                                        <input type="date" class="form-control" name="txtExp_BOEDate" id="txtExp_BOEDate">
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="txtShipDate">Ship Date</label>
+
+                                                        <input type="date" class="form-control" name="txtShipDate" id="txtShipDate">
+
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="txtSubmitDate">Submit Date</label>
+
+                                                        <input type="date" class="form-control" name="txtSubmitDate" id="txtSubmitDate">
+
+                                                    </div>
+                                                </div>
+
+
+
+                                            </div>
+                                        </div>
+                                        <div class="card-body">
+                                            @*<h3 style="border-bottom:1px solid #e2e2e2" class="box-title">-NO DEP. TRANS-</h3>*@
+                                            <div class="row">
+
+
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="txtBOE2">BOE2</label>
+
+                                                        <input type="text" class="form-control" name="txtBOE2" id="txtBOE2">
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="txtBOE2_m2">BOE2(M2)</label>
+
+                                                        <input type="text" class="form-control" id="txtBOE2_m2" name="txtBOE2_m2">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="txtTempBOE">Temp. BOE</label>
+
+                                                        <input type="text" class="form-control" id="txtTempBOE" name="txtTempBOE">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="txtDADate">DA Date</label>
+
+                                                        <input type="date" class="form-control" name="txtDADate" id="txtDADate">
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="txtSGDate">SG Date</label>
+
+                                                        <input type="date" class="form-control" name="txtSGDate" id="txtSGDate">
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="txtVECDate">VEC Date</label>
+
+                                                        <input type="date" class="form-control" name="txtVECDate" id="txtVECDate">
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="txtGPDate">GP Date</label>
+
+                                                        <input type="date" class="form-control" name="txtGPDate" id="txtGPDate">
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="ddlExitReason">Exit Reason:</label>
+
+                                                        <select class="form-control" name="ddlExitReason" id="ddlExitReason">
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+
+                                            </div>
+                                        </div>
+                                    </section>
+                                </div>
+                                <div id="Delivery6" class="tab-pane">
+                                    <section class="card">
+
+                                        <div class="card-body">
+
+                                            <div class="row">
+
+                                                <div class="col-lg-12">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="Project_ID"></label>
+                                                        <div class="form-group">
+                                                            <div class="row">
+                                                                <div class="col-md-3">
+                                                                    <input type="checkbox" name="Category" id="Category">
+                                                                    <label class="col-form-label" for="Project_ID">Paper Ready</label>
+
+                                                                </div>
+                                                                <div class="col-md-3">
+                                                                    <input type="checkbox" name="Category" id="Category">
+                                                                    <label class="col-form-label" for="Project_ID">Paper Taken</label>
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="Project_ID">Taken_by Contact</label>
+
+                                                        <input type="text" class="form-control" id="PurchaseAuctionfee" name="PurchaseAuctionfee">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="txtTakenByName">Taken By Name</label>
+
+                                                        <input type="text" class="form-control" name="txtTakenByName" id="txtTakenByName">
+
+                                                    </div>
+                                                </div>
+                                                <div class="clearfix"></div>
+                                                <div class="col-lg-12">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="Project_ID"></label>
+                                                        <div class="form-group">
+                                                            <div class="row">
+                                                                <div class="col-md-3">
+                                                                    <label class="col-form-label" for="txtDOIssued">DO Issued</label>
+                                                                    <input type="checkbox" name="txtDOIssued" id="txtDOIssued">
+
+
+                                                                </div>
+                                                                <div class="col-md-3">
+                                                                    <input type="checkbox" name="txtCarTaken" id="txtCarTaken">
+                                                                    <label class="col-form-label" for="txtCarTaken">Car Taken</label>
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="Project_ID">&nbsp;</label>
+
+                                                        <input type="text" class="form-control" id="PurchaseTax" name="PurchaseTax">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="Project_ID">Car Taken Contact</label>
+
+                                                        <input type="text" class="form-control" id="PurchaseAuctionfee" name="PurchaseAuctionfee">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="Project_ID">Car Taken Name</label>
+
+                                                        <input type="text" class="form-control" name="PurchaseRikuso" id="PurchaseRikuso">
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="Project_ID">Comment</label>
+
+                                                        <input type="text" class="form-control" name="PurchaseRikuso" id="PurchaseRikuso">
+
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </section>
+                                </div>
+                                <div id="Attachments6" class="tab-pane" hidden>
+                                    <section class="card">
+
+                                        <div class="card-body">
+
+                                            <div class="row">
+
+
+                                                <div class="col-lg-6">
+
+                                                    <div class="form-group">
+                                                        <label class="col-form-label" for="TaskAttachment">Attachment</label>
+                                                        <input type="file" class="form-control" id="Attachment" name="Attachment" placeholder="">
+
+                                                    </div>
+                                                </div>
+
+
+
+                                            </div>
+                                        </div>
+                                    </section>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </form>
+
+
+
+
+
+
+        </div>
+
+
+    </div>
+
+
+    <!-- Modal Delete Stock master -->
+    <div class="modal fade bs-modal-lg" id="DeleteStockMasterModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="background: #f6f6f6;">
+
+
+                    <h4 class="modal-title">Delete Stock Invoice</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+
+                </div>
+
+                <form method="post" asp-area="" asp-controller="Stock" asp-action="DeleteStockMaster">
+
+                    <div class="modal-body">
+
+                        <section class="card">
+
+                            <div class="card-body" style="box-shadow:none;">
+
+
+                                <div class="row form-group">
+
+                                    <div class="col-lg-12">
+                                        <div class="form-group">
+                                            <h3>Do you want to delete this record?</h3>
+
+                                            <input type="hidden" id="Stock_ID_Delete" name="Stock_ID" />
+
+                                        </div>
+                                    </div>
+
+
+                                </div>
+
+
+                            </div>
+
+
+
+                        </section>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Confirm</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade bs-modal" id="ChangeStockStatustoCancel" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog small" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+
+
+                    <h4 class="modal-title">Cancel Stock</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+
+                </div>
+
+                <form method="post" asp-area="" asp-controller="Stock" asp-action="ChangeStockStatus" data-ajax-loading="">
+
+                    <div class="modal-body small">
+
+                        <section class="card">
+
+                            <div class="card-body" style="box-shadow:none;">
+
+
+                                <div class="row form-group-sm">
+
+                                    <div class="col-sm-12">
+                                        <div class="form-group">
+                                            <h3>Do you want to Cancel this Stock?</h3>
+
+                                            <input type="hidden" id="Stock_ID" name="Stock_ID" value="@Model.StockObject.stock_ID" />
+                                            <input type="hidden" id="Status_ID" name="Status_ID" value="13" />
+
+
+                                        </div>
+                                    </div>
+
+
+                                </div>
+
+
+                            </div>
+
+
+
+                        </section>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary btn-sm">Confirm</button>
+                        <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+    <div class="modal fade bs-modal" id="AddMakeModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="background: #f6f6f6;">
+
+
+                    <h4 class="modal-title">Message Send </h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+
+                </div>
+
+                <form method="post" asp-area="" asp-controller="" asp-action="">
+
+                    <div class="modal-body">
+
+                        <section class="card">
+
+                            <div class="card-body">
+
+
+
+                                <div class="row form-group">
+
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label class="col-form-label" for="Project_ID">Number</label>
+
+                                            <input type="text" class="form-control" id="Number" name="Number" required>
+
+                                        </div>
+
+                                        <a type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-info" id="Send-btn" href="">Send&nbsp;<i class="fas fa-whatsapp"></i></a>
+
+                                    </div>
+
+                                </div>
+
+
+
+                            </div>
+
+
+
+                        </section>
+                    </div>
+
+                    <div class="modal-footer">
+    
+                        <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</section>
+@section Scripts {
+
+    <script>
+
+
+        
+        
+        
+        //$(document).ready(function () {
+        //    $("#DisbleVendor_ID").attr("disabled", "disabled");
+        //})
+        
+        //By Yaseen 1-4-2022
+        
+        function RemoveAtt() {
+            debugger;
+            $("#ButtonIssue").click(function () {
+
+                $("#DisbleVendor_ID").removeAttr("disabled");
+                $("#Disbleloc_ID").removeAttr("disabled");
+
+            });
+
+        }
+        //By Yaseen 1-4-2022
+
+
+
+
+
+
+        //this function is for selecting model description on the basis of Make ID
+        function GetSubModel(Make_ID) {
+            //debugger
+            var ID = Make_ID.value;
+            var procemessage = "<option value='0'> Please wait...</option>";
+            $(".MakeModelClass").html(procemessage).show();
+
+
+            if (!ID) {
+                ID = 0;
+                var emptyAppend = "<option value=''>Select</option>";
+                $(".MakeModelClass").html(emptyAppend).show();
+
+            } else {
+                $.getJSON("/Purchases/GetModelDescListByID", { Make_ID: ID }, function (data) {
+                    //first empty the model
+                    //debugger
+                    $(".MakeModelClass").empty();
+                    //Then append select
+                    $(".MakeModelClass").append("<option value=''>Select</option>");
+                    $.each(data, function (index, row) {
+
+                        //Now here appending all options in the sub classification list
+                        //$(".MakeModelClass").append("<option value='" + row.modelDesc_ID + "'>" + row.modelDesciption + "</option>")
+                        var optionText = row.modelDesciption;
+                        $('.MakeModelClass').append($("<option></option>").attr("value", row.modelDesc_ID).text(optionText));
+                    });
+                });
+            }
+
+
+
+        }
+
+        
+        
+        function goBack() {
+            window.history.back();
+        }
+        function DeleteStockMaster(stock_ID) {
+            debugger
+            $("#Stock_ID_Delete").val(stock_ID);
+
+        }
+        SelectedCountry();
+        function SelectedCountry() {
+            if (document.getElementById("make_country_ID").value === '') {
+                $("#make_country_ID").val(@make_country_ID_Dropdown);
+            }
+        }
+       
+        function CalculatePurchaseSumAmount() {
+
+            
+            var PriceOrignal = 0;
+
+            var PriceRate = 0;
+
+            var FreightCharges = 0;
+
+            var FreightRate = 0;
+
+            
+
+            var totalprice = 0;
+
+            var txtTotalExp = 0;
+
+            var txtTotalCost = 0;
+
+            var Transport_Exp = 0;
+
+            var AgentComm_Exp = 0;
+
+
+            var Totalpurchase = 0;
+            var TotalFreight = 0;
+            var AllTotal = 0;
+            var AllTotalCost = 0;
+            var PriceTaxUpdate = 0;
+            var AuctionFeeUpdate = 0;
+            var ReksoFeeUpdate = 0;
+            var RecycleFeeUpdate = 0;
+            var Vanning_ChargesUpdate = 0;
+            var OtherCharges = 0;
+            var JP_Charges = 0;
+            var Exp_Custom_Duty = 0;
+            var OtherCharges_Exp = 0;
+            var CC_Exp = 0;
+            var ME_Exp = 0;
+            var Comm_Exp = 0;
+            var Paper_Exp = 0;
+
+
+
+
+            PriceOrignal = document.getElementById("PriceOrignal").value;
+
+            PriceRate = document.getElementById("PriceRate").value;
+
+
+            FreightCharges = document.getElementById("FreightCharges").value;
+
+            FreightRate = document.getElementById("FreightRate").value;
+
+          
+
+            totalprice = document.getElementById("TotalPrice").value;
+
+            txtTotalExp = document.getElementById("txtTotalExp").value;
+
+            txtTotalCost = document.getElementById("txtTotalCost").value;
+
+            Transport_Exp = document.getElementById("Transport_Exp").value;
+
+            AgentComm_Exp = document.getElementById("AgentComm_Exp").value;
+
+
+
+            PriceTaxUpdate = document.getElementById("PriceTaxUpdate").value;
+            AuctionFeeUpdate = document.getElementById("AuctionFeeUpdate").value;
+            ReksoFeeUpdate = document.getElementById("ReksoFeeUpdate").value;
+            RecycleFeeUpdate = document.getElementById("RecycleFeeUpdate").value;
+            Vanning_ChargesUpdate = document.getElementById("Vanning_ChargesUpdate").value;
+            OtherCharges = document.getElementById("OtherCharges").value;
+            JP_Charges = document.getElementById("JP_Charges").value;
+            Exp_Custom_Duty = document.getElementById("Exp_Custom_Duty").value;
+            OtherCharges_Exp = document.getElementById("OtherCharges_Exp").value;
+            CC_Exp = document.getElementById("CC_Exp").value;
+            ME_Exp = document.getElementById("ME_Exp").value;
+            Comm_Exp = document.getElementById("Comm_Exp").value;
+            Paper_Exp = document.getElementById("Paper_Exp").value;
+
+
+
+            if (!PriceOrignal) {
+                PriceOrignal = 0;
+            }
+
+            if (!PriceRate) {
+
+                PriceRate = 0;
+            }
+            if (!FreightCharges) {
+                FreightCharges = 0;
+            }
+            if (!FreightRate) {
+                FreightRate = 0;
+            }
+          
+            if (!totalprice) {
+                totalprice = 0;
+            }
+            if (!txtTotalExp) {
+                txtTotalExp = 0;
+            }
+            if (!txtTotalCost) {
+                txtTotalCost = 0;
+            }
+            if (!Totalpurchase) {
+                Totalpurchase = 0;
+            }
+            if (!TotalFreight) {
+                TotalFreight = 0;
+            }
+            if (!AllTotal) {
+                AllTotal = 0;
+            }
+            if (!AllTotalCost) {
+                AllTotalCost = 0;
+            }
+
+            if (!Transport_Exp) {
+                Transport_Exp = 0;
+            }
+            if (!AgentComm_Exp) {
+                AgentComm_Exp = 0;
+            }
+            //NEW
+
+
+            if (!RecycleFeeUpdate) {
+                RecycleFeeUpdate = 0;
+            }
+            if (!PriceTaxUpdate) {
+                PriceTaxUpdate = 0;
+            }
+            if (!AuctionFeeUpdate) {
+                AuctionFeeUpdate = 0;
+            }
+            if (!ReksoFeeUpdate) {
+                ReksoFeeUpdate = 0;
+            }
+            if (!Vanning_ChargesUpdate) {
+                Vanning_ChargesUpdate = 0;
+            }
+            if (!OtherCharges) {
+                OtherCharges = 0;
+            }
+            if (!JP_Charges) {
+                JP_Charges = 0;
+            }
+            if (!Exp_Custom_Duty) {
+                Exp_Custom_Duty = 0;
+            }
+            if (!OtherCharges_Exp) {
+                OtherCharges_Exp = 0;
+            }
+            if (!CC_Exp) {
+                CC_Exp = 0;
+            }
+            if (!ME_Exp) {
+                ME_Exp = 0;
+            }
+            if (!Comm_Exp) {
+                Comm_Exp = 0;
+            }
+            if (!Paper_Exp) {
+                Paper_Exp = 0;
+            }
+            debugger
+            var currency = PriceOrignal;
+            var numbers = Number(currency.replace(/[^0-9.-]+/g, ""));
+            var currencyTax = PriceTaxUpdate;
+            var numbersTax = Number(currencyTax.replace(/[^0-9.-]+/g, ""));
+            var currencyFREIGHT = FreightCharges;
+            var numbersFREIGHT = Number(currencyFREIGHT.replace(/[^0-9.-]+/g, ""));
+     
+
+
+            TotalFreight = Number(numbersFREIGHT) * Number(FreightRate);
+
+
+            var AllTotal = (Number(numbers)+Number(numbersTax) + Number(AuctionFeeUpdate) + Number(ReksoFeeUpdate) + Number(RecycleFeeUpdate) + Number(Vanning_ChargesUpdate) + Number(OtherCharges)
+                + Number(JP_Charges)) * Number(PriceRate) + Number(TotalFreight);
+          
+
+
+
+            txtTotalExp = Number(Transport_Exp) + Number(AgentComm_Exp) + Number(Exp_Custom_Duty) + Number(OtherCharges_Exp) + Number(CC_Exp) + Number(ME_Exp) + Number(Comm_Exp) + Number(Paper_Exp);
+
+
+            var AllTotalCost = Number(AllTotal) + Number(txtTotalExp);
+
+
+            $("#txtTotalExp").val(txtTotalExp.toFixed(2));
+
+            $("#txtTotalCost").val(AllTotalCost.toFixed(2));
+
+
+
+        }
+                     $(document).ready(function(){
+    $("#Send-btn").click(function(event){
+        event.preventDefault();
+        var ChassisNo ='@Model.StockObject.Chassis_No';
+        var Make ='@Model.StockObject.Make';
+        var Model ='@Model.StockObject.ModelDesciption';
+        var Year='@Model.StockObject.ModelYear';
+        var win = window.location.assign("https://api.whatsapp.com/send" + "?phone=" + $("#Number").val() + "&text=ChassisNo:" + ChassisNo + " Make:" + Make + " Model:" + Model + " Year:" + Year + " and a link http://mehrmotors.dealersol.com/CommonImages/OtherImages/@NAME");
+        win.focus();
+    });
+                     })
+                    $(document).ready(function(){
+                        $("#print-btn").click(function(event){
+        event.preventDefault();
+
+        var win = window.open("@Url.Action("Broucher_Print", "Report")" + "?Stock_ID=" + $("#Stock_ID").val() ,  "_blank");
+        win.focus();
+    });
+        })
+        //----method for opening vendor popup
+        function AddNewVendor(Vendor) {
+            vendorValue = Vendor.value;
+            if (vendorValue == 'NewVendor') {
+                $('#AddPartnerModal').modal('show');
+            }
+        }
+
+
+
+        GetSalesDetail()
+
+
+        function GetSalesDetail() {
+
+            //debugger
+
+
+            var Stock_ID = document.getElementById("Stock_ID").value.toString();
+
+            if (Stock_ID == -1) {
+
+            }
+            else {
+                $.ajax({
+
+                    type: "Get",
+                    url: "/Sales/GetSalesDetail",
+                    data: { //Passing data
+                        Stock_ID: Stock_ID
+                    },
+                    datatype: "json",
+                    success: function (response) {
+
+
+
+                        $("#txtCustomerName").val(response.customerName);
+                        $("#txtCustomerNumber").val(response.customer_Contact);
+                        $("#txtSoldDate").val(response.saleDate);
+                        $("#txtSoldPrice").val(response.total_Amt);
+                        $("#txtPaid").val(response.paid_amt);
+                        $("#txtBalDue").val(response.bal_due);
+                        $("#ddlDestination_ExportTo").val(response.exportTo_Destination_ID);
+                        $("#ddlPortofDisc").val(response.port_of_Exit_ID);
+                        $("#ddlExitPoint").val(response.port_of_Exit_ID);
+                        $("#PortFrom").val(response.portFrom);
+                        $("#PortTo").val(response.portTO);
+                        $("#Destination").val(response.destination);
+
+
+
+
+
+                    }
+                })
+            }
+
+        }
+    </script>
+
+
+
+}

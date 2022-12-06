@@ -1,0 +1,161 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OPurchases
+
+
+
+<div style="overflow-x:auto;">
+
+
+    <table class="table table-bordered table-striped mb-0 mt-1" id="tblBulkLoad">
+        <thead>
+            <tr>
+
+
+                <th>MAKENAME </th>
+                <th>MAKEMODELNAME </th>
+                <th>CHASSIS_NO </th>
+                <th> MODEL</th>
+                <th>COLORNAME </th>
+                <th>COLOR_INT </th>
+                <th> PRICE</th>
+                <th>PRICE_RATE</th>
+                <th>FREIGHT</th>
+                <th>FR_RATE</th>
+                <th> SELLING_PRICE</th>
+                <th> TRANSMISSION </th>
+                <th>DOOR  </th>
+                <th> DRIVE </th>
+                <th> ENGINE_NO </th>
+                <th> WEIGHT </th>
+                <th> HS_CODE </th>
+                <th>ENGINE_POWER  </th>
+                <th> MILEAGE </th>
+                <th> VEHICLE_CC    </th>
+                <th> USED_NEW    </th>
+                <th> OPTIONS    </th>
+                <th> FUEL_TYPE    </th>
+                <th>MAKECATEGORYNAME</th>
+                <th> VENDORNAME    </th>
+                <th> PURCHASEDATE    </th>
+                <th>  PURCHASE_REF   </th>
+                <th>BL_NO</th>
+                <th>SHIP_NAME</th>
+                <th>SHIPDATE</th>
+                <th>LEAVE_DATE</th>
+                <th>ENTRY_DATE</th>
+                <th>BOE</th>
+                <th>LOCATION</th>
+                <th>MAKECOUNTRYNAME</th>
+                <th>AVAILABILITY</th>
+                <th>STOCK_TYPE</th>
+                <th>SHOWROOM</th>
+                <th>COMMENTS</th>
+                <th>OPTION_CODE</th>
+                <th>KEYNO</th>
+
+                <th>PRODUCTION_DATE</th>
+                <th>EXP_TRANSPORT</th>
+                <th>EXP_AGENT_COMMISSION</th>
+                <th>EXP_CUSTOM_DUTY</th>
+                <th>EXP_OTHERS</th>
+                <th>EXP_CC</th>
+                <th>EXP_MAINT</th>
+                <th>EXP_COMM_OTHERS</th>
+                <th>EXP_PAPER</th>
+                <th>OTHER_REF</th>
+                <th>TAX10</th>
+                <th>AUCTIONFEE</th>
+                <th>REKSO</th>
+                <th>RECYCLE</th>
+                <th>LOADING</th>
+
+                <th>AUCTIONNAME</th>
+                <th>CONT_NO</th>
+
+
+            </tr>
+        </thead>
+        <tbody>
+
+            @if (Model.ImportHolderList != null)
+            {
+
+
+                foreach (importHolder item in Model.ImportHolderList)
+                {
+            <tr>
+
+
+                <td>@Html.DisplayFor(modelItem => item.MAKENAME)</td>
+                <td>@Html.DisplayFor(modelItem => item.MAKEMODELNAME)</td>
+                <td>@Html.DisplayFor(modelItem => item.CHASSIS_NO)</td>
+                <td>@Html.DisplayFor(modelItem => item.MODEL)</td>
+                <td>@Html.DisplayFor(modelItem => item.COLORNAME)</td>
+                <td>@Html.DisplayFor(modelItem => item.COLOR_INT)</td>
+                <td>@Html.DisplayFor(modelItem => item.PRICE)</td>
+                <td>@Html.DisplayFor(modelItem => item.PRICE_RATE)</td>
+                <td>@Html.DisplayFor(modelItem => item.FREIGHT)</td>
+                <td>@Html.DisplayFor(modelItem => item.FR_RATE)</td>
+                <td>@Html.DisplayFor(modelItem => item.SELLING_PRICE)</td>
+                <td>@Html.DisplayFor(modelItem => item.TRANSMISSION)</td>
+                <td>@Html.DisplayFor(modelItem => item.DOOR)</td>
+                <td>@Html.DisplayFor(modelItem => item.DRIVE)</td>
+                <td>@Html.DisplayFor(modelItem => item.ENGINE_NO)</td>
+                <td>@Html.DisplayFor(modelItem => item.WEIGHT)</td>
+                <td>@Html.DisplayFor(modelItem => item.HS_CODE)</td>
+                <td>@Html.DisplayFor(modelItem => item.ENGINE_POWER)</td>
+                <td>@Html.DisplayFor(modelItem => item.MILEAGE)</td>
+                <td>@Html.DisplayFor(modelItem => item.VEHICLE_CC)</td>
+                <td>@Html.DisplayFor(modelItem => item.USED_NEW)</td>
+                <td>@Html.DisplayFor(modelItem => item.OPTIONS)</td>
+                <td>@Html.DisplayFor(modelItem => item.FUEL_TYPE)</td>
+                <td>@Html.DisplayFor(modelItem => item.MAKECATEGORYNAME)</td>
+                <td>@Html.DisplayFor(modelItem => item.VENDORNAME)</td>
+                <td>@Html.DisplayFor(modelItem => item.PURCHASEDATE)</td>
+                <td>@Html.DisplayFor(modelItem => item.PURCHASE_REF)</td>
+                <td>@Html.DisplayFor(modelItem => item.BL_NO)</td>
+                <td>@Html.DisplayFor(modelItem => item.SHIP_NAME)</td>
+                <td>@Html.DisplayFor(modelItem => item.SHIPDATE)</td>
+                <td>@Html.DisplayFor(modelItem => item.LEAVE_DATE)</td>
+                <td>@Html.DisplayFor(modelItem => item.ENTRY_DATE)</td>
+                <td>@Html.DisplayFor(modelItem => item.BOE)</td>
+                <td>@Html.DisplayFor(modelItem => item.LOCATION)</td>
+                <td>@Html.DisplayFor(modelItem => item.MAKECOUNTRYNAME)</td>
+                <td>@Html.DisplayFor(modelItem => item.AVAILABILITY)</td>
+                <td>@Html.DisplayFor(modelItem => item.STOCK_TYPE)</td>
+                <td>@Html.DisplayFor(modelItem => item.SHOWROOM)</td>
+                <td>@Html.DisplayFor(modelItem => item.COMMENTS)</td>
+                <td>@Html.DisplayFor(modelItem => item.OPTION_CODE)</td>
+                <td>@Html.DisplayFor(modelItem => item.KEYNO)</td>
+                <th>@Html.DisplayFor(modelItem => item.PRODUCTION_DATE)</th>
+                <td>@Html.DisplayFor(modelItem => item.EXP_TRANSPORT)</td>
+                <td>@Html.DisplayFor(modelItem => item.EXP_AGENT_COMMISSION)</td>
+                <td>@Html.DisplayFor(modelItem => item.EXP_CUSTOM_DUTY)</td>
+                <td>@Html.DisplayFor(modelItem => item.EXP_OTHERS)</td>
+                <td>@Html.DisplayFor(modelItem => item.EXP_CC)</td>
+                <td>@Html.DisplayFor(modelItem => item.EXP_MAINT)</td>
+                <td>@Html.DisplayFor(modelItem => item.EXP_COMM_OTHERS)</td>
+                <td>@Html.DisplayFor(modelItem => item.EXP_PAPER)</td>
+                <td>@Html.DisplayFor(modelItem => item.OTHER_REF)</td>
+                <td>@Html.DisplayFor(modelItem => item.TAX10)</td>
+                <td>@Html.DisplayFor(modelItem => item.AUCTIONFEE)</td>
+                <td>@Html.DisplayFor(modelItem => item.REKSO)</td>
+                <td>@Html.DisplayFor(modelItem => item.RECYCLE)</td>
+                <td>@Html.DisplayFor(modelItem => item.LOADING)</td>
+                <td>@Html.DisplayFor(modelItem => item.RECYCLE)</td>
+                <td>@Html.DisplayFor(modelItem => item.LOADING)</td>
+
+                <td>@Html.DisplayFor(modelItem => item.AUCTIONNAME)</td>
+                <td>@Html.DisplayFor(modelItem => item.CONT_NO)</td>
+
+
+
+            </tr>
+                }
+            }
+
+        </tbody>
+    </table>
+
+</div>

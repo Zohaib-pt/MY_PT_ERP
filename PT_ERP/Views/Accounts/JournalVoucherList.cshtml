@@ -1,0 +1,346 @@
+﻿
+@using DAL
+@using DAL.Models
+@model DAL.oClasses.OAccounts
+
+
+
+@{
+    ViewData["Title"] = "JournalVoucherList";
+    Layout = "~/Views/Shared/_LayoutTablePages.cshtml";
+}
+
+<header class="page-header">
+    <h2>Accounts</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+
+            <li><a><span>@ViewBag.BreadCumController</span></a></li>
+            <li><a asp-area="" asp-controller="@ViewBag.BreadCumController" asp-action="@ViewBag.BreadCumAction"><span>Journal Voucher List</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+
+<div class="row">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+        <div class="col-lg-12">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-info">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Success!</strong> @TempData["Success"] <a href="" class="alert-link"></a>
+                </div>
+            }
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Error!</strong> @TempData["Error"] <a href="" class="alert-link"></a>
+                </div>
+            }
+        </div>
+    }
+
+
+</div>
+
+
+<!--Following 'LoaderImage' div is for showing ajax loader before ajax call-->
+<div class="imageGIFLoader" id="LoaderImage">
+    <img src="~/img/projects/ajax-loader.gif" class="img-responsive" style="width:65px; height:65px;" />
+</div>
+
+
+<div class="row" style="padding-top:1px;">
+    <div class="col">
+        <section class="card">
+            <header class="card-header">
+
+             
+                <div class="row">
+                    <div class="col-lg-12">
+                        <section class="card">
+                            <div class="card-body">
+
+
+                                <form method="Post" data-ajax="true" 
+                                      asp-area="" asp-controller="Accounts" asp-action="PaymentsList" data-ajax-loading="">
+
+                                    <div class="row form-group">
+
+                                        <div class="col-lg-1">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="Project_ID"> Ref</label>
+                                                <input type="text" id="PaymentRef" name="PaymentRef" class="form-control" placeholder="Ref" />
+
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-2">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="Vendor_ID">Vendor</label>
+                                                <input type="text" id="Party_ID_Name" name="Party_ID_Name" class="form-control" />
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-2">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="From_Date">From Date</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                        </span>
+                                                    </span>
+
+                                                    <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="StartDate" name="StartDate">
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="col-lg-2">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="To_Date">To Date</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                        </span>
+                                                    </span>
+
+                                                    <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="EndDate" name="EndDate">
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                      
+                                       
+
+
+                                        <div class="col-lg-4">
+
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="Search"> &nbsp; </label>
+                                                <br />
+                                                <button type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-info">Search&nbsp;<i class="fas fa-search"></i></button>
+
+                                                <a class="mb-1 mt-1 mr-1 btn btn-sm btn-primary" asp-area="" asp-controller="Accounts" asp-action="NewJournalVoucher">Add New &nbsp;<i class="fas fa-plus"></i></a>
+                                               
+                                                
+                                                <button type="button" class="mb-1 mt-1 mr-1 btn btn-sm btn-warning">Print &nbsp;<i class="fas fa-print"></i></button>
+
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                </form>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
+
+
+            </header>
+            <div class="card-body">
+
+
+
+                <table class="table table-bordered table-striped mb-0" id="datatable-default">
+                    <thead>
+                        <tr>
+
+
+
+
+                            <th>Voucher Ref</th>
+
+                            <th>Voucher Date</th>
+
+
+
+
+
+                            <th> Created At</th>
+                            <th> Created By</th>
+                            <th>View</th>
+
+                        </tr>
+                    </thead>
+                    <tbody id="TablePaymentListSearch">
+
+                        @if (Model.JournalVoucherMasterList != null)
+                        {
+                            foreach (JournalVoucher_DAL item in Model.JournalVoucherMasterList)
+                            {
+                               
+
+                                <tr>
+                                    <td><a asp-controller="Accounts" asp-action="NewJournalVoucher" asp-route-JVMaster_ID="@item.JVMaster_ID"> @Html.DisplayFor(modelItem => item.JVMaster_ref)</a></td>
+                                    <td>@Html.DisplayFor(modelItem => item.Date)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Created_at)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Created_by)</td>
+                                    
+                               
+                                    <td><a asp-controller="Accounts" asp-action="NewJournalVoucher" asp-route-JVMaster_ID="@item.JVMaster_ID"> View</a></td>
+
+
+                                </tr>
+                            }
+                        }
+
+                    </tbody>
+                </table>
+
+
+            </div>
+        </section>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+@section Scripts{
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
+
+
+    <script>
+
+        function myBeginSearch() {
+            $("#LoaderImage").css("visibility", "visible");
+        }
+
+        function mySuccessSearch(data) {
+
+            debugger
+            if (data.message == undefined) {
+
+                $('#TablePurchaseListSearch').html(data);
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        function myFailureSearch() {
+
+            alert("Failured occured. Please try again!");
+            $("#LoaderImage").css("visibility", "hidden");
+        }
+
+        function myCompleteSearch() {
+            $("#LoaderImage").css("visibility", "hidden");
+
+        }
+
+       
+    </script>
+
+<script>
+    //---show attachment popup
+    function ShowAttachmentMaster(PurchaseMaster_ID) {
+        debugger
+        var TeamDetailPostBackURL = '/Purchases/GetPurchaseMasterNew_Attachments';
+
+        //--assign value to PurchaseMaster_ID hidden field in the main. Dont remove this fields
+        $("#PurchaseMasterMain").val(PurchaseMaster_ID);
+
+
+        if (!PurchaseMaster_ID) {
+            alert("ID is null. Please try again!");
+        } else {
+            $.ajax({
+                type: "GET",
+                url: TeamDetailPostBackURL,
+                contentType: "application/json; charset=utf-8",
+                data: { "PurchaseMaster_ID": PurchaseMaster_ID },
+                datatype: "json",
+                success: function (data) {
+
+
+                    if (data.message == undefined) {
+                        $('#AttachmentsPurchaseMaster').html(data);
+
+                       
+                        //--assign value to PurchaseMaster_ID hidden field. this field is in partial view '_PurchaseListAttachment'
+                        $("#PurchaseMaster_ID_Attachment").val(PurchaseMaster_ID);
+
+                        $('#ShowAttachmentMasterModal').modal('show');
+
+                    } else {
+                        alert(data.message);
+                        $('#ShowAttachmentMasterModal').modal('hide');
+                    }
+
+                },
+                error: function () {
+                    alert("Dynamic content load failed.");
+                }
+            });
+        }
+
+
+
+    }
+
+
+    //---after successfull submission of attachment
+    function mySuccessAttachment(data) {
+
+        debugger
+        if (data.message == undefined) {
+
+           
+            $('#AttachmentsPurchaseMaster').html(data);
+
+            //---assign id of purchase master to the hidden field PurchaseMaster_ID_Attachment after partial view refresh
+            var PurchaseMaster_ID = document.getElementById("PurchaseMasterMain").value;
+            $("#PurchaseMaster_ID_Attachment").val(PurchaseMaster_ID);
+
+
+
+        } else {
+            alert(data.message);
+
+        }
+
+
+    }
+
+    //---if error occured in insertion of attachment
+    function myFailureAttachment() {
+
+        alert("Failured occured. Please try again!");
+       
+    }
+
+</script>
+
+}

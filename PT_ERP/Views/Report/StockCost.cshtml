@@ -1,0 +1,359 @@
+﻿
+@using DAL
+@using DAL.Models
+@model DAL.oClasses.oReports
+@using X.PagedList.Mvc.Core; @*//import this so we get our HTML Helper*@
+@using X.PagedList;  @*//import this so we can cast our list to IPagedList*@
+
+@{ ViewData["Title"] = "StockReport";
+    Layout = "~/Views/Shared/_LayoutTablePages.cshtml"; }
+
+<header class="page-header">
+    <h2>@ViewBag.SectionHeaderTitle</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+
+            <li><a><span>@ViewBag.BreadCumController</span></a></li>
+            <li><a asp-area="" asp-controller="@ViewBag.BreadCumController" asp-action="@ViewBag.BreadCumAction"><span>@ViewBag.SectionSub_HeaderTitle</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+
+<div class="row">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+<div class="col-lg-12">
+    @if (TempData["Success"] != null)
+    {
+<div class="alert alert-info">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+    <strong>Success!</strong> @TempData["Success"] <a href="" class="alert-link"></a>
+</div>}
+
+    @if (TempData["Error"] != null)
+    {
+<div class="alert alert-danger">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+    <strong>Error!</strong> @TempData["Error"] <a href="" class="alert-link"></a>
+</div>}
+</div>}
+
+
+</div>
+
+
+
+<div class="row" style="padding-top:1px;">
+    <div class="col">
+        <section class="card">
+            <header class="card-header">
+
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <section class="card">
+                            <div class="card-body">
+
+                                <form method="get" data-ajax="true" data-ajax-complete="myCompleteSearch" data-ajax-success="mySuccessSearch" data-ajax-failure="myFailureSearch"
+                                      data-ajax-begin="myBeginSearch" asp-area="" asp-controller="Report" asp-action="StockCostSearch" data-ajax-loading="">
+
+                                    <div class="row form-group">
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+
+                                                <label>Start Date </label>
+                                                <div class="input-group date form_date col-md-13" data-date="" data-date-format="dd MM yyyy" data-link-field="dtp_input2" data-link-format="yyyy-mm-dd">
+                                                    <input id='StartPurchaseDate' name="StartPurchaseDate" data-plugin-datepicker class="form-control" autocomplete="off" value="" size="16" type="text">
+                                                    <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label>End Date</label>
+
+                                                <div class="input-group date form_date col-md-13" data-date="" data-date-format="dd MM yyyy" data-link-field="dtp_input2" data-link-format="yyyy-mm-dd">
+                                                    <input id='EndPurchaseDate' name="EndPurchaseDate" data-plugin-datepicker class="form-control" autocomplete="off" value="" size="16" type="text">
+                                                    <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="Container_No">JB No</label>
+                                                <input type="text" id="Container_No" name="Container_No" class="form-control" placeholder="Container No" />
+
+                                            </div>
+                                        </div>
+
+
+
+
+
+
+
+
+                                        <div class="col-lg-4">
+
+
+
+
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="Search"> &nbsp; </label>
+                                                <br />
+                                                <button type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-primary">Search&nbsp;<i class="fas fa-search"></i></button>
+                                                <a type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-info" disabled="disabled" href="" id="print-btn">Print &nbsp;<i class="fas fa-print"></i></a>
+                                                <a type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-success" disabled="disabled" href="" id="export-btn">Export &nbsp;<i class="fas fa-file-excel"></i></a>
+
+                                            </div>
+
+
+                                        </div>
+
+
+                                    </div>
+                                </form>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
+
+
+            </header>
+            <div class="card-body" id="StockCostSearch">
+
+
+
+                <table class="table table-bordered table-striped mb-0">
+                    <thead>
+                        <tr>
+
+
+
+                            <th>Chassis_No</th>
+                            <th>Purchase Date</th>
+                            <th>ModelYear</th>
+                          
+                            <th>Price</th>
+                            <th>Price Rate</th>
+                            <th>Price Tax</th>
+                            <th>Freight Charges</th>
+                            <th>Auction Fee</th>
+                            <th>Rekso</th>
+                            <th>Recycle Fee</th>
+
+                            <th>Loading Charges</th>
+                            <th>Others</th>
+                            <th>JP Charges</th>
+                            <th>Total Cost</th>
+                            <th>Total Cost Others</th>
+
+
+
+
+
+                        </tr>
+                    </thead>
+
+
+                    <tbody>
+
+                        @if (Model.StockCostList != null)
+                        {
+                            //ViewBag.Price = 0;
+                            //ViewBag.PriceTax = 0;
+                            //ViewBag.Auction = 0;
+                            //ViewBag.Rekso = 0;
+                            //ViewBag.Recycle = 0;
+
+                            //ViewBag.Total_Cost = 0;
+                            //ViewBag.Total_Cost_Others = 0;
+                            foreach (StockReport item in Model.StockCostList)
+                            {
+                                //decimal Price = Convert.ToDecimal(item.Price);
+                                //ViewBag.Price = Convert.ToDecimal(ViewBag.Price) + Price;
+
+                                //decimal PriceTax = Convert.ToDecimal(item.PriceTax);
+                                //ViewBag.PriceTax = Convert.ToDecimal(ViewBag.PriceTax) + PriceTax;
+
+                                //decimal Auction = Convert.ToDecimal(item.Auction);
+                                //ViewBag.Auction = Convert.ToDecimal(ViewBag.Auction) + Auction;
+
+                                //decimal Rekso = Convert.ToDecimal(item.Rekso);
+                                //ViewBag.Rekso = Convert.ToDecimal(ViewBag.Rekso) + Rekso;
+
+                                //decimal Recycle = Convert.ToDecimal(item.Recycle);
+                                //ViewBag.Recycle = Convert.ToDecimal(ViewBag.Recycle) + Recycle;
+
+                                //decimal Total_Cost = Convert.ToDecimal(item.Total_Cost);
+                                //ViewBag.Total_Cost = Convert.ToDecimal(ViewBag.Total_Cost) + Total_Cost;
+
+                                //decimal Total_Cost_Others = Convert.ToDecimal(item.Total_Cost_Others);
+                                //ViewBag.Total_Cost_Others = Convert.ToDecimal(ViewBag.Total_Cost_Others) + Total_Cost_Others;
+                        <tr class="gradeX odd" role="row">
+
+
+
+                            <td>@Html.DisplayFor(modelItem => item.Chassis_No)</td>
+                            <td>@Html.DisplayFor(modelItem => item.PurchaseDate)</td>
+
+
+
+                            <td>@Html.DisplayFor(modelItem => item.ModelYear)</td>
+                          
+                            <td>@Html.DisplayFor(modelItem => item.Price)</td>
+                            <td>@Html.DisplayFor(modelItem => item.PriceRate)</td>
+                            <td>@Html.DisplayFor(modelItem => item.PriceTax)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Freight)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Auction)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Rekso)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Recycle)</td>
+
+                            <td>@Html.DisplayFor(modelItem => item.Loading)</td>
+
+                            <td>@Html.DisplayFor(modelItem => item.OtherCharges_JP)</td>
+                            <td>@Html.DisplayFor(modelItem => item.JP_Charges)</td>
+
+
+                            <td>@Html.DisplayFor(modelItem => item.Total_Cost)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Total_Cost_Others)</td>
+
+
+                        </tr>
+}
+        }
+
+                    </tbody>
+                    @if (Model.StockCostList_ttl != null)
+                    {
+                        foreach (StockReport item in Model.StockCostList_ttl)
+                        {
+                <tfoot>
+                    <tr role="row">
+
+
+                        <th>Total </th>
+                        <th> </th>
+                        <th> </th>
+                     
+
+                        <th>@Html.DisplayFor(modelItem => item.Price) </th>
+                        <th> </th>
+                        <th>@Html.DisplayFor(modelItem => item.PriceTax) </th>
+                        <th>@Html.DisplayFor(modelItem => item.Freight) </th>
+                        <th> @Html.DisplayFor(modelItem => item.Auction)</th>
+                        <th> @Html.DisplayFor(modelItem => item.Rekso)</th>
+                        <th>@Html.DisplayFor(modelItem => item.Recycle) </th>
+                        <th>@Html.DisplayFor(modelItem => item.Loading) </th>
+                        <th>@Html.DisplayFor(modelItem => item.OtherCharges_JP) </th>
+                        <th>@Html.DisplayFor(modelItem => item.JP_Charges) </th>
+                        <th>@Html.DisplayFor(modelItem => item.Total_Cost) </th>
+                        <th>@Html.DisplayFor(modelItem => item.Total_Cost_Others) </th>
+
+
+                    </tr>
+                </tfoot>
+                        }
+                    }
+
+                                </table>
+                <div class="invoice-summary">
+
+                    <div class="row">
+
+                        <div class="col-lg-6 col-md-6">
+
+                        </div>
+
+                        <div class="col-lg-6 col-md-6 justify-content-end text-right">
+                            @if (Model.StockCostList.Count() != 0)
+                            {
+
+                @Html.PagedListPager(Model.StockCostList, page => Url.Action("StockCostSearch", "Report", new { StartPurchaseDate = ViewBag.StartDate_StockCost, EndPurchaseDate = ViewBag.EndDate_StockCost, Container_No = ViewBag.Container_No_StockList, page })
+
+     , X.PagedList.Mvc.Core.Common.PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new AjaxOptions()
+     {
+         HttpMethod = "get",
+         UpdateTargetId = "StockCostSearch"
+     })
+                      )}
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+@section Scripts{
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
+
+
+    <script>
+
+        function myBeginSearch() {
+            $("#LoaderImage").css("visibility", "visible");
+        }
+
+        function mySuccessSearch(data) {
+
+            debugger
+            if (data.message == undefined) {
+
+                $('#StockCostSearch').html(data);
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        function myFailureSearch() {
+
+            alert("Failured occured. Please try again!");
+            $("#LoaderImage").css("visibility", "hidden");
+        }
+
+        function myCompleteSearch() {
+            $("#LoaderImage").css("visibility", "hidden");
+
+        }
+
+        $(document).ready(function(){
+    $("#print-btn").click(function(event){
+    event.preventDefault();
+
+        var win = window.open("@Url.Action("StockCost_Print", "Report")" + "?StartPurchaseDate=" + $("#StartPurchaseDate").val() + "&EndPurchaseDate=" + $("#EndPurchaseDate").val() + "&Container_No=" + $("#Container_No").val(), "_blank");
+    win.focus();
+    });
+    })
+     $(document).ready(function(){
+    $("#export-btn").click(function(event){
+    event.preventDefault();
+        window.location.href = "@Url.Action("StockCost_Excel", "Report")" + "?StartPurchaseDate=" + $("#StartPurchaseDate").val() + "&EndPurchaseDate=" + $("#EndPurchaseDate").val() + "&Container_No=" + $("#Container_No").val();
+    });
+    })
+    </script>
+
+
+
+}

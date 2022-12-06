@@ -1,0 +1,290 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OSales
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    @*<title>Example 3</title>*@
+    <style type="text/css">
+   
+
+        .clearfix:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+
+        a {
+            color: #001028;
+            text-decoration: none;
+        }
+
+        body {
+            font-family: Junge;
+            position: relative;
+            width: 25cm;
+            height: 29.7cm;
+            margin: 0 auto;
+            color: #001028;
+            background: #FFFFFF;
+            font-size: 14px;
+        }
+
+        .arrow {
+            margin-bottom: 4px;
+        }
+
+            .arrow.back {
+                text-align: right;
+            }
+
+        .inner-arrow {
+            padding-right: 10px;
+            height: 30px;
+            display: inline-block;
+            background-color: rgb(233, 125, 49);
+            text-align: center;
+            line-height: 30px;
+            vertical-align: middle;
+        }
+
+        .arrow.back .inner-arrow {
+            background-color: rgb(233, 217, 49);
+            padding-right: 0;
+            padding-left: 10px;
+        }
+
+        .arrow:before,
+        .arrow:after {
+            content: '';
+            display: inline-block;
+            width: 0;
+            height: 0;
+            border: 15px solid transparent;
+            vertical-align: middle;
+        }
+
+        .arrow:before {
+            border-top-color: rgb(233, 125, 49);
+            border-bottom-color: rgb(233, 125, 49);
+            border-right-color: rgb(233, 125, 49);
+        }
+
+        .arrow.back:before {
+            border-top-color: transparent;
+            border-bottom-color: transparent;
+            border-right-color: rgb(233, 217, 49);
+            border-left-color: transparent;
+        }
+
+        .arrow:after {
+            border-left-color: rgb(233, 125, 49);
+        }
+
+        .arrow.back:after {
+            border-left-color: rgb(233, 217, 49);
+            border-top-color: rgb(233, 217, 49);
+            border-bottom-color: rgb(233, 217, 49);
+            border-right-color: transparent;
+        }
+
+        .arrow span {
+            display: inline-block;
+            width: 80px;
+            margin-right: 20px;
+            text-align: right;
+        }
+
+        .arrow.back span {
+            margin-right: 0;
+            margin-left: 20px;
+            text-align: left;
+        }
+
+        h1 {
+            color: #5D6975;
+            font-family: Junge;
+            font-size: 2.4em;
+            line-height: 1.4em;
+            font-weight: normal;
+            text-align: center;
+            border-top: 1px solid #5D6975;
+            border-bottom: 1px solid #5D6975;
+            margin: 0 0 2em 0;
+        }
+
+            h1 small {
+                font-size: 0.45em;
+                line-height: 1.5em;
+                float: left;
+            }
+
+                h1 small:last-child {
+                    float: right;
+                }
+
+        #project {
+            float: left;
+        }
+
+        #company {
+            float: right;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border-spacing: 0;
+            margin-bottom: 30px;
+        }
+
+            table th,
+            table td {
+                text-align: center;
+            }
+
+            table th {
+                padding: 5px 20px;
+                color: #5D6975;
+                border-bottom: 1px solid #C1CED9;
+                white-space: nowrap;
+                font-weight: normal;
+            }
+
+            table .service,
+            table .desc {
+                text-align: left;
+            }
+
+            table td {
+                padding: 20px;
+                text-align: right;
+            }
+
+                table td.service,
+                table td.desc {
+                    vertical-align: top;
+                }
+
+                table td.unit,
+                table td.qty,
+                table td.total {
+                    font-size: 1.2em;
+                }
+
+                table td.sub {
+                    border-top: 1px solid #C1CED9;
+                }
+
+                table td.grand {
+                    border-top: 1px solid #5D6975;
+                }
+
+            table tr:nth-child(2n-1) td {
+                background: #EEEEEE;
+            }
+
+            table tr:last-child td {
+                background: #DDDDDD;
+            }
+
+        #details {
+            margin-bottom: 30px;
+        }
+
+        footer {
+            color: #5D6975;
+            width: 100%;
+            height: 30px;
+            position: absolute;
+            bottom: 0;
+            border-top: 1px solid #C1CED9;
+            padding: 8px 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <h1 class="clearfix"><small><span></span><br /></small> <b>Tax Invoice </b><small><span></span><br /></small></h1>
+        <div id="details" class="clearfix">
+            <div id="project">
+                <div><div style="font-size:18px"><span><b>Consignee :</b></span> @Model.SalesMasterPrintObj.CustomerName (@Model.SalesMasterPrintObj.Customer_ID)</div></div>
+                <div ><div style="font-size:18px"><span><b>Address :</b></span> @Model.SalesMasterPrintObj.Invoice_address</div></div>
+                <div ><div style="font-size:18px"><span><b>TRN :</b></span> @Model.SalesMasterPrintObj.CustomerTRN</div></div>
+               
+            </div>
+            <div id="company">
+                <div ><div style="font-size:18px"><b>Date :</b><span>@Model.SalesMasterPrintObj.SaleDate</span></div></div>
+                <div ><div style="font-size:18px"><b>INV# :</b><span>@Model.SalesMasterPrintObj.SaleRef</span></div></div>
+                <div ><div style="font-size:18px"><b>TRN# :</b><span>100329112500003</span></div></div>
+                <div><div style="font-size:18px"><b>Type :</b><span>@Model.SalesMasterPrintObj.Sale_trans_type</span></div></div>
+            </div>
+        </div>
+        <table class="table table-responsive-md table-bordered mb-0">
+            <thead>
+                <tr  >
+                    <th style="background-color:#bababa; color:#000; font-size:14px " class="service">S.No</th>
+                    <th style="background-color:#bababa; color:#000; font-size:14px " class="desc">CAR TYPE</th>
+                    <th style="background-color:#bababa; color:#000; font-size:14px " class="desc">CHASSIS NO</th>
+                    <th style="background-color:#bababa; color:#000; font-size:14px ">ENGINE NO.</th>
+                    <th style="background-color:#bababa; color:#000; font-size:14px ">COLOR</th>
+                    <th style="background-color:#bababa; color:#000; font-size:14px ">MODEL</th>
+                    <th style="background-color:#bababa; color:#000; font-size:14px ">QTY</th>
+                    <th style="background-color:#bababa; color:#000; font-size:14px ">UNIT PRICE (AED)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.SalesDetailPrintObj != null)
+                {
+                    int counter = 0;
+
+                    foreach (pa_SalesDetails item in Model.SalesDetailPrintObj)
+                    {
+                        counter++;
+                        <tr>
+                            <td class="service">@counter</td>
+                            <td class="desc">@item.ModelDesciption</td>
+                            <td class="unit">@item.Chassis_No</td>
+                            <td class="qty">@item.Engine_No</td>
+                            <td class="qty">@item.Color</td>
+                            <td class="qty">@item.ModelYear</td>
+                            <td class="qty">@item.Quantity</td>
+
+                            <td class="total">@item.Unit_Price AED</td>
+                        </tr>
+                    }
+                }
+            <tr>
+                <td colspan="4" class="sub">TOTAL</td>
+                
+                <td colspan="4" class="sub total">@Model.SalesMasterPrintObj.Total_Amt AED</td>
+            </tr>
+                <tr>
+                    <td colspan="4">TAX 5%</td>
+                    <td colspan="4" class="total">@Model.SalesMasterPrintObj.VATExp AED</td>
+                </tr>
+                <tr>
+                    <td colspan="4" class="grand total">TOTAL AFTER TAX</td>
+                    <td colspan="4" class="grand total">@Model.SalesMasterPrintObj.AfterVatTotal AED</td>
+                </tr>
+                <tr>
+                    <td  colspan="4" class="grand total">TOTAL IN WORDS</td>
+                    <td colspan="4"  class="grand total">@Model.SalesDetailPrintObj_TTL.Total_Amt_inWords Only</td>
+                </tr>
+            </tbody>
+        </table>
+
+
+    </main>
+    <footer>
+ 
+    </footer>
+</body>
+</html>
+

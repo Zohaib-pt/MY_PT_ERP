@@ -1,0 +1,523 @@
+﻿
+@using DAL
+@using DAL.Models
+
+@using X.PagedList.Mvc.Core; @*//import this so we get our HTML Helper*@
+@using X.PagedList;  @*//import this so we can cast our list to IPagedList *@
+@model DAL.oClasses.ODelivery
+
+
+@{
+    ViewData["Title"] = "Depoist list";
+    Layout = "~/Views/Shared/_LayoutTablePages.cshtml";
+}
+
+
+
+<header class="page-header">
+    <h2>Sales</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+
+            <li><a><span>@ViewBag.BreadCumController</span></a></li>
+            <li><a asp-area="" asp-controller="@ViewBag.BreadCumController" asp-action="@ViewBag.BreadCumAction"><span>Deposit List</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+
+<div class="row">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+        <div class="col-lg-12">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-info">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Success!</strong> @TempData["Success"] <a href="" class="alert-link"></a>
+                </div>
+            }
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Error!</strong> @TempData["Error"] <a href="" class="alert-link"></a>
+                </div>
+            }
+        </div>
+    }
+
+
+</div>
+
+<!--Following 'LoaderImage' div is for showing ajax loader before ajax call-->
+<div class="imageGIFLoader" id="LoaderImage">
+    <img src="~/img/projects/ajax-loader.gif" class="img-responsive" style="width:65px; height:65px;" />
+</div>
+
+<div class="row" style="padding-top:1px;">
+    <div class="col">
+        <section class="card">
+            <header class="card-header">
+
+                <div class="row">
+
+
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <section class="card">
+                            <div class="card-body">
+
+                                <form method="get" data-ajax="true" data-ajax-complete="myCompleteSearch" data-ajax-success="mySuccessSearch" data-ajax-failure="myFailureSearch"
+                                      data-ajax-begin="myBeginSearch" asp-area="" asp-controller="Delivery" asp-action="DepositListSearch" data-ajax-loading="">
+
+
+
+
+                                    <div class="row form-group">
+
+                                        <div class="col-lg">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="Project_ID">Ref</label>
+                                                <input type="text" id="DV_Ref" name="DV_Ref" class="form-control" placeholder="DV Ref" />
+
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="Project_ID">Party Name</label>
+                                                <input type="text" id="Party_ID_Name" name="Party_ID_Name" class="form-control" placeholder="Party Name" />
+
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="From_Date">Start Date</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                        </span>
+                                                    </span>
+
+                                                    <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="StartDate" name="StartDate">
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="col-lg">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="To_Date">End Date</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                        </span>
+                                                    </span>
+
+                                                    <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="EndDate" name="EndDate">
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+
+                                        <div class="col-lg">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="Color">Chassis No</label>
+                                                <input type="text" id="Chassis_no" name="Chassis_no" class="form-control" placeholder="Chassis No" />
+                                            </div>
+                                        </div>
+                                        <div class="col-lg">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="Color">Cheque No</label>
+                                                <input type="text" id="Cheque_no" name="Cheque_no" class="form-control" placeholder="Cheque No" />
+                                            </div>
+                                        </div>
+
+                                        <partial name="~/Views/Shared/_CompanyWise.cshtml" />
+
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg">
+
+
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="Search"> &nbsp; </label>
+
+                                                <button type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-info">Search&nbsp;<i class="fas fa-search"></i></button>
+                                                <a class="mb-1 mt-1 mr-1 btn btn-sm btn-primary" asp-area="" asp-controller="Delivery" asp-action="DepositRecieved">Add New&nbsp;<i class="fas fa-plus"></i></a>
+
+                                                <a type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-info" href="" id="print-btn">Print &nbsp;<i class="fas fa-print"></i></a>
+                                                <a type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-success" href="" id="export-btn">Export &nbsp;<i class="fas fa-file-excel"></i></a>
+
+
+                                            </div>
+
+
+
+                                        </div>
+                                    </div>
+
+
+                                </form>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
+
+
+            </header>
+            <div class="card-body" id="DepositpartialviewListarea">
+
+
+                <div class="invoice-summary mb-1">
+
+                    <div class="row mb-1">
+
+                        <div class="col-lg-6 col-md-6 mb-1">
+                            <b>@ViewBag.RecordsPerPage</b> records per page
+                        </div>
+
+                        <div class="col-lg-6 col-md-6 mb-1 justify-content-end text-right">
+
+                        </div>
+                    </div>
+
+                </div>
+
+                <table class="table table-bordered table-striped mb-0">
+                    <thead>
+                        <tr>
+
+
+
+
+                            <th>Ref</th>
+
+                            <th>Date</th>
+                            <th>Customer Name</th>
+                            <th>Deposit</th>
+                            <th>Others</th>
+                            <th>Total</th>
+                            <th>Recieved</th>
+                            <th>Return</th>
+                            <th @ViewBag.AttachmentVisibility>Attachments</th>
+                            <th>View</th>
+
+
+
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @if (Model.DepositsDetailListIPageList.Any())
+                        {
+                            foreach (Deposits_DAL item in Model.DepositsDetailListIPageList)
+                            {
+                                <tr>
+
+                                    <td>@Html.DisplayFor(modelItem => item.DV_Ref)</td>
+                                    <td>@Convert.ToDateTime(item.Date_Taken).ToShortDateString()</td>
+
+                                    <td>@Html.DisplayFor(modelItem => item.CUSTOMER_NAME)</td>
+                                    <td>@item.Deposit</td>
+                                    <td>@item.Others</td>
+
+                                    <td>@item.Total_Collected</td>
+                                    <td>@item.Amount_Recieved</td>
+                                    <td>@item.Amount_Return</td>
+                                    <td @ViewBag.AttachmentVisibility><a href="#" onclick="ShowAttachmentMaster('@item.DV_ID');">Manage Attachment</a> </td>
+                                    <td>
+                                        <a asp-controller="Delivery" asp-action="DepositRecieved" asp-route-DV_ID="@item.DV_ID"> Deposit</a><br />
+                                        <a asp-controller="Delivery" asp-action="DepositReturn" asp-route-DV_ID="@item.DV_ID"> Claim </a>
+
+
+
+                                    </td>
+                                </tr>
+                            }
+                        }
+
+
+
+
+
+                    </tbody>
+                </table>
+                <div class="invoice-summary">
+
+                    <div class="row">
+
+                        <div class="col-lg-6 col-md-6">
+
+                        </div>
+
+                        <div class="col-lg-6 col-md-6 justify-content-end text-right">
+                            @if (Model.DepositsDetailListIPageList.Count() != 0)
+                            {
+
+                                @Html.PagedListPager(Model.DepositsDetailListIPageList, page => Url.Action("DepositListSearch", "Delivery", new
+                           {
+                               DV_Ref = ViewBag.DV_Ref_Deposit,
+                               Party_ID_Name = ViewBag.Party_ID_Name_Deposit,
+                               StartDate = ViewBag.StartDate_Deposit,
+                               EndDate = ViewBag.EndDate_Deposit,
+                               ChassisNo = ViewBag.ChassisNo_Deposit,
+                               Cheque_no = ViewBag.Cheque_no_Deposit,
+                               c_ID = ViewBag.c_ID_Deposit,
+                               page
+                           })
+
+                                 , X.PagedList.Mvc.Core.Common.PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new AjaxOptions()
+                                 {
+                                     HttpMethod = "get",
+                                     UpdateTargetId = "DepositpartialviewListarea"
+                                 }))
+                            }
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+
+<!-- Modal show attachment -->
+<div class="modal fade bs-modal-lg" id="ShowAttachmentMasterModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <!-- Following fields is for making a central sales master id for attachments -->
+        <input type="hidden" id="DepositMain" name="DepositMain" />
+
+        <div class="modal-content" id="AttachmentsDV">
+
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts{
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css" rel="stylesheet" />
+
+
+    <script>
+
+                              function myBeginSearch() {
+                             $("#LoaderImage").css("visibility", "visible");
+                             }
+
+                            function mySuccessSearch(data) {
+
+                                debugger
+                                if (data.message == undefined) {
+
+                                    $('#DepositpartialviewListarea').html(data);
+
+
+                                } else {
+                                    alert(data.message);
+
+                                }
+
+
+                            }
+
+                            function myFailureSearch(data) {
+                                console.log(data);
+                                alert("Failured occured. Please try again!");
+            $("#LoaderImage").css("visibility", "hidden");
+                            }
+
+                            function myCompleteSearch() {
+            $("#LoaderImage").css("visibility", "hidden");
+
+                            }
+
+
+                            //---show attachment popup
+                            function ShowAttachmentMaster(DV_ID) {
+                                debugger
+                                var TeamDetailPostBackURL = '/Delivery/GetDepositInvoice_Attachments';
+
+            //--assign value to DV_ID hidden field in the main. Dont remove this fields
+            $("#DepositMain").val(DV_ID);
+
+
+                                if (!DV_ID) {
+                                    alert("ID is null. Please try again!");
+                                } else {
+                $.ajax({
+                                    type: "GET",
+                    url: TeamDetailPostBackURL,
+                    contentType: "application/json; charset=utf-8",
+                    data: { "DV_ID": DV_ID },
+                    datatype: "json",
+                    success: function (data) {
+
+
+                                            if (data.message == undefined) {
+                            $('#AttachmentsDV').html(data);
+
+
+                            //--assign value to DV_ID hidden field. this field is in partial view '_SalesInvoiceAttachment'
+                            $("#DV_ID_Attachment").val(DV_ID);
+
+                            $('#ShowAttachmentMasterModal').modal('show');
+
+                                            } else {
+                                                alert(data.message);
+                            $('#ShowAttachmentMasterModal').modal('hide');
+                                            }
+
+                                        },
+                    error: function () {
+                                            alert("Dynamic content load failed.");
+                                        }
+                                    });
+                                }
+
+
+
+                            }
+
+
+                            //---after successfull submission of attachment
+                            function mySuccessAttachment(data) {
+
+                                debugger
+                                if (data.message == undefined) {
+
+
+                $('#AttachmentsDV').html(data);
+
+                                    //---assign id of sales master to the hidden field DV_ID_Attachment after partial view refresh
+                                    var DV_ID = document.getElementById("DepositMain").value;
+                $("#DV_ID_Attachment").val(DV_ID);
+
+
+
+                                } else {
+                                    alert(data.message);
+
+                                }
+
+
+                            }
+
+                            //---if error occured in insertion of attachment
+                            function myFailureAttachment() {
+
+                                alert("Failured occured. Please try again!");
+
+                            }
+
+
+                            //---Delete Attachment
+                            function DeleteAttachment(Attachment_ID, Master_ID, Type, File_Name) {
+                                swal({
+                                    title: "Delete Deposit Attachment",
+
+                                    text: " Are you sure do you want to delete this Attachment? \n",
+
+                                    showCancelButton: true,
+                                    confirmButtonColor: "#0088CC",
+                                    confirmButtonText: "Confirm",
+
+                                    closeOnConfirm: true
+                                },
+                                    function (isConfirm) {
+                                        if (isConfirm) {
+                                            var TeamDetailPostBackURL = '/Delivery/DeleteAttachmentDeposit';
+
+                                            //--in this function , the 'Type' is for the field in attachment table for specifying different voucher documents
+
+                                            var DV_ID = Master_ID;
+                                            if (!DV_ID) {
+                                                alert("Attachment ID is null. Please try again!");
+                                            } else {
+                                                $.ajax({
+                                                    type: "GET",
+                                                    url: TeamDetailPostBackURL,
+                                                    contentType: "application/json; charset=utf-8",
+                                                    data: { "DV_ID": DV_ID, "Attachment_ID": Attachment_ID, "Type": Type, "File_Name": File_Name },
+                                                    datatype: "json",
+                                                    success: function (data) {
+
+
+                                                        if (data.message == undefined) {
+                                                            $('#AttachmentsDV').html(data);
+
+
+                                                            //--assign value to DV_ID hidden field. this field is in partial view '_SalesInvoiceAttachment'
+                                                            $("#DV_ID_Attachment").val(DV_ID);
+
+
+
+                                                        } else {
+                                                            alert(data.message);
+                                                            //$('#ShowAttachmentMasterModal').modal('hide');
+                                                        }
+
+                                                    },
+                                                    error: function () {
+                                                        alert("Dynamic content load failed.");
+                                                    }
+                                                });
+                                            }
+                                        }
+                                    });
+
+
+
+
+                            }
+
+
+        $(document).ready(function(){
+    $("#print-btn").click(function(event){
+        event.preventDefault();
+
+        var win = window.open("@Url.Action("DepositList_print","Report")" + "?DV_Ref=" + $("#DV_Ref").val() + "&Party_ID_Name=" + $("#Party_ID_Name").val() + "&StartDate=" + $("#StartDate").val() + "&EndDate=" + $("#EndDate").val() + "&Chassis_no=" + $("#Chassis_no").val() + "&Cheque_no=" + $("#Cheque_no").val()+ "&c_ID=" + $("#c_ID").val(),"_blank");
+        win.focus();
+    });
+        })
+         $(document).ready(function () {
+               $("#export-btn").click(function(event){
+                event.preventDefault();
+                var win = window.open("@Url.Action("DepositList_Excel", "Report")" + "?DV_Ref=" + $("#DV_Ref").val() + "&Party_ID_Name=" + $("#Party_ID_Name").val() + "&StartDate=" + $("#StartDate").val() + "&EndDate=" + $("#EndDate").val() + "&Chassis_no=" + $("#Chassis_no").val() + "&Cheque_no=" + $("#Cheque_no").val()+ "&c_ID=" + $("#c_ID").val(),"_blank");
+                   win.focus();
+               });
+            });
+
+
+    </script>
+
+
+
+}

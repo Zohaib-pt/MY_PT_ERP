@@ -1,0 +1,113 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OAccounts
+
+
+<table class="table table-responsive-md table-bordered mb-0">
+    <thead>
+        <tr>
+            <th>Edit/Delete</th>
+            <th>On Account</th>
+            <th>Amount</th>
+            <th width="30%">Description</th>
+
+            <th>Recieved Mode</th>
+            <th>Ref</th>
+            <th>Cheque Details</th>
+
+
+        </tr>
+    </thead>
+    <tbody>
+
+        @if (Model.receiptDetailList != null)
+        {
+            ViewBag.Grand_Amount = "0";
+            ViewBag.Grand_VAT_Exp = "0";
+            ViewBag.Grand_Total_Amount = "0";
+
+            foreach (pa_ReceiptDetails_DAL item in Model.receiptDetailList)
+            {
+
+                ViewBag.Grand_Amount = item.Grand_Amount;
+                ViewBag.Grand_VAT_Exp = item.Grand_VAT_Exp;
+                ViewBag.Grand_Total_Amount = item.Grand_Total_Amount;
+
+        <tr>
+
+
+            <td>
+                <a onclick="UpdateReceiptDetailGeneral('@item.ReceiptDetail_ID', '@item.DR_accountID', '@item.Amount', '@item.Currency_ID', '@item.Currency_Rate', '@item.other_curr_amount', '@item.CR_accountID', '@item.Description', '@item.trans_ref', '@item.Cheque_Bank_Name',
+        '@item.cheque_Date', '@item.Cheque_no', '@item.VAT_Rate', '@item.VAT_Exp', '@item.Total_Amount','@item.PDC_Recieving_Acc_ID');" data-toggle="modal" data-target="#UpdateReceiptDetailModal"><img style="width: 20px;" src="~/Img/Icons/edit.png" /></a>
+                <a onclick="DeleteReceiptsDetail('@item.ReceiptDetail_ID');" data-toggle="modal" data-target="#DeleteSalesDetailModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+
+
+
+            </td>
+            <td>@Html.DisplayFor(modelItem => item.CR_AccountName)</td>
+            <td>
+
+
+                @Html.DisplayFor(modelItem => item.Amount)<br />
+
+                @Html.DisplayFor(modelItem => item.Currency_ShortName) x @Html.DisplayFor(modelItem => item.Currency_Rate)
+
+
+
+            </td>
+            <td width="30%">@Html.DisplayFor(modelItem => item.Description)</td>
+            <td>@Html.DisplayFor(modelItem => item.DR_AcountName)</td>
+            <td>@Html.DisplayFor(modelItem => item.trans_ref)</td>
+            <td class="text-wrap">
+                <b>@Html.DisplayFor(modelItem => item.Cheque_Bank_Name)</b>
+                <i>@Html.DisplayFor(modelItem => item.Cheque_no) </i>
+                <b>@Html.DisplayFor(modelItem => item.cheque_Date)</b>
+
+            </td>
+
+
+        </tr>
+
+
+            }
+        }
+
+
+    </tbody>
+
+</table>
+
+<div class="invoice-summary">
+
+    <div class="row">
+
+        <div class="col-lg-9 col-md-9">
+
+        </div>
+
+        <div class="col-lg-3 col-md-3 justify-content-end text-right">
+            <table class="table h6 text-dark">
+                <tbody>
+
+                    <tr class="b-top-0">
+                        <td colspan="2"> Sub Total:</td>
+                        <td class="text-right" id="SubTotal">@ViewBag.Grand_Amount</td>
+                    </tr>
+                    <tr class="b-top-0">
+                        <td colspan="2"> VAT Charges:</td>
+                        <td class="text-right" id="SubTotal">@ViewBag.Grand_VAT_Exp</td>
+                    </tr>
+
+                    <tr class="h5">
+                        <td colspan="2">Total Receivable:</td>
+                        <td class="text-right" id="Total_Payable">@ViewBag.Grand_Total_Amount</td>
+                    </tr>
+
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>

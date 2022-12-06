@@ -1,0 +1,211 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OPurchases
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+
+@{
+    Layout = null;
+    var StartDate = @Context.Request.Query["From_Date"];
+    var EndDate = @Context.Request.Query["To_Date"];
+}
+
+<!DOCTYPE HTML>
+<HTML>
+<head>
+
+    <!-- Basic -->
+    <meta charset="UTF-8">
+
+
+    <title>@ViewBag.PageTitle</title>
+    <meta name="keywords" content="DearlerSol | Dealers Management System " />
+    <meta name="description" content="Vehicle Management System | Dealer Management System | Dealer ERP ">
+    <meta name="author" content="DealerSol.com">
+
+    <!-- Mobile Metas -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <!-- Favicon  -->
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+
+
+    <!-- Vendor CSS -->
+
+    <link rel="stylesheet" href="~/vendor/bootstrap/css/bootstrap.css" />
+
+
+
+    <style>
+        .moneycol {
+            text-align: right;
+        }
+
+        .controlheight {
+            height: 1px;
+            border: 1px solid #d3d3d3;
+            margin: 0px;
+        }
+
+            .controlheight table th, .table td {
+                padding: 5px;
+            }
+
+        .SumHeading {
+            background-color: #d3d3d3;
+            text-align: left;
+            font-weight: bold;
+            font-size: 16px
+        }
+
+        .ColHeading {
+            background-color: #d3d3d3;
+            font-size: 18px;
+            text-align: center
+        }
+    </style>
+
+
+</head>
+
+<BODY>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col">
+                <section>
+                    <header>
+                        <div class="row form-inline">
+
+                            @*<div class="col-md-12">
+
+                                    <h5 style="color:black;">
+                                        @Configuration.GetSection("AppSettings").GetSection("CompanyName").Value
+
+                                    </h5>
+                                    <p style="color:black;">
+                                        Phone No:
+
+
+                                    </p>
+                                </div>*@
+                            @* Farzaib *@
+                            <div class="col-md-6">
+                                <p class="h6 text-right"><b>From</b> @StartDate  <b>Till</b> @EndDate</p>
+                                <div class="text-center">
+                                    <h4 class="text-left" style="position:absolute; top:50%; left: 1.5%;">@Configuration.GetSection("AppSettings").GetSection("CompanyName").Value.ToString()</h4>
+                                    <h3>Other Purchase List</h3>
+                                </div>
+
+
+
+                            </div>
+                            @*<div class="col-md-12" style="text-align:center">
+
+                                    <h3 style="color:black;">
+                                        Other  Purchase List
+                                        <br />
+                                    </h3>
+                                    <p><b>From</b> @StartDate   <b>Till</b> @EndDate</p>
+
+
+                                </div>*@
+
+
+                        </div>
+                        @*<div class="row form-group">
+                                <div class="col-xs-12">
+                                    <h6 style="text-align:center">From   - To   </h6>
+                                </div>
+                            </div>*@
+                    </header>
+                    <div>
+                        <table class="table table-bordered" @*id="datatable-default"*@>
+                            <thead>
+                                <tr class="ColHeading">
+
+
+                                    <th>Ref</th>
+
+                                    <th>Vendor</th>
+
+                                    <th>Date</th>
+                                    <th>Amt</th>
+                                    <th>VAT</th>
+                                    <th>Total</th>
+                                    <th>Paid</th>
+                                    <th>Balance</th>
+                                    <th>Status</th>
+
+
+                                </tr>
+                            </thead>
+                            <tbody>
+
+
+                                @if (Model.purchaseOtherMasterList1 != null)
+                                {
+
+
+                                    foreach (Pa_PurchaseMaster_DAL item in Model.purchaseOtherMasterList1)
+                                    {
+
+                                        double Total = Convert.ToDouble(string.IsNullOrEmpty(item.Total) == true ? "0" : item.Total);
+                                        ViewBag.Total = Total;
+
+                                        double TotalVAT_Exp = Convert.ToDouble(string.IsNullOrEmpty(item.TotalVAT_Exp) == true ? "0" : item.TotalVAT_Exp);
+                                        ViewBag.vTotalVAT_Exp = TotalVAT_Exp;
+
+                                        double SumTotal_Amount = Convert.ToDouble(string.IsNullOrEmpty(item.Total_Amount) == true ? "0" : item.Total_Amount);
+                                        ViewBag.vSumTotal_Amount = SumTotal_Amount;
+
+                                        double Total_Paid = Convert.ToDouble(string.IsNullOrEmpty(item.TotalPaid) == true ? "0" : item.TotalPaid);
+                                        ViewBag.vTotal_Paid = Total_Paid;
+
+                                        double Total_Bal_Due = Convert.ToDouble(string.IsNullOrEmpty(item.TotalBal_due) == true ? "0" : item.TotalBal_due);
+                                        ViewBag.vTotal_Bal_Due = Total_Bal_Due;
+
+
+                                        <tr>
+
+                                            <TD class="controlheight">@item.PurchaseRef</TD>
+                                            <TD class="controlheight">@item.Vendor_Name</TD>
+                                            <TD class="controlheight">@item.PurchaseDate</TD>
+                                            <TD class="controlheight">@item.Total</TD>
+                                            <TD class="controlheight moneycol">@item.VAT_Exp</TD>
+                                            <TD class="controlheight moneycol">@item.Total_Amount</TD>
+                                            <TD class="controlheight moneycol">@item.Paid</TD>
+                                            <TD class="controlheight moneycol">@item.Bal_Due</TD>
+                                            <TD class="controlheight moneycol">@item.PurchaseStatus</TD>
+
+                                        </tr>
+                                    }
+                                }
+
+                                <tr>
+
+                                    <TD class="SumHeading"><b>Total</b></TD>
+                                    <TD class="controlheight"></TD>
+                                    <TD class="controlheight"></TD>
+                                    <TD class="controlheight moneycol"><b>@ViewBag.Total</b></TD>
+                                    <TD class="controlheight moneycol"><b>@ViewBag.vTotalVAT_Exp</b></TD>
+                                    <TD class="controlheight moneycol"><b>@ViewBag.vSumTotal_Amount</b></TD>
+                                    <TD class="controlheight moneycol"><b>@ViewBag.vTotal_Paid</b></TD>
+                                    <TD class="controlheight moneycol"><b>@ViewBag.vTotal_Bal_Due</b></TD>
+                                    <TD class="controlheight"></TD>
+
+
+                                </tr>
+
+
+
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+    </div>
+</BODY>
+</HTML>

@@ -1,0 +1,139 @@
+﻿
+@using DAL
+@using DAL.Models
+@model DAL.oClasses.oReports
+@using X.PagedList.Mvc.Core; @*//import this so we get our HTML Helper*@
+@using X.PagedList;  @*//import this so we can cast our list to IPagedList*@
+
+<table class="table table-bordered table-striped mb-0">
+    <thead>
+        <tr>
+
+
+
+            <th> Chassis</th>
+            <th>Purchase Date </th>
+            <th>Sale Date </th>
+
+            <th> Ref </th>
+            <th> RecycleFee_Out </th>
+            <th> RecycleFee_In </th>
+
+
+
+
+
+
+        </tr>
+    </thead>
+
+
+    <tbody>
+
+        @if (Model.Recycle != null)
+        {
+
+
+            foreach (RecycleReport item in Model.Recycle)
+            {
+
+
+                var Date = new string[4];
+                if (item.Date != "" && item.Date != null)
+                {
+                    Date = item.Date.Split('/');
+
+                }
+
+
+
+<tr class="gradeX odd" role="row">
+
+
+
+
+    <td>@Html.DisplayFor(modelItem => item.Chassis_No) </td>
+
+    <td>@Html.DisplayFor(modelItem => @Date[0]) </td>
+    <td>@Html.DisplayFor(modelItem => @Date[1]) </td>
+
+    <td>@Html.DisplayFor(modelItem => item.Ref) </td>
+
+    <td>@Html.DisplayFor(modelItem => item.RecycleFee_Out) </td>
+
+    <td>@Html.DisplayFor(modelItem => item.RecycleFee_In) </td>
+
+
+
+
+</tr>
+}
+}
+
+    </tbody>
+
+    <tfoot>
+        @if (Model.Recycle_TTL != null)
+        {
+
+
+            foreach (RecycleReport item in Model.Recycle_TTL)
+            {
+        <tr role="row">
+            <th>Total</th>
+            <th>Balance ==> @item.Balance</th>
+            <th> </th>
+            <th> </th>
+            <th>@item.RecycleFee_Out_ttl</th>
+            <th>@item.RecycleFee_In_ttl</th>
+
+
+
+
+
+        </tr>
+}
+}
+    </tfoot>
+
+
+</table>
+
+<div class="invoice-summary">
+
+    <div class="row">
+
+        <div class="col-lg-6 col-md-6">
+
+        </div>
+
+        <div class="col-lg-6 col-md-6 justify-content-end text-right">
+
+            <div class="invoice-summary">
+
+                <div class="row">
+
+                    <div class="col-lg-6 col-md-6">
+
+                    </div>
+
+                    <div class="col-lg-6 col-md-6 justify-content-end text-right">
+                        @if (Model.Recycle.Count() != 0)
+                        {
+
+            @Html.PagedListPager(Model.Recycle, page => Url.Action("RecycleReport_Search", "Report", new { StartDate = ViewBag.StartDate_RecycleReport, EndDate = ViewBag.EndDate_RecycleReport, ChassisNo = ViewBag.ChassisNo_RecycleReport, page })
+
+      , X.PagedList.Mvc.Core.Common.PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new AjaxOptions()
+      {
+          HttpMethod = "get",
+          UpdateTargetId = "RecycleReportSearch"
+      })
+                            )}
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,1914 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OSales
+@{ ViewData["Title"] = "SalesReturn";
+    Layout = "~/Views/Shared/_Layout.cshtml"; }
+@{ string Form_SalesMaster_ActionMethod = "";
+    int? SaleMaster_ID = ViewBag.SaleMaster_ID;
+
+
+    if (Model.SalesReturnMasterObj != null && Model.SalesReturnMasterObj.SaleMaster_ID > 0)
+    {
+
+        Form_SalesMaster_ActionMethod = "UpdateSalesMaster_Return";
+
+
+    }
+    else
+    {
+        Form_SalesMaster_ActionMethod = "InsertSalesInvoiceMaster_Return";
+    } }
+<header class="page-header">
+    <h2>Sales</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+            <li><a asp-area="" asp-controller="Sales" asp-action="SalesReturnList"><span>Sale</span></a></li>
+            <li><a asp-area="" asp-controller="@ViewBag.BreadCumController" asp-action="@ViewBag.BreadCumAction"><span>New Sales Return</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+
+
+
+
+
+<div class="row" id="SuccessErrorSection">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+<div class="col-lg-12">
+    @if (TempData["Success"] != null)
+    {
+<div class="alert alert-info">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+    <strong>Success!</strong> @TempData["Success"] <a href="" class="alert-link"></a>
+</div>}
+
+    @if (TempData["Error"] != null)
+    {
+<div class="alert alert-danger">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+    <strong>Error!</strong> @TempData["Error"] <a href="" class="alert-link"></a>
+</div>}
+</div>}
+
+
+</div>
+
+<!-- start: page -->
+<section class="card">
+    <div class="card-body">
+        <div class="invoice">
+            <header class="clearfix">
+                <div class="row">
+                    <div class="col-sm-6 mt-0">
+                        <h2 class="h4 mt-0 mb-2 text-dark font-weight-bold">SalesReturn</h2>
+
+                    </div>
+
+                    <div class="col-sm-6 mt-0 text-right">
+
+
+
+                    </div>
+
+
+                </div>
+            </header>
+
+            <div class="row">
+                <div class="col-lg-8">
+
+                    @if (Model.SalesReturnMasterObj.SaleMaster_ID != null)
+                    {
+                        if (Model.SalesReturnMasterObj.SaleMaster_ID > 0)
+                        {
+
+        <button type="button" id="ButtonSaleMasterUpdate" class="btn-sm btn btn-success">Update &nbsp;<i class="fas fa-save"></i></button>
+
+
+
+
+                            <button type="button" class="btn-sm btn btn-info" id="print-btn"> Print &nbsp;<i class="fas fa-print"></i></button>
+
+
+
+
+
+                                                <a asp-controller="Sales" asp-action="SalesReturnList" class="btn-sm btn btn-default">List &nbsp;<i class="fas fa-list"></i></a> }
+                                        }
+                                        else
+                                        {
+                            <button type="button" id="ButtonSaleMasterIssue" class="btn-sm btn btn-success">Issue &nbsp;<i class="fas fa-save"></i></button>
+
+
+
+                                            <button type="button" class="btn-sm btn btn-info" id="print-btn" disabled="disabled"> Print &nbsp;<i class="fas fa-print"></i></button>
+
+
+                                                            <a asp-controller="Sales" asp-action="SalesReturnList" class="btn-sm btn btn-default">List &nbsp;<i class="fas fa-list"></i></a>}
+
+
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div class="col">
+
+
+
+                    <form method="post" asp-area="" asp-controller="Sales" asp-action="@Form_SalesMaster_ActionMethod" id="formSaleMaster">
+                        @Html.AntiForgeryToken()
+
+                        <section class="card">
+
+                            <div class="card-body">
+
+
+
+                                <div class="row form-group">
+                                    <div class="col-lg-4">
+
+                                        <div class="row MasterForm">
+                                            <label for="To" class="col-sm-4 col-form-label">Customer</label>
+                                            <div class="col-sm-8">
+                                                <select class="form-control select2" id="Customer_ID" readonly name="Customer_ID" asp-items="@(new SelectList( ViewBag.CustomerMaster,"Customer_ID","CustomerName", Model.SalesReturnMasterObj.Customer_ID))" required>
+                                                    <option value="0">Cash Customer</option>
+                                                </select>
+                                                <input type="hidden" id="SaleMaster_ID" name="SaleMaster_ID" value="@SaleMaster_ID" />
+                                            </div>
+                                        </div>
+                                        <div class="row MasterForm">
+                                            <label for="To" class="col-sm-4 col-form-label">Name</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" id="Customer_Name" readonly name="Customer_Name" value="@Model.SalesReturnMasterObj.Customer_Name" placeholder="Name">
+                                            </div>
+                                        </div>
+                                        <div class="row MasterForm">
+                                            <label for="To" class="col-sm-4 col-form-label">Contact</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" id="Customer_Contact" readonly name="Customer_Contact" value="@Model.SalesReturnMasterObj.Customer_Contact" placeholder="Contact Number">
+                                            </div>
+                                        </div>
+
+                                        <div class="row MasterForm">
+                                            <label for="Address" class="col-sm-4 col-form-label">Address</label>
+                                            <div class="col-sm-8">
+                                                @*<textarea class="form-control" rows="1" id="Invoice_address" name="Invoice_address" placeholder="">@Model.SalesReturnMasterObj.Invoice_address</textarea>*@
+                                                <input type="text" class="form-control" id="Invoice_address" name="Invoice_address" value="@Model.SalesReturnMasterObj.Invoice_address" placeholder="Customer Address">
+                                            </div>
+                                        </div>
+                                        <div class="row MasterForm">
+                                            <label for="To" class="col-sm-4 col-form-label">CustomerTRN</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" id="CustomerTRN" name="CustomerTRN" value="@Model.SalesReturnMasterObj.CustomerTRN" placeholder="Customer TRN">
+                                            </div>
+                                        </div>
+
+                                        <div class="row MasterForm">
+                                            <label for="To" class="col-sm-4 col-form-label">Remarks</label>
+                                            <div class="col-sm-8">
+                                                <textarea type="text" class="form-control" id="Remarks" name="Remarks" placeholder="Remarks">@Model.SalesReturnMasterObj.Remarks</textarea>
+                                            </div>
+                                        </div>
+                                        @*<div class="row MasterForm">
+                                                <label for="shipping_co_ID" class="col-sm-4 col-form-label">Shipping Co</label>
+                                                <div class="col-sm-8">
+                                                    <select class="form-control" id="shipping_co_ID" name="shipping_co_ID" asp-items="@(new SelectList( ViewBag.ShippingCompanies,"Partner_ID","PartnerName", Model.SalesReturnMasterObj.shipping_co_ID))">
+                                                        <option>Select Ship Co</option>
+
+                                                    </select>
+
+                                                </div>
+                                            </div>*@
+
+
+
+
+                                    </div>
+
+                                    <div class="col-lg-4">
+
+
+
+                                    </div>
+
+                                    <div class="col-lg-4 ">
+
+
+                                        <div class="row MasterForm">
+                                            <label for="PurchaseRef" class="col-sm-4 col-form-label">Ref No</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" id="SaleRef" name="SaleRef" value="@Model.SalesReturnMasterObj.SaleRef" readonly>
+                                            </div>
+                                        </div>
+
+                                        <div class="row MasterForm">
+                                            <label for="PurchaseDate" class="col-sm-4 col-form-label">Date</label>
+                                            <div class="col-sm-8">
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                        </span>
+                                                    </span>
+
+                                                    @if (!String.IsNullOrEmpty(Model.SalesReturnMasterObj.SaleDate))
+                                                    {
+                                        <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="SaleDate" name="SaleDate" value="@Model.SalesReturnMasterObj.SaleDate" required> }
+                                    else
+                                    {
+                        <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="SaleDate" name="SaleDate" value="@DateTime.Now.ToString("dd-MMM-yyyy")" required>}
+
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+
+                                        <div class="row MasterForm">
+                                            <label for="To" class="col-sm-4 col-form-label">Ref</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" id="Manualbook_ref" readonly name="Manualbook_ref" value="@Model.SalesReturnMasterObj.Manualbook_ref" placeholder="Manualbook_Ref">
+                                            </div>
+                                        </div>
+
+                                        <div class="row MasterForm">
+                                            <label for="Seller_ID" class="col-sm-4 col-form-label">Seller</label>
+                                            <div class="col-sm-8">
+                                                <select class="form-control" id="Seller_ID" name="Seller_ID" READONLY asp-items="@(new SelectList( ViewBag.SellerList,"Partner_ID","PartnerName", Model.SalesReturnMasterObj.Seller_ID))">
+                                                    <option>Select Seller</option>
+
+                                                </select>
+
+                                            </div>
+                                        </div>
+                                        <div class="row MasterForm">
+                                            <label class="col-sm-4 col-form-label" for="Chassis">Sale Ref</label>
+
+                                            @*<div class="col-sm-8">
+                                                    <select class="form-control" id="SaleMasterRef_ID" name="SaleMasterRef_ID" onchange="GetSaleRefDetail()" asp-items="@(new SelectList( ViewBag.SaleRef,"SaleMaster_ID","SaleRef", Model.SalesReturnMasterObj.SaleMasterRef_ID))" required>
+                                                        <option value="0">Select Ref</option>
+
+                                                    </select>
+                                                </div>*@
+                                            <div class="col-sm-4" style="padding-right:1px;">
+                                                <input type="text" class="form-control" id="SaleRefS" name="SaleRefS">
+                                                <input type="hidden" class="form-control" id="SaleMasterRef_ID" name="SaleMasterRef_ID" value="@Model.SalesReturnMasterObj.SaleMasterRef_ID">
+                                            </div>
+                                            <div class="col-sm-4" style="padding-left:1px; ">
+                                                <button type="button" onclick="GetSaleRefDetail()" class=" btn btn-primary" style="width:100%;">Get &nbsp; <i class="fa fa-search"></i></button>
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+
+
+
+                                </div>
+
+                            </div>
+
+
+
+                        </section>
+                    </form>
+
+                </div>
+
+            </div>
+
+            <div class="row m-2">
+                <div class="col-lg-3">
+                    <h2 class="card-title" style="line-height:normal;">Details </h2>
+                </div>
+                <div class="col-lg-6">
+                    &nbsp;
+                </div>
+                <div class="col-lg-3 text-right">
+                    @*<button class="btn btn-sm btn-primary" onclick="ShowDetails();">Add Details &nbsp;<i class="fas fa-plus"></i></button>*@
+
+
+                </div>
+            </div>
+
+            <div id="SalesDetailSection">
+
+                <table class="table table-responsive-md table-bordered mb-0">
+                    <thead>
+                        <tr>
+                            <th>Delete</th>
+                            <th>Item</th>
+                            <th>Description</th>
+                            <th>Unit Price</th>
+                            <th>Sale QTY</th>
+                            <th>Return QTY</th>
+
+
+
+                            <th>Amount</th>
+
+
+
+
+
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.SalesReturnDetailList != null)
+                        {
+
+                            ViewBag.SubTotal = 0;
+                            foreach (pa_SalesDetails item in Model.SalesReturnDetailList)
+                            {
+
+                                ViewBag.Grand_Amount = item.Grand_Amount;
+                                ViewBag.Grand_VATExp = item.Grand_VATExp;
+                                ViewBag.Grand_TotalAmount = item.Grand_TotalAmount;
+                                ViewBag.Total_Amt_inWords = item.Total_Amt_inWords;
+
+            <tr>
+
+
+                <td>
+
+                    <a onclick="DeleteSalesDetail('@item.SalesDetails_ID');" data-toggle="modal" data-target="#DeleteSalesDetailModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ItemName)
+                    <br />
+                    <span class="small"> @Html.DisplayFor(modelItem => item.ItemCode)</span>
+
+                </td>
+                <td>@Html.DisplayFor(modelItem => item.ItemDesc)</td>
+                <td>@Html.DisplayFor(modelItem => item.Unit_Price)</td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SaleQty) x
+                    @Html.DisplayFor(modelItem => item.UM_ID)
+                    <br />
+                    @Html.DisplayFor(modelItem => item.LocationName)
+
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.Quantity) x
+                    @Html.DisplayFor(modelItem => item.UM_ID)
+
+
+                </td>
+
+                <td>@Html.DisplayFor(modelItem => item.Total_Amount)</td>
+
+
+
+
+
+            </tr>
+}
+    }
+                    </tbody>
+
+                </table>
+
+                <div class="invoice-summary">
+
+                    <div class="row">
+
+                        <div class="col-lg-9 col-md-9">
+
+                        </div>
+
+                        <div class="col-lg-3 col-md-3 justify-content-end text-right">
+                            <table class="table h6 text-dark">
+                                <tbody>
+
+
+
+                                    <tr class="b-top-0">
+                                        <td colspan="2"> Sub Total:</td>
+                                        <td class="text-right" id="SubTotal">@ViewBag.Grand_Amount</td>
+                                    </tr>
+
+
+
+                                    <tr class="h5">
+                                        <td colspan="2">Total:</td>
+                                        <td class="text-right" id="Total_Payable">@ViewBag.Grand_TotalAmount</td>
+                                    </tr>
+
+
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+
+                <section class="card">
+                    <div class="card-body">
+                        <header class="clearfix">
+                            <div class="row m-2">
+
+                                <div class="col-lg-6">
+                                    <h4 class="modal-title">Payment Details</h4>
+                                </div>
+
+
+                                <div class="col-lg-6 text-right">
+                                    <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#AddNewPaymentDetailModal">Add New &nbsp;<i class="fas fa-plus"></i></button>
+
+                                </div>
+
+
+
+
+                            </div>
+                        </header>
+                        <div id="DepsitReturnDetailSection">
+
+                            <table class="table table-responsive-md table-bordered mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Edit/Delete</th>
+                                        <th>On Account</th>
+
+                                        <th>Description</th>
+                                        <th>Pay Via</th>
+                                        <th>Ref</th>
+                                        <th>Amount</th>
+                                        <th>VAT Charges</th>
+                                        <th>Total Amount</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    @if (Model.PaymentDetailList != null)
+                                    {
+
+
+                                        foreach (Pa_PaymentDetails_DAL item in Model.PaymentDetailList)
+                                        {
+
+
+                                            ViewBag.Vat_ExpTotal = item.VatExpTotal;
+                                            ViewBag.AmountTotal = item.AmountTotal;
+                                            ViewBag.Grand_Total = item.Grand_Total;
+
+
+                        <tr>
+
+
+
+
+                            <td>
+                                <a onclick="UpdatePaymentDetailGeneral('@item.PaymentDetails_ID'	,'@item.DR_accountID', '@item.Amount', '@item.VAT_Rate', '@item.Currency_ID', '@item.Currency_Rate', '@item.Amount_Others',
+	                                    '@item.CR_accountID', '@item.Description', '@item.trans_ref','@item.cheque_bank_name','@item.cheque_date', '@item.cheque_no', '@item.VAT_Exp', '@item.Total_Amount');" data-toggle="modal" data-target="#UpdateNewPaymentDetailModal"><img style="width: 20px;" src="~/Img/Icons/edit.png" /></a>
+                                <a onclick="DeletePaymentDetail('@item.PaymentDetails_ID');" data-toggle="modal" data-target="#DeletePaymentDetailModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+                            </td>
+
+                            <td>@Html.DisplayFor(modelItem => item.DR_AccountName)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Description)</td>
+                            <td>@Html.DisplayFor(modelItem => item.CR_AcountName)</td>
+                            <td>@Html.DisplayFor(modelItem => item.trans_ref)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Amount)</td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.VAT_Exp)
+                            </td>
+                            <td>@Html.DisplayFor(modelItem => item.Total_Amount)</td>
+
+
+                        </tr>
+}
+                }
+
+                                </tbody>
+
+                            </table>
+
+
+
+                        </div>
+
+
+                    </div>
+                </section>
+
+                <hr />
+
+
+
+
+
+            </div>
+
+
+            <div class="row">
+
+                    <div class="col-sm-3"><span class="show-grid-block">Created at : <b>@Model.SalesReturnMasterObj.Created_at </b></span></div>
+                    <div class="col-sm-3"><span class="show-grid-block">Created by :</span><b>@Model.SalesReturnMasterObj.Created_by</b></div>
+                    <div class="col-sm-3"><span class="show-grid-block">Modified at :<b>@Model.SalesReturnMasterObj.Modified_at </b></span></div>
+                    <div class="col-sm-3"><span class="show-grid-block">Modified by : <b>@Model.SalesReturnMasterObj.Modified_by </b></span></div>
+                </div>
+
+
+
+        </div>
+
+
+    </div>
+</section>
+
+
+
+
+
+
+
+
+
+<!--Insert Payment detail model-->
+<div class="modal fade bs-modal-lg in" id="AddNewPaymentDetailModal" tabindex="-1" role="dialog" aria-hidden="true" style=" padding-right: 17px;">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Payment Details</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" data-ajax="true" data-ajax-success="mySuccessInsertPaymentDetail" data-ajax-failure="myFailureInsertPaymentDetail"
+                  asp-area="" asp-controller="Sales" asp-action="InsertPaymentDetail" data-ajax-loading="" id="FormInsertPaymentDetail">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body">
+
+
+
+                            <div class="form-body">
+                                <div class="row">
+                                    @if (Model.SalesReturnMasterObj.SaleMaster_ID != null)
+                                    {
+                        <input id="hdSaleMaster_ID" name="hdSaleMaster_ID" type="hidden" value="@Model.SalesReturnMasterObj.SaleMaster_ID" /> }
+                    else
+
+                    {
+
+        <input id="hdSaleMaster_ID" name="hdSaleMaster_ID" type="hidden" value="0" />}
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+
+                                            <label class="control-label">Account*</label>
+
+
+                                            <select class="form-control" id="RDR_accountID"   name="DR_accountID"  Readonly>
+                                                <option value="132">SALE RETURN-ON HOLD</option>
+                                            </select>
+
+                                        
+
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Amount*</label>
+                                            <input type="number" id="RAmount" name="Amount" class="form-control" step="any" placeholder="Enter Amount" onblur="CalculateSumAmountPaymentSaleRetrun()" required>
+
+                                        </div>
+                                    </div>
+
+                                    <!--/span-->
+
+                                    <div class="col-md-3">
+                                        <label class="control-label">Currency & Rate</label>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-5 col-sm-5" style="padding:0; padding-left:12px;">
+                                                    <select class="form-control" id="RCurrency_ID" name="Currency_ID" asp-items="@(new SelectList(ViewBag.CurrencyList,"Currency_ID","Currency_ShortName"))">
+                                                        <option>SELECT</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-7 col-sm-7" style="padding:0;">
+                                                    <input type="number" id="RCurrency_Rate" name="Currency_Rate" step="any" onblur="CalculateSumAmountPaymentSaleRetrun()" value="1" class="form-control" placeholder="Rate">
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Other Amount </label>
+                                            <input type="text" id="RAmount_Others" name="Amount_Others" step="any" class="form-control" placeholder="Other Amount" readonly>
+
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Pay Via*</label>
+
+                                            <select class="form-control" id="CR_accountID" name="CR_accountID" asp-items="@(new SelectList( ViewBag.CR_AccountsList,"Account_ID","AccountName"))">
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="control-label">Description</label>
+                                            <input type="text" id="Description" name="Description" class="form-control" placeholder="Enter Description here">
+
+                                        </div>
+                                    </div>
+
+                                    <!--/span-->
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Ref </label>
+
+                                            <input type="text" id="trans_ref" name="trans_ref" class="form-control" value="@Model.SalesReturnMasterObj.SaleRef" placeholder="" readonly>
+
+
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+                                </div>
+                                <div class="row">
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Bank</label>
+                                            <input type="text" id="cheque_bank_name" name="cheque_bank_name" class="form-control" placeholder="Bank">
+
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Cheque Date </label>
+
+                                            <div class="input-group">
+                                                <span class="input-group-prepend">
+                                                    <span class="input-group-text">
+                                                        <i class="fas fa-calendar-alt"></i>
+                                                    </span>
+                                                </span>
+
+                                                <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="cheque_date" name="cheque_date">
+
+                                            </div>
+
+
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Cheque # </label>
+                                            <input type="text" id="cheque_no" name="cheque_no" class="form-control" placeholder="Cheque #">
+
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-md-3 col-lg-3">
+                                        <label class="control-label">VAT Charges </label>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-5 col-sm-5" style="padding:0; padding-left:12px;">
+                                                    <select class="form-control" id="RVAT_Rate" name="VAT_Rate" onchange="CalculateSumAmountPaymentSaleRetrun()">
+                                                        <option value="0">0%</option>
+                                                        <option value="5">5%</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-7 col-sm-7" style="padding:0;">
+                                                    <input type="text" id="RVAT_Exp" name="VAT_Exp" step="any" class="form-control" placeholder="total" readonly>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-3 col-lg-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Total </label>
+                                            <input type="text" id="RTotal_Amount" name="Total_Amount" step="any" class="form-control" placeholder="total" readonly>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Add</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal Update payment detail-->
+<div class="modal fade bs-modal-lg in" id="UpdateNewPaymentDetailModal" tabindex="-1" role="dialog" aria-hidden="true" style=" padding-right: 17px;">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Payment Details</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" data-ajax="true" data-ajax-success="mySuccessUpdatePaymentDetail" data-ajax-failure="myFailureUpdatePaymentDetail"
+                  asp-area="" asp-controller="Sales" asp-action="UpdatePaymentDetail" data-ajax-loading="" id="FormUpdatePaymentDetail">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body">
+
+
+
+                            <div class="form-body">
+                                <div class="row">
+                                    @if (Model.SalesReturnMasterObj.SaleMaster_ID != null)
+                                    {
+                                        <input id="hdSaleMaster_ID" name="hdSaleMaster_ID" type="hidden" value="@Model.SalesReturnMasterObj.SaleMaster_ID" /> }
+                                    else
+
+                                    {
+
+                                        <input id="hdSaleMaster_ID" name="hdSaleMaster_ID" type="hidden" value="0" />}
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Account*</label>
+
+                                            <select class="form-control" id="PDR_accountIDUpdate" name="DR_accountID"  readonly>
+                                                <option value="132">SALE RETURN-ON HOLD</option>
+                                            </select>
+
+                                            <!--payment detail id-->
+                                            <input type="hidden" id="PPaymentDetails_IDUpdate" name="PaymentDetails_ID" />
+
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Amount*</label>
+                                            <input type="number" id="PAmountUpdate" name="Amount" step="any" class="form-control PSum" placeholder="Enter Amount" onblur="CalSumAmountsPaymentUdpate()" required>
+
+                                        </div>
+                                    </div>
+
+                                    <!--/span-->
+
+                                    <div class="col-md-3">
+                                        <label class="control-label">Currency & Rate</label>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-5 col-sm-5" style="padding:0; padding-left:5px;">
+                                                    <select class="form-control" id="PCurrency_IDUpdate" name="Currency_ID" asp-items="@(new SelectList( ViewBag.CurrencyList,"Currency_ID","Currency_ShortName"))">
+                                                        <option>SELECT</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="col-md-7 col-sm-7" style="padding:0;">
+                                                    <input type="number" id="PCurrency_RateUpdate" name="Currency_Rate" step="any" onblur="CalSumAmountsPaymentUdpate()" value="1" class="form-control" placeholder="Rate">
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Other Amount </label>
+                                            <input type="text" id="PAmount_OthersUpdate" name="Amount_Others" step="any" class="form-control" placeholder="Other Amount" readonly>
+
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Pay Via*</label>
+
+                                            <select class="form-control" id="PCR_accountIDUpdate" name="CR_accountID" asp-items="@(new SelectList( ViewBag.CR_AccountsList,"Account_ID","AccountName"))" required>
+                                                <option>Select</option>
+                                            </select>
+
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="control-label">Description</label>
+                                            <input type="text" id="PDescriptionUpdate" name="Description" class="form-control" placeholder="Enter Description here">
+
+                                        </div>
+                                    </div>
+
+                                    <!--/span-->
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Ref </label>
+
+                                            <input type="text" id="Ptrans_refUpdate" name="trans_ref" class="form-control" placeholder="" readonly>
+
+
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+                                </div>
+                                <div class="row">
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Bank</label>
+                                            <input type="text" id="Pcheque_bank_nameUpdate" name="cheque_bank_name" class="form-control" placeholder="Bank">
+
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Cheque Date </label>
+
+
+                                            <div class="input-group">
+                                                <span class="input-group-prepend">
+                                                    <span class="input-group-text">
+                                                        <i class="fas fa-calendar-alt"></i>
+                                                    </span>
+                                                </span>
+
+                                                <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="PPcheque_dateUpdate" name="cheque_date">
+
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                    <!--/span-->
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Cheque # </label>
+                                            <input type="text" id="Pcheque_noUpdate" name="cheque_no" class="form-control" placeholder="Cheque #">
+
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-md-3 col-lg-3">
+                                        <label class="control-label">VAT Charges </label>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-5 col-sm-5" style="padding:0; padding-left:12px;">
+                                                    <select class="form-control" id="PVAT_RateUpdate" name="VAT_Rate" onchange="CalSumAmountsPaymentUdpate()">
+                                                        <option value="0">0%</option>
+                                                        <option value="5">5%</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-7 col-sm-7" style="padding:0;">
+                                                    <input type="text" id="PVAT_ExpUpdate" name="VAT_Exp" step="any" class="form-control" placeholder="total" readonly>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-3 col-lg-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Total </label>
+                                            <input type="text" id="PTotal_AmountUpdate" name="Total_Amount" step="any" class="form-control" placeholder="total" readonly>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Update</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- Modal Delete SaleDetail -->
+<div class="modal fade bs-modal-lg" id="DeleteSalesDetailModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Delete SalesReturn Detail</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" data-ajax="true" data-ajax-success="mySuccessAuctionDetail" data-ajax-failure="myFailureAuctionDetail" asp-area="" asp-controller="Sales" asp-action="DeleteDetail_Return">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <h3>Do you want to delete this record?</h3>
+
+                                        <input type="hidden" id="Material_OUT_ID_Delete" name="SalesDetails_ID" />
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modal Change Sales Master Status -->
+<div class="modal fade bs-modal-lg" id="ChangeStatusSalesModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Change Sales Master Status</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="Sales" asp-action="#" data-ajax-loading="">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <h3>Do you want to change status of this record?</h3>
+
+                                        <input type="hidden" id="SaleMaster_IDStatus" name="SaleMaster_ID" />
+                                        <input type="hidden" id="Sales_Status_ID" name="Status_ID" />
+                                        <input type="hidden" id="Trans_Type" name="Trans_Type" value="Sales_Invoice" />
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade bs-modal-lg" id="ShowDetailsModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <!-- Following fields is for making a central Stock master id for attachments -->
+
+
+        <div class="modal-content" id="LocDetailMaster">
+
+
+        </div>
+
+    </div>
+</div>
+
+
+
+@section Scripts {
+
+
+
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
+
+
+
+    <script>
+        //---this function will hit after success submission of insert Sales detail form
+        function mySuccessSalesDetail(data) {
+
+            var SuccessDiv = " <div class='col-lg-12'><div class='alert alert-info'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button><strong>Success!</strong> Saved Successfully! <a href ='' class='alert-link'></a></div></div>";
+            debugger
+            if (data.message == undefined) {
+
+                //$('#AddNewSaleModal').modal('hide');
+                $('#SalesDetailSection').html(data);
+                $('#SuccessErrorSection').html(SuccessDiv).show();
+
+                //reset form after success
+                $('#FormInsertSalesDetail').trigger("reset");
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        //---this function will hit when error occured in submission of Sales detail
+        function myFailureSalesDetail() {
+
+            alert("Failured occured. Please try again!");
+        }
+
+        //---this function will hit after success submission of update Sale detail form
+        function mySuccessSalesReturnUpate(data) {
+
+            var SuccessDiv = "<div class='col-lg-12'><div class='alert alert-info'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button><strong>Success!</strong> Updated Successfully! <a href ='' class='alert-link'></a></div></div>";
+            debugger
+            if (data.message == undefined) {
+
+                $('#UdpateSaleDetailByChassisModal').modal('hide');
+                $('#UdpateSaleDetailByServicesModal').modal('hide');
+                $('#SalesDetailSection').html(data);
+                $('#SuccessErrorSection').html(SuccessDiv).show();
+
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        function myFailureSalesReturnUpdate() {
+
+            alert("Failured occured. Please try again!");
+        }
+
+
+        //---delete Sales invoice master
+        function DeleteSalesMaster(SaleMaster_ID) {
+            debugger
+            $("#SaleMaster_ID_Delete").val(SaleMaster_ID);
+
+        }
+
+
+        //---Delete Sales detail
+        function DeleteSalesDetail(SalesDetails_ID) {
+            debugger
+            $("#Material_OUT_ID_Delete").val(SalesDetails_ID);
+
+        }
+
+
+
+        $(document).ready(function () {
+            $("#ButtonSaleMasterIssue").click(function () {
+                $("#formSaleMaster").submit();
+            });
+        });
+
+        $(document).ready(function () {
+            $("#ButtonSaleMasterUpdate").click(function () {
+                $("#formSaleMaster").submit();
+            });
+        });</script>
+
+    <script>
+        function DisplayDescription(SelectBy) {
+            debugger
+            var SelectedValue = SelectBy.value;
+            if (SelectedValue == 'ByService') {
+                $(".ServiceDescription").show();
+                $(".ByChassisClass").hide();
+                $("#Chassis").prop('required', false);
+                $("#ItemDesc").prop('required', true);
+            } else {
+                $(".ServiceDescription").hide();
+                $(".ByChassisClass").show();
+                $("#Chassis").prop('required', true);
+                $("#ItemDesc").prop('required', false);
+            }
+
+        }
+
+
+
+
+        //This function is for validation of chassis no
+        function ValidateChassis() {
+
+            //debugger
+
+
+            var Chassis = document.getElementById("Chassis").value.toString();
+
+            $.ajax({
+
+                type: "Get",
+                url: "/Accounts/ValidateChassisNo_UNSOLD",
+                data: { //Passing data
+                    ChassisNo: Chassis
+
+
+                },
+                datatype: "json",
+                success: function (response) {
+                    debugger
+                    if (response.message == 'Chassis is valid') {
+                        //debugger
+                        $("#ChassisValidationMessage").text(response.message);
+                        $("#ChassisValidationMessage").css("color", "green");
+                        $("#Chassis").val(response.ItemId);
+                        $("#Make").val(response.make);
+                        $("#ModelDesc").val(response.modelDesciption);
+                        $("#ModelYear").val(response.modelYear);
+                        $("#Color").val(response.color);
+                    } else {
+                        $("#ChassisValidationMessage").text(response.message);
+                        $("#ChassisValidationMessage").css("color", "red");
+                        $("#Chassis").val("");
+                        $("#Make").val("");
+                        $("#ModelDesc").val("");
+                        $("#ModelYear").val("");
+                        $("#Color").val("");
+                    }
+
+                }
+            })
+        }
+        function GetCustomerDetail() {
+
+            //debugger
+
+
+            var Customer = document.getElementById("Customer_ID").value.toString();
+
+            if (Customer == -1) {
+                $('#AddCustomerModal').modal('show');
+            }
+            else {
+                $.ajax({
+
+                    type: "Get",
+                    url: "/Sales/GetCustomerDetail",
+                    data: { //Passing data
+                        Customer_ID: Customer
+                    },
+                    datatype: "json",
+                    success: function (response) {
+                        debugger
+
+
+                        $("#Customer_Contact").val(response.contactNumber);
+                        $("#Invoice_address").val(response.contactAddress);
+                        $("#CustomerTRN").val(response.trn);
+
+
+
+
+
+                    }
+                })
+            }
+
+        }
+
+        //---change Sales master status
+        function ChangeStatusSalesMaster(SaleMaster_ID, Status) {
+            debugger
+            $("#SaleMaster_IDStatus").val(SaleMaster_ID);
+            $("#Sales_Status_ID").val(Status);
+
+        }
+
+
+
+
+        function DeleteReceiptsDetail(ReceiptDetail_ID) {
+
+            $("#ReceiptDetail_IDDelete").val(ReceiptDetail_ID);
+
+        }
+
+
+
+
+
+
+
+        //----method for opening customer popup
+        function AddNewCustomer(Customer) {
+
+
+
+            CustomerValue = Customer.value;
+            if (CustomerValue == 'NewCustomer') {
+                $('#AddCustomerModal').modal('show');
+            }
+        }</script>
+    <script>
+        function CalculateSumAmountCheck() {
+            debugger
+            var form = document.getElementById("FormInsertPaymentDetail"),
+                inputs = form.getElementsByTagName("input");
+            var Quanity = 0;
+            var Unit_Price = 0;
+
+            var Sale_Amount = 0;
+            var VATRate = 0;
+            var SalePrice = 0;
+            var VATExp = 0;
+
+            var Total_Amount = 0;
+            var BALQuanity = 0;
+
+            for (var i = 0, len = inputs.length; i < len; i++) {
+                if (inputs[i].type === "checkbox" && inputs[i].checked == true) {
+                    if (document.getElementById("txtReturnQty" + inputs[i].name).value == 0) {
+                        BALQuanity = document.getElementById("txtBalanceQty" + inputs[i].name).value;
+                        if (!BALQuanity) {
+                            BALQuanity = 0;
+                        }
+
+
+                        $("#txtReturnQty" + inputs[i].name).val(BALQuanity);
+                        Quanity = document.getElementById("txtReturnQty" + inputs[i].name).value;
+                        Unit_Price = document.getElementById("txtUnitPrice" + inputs[i].name).value;
+
+
+                        VATRate = document.getElementById("txtVAT_Rate" + inputs[i].name).value;
+
+
+
+                        Total_Amount = document.getElementById("txtTTLAmount" + inputs[i].name).value;
+
+
+                        if (!Quanity) {
+                            Quanity = 0;
+                        }
+                        if (!Unit_Price) {
+                            Unit_Price = 0;
+                        }
+
+                        if (!VATRate) {
+                            VATRate = 0;
+
+                        }
+                        if (!VATExp) {
+                            VATExp = 0;
+                        }
+                        if (!Total_Amount) {
+                            Total_Amount = 1;
+                        }
+
+
+
+
+
+
+
+
+
+                        Total_Amount = (Number(Unit_Price) * Number(Quanity));
+                        VATExp = 0;
+                        $("#txtVAT_Exp" + inputs[i].name).val(VATExp);
+                        $("#txtTTLAmount" + inputs[i].name).val(Number(Total_Amount) + Number(VATExp));
+
+
+
+                    }
+
+                }
+
+
+
+
+            }
+        }
+        function CalculateSumAmount() {
+            debugger
+            var form = document.getElementById("FormInsertPaymentDetail"),
+                inputs = form.getElementsByTagName("input");
+            var Quanity = 0;
+            var Unit_Price = 0;
+
+            var Sale_Amount = 0;
+            var VATRate = 0;
+            var SalePrice = 0;
+            var VATExp = 0;
+
+            var Total_Amount = 0;
+
+
+            for (var i = 0, len = inputs.length; i < len; i++) {
+                if (inputs[i].type === "checkbox" && inputs[i].checked == true) {
+
+                    Quanity = document.getElementById("txtReturnQty" + inputs[i].name).value;
+                    Unit_Price = document.getElementById("txtUnitPrice" + inputs[i].name).value;
+
+
+                    VATRate = document.getElementById("txtVAT_Rate" + inputs[i].name).value;
+
+
+
+                    Total_Amount = document.getElementById("txtTTLAmount" + inputs[i].name).value;
+
+
+                    if (!Quanity) {
+                        Quanity = 0;
+                    }
+                    if (!Unit_Price) {
+                        Unit_Price = 0;
+                    }
+
+                    if (!VATRate) {
+                        VATRate = 0;
+
+                    }
+                    if (!VATExp) {
+                        VATExp = 0;
+                    }
+                    if (!Total_Amount) {
+                        Total_Amount = 1;
+                    }
+
+
+
+
+
+
+
+
+
+                    Total_Amount = (Number(Unit_Price) * Number(Quanity));
+                    VATExp = 0;
+                    $("#txtVAT_Exp" + inputs[i].name).val(VATExp);
+                    $("#txtTTLAmount" + inputs[i].name).val(Number(Total_Amount) + Number(VATExp));
+
+
+
+                }
+
+
+
+
+
+
+            }
+        }
+
+
+        //---function for calculating amounts in the payment detail pop up form insert
+        function CalculateSumAmountPaymentSaleRetrun() {
+            debugger;
+            var Amount = 0;
+            var VAT_Rate = 0;
+            var Currency_Rate = 1;
+
+
+            var Amount_Others = 0;
+            var VAT_Exp = 0;
+            var Total_Amount = 0;
+
+
+            Amount = document.getElementById("RAmount").value;
+            VAT_Rate = document.getElementById("RVAT_Rate").value;
+            Currency_Rate = document.getElementById("RCurrency_Rate").value;
+
+            Amount_Others = document.getElementById("RAmount_Others").value;
+            VAT_Exp = document.getElementById("RVAT_Exp").value;
+            Total_Amount = document.getElementById("RTotal_Amount").value;
+
+
+            if (!Amount) {
+                Amount = 0;
+            }
+            if (!VAT_Rate) {
+                VAT_Rate = 0;
+            }
+            if (!Currency_Rate) {
+                Currency_Rate = 1;
+            }
+            if (!Amount_Others) {
+                Amount_Others = 0;
+
+            }
+            if (!VAT_Exp) {
+                VAT_Exp = 0;
+            }
+            if (!Total_Amount) {
+                Total_Amount = 0;
+            }
+
+
+
+            //---calculate sum vat exp
+            VAT_Exp = VAT_Rate * Amount / 100;
+            $("#RVAT_Exp").val(VAT_Exp);
+
+            Total_Amount = (Number(Amount) + Number(VAT_Exp));
+            $("#RTotal_Amount").val(Total_Amount);
+
+            //---calculate Amount_Others
+            Amount_Others = Amount * Currency_Rate;
+            $("#RAmount_Others").val(Amount_Others);
+
+
+
+
+        }
+
+
+        //---function for calculating amounts in the payment detail pop up form Update
+        function CalSumAmountsPaymentUdpate() {
+            debugger
+            var AmountUpdate = 0;
+            var VAT_RateUpdate = 0;
+            var Currency_RateUpdate = 1;
+
+
+            var Amount_OthersUpdate = 0;
+            var VAT_ExpUpdate = 0;
+            var Total_AmountUpdate = 0;
+
+
+            AmountUpdate = document.getElementById("PAmountUpdate").value;
+            VAT_RateUpdate = document.getElementById("PVAT_RateUpdate").value;
+            Currency_RateUpdate = document.getElementById("PCurrency_RateUpdate").value;
+
+            Amount_OthersUpdate = document.getElementById("PAmount_OthersUpdate").value;
+            VAT_ExpUpdate = document.getElementById("PVAT_ExpUpdate").value;
+            Total_AmountUpdate = document.getElementById("PTotal_AmountUpdate").value;
+
+
+            if (!AmountUpdate) {
+                AmountUpdate = 0;
+            }
+            if (!VAT_RateUpdate) {
+                VAT_RateUpdate = 0;
+            }
+            if (!Currency_RateUpdate) {
+                Currency_RateUpdate = 1;
+            }
+            if (!Amount_OthersUpdate) {
+                Amount_OthersUpdate = 0;
+
+            }
+            if (!VAT_ExpUpdate) {
+                VAT_ExpUpdate = 0;
+            }
+            if (!Total_AmountUpdate) {
+                Total_AmountUpdate = 0;
+            }
+
+
+
+            //---calculate sum vat exp
+            VAT_ExpUpdate = VAT_RateUpdate * AmountUpdate / 100;
+            $("#PVAT_ExpUpdate").val(VAT_ExpUpdate);
+
+            Total_AmountUpdate = (Number(AmountUpdate) + Number(VAT_ExpUpdate));
+            $("#PTotal_AmountUpdate").val(Total_AmountUpdate);
+
+            //---calculate Amount_Others
+            Amount_OthersUpdate = AmountUpdate * Currency_RateUpdate;
+            $("#PAmount_OthersUpdate").val(Amount_OthersUpdate);
+
+
+
+
+        }
+
+    </script>
+    <script>
+        //---show attachment popup
+        function ShowDetails() {
+            debugger;
+            var TeamDetailPostBackURL = '/Sales/Get_SaleRefDetails_Return';
+
+            //--assign value to ItemCode hidden field in the main. Dont remove this fields
+
+            var SaleMaster_ID = document.getElementById("SaleRefS").value;
+            SaleMaster_ID = SaleMaster_ID.slice(2);
+            if (SaleMaster_ID > 0) {
+
+                $.ajax({
+                    type: "GET",
+                    url: TeamDetailPostBackURL,
+                    contentType: "application/json; charset=utf-8",
+                    data: { "SaleMaster_ID": SaleMaster_ID },
+                    datatype: "json",
+                    success: function (data) {
+
+
+                        if (data.message == undefined) {
+                            $('#LocDetailMaster').html(data);
+
+
+
+
+                            $('#ShowDetailsModal').modal('show');
+
+                        } else {
+                            alert(data.message);
+                            $('#ShowDetailsModal').modal('hide');
+                        }
+
+                    },
+                    error: function () {
+                        alert("Dynamic content load failed.");
+                    }
+                });
+            } else {
+                alert("Sale Ref Not Exist");
+            }
+
+
+
+        }</script>
+    <script type="text/javascript">
+function SaveForm() {
+            debugger
+
+            var form = document.getElementById("FormInsertPaymentDetail"),
+                inputs = form.getElementsByTagName("input"),
+
+                item_ID = [],
+                item_Description = [],
+                ReturnQty = [],
+                UOM = [],
+                SalePrice = [],
+
+                Loc_ID = [],
+                VAT_Rate = [],
+                VAT_Exp = [],
+
+
+                TTLAmount = [],
+
+                SaleMaster_Id = [],
+                SaleDetails_ID = [];
+
+
+
+            for (var i = 0, len = inputs.length; i < len; i++) {
+                if (inputs[i].type === "checkbox" && inputs[i].checked == true) {
+                    SaleDetails_ID.push(inputs[i].name);
+                    item_ID.push(document.getElementById("txtItem_ID" + inputs[i].name).value);
+                    item_Description.push(document.getElementById("txtitem_Description" + inputs[i].name).value);
+                    ReturnQty.push(document.getElementById("txtReturnQty" + inputs[i].name).value);
+                    UOM.push(document.getElementById("txtUOM" + inputs[i].name).value);
+                    SalePrice.push(document.getElementById("txtUnitPrice" + inputs[i].name).value);
+
+                    Loc_ID.push(document.getElementById("txtLoc_ID" + inputs[i].name).value);
+                    VAT_Rate.push(document.getElementById("txtVAT_Rate" + inputs[i].name).value);
+                    VAT_Exp.push(document.getElementById("txtVAT_Exp" + inputs[i].name).value);
+
+
+                    TTLAmount.push(document.getElementById("txtTTLAmount" + inputs[i].name).value);
+
+                    SaleMaster_Id.push(document.getElementById("txtSaleMaster_ID" + inputs[i].name).value);
+                }
+
+
+
+
+
+
+            }
+
+
+
+            return $.ajax({
+                type: 'POST',
+                url: "/Sales/InsertSalesReturnDetail",
+                data: {
+
+                    hdSaleMaster_ID: $('#SaleMaster_ID').val(),
+
+                    Item_ID: item_ID,
+                    ItemDesc: item_Description,
+                    Quantity: ReturnQty,
+                    UM_ID: UOM,
+
+                    Unit_Price: SalePrice,
+                    VATRate: VAT_Rate,
+                    VATExp: VAT_Exp,
+
+
+                    Total_Amount: TTLAmount,
+
+                    Location_ID: Loc_ID,
+                    SaleDetails_ID: SaleDetails_ID,
+                    SaleMaster_Id: SaleMaster_Id,
+
+                },
+                success: function (result, status, xhr) {
+                    mySuccessAuctionDetail(result);
+
+                }
+            });
+
+
+        }
+        function GetSaleRefDetail() {
+
+            debugger
+
+
+            var SaleMaster_ID = document.getElementById("SaleRefS").value.toString();
+            SaleMaster_ID = SaleMaster_ID.slice(2);
+            $("#SaleMasterRef_ID").val(SaleMaster_ID);
+
+                $.ajax({
+
+                    type: "Get",
+                    url: "/Sales/GetSaleRefDetail",
+                    data: { //Passing data
+                        SaleMaster_ID: SaleMaster_ID
+                    },
+                    datatype: "json",
+                    success: function (response) {
+                        debugger
+
+
+                        $("#Customer_ID").val(response.customer_ID);
+                        $("#Customer_Contact").val(response.customer_Contact);
+                        $("#Invoice_address").val(response.invoice_address);
+                        $("#CustomerTRN").val(response.customerTRN);
+                        $("#Remarks").val(response.remarks);
+                        $("#Manualbook_ref").val(response.manualbook_ref);
+                        $("#Seller_ID").val(response.seller_ID);
+                        $("#Customer_Name").val(response.customer_Name);
+
+                        ShowDetails();
+
+
+
+
+
+                    }
+                })
+
+
+        }
+        //---this function will hit after success submission of insert Stock detail form
+        function mySuccessAuctionDetail(data) {
+
+            var SuccessDiv = " <div class='col-lg-12'><div class='alert alert-info'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button><strong>Success!</strong> Saved Successfully! <a href ='' class='alert-link'></a></div></div>";
+            debugger
+            if (data.message == undefined) {
+
+
+
+
+                //$('#AddNewSaleModal').modal('hide');
+                $('#SalesDetailSection').html(data);
+                $('#SuccessErrorSection').html(SuccessDiv).show();
+
+                //reset form after success
+                $('#FormInsertPaymentDetail').trigger("reset");
+
+                $('#DeleteSalesDetailModal').modal('hide');
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        //---this function will hit when error occured in submission of Stock detail
+        function myFailureStockDetail() {
+
+            alert("Failured occured. Please try again!");
+        }
+                     $(document).ready(function () {
+
+
+
+            $("#print-btn").click(function(event){
+                event.preventDefault();
+                var win = window.open("@Url.Action("SalesInvoiceReturn_Print_trd", "Report")" + "?SaleMaster_ID=" + $("#SaleMaster_ID").val() , "_blank");
+                win.focus();
+            });
+
+
+                     })
+
+
+
+        //---this function will hit after success submission of insert paymnet detail form
+        function mySuccessInsertPaymentDetail(data) {
+
+            var SuccessDiv = " <div class='col-lg-12'><div class='alert alert-info'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button><strong>Success!</strong> Saved Successfully! <a href ='' class='alert-link'></a></div></div>";
+            debugger
+            if (data.message == undefined) {
+
+                //$('#AddNewPurchaseModal').modal('hide');
+                $('#DepsitReturnDetailSection').html(data);
+                $('#SuccessErrorSection').html(SuccessDiv).show();
+
+                $('#AddNewPaymentDetailModal').modal('hide');
+                //reset form after success
+                $('#FormInsertPaymentDetail').trigger("reset");
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+        //---this function will hit when error occured in submission of payment detail
+        function myFailureInsertPaymentDetail() {
+
+            alert("Failured occured. Please try again!");
+        }
+        //---this function will hit after success submission of Update paymnet detail form
+        function mySuccessUpdatePaymentDetail(data) {
+
+            var SuccessDiv = " <div class='col-lg-12'><div class='alert alert-info'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button><strong>Success!</strong> Saved Successfully! <a href ='' class='alert-link'></a></div></div>";
+            debugger
+            if (data.message == undefined) {
+
+                //$('#AddNewPurchaseModal').modal('hide');
+                $('#DepsitReturnDetailSection').html(data);
+                $('#SuccessErrorSection').html(SuccessDiv).show();
+
+                $('#UpdateNewPaymentDetailModal').modal('hide');
+                //reset form after success
+                $('#FormUpdatePaymentDetail').trigger("reset");
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+        //---this function will hit when error occured in submission of payment detail
+        function myFailureUpdatePaymentDetail() {
+
+            alert("Failured occured. Please try again!");
+        }
+        //----Assigning values to Update purchase detail form
+        function UpdatePaymentDetailGeneral(PaymentDetails_ID, DR_accountID, Amount, VAT_Rate, Currency_ID, Currency_Rate, Amount_Others, CR_accountID, Description, trans_ref, cheque_bank_name,
+            cheque_date, cheque_no, VAT_Exp, Total_Amount) {
+
+
+
+            debugger
+
+            $("#PPaymentDetails_IDUpdate").val(PaymentDetails_ID);
+            $("#PCR_accountIDUpdate").val(CR_accountID);
+            $("#PAmountUpdate").val(Amount);
+            $("#PVAT_RateUpdate").val(VAT_Rate);
+            $("#PCurrency_IDUpdate").val(Currency_ID);
+            $("#PCurrency_RateUpdate").val(Currency_Rate);
+            $("#PAmount_OthersUpdate").val(Amount_Others);
+            $("#PDR_accountIDUpdate").val(DR_accountID);
+            $("#PDescriptionUpdate").val(Description);
+            $("#Ptrans_refUpdate").val(trans_ref);
+            $("#Pcheque_bank_nameUpdate").val(cheque_bank_name);
+            $("#Pcheque_dateUpdate").val(cheque_date);
+            $("#Pcheque_noUpdate").val(cheque_no);
+            $("#PVAT_ExpUpdate").val(VAT_Exp);
+            $("#PTotal_AmountUpdate").val(Total_Amount);
+
+
+        }
+
+
+
+    </script>
+
+}
+
+
+
+
+

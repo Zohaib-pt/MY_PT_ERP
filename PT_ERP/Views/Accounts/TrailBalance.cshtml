@@ -1,0 +1,290 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OAccounts
+@{
+    ViewData["Title"] = "TrailBalance";
+    Layout = "~/Views/Shared/_LayoutTablePages.cshtml";
+}
+
+
+
+<header class="page-header">
+    <h2>@ViewBag.SectionHeaderTitle</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+
+            <li><a><span>@ViewBag.BreadCumController</span></a></li>
+            <li><a asp-area="" asp-controller="@ViewBag.BreadCumController" asp-action="@ViewBag.BreadCumAction"><span>@ViewBag.SectionSub_HeaderTitle</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+
+<div class="row">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+        <div class="col-lg-12">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-info">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Success!</strong> @TempData["Success"] <a href="" class="alert-link"></a>
+                </div>
+            }
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Error!</strong> @TempData["Error"] <a href="" class="alert-link"></a>
+                </div>
+            }
+        </div>
+    }
+
+
+</div>
+
+
+<!--Following 'LoaderImage' div is for showing ajax loader before ajax call-->
+<div class="imageGIFLoader" id="LoaderImage">
+    <img src="~/img/projects/ajax-loader.gif" class="img-responsive" style="width:65px; height:65px;" />
+</div>
+
+
+<div class="row" style="padding-top:1px;">
+    <div class="col">
+        <section class="card">
+            <header class="card-header">
+
+               
+                <div class="row">
+                    <div class="col-lg-12">
+                        <section class="card">
+                            <div class="card-body">
+
+
+                                <form method="get"  asp-area="" asp-controller="Accounts" asp-action="TrailBalance" data-ajax-loading="">
+
+                                    <div class="row form-group">
+
+                            
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="From_Date">Start Date</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                        </span>
+                                                    </span>
+
+                                                    <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="StartDate" value="@ViewBag.StartDate" name="StartDate">
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="To_Date">End Date</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                        </span>
+                                                    </span>
+
+                                                    <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" value="@ViewBag.EndDate" id="EndDate" name="EndDate">
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+
+
+                                        <div class="col-md-4">
+
+                                            <div class="form-group">
+                                                <br />
+
+                                                <button type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-primary">Search&nbsp;<i class="fas fa-search"></i></button>
+                                                <button type="button" class="mb-1 mt-1 mr-1 btn btn-sm btn-info" href="" id="print-btn">Print&nbsp;<i class="fas fa-print"></i></button>
+                                                <button type="button" class="mb-1 mt-1 mr-1 btn btn-sm btn-success" id="export-btn">Export &nbsp;<i class="fas fa-file-excel"></i></button>
+
+                                            </div>
+                                        </div>
+
+
+
+
+
+                                    </div>
+
+                                </form>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
+
+
+            </header>
+            
+            <div class="card-body">
+
+
+                
+                <table class="table table-bordered table-striped mb-0" id="datatable-default">
+                    <thead>
+                        <tr>
+
+
+
+
+                            <th>Account</th>
+
+                            <th>DR</th>
+
+                            <th>CR</th>
+
+
+
+
+
+
+
+
+                        </tr>
+                    </thead>
+                    <tbody id="TablePurchaseListSearch">
+
+                        @if (Model.TrailBalanceList != null)
+                        {
+
+
+                            foreach (Pa_TrailBalance_DAL item in Model.TrailBalanceList)
+                            {
+                             
+
+                        <tr>
+
+                            <td><a href="@item.Link">@Html.DisplayFor(modelItem => item.ACCOUNT)</a></td>
+                            <td> @Html.DisplayFor(modelItem => item.Debit)</td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Credit)
+                            </td>
+
+                        </tr>
+
+                            }
+
+                         }
+
+                    </tbody>
+                    <tfoot>
+
+                        @if (Model.TrailBalanceList_ttl != null)
+                        {
+
+
+
+                            foreach (Pa_TrailBalance_DAL item in Model.TrailBalanceList_ttl)
+                            {
+                    <tr role="row">
+
+                        <th></th>
+                        <th>@item.Debit</th>
+                        <th>@item.Credit</th>
+                    </tr>
+                            }
+                        }
+                                    </tfoot>
+                </table>
+
+
+            </div>
+        </section>
+    </div>
+</div>
+
+@section Scripts{
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
+
+
+    <script>
+
+        function myBeginSearch() {
+            $("#LoaderImage").css("visibility", "visible");
+        }
+        
+        function mySuccessSearch(data) {
+
+            debugger
+            if (data.message == undefined) {
+
+                $('#TablePurchaseListSearch').html(data);
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        function myFailureSearch() {
+
+            alert("Failured occured. Please try again!");
+            $("#LoaderImage").css("visibility", "hidden");
+        }
+
+        function myCompleteSearch() {
+            $("#LoaderImage").css("visibility", "hidden");
+
+        }
+
+
+         $(document).ready(function(){
+    $("#print-btn").click(function(event){
+        event.preventDefault();
+
+        var win = window.open("@Url.Action("TrailBalance_print", "Report")" + "?StartDate=" + $("#StartDate").val() + "&EndDate=" + $("#EndDate").val(),"_blank");
+        win.focus();
+    });
+         })
+
+         $(document).ready(function(){
+                $("#export-btn").click(function(event){
+        event.preventDefault();
+
+        var win = window.open("@Url.Action("TrailBalance_Excel", "Report")" + "?StartDate=" + $("#StartDate").val() + "&EndDate=" + $("#EndDate").val(),"_blank");
+        win.focus();
+    });
+        })
+
+
+    </script>
+
+<script>
+    $(document).ready(function () {
+        $('#datatable-default').dataTable({
+            "pageLength": 30
+        });
+    }
+</script>
+
+}

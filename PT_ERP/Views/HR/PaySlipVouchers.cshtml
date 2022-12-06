@@ -1,0 +1,297 @@
+﻿@using DAL.Models
+@model DAL.oClasses.OHR
+
+@{ ViewData["Title"] = "PaySlipVouchers";
+    Layout = "~/Views/Shared/_LayoutTablePages.cshtml"; }
+<header class="page-header">
+    <h2>HR</h2>
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+            <li><a asp-area="" asp-controller="HR" asp-action="PaySlipVouchers"><span>StaffPaySlips</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+
+<div class="row">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+<div class="col-lg-12">
+    @if (TempData["Success"] != null)
+      {
+        <div class="alert alert-info" id="ajax-alert">
+         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+         <strong>Success!</strong> @TempData["Success"] <a href="" class="alert-link"></a>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+            <strong>Error!</strong> @TempData["Error"] <a href="" class="alert-link"></a>
+         </div>
+    }
+</div>
+    }
+
+
+</div>
+
+<div class="row">
+    <div class="col">
+        <section class="card">
+
+            <header class="card-header">
+
+                <div class="row">
+                    <div class="col-lg-6">
+                        <h2 class="card-title" style="line-height:normal;">Staff PayRoll Slip</h2>
+                    </div>
+
+                </div>
+
+            </header>
+            <div class="card-body">
+
+                @*<form method="post" asp-controller="HR" asp-action="InsertIssuPaymentVouchar" enctype="multipart/form-data">
+                </form>*@
+                    <table class="table table-bordered table-striped mb-0" id="datatable-default">
+                        <thead>
+                            <tr>
+                                <th>emp_No</th>
+                                <th>emp_Name</th>
+                                <th>Period_Desc</th>
+                                <th>Bal_Recieved</th>
+                                <th>Salary_Paid</th>
+
+                                <th id="checktd">
+                                    <input id="chkselectAll" onclick="handleClick(this);" type="checkbox" name="chkselectAll"><label for="chkselectAll">&nbsp;Select All</label>
+                                    <script>
+                                        function handleClick(cb) {
+                                            
+                                            var parentValueToPush = new Array();
+
+                                            if (cb.checked == true) {
+                                                    $("#datatable-default input[type=checkbox]").each(function () {
+                                                        $(this).prop("checked", true);
+                                                    });
+
+                                                } else {
+                                                    $("#datatable-default input[type=checkbox]").each(function () {
+                                                        $(this).prop("checked", false);
+                                                    });
+                                                }
+                                            
+                                            //console.log(cb.checked)
+                                        }
+
+                                        
+                                    </script>
+                                
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.PaySlipVoucharList != null)
+                            {
+                                foreach (PaySlipVouchar_DAL item in Model.PaySlipVoucharList)
+                                {
+
+                <tr>
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.emp_No)
+
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.emp_name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Period_Desc)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Bal_Recieved)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Salary_Paid)
+                    </td>
+                    <td>
+                        <input id="payRollcheckbox_@item.emp_No" class="paycheckbox" type="checkbox" value="@item.emp_PayRollDetail_ID"  name="emp_PayRollDetail_ID"><label for="payRollcheckbox">&nbsp;Pay</label>
+                    </td>
+
+
+                </tr>
+}
+        }
+
+                        </tbody>
+                    </table>
+
+
+                    <div class="row form-group">
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="col-form-label" for="pay_Account_ID">
+                                    Pay Via A/C :
+                                </label>
+                                <select class="form-control" id="pay_Account_ID" name="pay_Account_ID" placeholder="" asp-items="@(new SelectList( ViewBag.CR_accountIDList,"Account_ID","AccountName"))" required>
+                                    <option>Select</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4" style="margin-top:30px">
+                            <label class="col-form-label" for="TaskAttachment">&nbsp;</label>
+                            <button type="submit" id="btnIssuePaymentVouchers" onclick="InsertPayment()" class="mb-1 mt-1 mr-1 btn btn-sm btn-success">Issue Payment Vouchers</button>
+                            <script>
+                                function InsertPayment() {
+                                    debugger
+                                       
+                                    var Employee_Id = [];
+                                    var account_id = $("#pay_Account_ID").val()
+                                        // Parent checked check box value
+
+
+                                        // Child checked check box value
+                                        $('.paycheckbox:checked').each(function () {
+                                            Employee_Id.push($(this).val());
+                                        });
+
+                                    $.ajax({
+                                        url: '/HR/InsertIssuPaymentVouchar',
+                                        /*contentType: 'application/json; charset=utf-8',*/
+                                        type: 'POST',
+                                        data: {
+                                            emp_PayrollDetails_ID: Employee_Id,
+                                            pay_Account_ID: account_id
+                                        },
+                                            cache: false,
+                                        success: function () {
+                                        
+                                            window.location.href = '';
+                                        
+         
+                                            },
+                                            error: function (xhr, status, error) {
+                                                alert("Error");
+                                            }
+                                        });
+
+                                    
+
+                                }
+                            </script>
+                        </div>
+
+
+                    </div>
+                
+
+            </div>
+        </section>
+    </div>
+</div>
+
+@section Scripts {
+
+
+
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+
+    <script>
+
+
+        
+        
+        
+       
+
+        //$("#checktd #chkselectAll").checked(function () {
+        //    debugger
+        //    if ($("#datatable-default #chkselectAll").is(':checked')) {
+        //        $("#datatable-default input[type=checkbox]").each(function () {
+        //            $(this).prop("checked", true);
+        //        });
+
+        //    } else {
+        //        $("#datatable-default input[type=checkbox]").each(function () {
+        //            $(this).prop("checked", false);
+        //        });
+        //    }
+        //});
+
+        //$(document).ready(function () {
+        //    $('#chkselectAll').change(function () {
+        //        $('.paycheckbox').prop('checked', this.checked);
+        //    });
+
+        //    $('.paycheckbox').change(function () {
+        //        if ($('.paycheckbox:checked').length == $('.paycheckbox').length) {
+        //            $('#chkselectAll').prop('checked', true);
+        //        }
+        //        else {
+        //            $('#chkselectAll').prop('checked', false);
+        //        }
+        //    });
+        //});
+
+      
+
+        console.log(quotes);
+
+
+        //var PayCheckBox = document.getElementById("emp_PayRollDetail_ID").value.toString();
+
+        //$('#btnIssuePaymentVouchers').click(function () {
+        //    var values = $('input[type="checkbox"].paycheckbox:checked').map(function () {
+        //        return $(this).val();
+        //    }).toArray();
+            
+        $('#btnIssuePaymentVouchers').click(function () {
+            debugger
+            var quotes = [];
+            $("input:checked").each(function (index, value) {
+              
+                quotes.push($(value).val());
+            });
+          }).toArray();
+           
+            $.ajax({
+                type: 'POST',
+                url: '/HR/InsertIssuPaymentVouchar',
+                data: JSON.stringify({ name: quotes }),
+                contentType: 'application/json',
+                success: function (result) {
+
+                },
+                error: function (err, result) {
+                    alert("Error in delete" + err.responseText);
+                }
+
+
+            })
+        }
+
+    </script>
+
+
+
+}
+
+
+
+
+

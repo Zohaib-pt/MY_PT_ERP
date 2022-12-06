@@ -1,0 +1,404 @@
+﻿@using DAL
+@using DAL.Models
+@using X.PagedList.Mvc.Core; @*//import this so we get our HTML Helper*@
+@using X.PagedList;  @*//import this so we can cast our list to IPagedList*@
+
+
+@model DAL.oClasses.OAccounts
+@{ //ViewData["Title"] = "Ledger";
+                Layout = "~/Views/Shared/_LayoutTablePages.cshtml"; }
+
+
+
+<header class="page-header">
+    <h2>@ViewBag.SectionHeaderTitle</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+
+            <li><a><span>@ViewBag.BreadCumController</span></a></li>
+            <li><a asp-area="" asp-controller="@ViewBag.BreadCumController" asp-action="@ViewBag.BreadCumAction"><span>@ViewBag.SectionSub_HeaderTitle</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+
+<div class="row">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+<div class="col-lg-12">
+    @if (TempData["Success"] != null)
+    {
+<div class="alert alert-info">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+    <strong>Success!</strong> @TempData["Success"] <a href="" class="alert-link"></a>
+</div>}
+
+    @if (TempData["Error"] != null)
+    {
+<div class="alert alert-danger">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+    <strong>Error!</strong> @TempData["Error"] <a href="" class="alert-link"></a>
+</div>}
+</div>}
+
+
+</div>
+
+
+<!--Following 'LoaderImage' div is for showing ajax loader before ajax call-->
+<div class="imageGIFLoader" id="LoaderImage">
+    <img src="~/img/projects/ajax-loader.gif" class="img-responsive" style="width:65px; height:65px;" />
+</div>
+
+
+<div class="row" style="padding-top:1px;">
+    <div class="col">
+        <section class="card">
+            <header class="card-header">
+
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <section class="card">
+                            <div class="card-body">
+
+
+                                <form method="get" data-ajax="true" data-ajax-complete="myCompleteSearch" data-ajax-success="mySuccessSearch" data-ajax-failure="myFailureSearch"
+                                      data-ajax-begin="myBeginSearch" asp-area="" asp-controller="Accounts" asp-action="Search_Ledger" data-ajax-loading="">
+
+                                    <div class="row form-group">
+
+
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="From_Date">Start Date</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                        </span>
+                                                    </span>
+
+                                                    <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="From_Date" name="From_Date">
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="To_Date">End Date</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                        </span>
+                                                    </span>
+
+                                                    <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="To_Date" name="To_Date">
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="AccountID">Account</label>
+                                                <select class="form-control select2" id="AccountID"
+                                                        name="AccountID"
+                                                        asp-items="@(new SelectList( ViewBag.allaccountlist,"Account_ID","AccountName",Model.AccountMaster_obj.Account_ID))">
+                                                </select>
+
+                                            </div>
+                                        </div>
+
+
+                                        @*<div class="col-md-2">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="AccountID">Head Acc</label>
+                                                <select class="form-control select2" id="HeadAccounts_ID"
+                                                        name="HeadAccounts_ID"
+                                                        asp-items="@(new SelectList( ViewBag.HeadAccountList,"HeadAccounts_ID","HeadAccount",Model.AccountMaster_obj.Account_ID))">
+                                                </select>
+
+                                            </div>
+                                        </div>*@
+
+
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="Trans_Ref">Trans Ref</label>
+                                                <input type="text" id="Trans_Ref" name="Trans_Ref" class="form-control" placeholder="Ref" />
+
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4">
+
+                                            <div class="form-group">
+                                                <br />
+
+                                                <button type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-primary">Search&nbsp;<i class="fas fa-search"></i></button>
+                                                <button type="button" class="mb-1 mt-1 mr-1 btn btn-sm btn-info" id="print-btn">Print&nbsp;<i class="fas fa-print"></i></button>
+                                                <button type="button" class="mb-1 mt-1 mr-1 btn btn-sm btn-success" id="export-btn">Export &nbsp;<i class="fas fa-file-excel"></i></button>
+
+                                            </div>
+                                        </div>
+
+
+
+                                    </div>
+
+                                </form>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
+
+
+            </header>
+
+            <div class="card-body" id="TablePurchaseListSearch">
+
+
+                <div class="invoice-summary mb-1">
+
+                    <div class="row mb-1">
+
+                        <div class="col-lg-6 col-md-6 mb-1">
+                            <b>@ViewBag.RecordsPerPage</b> records per page
+                        </div>
+
+                        <div class="col-lg-6 col-md-6 mb-1 justify-content-end text-right">
+
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <table class="table table-bordered table-striped mb-0 mt-1" @*id="datatable-default"*@>
+                    @if (Model.LedgerMasterIPagedList_TTL != null)
+                    {
+
+
+                        foreach (Pa_Ledger_DAL item in Model.LedgerMasterIPagedList_TTL)
+                        {
+        <b>
+            <label class="col-form-label" style="float:right;font-family:sans-serif;font-size:15px;color:black"> Opening Balance:  @item.Opening_Balance</label>
+        </b>
+}
+}
+                    <thead>
+                        <tr>
+
+                            <th>Date</th>
+                            <th>Description</th>
+
+                            <th>Debit</th>
+                            <th>Credit</th>
+                            <th>Account</th>
+                            <th>Ref</th>
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @if (Model.LedgerMasterIPagedList != null)
+                        {
+                            foreach (Pa_Ledger_DAL item in Model.LedgerMasterIPagedList)
+                            {
+            <tr>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.Date)
+                </td>
+                <td> @Html.DisplayFor(modelItem => item.Description)</td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Debit)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.Credit)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.ACCOUNT)
+                </td>
+                <td>
+                    <a href="@item.Link" onclick="btndisable();"> @Html.DisplayFor(modelItem => item.trans_ref)</a>
+                </td>
+
+
+                @*<td> @Html.DisplayFor(modelItem => item.PurchaseStatus)</td>
+                    <td> <a asp-controller="Purchases" asp-action="NewPurchase" asp-route-PurchaseMaster_ID="@item.PurchaseMaster_ID">View</a></td>*@
+
+
+            </tr>}
+                        }
+
+
+
+
+                    </tbody>
+                    <tfoot>
+                        @if (Model.LedgerMasterIPagedList_TTL != null)
+                        {
+
+
+                            foreach (Pa_Ledger_DAL item in Model.LedgerMasterIPagedList_TTL)
+                            {
+            <tr role="row">
+                <th>Total</th>
+
+
+                <th></th>
+                <th>@item.TotalDebit</th>
+                <th>@item.TotalCredit</th>
+                <th>Closing Balance</th>
+                <th>@item.TotalBalance</th>
+
+
+
+            </tr>}
+                        }
+                    </tfoot>
+                </table>
+
+
+
+                <div class="invoice-summary">
+
+                    <div class="row">
+
+                        <div class="col-lg-6 col-md-6">
+
+                        </div>
+
+                        <div class="col-lg-6 col-md-6 justify-content-end text-right">
+                            @if (Model.LedgerMasterIPagedList.Count() != 0)
+                            {
+
+                @Html.PagedListPager(Model.LedgerMasterIPagedList, page => Url.Action("Search_Ledger", "Accounts", new { From_Date = ViewBag.From_Date_Ledger, To_Date = ViewBag.To_Date_Ledger, AccountID = ViewBag.AccountID_Ledger, Trans_Ref = ViewBag.Trans_Ref_Ledger, page })
+
+, X.PagedList.Mvc.Core.Common.PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new AjaxOptions()
+{
+HttpMethod = "get",
+UpdateTargetId = "TablePurchaseListSearch"
+})
+                 )}
+                        </div>
+                    </div>
+
+                </div>
+
+
+            </div>
+        </section>
+    </div>
+</div>
+
+@section Scripts{
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
+
+    <script>
+
+        $(function () {
+            $(".select2").select2({
+                theme: "bootstrap",
+            });
+
+        });
+
+
+    </script>
+    <script>
+
+            function myBeginSearch() {
+                $("#LoaderImage").css("visibility", "visible");
+            }
+
+            function mySuccessSearch(data) {
+
+                debugger
+                if (data.message == undefined) {
+
+                    $('#TablePurchaseListSearch').html(data);
+
+
+                } else {
+                    alert(data.message);
+
+                }
+
+
+            }
+
+            function myFailureSearch() {
+
+                alert("Failured occured. Please try again!");
+                $("#LoaderImage").css("visibility", "hidden");
+            }
+
+            function myCompleteSearch() {
+                $("#LoaderImage").css("visibility", "hidden");
+
+            }
+
+
+
+        $(document).ready(function(){
+    $("#print-btn").click(function(event){
+        event.preventDefault();
+
+        var win = window.open("@Url.Action("Ledger_print", "Report")" + "?From_Date=" + $("#From_Date").val() + "&To_Date=" + $("#To_Date").val() + "&AccountID=" + $("#AccountID").val() + "&Trans_Ref=" + $("#Trans_Ref").val(),"_blank");
+        win.focus();
+    });
+        })
+
+         $(document).ready(function(){
+    $("#export-btn").click(function(event){
+        event.preventDefault();
+
+        var win = window.open("@Url.Action("Ledger_Excel", "Report")" + "?From_Date=" + $("#From_Date").val() + "&To_Date=" + $("#To_Date").val() + "&AccountID=" + $("#AccountID").val() + "&Trans_Ref=" + $("#Trans_Ref").val(),"_blank");
+        win.focus();
+    });
+
+        })
+
+    </script>
+
+}
+
+@*@section Scripts {
+        <script type="text/javascript">
+
+            function Delete_Category(VehCategory_ID, VehCategoryName) {
+                debugger
+                $("#CategoryID_Delete").val(VehCategory_ID);
+                $("#ColorName_Delete").val(VehCategoryName);
+            }
+
+            function Update_Category(VehCategory_ID, VehCategoryName) {
+                debugger
+                $("#CategoryID_Update").val(VehCategory_ID);
+                $("#CategoryName_Update").val(VehCategoryName);
+            }
+
+
+        </script>
+    }*@

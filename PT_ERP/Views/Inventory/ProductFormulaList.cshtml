@@ -1,0 +1,456 @@
+﻿@using DAL
+@using DAL.Models
+@using X.PagedList.Mvc.Core; @*//import this so we get our HTML Helper*@
+@using X.PagedList;  @*//import this so we can cast our list to IPagedList *@
+@{
+    ViewData["Title"] = "ProductFormulaList";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<header class="page-header">
+    <h2>Inventory</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+
+            <li><a><span>@ViewBag.BreadCumController</span></a></li>
+            <li><a asp-area="" asp-controller="@ViewBag.BreadCumController" asp-action="@ViewBag.BreadCumAction"><span>Sale Invoice List</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+
+<div class="row">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+        <div class="col-lg-12">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-info">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Success!</strong> @TempData["Success"] <a href="" class="alert-link"></a>
+                </div>
+            }
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Error!</strong> @TempData["Error"] <a href="" class="alert-link"></a>
+                </div>
+            }
+        </div>
+    }
+
+
+</div>
+
+<!--Following 'LoaderImage' div is for showing ajax loader before ajax call-->
+<div class="imageGIFLoader" id="LoaderImage">
+    <img src="~/img/projects/ajax-loader.gif" class="img-responsive" style="width:65px; height:65px;" />
+</div>
+
+<div class="row" style="padding-top:1px;">
+    <div class="col">
+        <section class="card">
+            <header class="card-header">
+
+                <div class="row">
+
+
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <section class="card">
+                            <div class="card-body">
+
+                                <form method="get" data-ajax="true" data-ajax-complete="myCompleteSearch" data-ajax-success="mySuccessSearch" data-ajax-failure="myFailureSearch"
+                                      data-ajax-begin="myBeginSearch" asp-area="" asp-controller="Inventory" asp-action="GetInventoryMasterInvoiceListBySearchFilers" data-ajax-loading="">
+
+                                    <div class="row form-group">
+
+                                        <div class="col-lg">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="Project_ID">Ref</label>
+                                                <input type="text" id="Ref" name="Ref" class="form-control" placeholder="Ref" />
+
+                                            </div>
+                                        </div>
+
+
+                                        <div class="col-lg">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="StartDate">Start Date</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                        </span>
+                                                    </span>
+
+                                                    <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="StartDate" name="StartDate">
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="col-lg">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="EndDate">End Date</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                        </span>
+                                                    </span>
+
+                                                    <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="EndDate" name="EndDate">
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                          
+
+
+                                        <partial name="~/Views/Shared/_CompanyWise.cshtml" />
+
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg">
+
+
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="Search"> &nbsp; </label>
+
+                                                <button type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-info">Search&nbsp;<i class="fas fa-search"></i></button>
+                                                <a class="mb-1 mt-1 mr-1 btn btn-sm btn-primary" asp-area="" asp-controller="Inventory" asp-action="NewProductFormula">Add New&nbsp;<i class="fas fa-plus"></i></a>
+
+                                                <a type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-info" href="" id="print-btn">Print &nbsp;<i class="fas fa-print"></i></a>
+                                                <a type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-success" href="" id="export-btn">Export &nbsp;<i class="fas fa-file-excel"></i></a>
+
+
+                                            </div>
+
+
+
+                                        </div>
+                                    </div>
+
+
+                                </form>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
+
+
+            </header>
+            <div class="card-body" id="InventoryInvoiceListSearch">
+
+                <div class="invoice-summary mb-1">
+
+                    <div class="row mb-1">
+
+                        <div class="col-lg-6 col-md-6 mb-1">
+                            <b>@ViewBag.RecordsPerPage</b> records per page
+                        </div>
+
+                        <div class="col-lg-6 col-md-6 mb-1 justify-content-end text-right">
+
+                        </div>
+                    </div>
+
+                </div>
+
+                <table class="table table-bordered table-striped mb-0 mt-1" @*id="datatable-default"*@>
+                    <thead>
+                        <tr>
+
+
+
+
+                            <th>Ref</th>
+
+                            <th>P_Date</th>
+                            <th>FormulaName</th>
+                            <th>Item</th>
+                            <th>Created_At</th>
+                  
+                            <th>View</th>
+
+
+
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+
+
+                        @if (Model.ProductFormulaMasterList != null)
+                        {
+                            foreach (pa_ProductFormulaMaster_DAL item in Model.ProductFormulaMasterList)
+                            {
+
+                                <tr>
+
+
+
+                                    <td> <a asp-controller="Inventory" asp-action="NewProductFormula" asp-route-Formula_ID="@item.Formula_ID">@Html.DisplayFor(modelItem => item.Ref)</a></td>
+                                    <td>@Html.DisplayFor(modelItem => item.P_Date)</td>
+
+                                    <td>@Html.DisplayFor(modelItem => item.FormulaName)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.ItemName)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Created_At)</td>
+
+                                    <td> <a asp-controller="Inventory" asp-action="NewProductFormula" asp-route-Formula_ID="@item.Formula_ID">View</a></td>
+                                    @*<td>@Html.DisplayFor(modelItem => item.Modified_at)</td>*@
+
+
+
+
+
+                                </tr>
+                            }
+                        }
+
+
+
+
+
+                    </tbody>
+               
+                </table>
+
+                <div class="invoice-summary">
+
+                    <div class="row">
+
+                        <div class="col-lg-6 col-md-6">
+
+                        </div>
+                        <div class="col-lg-6 col-md-6 justify-content-end text-right">
+                            @*@if (Model.ProductFormulaMasterList.Count() != 0)
+                            {
+                           
+                                @Html.PagedListPager(Model.ProductFormulaMasterList, page => Url.Action("GetInventoryMasterInvoiceListBySearchFilers", "Inventory", new { Ref = ViewBag.Ref_ProductFormula, StartDate = ViewBag.StartDate_ProductFormula, EndDate = ViewBag.EndDate_ProductFormula, cID = ViewBag.c_ID_ProductFormula, page })
+
+                , X.PagedList.Mvc.Core.Common.PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new AjaxOptions()
+                {
+                    HttpMethod = "get",
+                    UpdateTargetId = "InventoryInvoiceListSearch"
+                })
+                                )
+                            }*@
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+    </div>
+</div>
+
+
+
+
+
+
+@section Scripts{
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
+
+
+    <script>
+
+        function myBeginSearch() {
+            $("#LoaderImage").css("visibility", "visible");
+        }
+
+        function mySuccessSearch(data) {
+
+            debugger
+            if (data.message == undefined) {
+
+                $('#InventoryInvoiceListSearch').html(data);
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        function myFailureSearch() {
+
+            alert("Failured occured. Please try again!");
+            $("#LoaderImage").css("visibility", "hidden");
+        }
+
+        function myCompleteSearch() {
+            $("#LoaderImage").css("visibility", "hidden");
+
+        }
+
+
+        //---show attachment popup
+        function ShowAttachmentMaster(SaleMaster_ID) {
+            debugger
+            var TeamDetailPostBackURL = '/Inventory/GetInventoryMasterInvoice_Attachments';
+
+            //--assign value to SaleMaster_ID hidden field in the main. Dont remove this fields
+            $("#InventoryMasterMain").val(SaleMaster_ID);
+
+
+            if (!SaleMaster_ID) {
+                alert("ID is null. Please try again!");
+            } else {
+                $.ajax({
+                    type: "GET",
+                    url: TeamDetailPostBackURL,
+                    contentType: "application/json; charset=utf-8",
+                    data: { "SaleMaster_ID": SaleMaster_ID },
+                    datatype: "json",
+                    success: function (data) {
+
+
+                        if (data.message == undefined) {
+                            $('#AttachmentsSaleMaster').html(data);
+
+
+                            //--assign value to SaleMaster_ID hidden field. this field is in partial view '_InventoryInvoiceAttachment'
+                            $("#SaleMaster_ID_Attachment").val(SaleMaster_ID);
+
+                            $('#ShowAttachmentMasterModal').modal('show');
+
+                        } else {
+                            alert(data.message);
+                            $('#ShowAttachmentMasterModal').modal('hide');
+                        }
+
+                    },
+                    error: function () {
+                        alert("Dynamic content load failed.");
+                    }
+                });
+            }
+
+
+
+        }
+
+
+        //---after successfull submission of attachment
+        function mySuccessAttachment(data) {
+
+            debugger
+            if (data.message == undefined) {
+
+
+                $('#AttachmentsSaleMaster').html(data);
+
+                //---assign id of Inventory master to the hidden field SaleMaster_ID_Attachment after partial view refresh
+                var SaleMaster_ID = document.getElementById("InventoryMasterMain").value;
+                $("#SaleMaster_ID_Attachment").val(SaleMaster_ID);
+
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        //---if error occured in insertion of attachment
+        function myFailureAttachment() {
+
+            alert("Failured occured. Please try again!");
+
+        }
+
+
+        //---Delete Attachment
+        function DeleteAttachment(Attachment_ID, Master_ID, Type, File_Name) {
+            debugger
+            var TeamDetailPostBackURL = '/Inventory/DeleteAttachmentInventoryInvoice';
+
+            //--in this function , the 'Type' is for the field in attachment table for specifying different voucher documents
+
+            var SaleMaster_ID = Master_ID;
+            if (!SaleMaster_ID) {
+                alert("Attachment ID is null. Please try again!");
+            } else {
+                $.ajax({
+                    type: "GET",
+                    url: TeamDetailPostBackURL,
+                    contentType: "application/json; charset=utf-8",
+                    data: { "SaleMaster_ID": SaleMaster_ID, "Attachment_ID": Attachment_ID, "Type": Type, "File_Name": File_Name },
+                    datatype: "json",
+                    success: function (data) {
+
+
+                        if (data.message == undefined) {
+                            $('#AttachmentsSaleMaster').html(data);
+
+
+                            //--assign value to SaleMaster_ID hidden field. this field is in partial view '_InventoryInvoiceAttachment'
+                            $("#SaleMaster_ID_Attachment").val(SaleMaster_ID);
+
+
+
+                        } else {
+                            alert(data.message);
+                            //$('#ShowAttachmentMasterModal').modal('hide');
+                        }
+
+                    },
+                    error: function () {
+                        alert("Dynamic content load failed.");
+                    }
+                });
+            }
+
+
+
+        }
+
+
+        $(document).ready(function(){
+    $("#print-btn").click(function(event){
+        event.preventDefault();
+
+        var win = window.open("@Url.Action("ProductFormulaList_print", "Report")" + "?Ref=" + $("#Ref").val() + "&StartDate=" + $("#StartDate").val() + "&EndDate=" + $("#EndDate").val() + "&c_ID=" + $("#c_ID").val() , "_blank");
+        win.focus();
+    });
+        })
+                $(document).ready(function(){
+    $("#export-btn").click(function(event){
+       event.preventDefault();
+        window.location.href = "@Url.Action("ProductFormulaList_Excel", "Report")" + "?Ref=" + $("#Ref").val() + "&StartDate=" + $("#StartDate").val() + "&EndDate=" + $("#EndDate").val() + "&c_ID=" + $("#c_ID").val();
+    });
+})
+
+    </script>
+
+
+
+}
+

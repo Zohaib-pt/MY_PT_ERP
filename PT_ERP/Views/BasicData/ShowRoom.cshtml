@@ -1,0 +1,525 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OBasicData
+@{
+    ViewData["Title"] = "ShowRoom";
+    Layout = "~/Views/Shared/_LayoutTablePages.cshtml";
+}
+
+<header class="page-header">
+    <h2>Basic Data</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+            <li><a asp-area="" asp-controller="BasicData" asp-action="ShowRooms"><span>ShowRoom List</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+
+<div class="row">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+        <div class="col-lg-12">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-info">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Success!</strong> @TempData["Success"] <a href="" class="alert-link"></a>
+                </div>
+            }
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Error!</strong> @TempData["Error"] <a href="" class="alert-link"></a>
+                </div>
+            }
+        </div>
+    }
+
+
+</div>
+
+<div class="row">
+    <div class="col">
+        <section class="card">
+            <header class="card-header">
+
+                <div class="row">
+                    <div class="col-lg-6">
+                        <h2 class="card-title" style="line-height:normal;">ShowRoom List </h2>
+                    </div>
+                    <div class="col-lg-6" style="text-align:right;">
+                        <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#AddShowRoomModal">Add ShowRoom &nbsp;<i class="fas fa-plus"></i></button>
+
+                        <button type="button" class="mb-1 mt-1 mr-1 btn btn-sm btn-info">Print &nbsp;<i class="fas fa-print"></i></button>
+                    </div>
+                </div>
+
+            </header>
+            <div class="card-body">
+
+
+
+                <table class="table table-bordered table-striped mb-0" id="datatable-default">
+                    <thead>
+                        <tr>
+
+
+                            <th>Edit</th>
+
+                            <th>ShowRoom Code</th>
+
+                            <th>ShowRoom Name</th>
+                            <th>ShowRoom No</th>
+                            <th>TRN</th>
+
+                            <th @ViewBag.AttachmentVisibility>Attachments</th>
+
+
+
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @if (Model.ShowRoomList != null)
+                        {
+                            foreach (Pa_ShowRoom_DAL item in Model.ShowRoomList)
+                            {
+
+                                <tr>
+
+                                    <td>
+                                        <a onclick="UpdateShowRoom('@item.ShowRoom_ID', '@item.ShowRoomCode', '@item.ShowRoomName', '@item.showroom_no', '@item.TRN')" data-toggle="modal"
+                                           data-target="#UpdateShowRoomModal"><img style="width: 20px;" src="~/Img/Icons/edit.png" /></a>
+
+
+                                    </td>
+
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.ShowRoomCode)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.ShowRoomName)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.showroom_no)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.TRN)
+                                    </td>
+
+                                    <td @ViewBag.AttachmentVisibility><a href="#" onclick="ShowAttachmentMaster('@item.ShowRoom_ID');">Manage Attachment</a> </td>
+
+                                </tr>
+
+
+
+                            }
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</div>
+
+
+<!-- Modal Insert ShowRoom -->
+<div class="modal fade" id="AddShowRoomModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Add ShowRoom</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="BasicData" asp-action="AddShowRoom" enctype="multipart/form-data">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body">
+
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">ShowRoom Code<span style="color: red; font-size: 15px; margin-left: 4px;">*</span></label>
+
+                                        <input type="text" class="form-control" id="ShowRoomCode" name="ShowRoomCode" required>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">ShowRoom Name<span style="color: red; font-size: 15px; margin-left: 4px;">*</span></label>
+
+                                        <input type="text" class="form-control" id="ShowRoomName" name="ShowRoomName" required>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">ShowRoom No</label>
+
+                                        <input type="text" class="form-control" id="showroom_no" name="showroom_no">
+                                    </div>
+                                </div>
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">TRN</label>
+
+                                        <input type="text" class="form-control" id="TRN" name="TRN">
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-sm btn-primary">Save</button>
+                    <button type="button" class="btn  btn-sm btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal Delete ShowRoom -->
+@*<div class="modal fade" id="DeleteShowRoomModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="background: #f6f6f6;">
+
+
+                    <h4 class="modal-title">Delete ShowRoom</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+
+                </div>
+
+                <form method="post" asp-area="" asp-controller="BasicData" asp-action="DeleteShowRoom">
+
+                    <div class="modal-body">
+
+                        <section class="card">
+
+                            <div class="card-body" style="box-shadow:none;">
+
+
+                                <div class="row form-group">
+
+                                    <div class="col-lg-12">
+                                        <div class="form-group">
+                                            <h3>Do you want to delete this record?</h3>
+
+                                            <input type="hidden" id="ShowRoomID_Delete" name="ShowRoom_ID" />
+
+                                        </div>
+                                    </div>
+
+
+                                </div>
+
+
+                            </div>
+
+
+
+                        </section>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Confirm</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>*@
+
+
+
+<!-- Modal udpate ShowRoom -->
+<div class="modal fade modal-sm" id="UpdateShowRoomModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Update ShowRoom</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="BasicData" asp-action="UpdateShowRoom" enctype="multipart/form-data">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body">
+
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">ShowRoom Code<span style="color: red; font-size: 15px; margin-left: 4px;">*</span></label>
+
+                                        <input type="text" class="form-control" id="ShowRoom_Updatea" name="ShowRoomCode" required>
+                                        <input type="hidden" id="ShowRoomID_Update" name="ShowRoom_ID" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">ShowRoom Name<span style="color: red; font-size: 15px; margin-left: 4px;">*</span></label>
+
+                                        <input type="text" class="form-control" id="ShowRoom_Updateb" name="ShowRoomName" required>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">ShowRoom No</label>
+
+                                        <input type="text" class="form-control" id="ShowRoom_Updatec" name="showroom_no">
+                                    </div>
+                                </div>
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">TRN</label>
+
+                                        <input type="text" class="form-control" id="ShowRoom_Updated" name="TRN">
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal show attachment -->
+<div class="modal fade bs-modal-lg" id="ShowAttachmentMasterModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <!-- Following fields is for making a central customer master id for attachments -->
+        <input type="hidden" id="ShowRoomMain" name="ShowRoomMain" />
+
+        <div class="modal-content" id="AttachmentsSaleMaster">
+
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
+
+
+
+
+
+    <script type="text/javascript">
+
+        //function DeleteShowRoom(ShowRoom_ID) {
+        //    debugger
+        //    $("#ShowRoomID_Delete").val(ShowRoom_ID);
+
+        //}
+
+        function UpdateShowRoom(ShowRoom_ID, ShowRoomCode, ShowRoomName, showroom_no, TRN) {
+            debugger
+            $("#ShowRoomID_Update").val(ShowRoom_ID);
+            $("#ShowRoom_Updatea").val(ShowRoomCode);
+            $("#ShowRoom_Updateb").val(ShowRoomName);
+            $("#ShowRoom_Updatec").val(showroom_no);
+            $("#ShowRoom_Updated").val(TRN);
+        }
+
+
+
+        //---show attachment popup
+        function ShowAttachmentMaster(ShowRoom_ID) {
+            debugger
+            var TeamDetailPostBackURL = '/BasicData/GetShowroom_Attachments';
+
+            //--assign value to ShowRoom_ID hidden field in the main. Dont remove this fields
+            $("#ShowRoomMain").val(ShowRoom_ID);
+
+
+            if (!ShowRoom_ID) {
+                alert("ID is null. Please try again!");
+            } else {
+                $.ajax({
+                    type: "GET",
+                    url: TeamDetailPostBackURL,
+                    contentType: "application/json; charset=utf-8",
+                    data: { "ShowRoom_ID": ShowRoom_ID },
+                    datatype: "json",
+                    success: function (data) {
+
+
+                        if (data.message == undefined) {
+                            $('#AttachmentsSaleMaster').html(data);
+
+
+                            //--assign value to ShowRoom_ID hidden field. this field is in partial view '_CustomerMasterAttachments'
+                            $("#ShowRoom_ID_Attachment").val(ShowRoom_ID);
+
+                            $('#ShowAttachmentMasterModal').modal('show');
+
+                        } else {
+                            alert(data.message);
+                            $('#ShowAttachmentMasterModal').modal('hide');
+                        }
+
+                    },
+                    error: function () {
+                        alert("Dynamic content load failed.");
+                    }
+                });
+            }
+
+
+
+        }
+
+
+        //---after successfull submission of attachment
+        function mySuccessAttachment(data) {
+
+            debugger
+            if (data.message == undefined) {
+
+
+                $('#AttachmentsSaleMaster').html(data);
+
+                //---assign id of sales master to the hidden field SaleMaster_ID_Attachment after partial view refresh
+                var ShowRoom_ID = document.getElementById("ShowRoomMain").value;
+                $("#ShowRoom_ID_Attachment").val(ShowRoom_ID);
+
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        //---if error occured in insertion of attachment
+        function myFailureAttachment() {
+
+            alert("Failured occured. Please try again!");
+
+        }
+
+
+        //---Delete Attachment
+        function DeleteAttachment(Attachment_ID, Master_ID, Type, File_Name) {
+            debugger
+            var TeamDetailPostBackURL = '/BasicData/DeleteAttachmentShowroom';
+
+            //--in this function , the 'Type' is for the field in attachment table for specifying different voucher documents
+
+            var ShowRoom_ID = Master_ID;
+            if (!ShowRoom_ID) {
+                alert("ShowRoom_ID is null. Please try again!");
+            } else {
+                $.ajax({
+                    type: "GET",
+                    url: TeamDetailPostBackURL,
+                    contentType: "application/json; charset=utf-8",
+                    data: { "ShowRoom_ID": ShowRoom_ID, "Attachment_ID": Attachment_ID, "Type": Type, "File_Name": File_Name },
+                    datatype: "json",
+                    success: function (data) {
+
+
+                        if (data.message == undefined) {
+                            $('#AttachmentsSaleMaster').html(data);
+
+
+                            //--assign value to SaleMaster_ID hidden field. this field is in partial view '_SalesInvoiceAttachment'
+                            $("#ShowRoom_ID_Attachment").val(ShowRoom_ID);
+
+
+
+                        } else {
+                            alert(data.message);
+                            //$('#ShowAttachmentMasterModal').modal('hide');
+                        }
+
+                    },
+                    error: function () {
+                        alert("Dynamic content load failed.");
+                    }
+                });
+            }
+
+
+
+        }
+
+
+    </script>
+}
+
+
+

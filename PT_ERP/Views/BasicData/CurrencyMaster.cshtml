@@ -1,0 +1,375 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OBasicData
+
+@{
+
+    Layout = "~/Views/Shared/_LayoutTablePages.cshtml";
+}
+
+
+
+
+
+<header class="page-header">
+    <h2>Basic Data</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+            <li><a asp-area="" asp-controller="BasicData" asp-action="CurrencyMaster"><span>Currency List</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+
+<div class="row">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+        <div class="col-lg-12">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-info">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Success!</strong> @TempData["Success"] <a href="" class="alert-link"></a>
+                </div>
+            }
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Error!</strong> @TempData["Error"] <a href="" class="alert-link"></a>
+                </div>
+            }
+        </div>
+    }
+
+
+</div>
+
+<div class="row">
+    <div class="col">
+        <section class="card">
+            <header class="card-header">
+
+                <div class="row">
+                    <div class="col-lg-6">
+                        <h2 class="card-title" style="line-height:normal;">Currency List</h2>
+                    </div>
+                    <div class="col-lg-6" style="text-align:right;">
+                        <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#AddMakeModal">Add New &nbsp;<i class="fas fa-plus"></i></button>
+
+                        @*<button type="button" class="mb-1 mt-1 mr-1 btn btn-sm btn-info">Print &nbsp;<i class="fas fa-print"></i></button>*@
+                    </div>
+                </div>
+
+            </header>
+            <div class="card-body">
+
+
+
+                <table class="table table-bordered table-striped mb-0" id="datatable-default">
+                    <thead>
+                        <tr>
+
+
+                            <th>Edit/Delete</th>
+                            <th>Full Name</th>
+                            <th>Short Name</th>
+
+
+                            <th>Rate</th>
+                            <th>Last Modified At</th>
+                           
+
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @if (Model.currencyMasteList != null)
+                        {
+                            foreach (Pa_CurrencyMaster_DAL item in Model.currencyMasteList)
+                            {
+
+                                <tr>
+
+                                    <td>
+                                        <a onclick="UpdateCurrencyMaster('@item.Currency_ID', '@item.Currency_Name', '@item.Currency_ShortName', '@item.Curr_Rate','@item.Minor_ShortName')" data-toggle="modal"
+                                           data-target="#UpdateMakeModal"><img style="width: 20px;" src="~/Img/Icons/edit.png" /></a>
+                                        <a onclick="DeleteCurrencyMaster('@item.Currency_ID')" data-toggle="modal" data-target="#DeleteMakeModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Currency_Name)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Currency_ShortName)
+                                    </td>
+
+
+                                    <td> @Html.DisplayFor(modelItem => item.Curr_Rate)</td>
+                                  
+                                    <td> @Html.DisplayFor(modelItem => item.Modified_at)</td>
+                                  
+
+                                </tr>
+
+
+
+                            }
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</div>
+
+
+<!-- Model Add currncy -->
+<div class="modal fade bs-modal" id="AddMakeModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Add Currency</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="BasicData" asp-action="InsertCurrencyMaster">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body">
+
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Full Name</label>
+
+                                        <input type="text" class="form-control" id="Currency_Name" name="Currency_Name" placeholder="Currency Full Name" required>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Short Name</label>
+
+                                        <input type="text" class="form-control" id="Currency_ShortName" name="Currency_ShortName" placeholder="Currency Short Name" required>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Rate</label>
+
+                                        <input type="text" class="form-control" id="Curr_Rate" name="Curr_Rate" required placeholder="Currency Rate">
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Minor ShortName</label>
+
+                                        <input type="text" class="form-control" id="Minor_ShortName" name="Minor_ShortName" placeholder="Minor Short Name" required>
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-sm btn-primary">Save</button>
+                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal Delete Make -->
+<div class="modal fade bs-modal-lg" id="DeleteMakeModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Delete Currency</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="BasicData" asp-action="DeleteCurrencyMaster">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <h3>Do you want to delete this record?</h3>
+                                  
+                                        <input type="hidden" id="Currency_IDDelete" name="Currency_ID" />
+                                       
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Model udpate Make -->
+<div class="modal fade bs-modal-sm" id="UpdateMakeModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Update CurrencyMaster</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="BasicData" asp-action="UpdateCurrencyMaster">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Currency_NameUpdate">Full Name</label>
+
+                                        <input type="text" class="form-control" id="Currency_NameUpdate" name="Currency_Name" placeholder="Currency Full Name" required>
+                                        <input type="hidden" id="Currency_IDUpdate" name="Currency_ID">
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Currency_ShortNameUpdate">Short Name</label>
+
+                                        <input type="text" class="form-control" id="Currency_ShortNameUpdate" name="Currency_ShortName" placeholder="Currency Short Name" required>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Curr_RateUpdate">Rate</label>
+
+                                        <input type="text" class="form-control" id="Curr_RateUpdate" name="Curr_Rate" required placeholder="Currency Rate">
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Minor_ShortNameUpdate">Minor ShortName</label>
+
+                                        <input type="text" class="form-control" id="Minor_ShortNameUpdate" name="Minor_ShortName" placeholder="Minor Short Name" required>
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+
+@section Scripts {
+    <script type="text/javascript">
+
+        function DeleteCurrencyMaster(CurrencyID) {
+            debugger
+            $("#Currency_IDDelete").val(CurrencyID);
+          
+        }
+
+        function UpdateCurrencyMaster(CurrencyID, Full_name, short_name, curr_rate, Minor_ShortName) {
+            debugger
+            $("#Currency_IDUpdate").val(CurrencyID);
+            $("#Currency_NameUpdate").val(Full_name);
+            $("#Currency_ShortNameUpdate").val(short_name);
+            $("#Curr_RateUpdate").val(curr_rate);
+            $("#Minor_ShortNameUpdate").val(Minor_ShortName);
+        }
+
+
+    </script>
+}

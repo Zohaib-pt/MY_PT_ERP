@@ -1,0 +1,837 @@
+﻿
+@using DAL
+@using DAL.Models
+@model DAL.oClasses.OStock
+
+@using X.PagedList.Mvc.Core; @*//import this so we get our HTML Helper*@
+@using X.PagedList;  @*//import this so we can cast our list to IPagedList *@
+@{ ViewData["Title"] = "AddGarage";
+    Layout = "~/Views/Shared/_LayoutTablePages.cshtml";
+
+}
+@{
+    string Form_StockMaster_ActionMethod = "";
+    int? Garage_Master_ID = ViewBag.Garage_Master_ID;
+
+
+    if (Model.GarageMasterObj != null && Model.GarageMasterObj.GarageMaster_ID > 0)
+    {
+
+        Form_StockMaster_ActionMethod = "UpdateGarageMaster";
+
+
+    }
+    else
+    {
+        Form_StockMaster_ActionMethod = "InsertGarageMaster";
+    }
+}
+<header class="page-header">
+    <h2>Garage</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+            <li><a asp-area="" asp-controller="Stock" asp-action="GarageList"><span>Garage List</span></a></li>
+            <li><a asp-area="" asp-controller="@ViewBag.BreadCumController" asp-action="@ViewBag.BreadCumAction"><span></span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+
+<div class="row" id="SuccessErrorSection">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+        <div class="col-lg-12">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-info">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Success!</strong> @TempData["Success"] <a href="" class="alert-link"></a>
+                </div>}
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Error!</strong> @TempData["Error"] <a href="" class="alert-link"></a>
+                </div>}
+        </div>}
+
+
+</div>
+<section class="card">
+    <div class="card-body">
+        <div class="invoice">
+            <header class="clearfix">
+                <div class="row">
+                    <div class="col-sm-6 mt-0">
+                        <h2 class="h4 mt-0 mb-2 text-dark font-weight-bold">Garage</h2>
+
+                    </div>
+
+                    <div class="col-sm-6 mt-0 text-right">
+
+
+
+                    </div>
+
+
+                </div>
+            </header>
+
+            <div class="row">
+                <div class="col-lg-8">
+                    @if (Model.GarageMasterObj.GarageMaster_ID != null)
+                    {
+                        if (Model.GarageMasterObj.GarageMaster_ID > 0)
+                        {
+
+                            <button type="button" id="ButtonSaleMasterUpdate" class="btn-sm btn btn-success">Update &nbsp;<i class="fas fa-save"></i></button>
+
+                            <button type="button" class="btn-sm btn btn-primary">Edit  &nbsp;<i class="fas fa-edit"></i></button>
+
+
+                            <a type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-info" id="print-btn" href="">Print &nbsp;<i class="fas fa-print"></i></a>
+                            <a type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-success" id="export-btn" href="">Export &nbsp;<i class="fas fa-file-excel"></i></a>
+
+                            <a asp-controller="Stock" asp-action="GarageList" class="btn-sm btn btn-default">List &nbsp;<i class="fas fa-list"></i></a> }
+                    }
+                    else
+                    {
+                        <button type="button" id="ButtonSaleMasterIssue" class="btn-sm btn btn-success">Issue &nbsp;<i class="fas fa-save"></i></button>
+
+                        <button type="button" class="btn-sm btn btn-primary" disabled="disabled">Edit  &nbsp;<i class="fas fa-edit"></i></button>
+
+
+                        <a type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-info" disabled="disabled" id="print-btn" href="">Print &nbsp;<i class="fas fa-print"></i></a>
+                        <a type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-success" disabled="disabled" id="export-btn" href="">Export &nbsp;<i class="fas fa-file-excel"></i></a>
+
+                        <a asp-controller="Stock" asp-action="GarageList" class="btn-sm btn btn-default">List &nbsp;<i class="fas fa-list"></i></a>}
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div class="col">
+
+
+
+                    <form method="post" asp-area="" asp-controller="Stock" asp-action="@Form_StockMaster_ActionMethod" id="formStockMaster">
+                        @Html.AntiForgeryToken()
+
+                        <section class="card">
+
+                            <div class="card-body">
+
+
+
+                                <div class="row form-group">
+
+
+                                    <div class="col-lg-4">
+
+                                        <div class="row MasterForm">
+                                            <label for="Vendor_ID" class="col-sm-3 col-form-label">Garage</label>
+                                            <div class="col-sm-9">
+                                                <select class="form-control select2" id="Vendor_ID" name="Vendor_ID"  asp-items="@(new SelectList( ViewBag.VendorMaster,"Partner_ID","PartnerName", Model.GarageMasterObj.GarageVendor_ID))" required>
+                                                    <option value="0">Select Garage</option>                                                
+                                                </select>
+                                           
+                                            </div>
+                                        </div>
+                                     
+                                        <div class="row MasterForm">
+                                            <label for="Address" class="col-sm-3 col-form-label">Remark</label>
+                                            <div class="col-sm-9">
+                                                <textarea class="form-control" rows="2" id="Remarks" name="Remarks" placeholder="Remark">@Model.GarageMasterObj.Remarks</textarea>
+                                           
+                                            </div>
+                                        </div>
+
+
+
+                                    </div>
+
+
+                                    <div class="col-lg-4">
+
+
+                                    </div>
+
+                                    <div class="col-lg-4">
+
+                                        <div class="row MasterForm">
+                                            <label for="To" class="col-sm-4 col-form-label">Ref</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" id="RefInv" name="RefInv" value="@Model.GarageMasterObj.RefInv" readonly>
+                                            </div>
+                                        </div>
+
+                                        <div class="row MasterForm">
+                                            <label for="PurchaseDate" class="col-sm-4 col-form-label">Date Send</label>
+                                            <div class="col-sm-8">
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                        </span>
+                                                    </span>
+
+                                                    @if (!String.IsNullOrEmpty(Model.GarageMasterObj.Date_Send))
+                                                    {
+                                                        <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="Date_Send" name="Date_Send" value="@Model.GarageMasterObj.Date_Send" required>
+                                                        <input id="GarageMaster_ID" name="GarageMaster_ID" type="hidden" value="@Model.GarageMasterObj.GarageMaster_ID" /> }
+                                                    else
+                                                    {
+                                                        <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="Date_Send" name="Date_Send" value="@DateTime.Now.ToString("dd-MMM-yyyy")" required>}
+
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+
+                                       
+
+                                            <div class="row MasterForm">
+                                                <label for="To" class="col-sm-4 col-form-label">Total Amount</label>
+                                                <div class="col-sm-8">
+                                                    <input type="number" id="Total_Amount" class="form-control" name="Total_Amount" value="@Model.GarageMasterObj.Total_Amount" placeholder="Total" readonly>
+                                                </div>
+                                            </div>
+
+                                        
+
+                                    </div>
+
+
+                                    
+
+
+
+
+
+                                
+                                  
+                                </div>
+                            </div>
+
+
+                        </section>
+                    </form>
+
+                </div>
+
+            </div>
+
+            <div class="row m-2">
+                <div class="col-lg-6">
+                    <h2 class="card-title" style="line-height:normal;">Details </h2>
+                </div>
+                <div class="col-lg-6 text-right">
+                    <button class="btn btn-sm btn-primary" data-toggle="modal"  data-target="#AddNewSaleDetailModal">Add New &nbsp;<i class="fas fa-plus"></i></button>
+
+
+                </div>
+            </div>
+
+            <div id="StockDetailSection">
+
+                <table class="table table-responsive-md table-bordered mb-0">
+                    <thead>
+                        <tr>
+                            <th>Edit/Delete</th>
+                            <th>Chassis</th>
+                            <th>Decription</th>
+                            <th>Amount</th>
+                          
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @if (Model.GarageDetailList != null)
+                        {
+
+
+                            foreach (Pa_Garage_Details item in Model.GarageDetailList)
+                            {
+
+
+
+                                <tr>
+
+
+                                    <td>
+
+                                        <a onclick="DeleteStockDetail('@item.Garage_Details_ID');" data-toggle="modal" data-target="#DeleteStockDetailModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+                                    </td>
+                                    <td>@Html.DisplayFor(modelItem => item.Chassis)</td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Description)
+                                    </td>
+                                    <td>@Html.DisplayFor(modelItem => item.Amount)</td>
+                                   
+                                </tr>
+                            }
+                        }
+
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+
+
+
+            <hr />
+
+
+
+            <div class="row">
+                <div class="col-sm-3"><span class="show-grid-block">Created at : <b>@Model.GarageMasterObj.Created_At </b></span></div>
+                <div class="col-sm-3"><span class="show-grid-block">Created by :</span><b>@Model.GarageMasterObj.Created_By</b></div>
+                <div class="col-sm-3"><span class="show-grid-block">Modified at :<b>@Model.GarageMasterObj.Last_Updated_At </b></span></div>
+                <div class="col-sm-3"><span class="show-grid-block">Modified by : <b>@Model.GarageMasterObj.Last_Updated_By </b></span></div>
+            </div>
+
+
+        </div>
+
+
+    </div>
+</section>
+
+<!-- Modal Insert Sale detail -->
+<div class="modal fade bs-modal-sm in" id="AddNewSaleDetailModal" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Garage Details</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+
+            </div>
+
+
+
+            <div class="modal-body">
+                <form method="post" data-ajax="true" data-ajax-success="mySuccessAuctionDetail" data-ajax-failure="myFailureAuctionDetail"
+                      asp-area="" id="FormInsertPaymentDetail">
+
+                    <section class="card">
+
+                        <div class="card-body">
+
+
+
+                            <div class="row form-group">
+
+                                @if (Model.GarageMasterObj.GarageMaster_ID != null)
+                                {
+                                    <input id="HdGarageMaster_ID" name="HdGarageMaster_ID" type="hidden" value="@Model.GarageMasterObj.GarageMaster_ID" /> }
+                                else
+
+                                {
+
+                                    <input id="HdGarageMaster_ID" name="HdGarageMaster_ID" type="hidden" value="0" />}
+
+
+
+
+
+
+                                <div style="width: 100%;">
+
+                                    <table class="table table-bordered table-striped mb-0" id="datatable-default">
+                                        <thead style="        background-color: #000; color: white;">
+                                            <tr>
+
+                                                <th id="checktd">
+
+
+                                                    Select All
+                                                    <input id="chkselectAll" onclick="handleClick(this);" type="checkbox" name="chkselectAll">
+                                                    <script>
+                                                        function handleClick(cb) {
+
+                                                            debugger;
+                                                            var parentValueToPush = new Array();
+
+                                                            if (cb.checked == true) {
+                                                                $("#datatable-default input[type=checkbox]").each(function () {
+                                                                    $(this).prop("checked", true);
+                                                                });
+
+                                                            } else {
+                                                                $("#datatable-default input[type=checkbox]").each(function () {
+                                                                    $(this).prop("checked", false);
+                                                                });
+                                                            }
+
+
+                                                        }
+
+
+                                                    </script>
+                                                </th>
+                                                <th>CHASSIS</th>
+                                                <th>Description</th>
+                                                <th>Amount</th>
+
+
+
+
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+
+                                            @if (Model.StockList != null)
+                                            {
+
+                                                foreach (var item in Model.StockList)
+                                                {
+                                            <tr class="gradeX odd" role="row">
+                                                <td><input type="checkbox" id="@item.stock_ID" value="@item.stock_ID" name="@item.stock_ID"></td>
+
+                                                <td>@item.Chassis_No</td>
+                                                <td><input type="text" class="form-control" id="Description" autocomplete="off" name="Description" /></td>
+                                                <td><input type="text" class="form-control" id="Amount"  autocomplete="off" name="Amount" /></td>
+
+                                            </tr>
+                                                }
+                                            }
+
+
+                                        </tbody>
+                                    </table>
+
+                                </div>
+
+
+
+
+
+
+
+
+
+
+                            </div>
+
+
+
+
+                        </div>
+
+
+
+                    </section>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="submit" onclick="SaveForm()" class="btn btn-sm btn-primary">Add</button>
+                <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-sm btn-warning" onclick="ClearAllFeilds()">Clear</button>
+
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+<!-- Modal Delete PurchaseDetail -->
+<div class="modal fade bs-modal-lg" id="DeleteStockDetailModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Delete Stock Detail</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" data-ajax="true" data-ajax-success="SuccessDeleteGarage" data-ajax-failure="FailureDeleteGarage" asp-controller="Stock" asp-action="DeleteGarageDetail">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <h3>Do you want to delete this record?</h3>
+                                        @if (Model.GarageMasterObj.GarageMaster_ID != null)
+                                        {
+                                            <input id="HdGarageMaster_ID" name="HdGarageMaster_ID" type="hidden" value="@Model.GarageMasterObj.GarageMaster_ID" /> }
+                                        else
+
+                                        {
+
+                                            <input id="HdGarageMaster_ID" name="HdGarageMaster_ID" type="hidden" value="0" />}
+
+                                        <input type="hidden" id="Detail_ID_Delete" name="Garage_Details_ID" />
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+@section Scripts {
+
+
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
+
+
+    <script>
+        $(function () {
+            $(".select2").select2({
+                theme: "bootstrap",
+
+            });
+        });</script>
+    <script type="text/javascript">
+        function SaveForm() {
+
+            debugger;
+
+           /* var table = document.getElementById("datatable-default");*/
+
+            var message = "stockId chassis Name                  Country\n";
+
+            //Loop through all checked CheckBoxes in GridView.
+            $("#datatable-default input[type=checkbox]:checked").each(function () {
+                var row = $(this).closest("tr")[0];
+                console.log(row);
+                message += "   " + row.cells[0].childNodes[0].value;////Stock_Id
+                message += "   " + row.cells[1].innerHTML;///Chassis No
+                message += "   " + row.cells[2].childNodes[0].value;/// Description
+                message += "   " + row.cells[3].childNodes[0].value;///Amount
+                message += "\n";
+
+                $.ajax({
+                    type: 'POST',
+                    url: "/Stock/InsertGarageDetail",
+                    data: {
+
+                        HdGarage_Master_ID: $("#HdGarageMaster_ID").val(),
+                        Description: row.cells[2].childNodes[0].value,
+                        Amount: row.cells[3].childNodes[0].value,
+                        Stock_ID: row.cells[0].childNodes[0].value,
+                       
+
+                    },
+                    success: function (result, status, xhr) {
+                        mySuccessAuctionDetail(result);
+                        
+                    }
+                });
+            });
+
+            console.log(result);
+
+            //var form = document.getElementById("FormInsertPaymentDetail"),
+            //    inputs = form.getElementsByTagName("input"),
+            //    arr = [];
+                
+            // Descriptionarr =[];
+            // Amountarr = [];
+
+
+            //for (var i = 0, len = inputs.length; i < len; i++) {
+            //    if (inputs[i].type === "checkbox" && inputs[i].checked == true) {
+            //        arr.push(inputs[i].name);
+
+            //    }
+
+
+            //    if (inputs[i].type === "Text") {
+            //        Descriptionarr.push($(this).val());
+
+            //    }
+
+
+            //    if (inputs[i].type === "Text") {
+            //        Amountarr.push($(this).val());
+
+            //    }
+            //}
+
+            //$('.Description:').each(function () {
+            //    Employee_Id.push($(this).val());
+            //});
+
+              
+              //var  Description = $("#Description").val(),
+              //var  Amount  = $("#Amount").val(),
+
+
+
+            //debugger;
+            //return $.ajax({
+            //    type: 'POST',
+            //    url: "/Stock/InsertGarageDetail",
+            //    data: {
+                    
+            //        HdGarage_Master_ID: $("#HdGarageMaster_ID").val(),
+            //        Description: Descriptionarr,
+            //        Amount: Amount,
+            //        Stock_ID: Amountarr,
+
+            //    },
+            //    success: function (result, status, xhr) {
+            //        mySuccessAuctionDetail(result);
+
+            //    }
+            //});
+
+
+        }
+
+
+
+
+    </script>
+    <script>
+
+        function ClearAllFeilds() {
+
+            $('#FormInsertPaymentDetail').trigger("reset");
+
+        }
+        //---this function will hit after success submission of insert Stock detail form
+        function mySuccessAuctionDetail(data) {
+
+            var SuccessDiv = " <div class='col-lg-12'><div class='alert alert-info'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button><strong>Success!</strong> Saved Successfully! <a href ='' class='alert-link'></a></div></div>";
+            debugger
+            if (data.message == undefined) {
+
+                $("#checkAll").change(function () {
+                    $("input:checkbox").prop('checked', $(this).prop("checked"));
+                });
+
+
+
+                $('#StockDetailSection').html(data);
+                $('#SuccessErrorSection').html(SuccessDiv).show();
+
+                //reset form after success
+                $('#FormInsertPaymentDetail').trigger("reset");
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        //---this function will hit when error occured in submission of Stock detail
+        function myFailureStockDetail() {
+
+            alert("Failured occured. Please try again!");
+        }
+
+        //---this function will hit after success submission of update purchase detail form
+        function mySuccessAuctionUpate(data) {
+
+            var SuccessDiv = "<div class='col-lg-12'><div class='alert alert-info'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button><strong>Success!</strong> Updated Successfully! <a href ='' class='alert-link'></a></div></div>";
+            debugger
+            if (data.message == undefined) {
+
+                $('#UdpateSaleDetailByChassisModal').modal('hide');
+                $('#UdpateSaleDetailByServicesModal').modal('hide');
+                $('#StockDetailSection').html(data);
+                $('#SuccessErrorSection').html(SuccessDiv).show();
+
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        function myFailureAuctionUpdate() {
+
+            alert("Failured occured. Please try again!");
+        }
+
+
+
+        //---Delete Stock detail
+        function DeleteStockDetail(Garage_Details_ID) {
+            debugger;
+            $("#Detail_ID_Delete").val(Garage_Details_ID);
+
+        }
+
+
+
+        $(document).ready(function () {
+            $("#ButtonSaleMasterIssue").click(function () {
+                $("#formStockMaster").submit();
+            });
+        });
+
+        $(document).ready(function () {
+            $("#ButtonSaleMasterUpdate").click(function () {
+                $("#formStockMaster").submit();
+            });
+        });</script>
+
+    <script>
+        function DisplayDescription(SelectBy) {
+            debugger
+            var SelectedValue = SelectBy.value;
+            if (SelectedValue == 'ByService') {
+                $(".ServiceDescription").show();
+                $(".ByChassisClass").hide();
+                $("#Chassis").prop('required', false);
+                $("#ItemDesc").prop('required', true);
+            } else {
+                $(".ServiceDescription").hide();
+                $(".ByChassisClass").show();
+                $("#Chassis").prop('required', true);
+                $("#ItemDesc").prop('required', false);
+            }
+
+        }
+
+
+
+
+
+        //This function is for validation of chassis no
+        function ValidateChassis() {
+
+            //debugger
+
+
+            var Chassis = document.getElementById("Chassis").value.toString();
+
+            $.ajax({
+
+                type: "Get",
+                url: "/Accounts/ValidateChassisNo_UNSOLD",
+                data: { //Passing data
+                    ChassisNo: Chassis
+
+
+                },
+                datatype: "json",
+                success: function (response) {
+                    debugger
+                    if (response.message == 'Chassis is valid') {
+                        //debugger
+                        $("#ChassisValidationMessage").text(response.message);
+                        $("#ChassisValidationMessage").css("color", "green");
+                        $("#Chassis").val(response.ItemId);
+                        $("#Make").val(response.make);
+                        $("#ModelDesc").val(response.modelDesciption);
+                        $("#ModelYear").val(response.modelYear);
+                        $("#Color").val(response.color);
+                    } else {
+                        $("#ChassisValidationMessage").text(response.message);
+                        $("#ChassisValidationMessage").css("color", "red");
+                        $("#Chassis").val("");
+                        $("#Make").val("");
+                        $("#ModelDesc").val("");
+                        $("#ModelYear").val("");
+                        $("#Color").val("");
+                    }
+
+                }
+            })
+        }
+        
+        //---after failure deleting of purchase detail
+        function FailureDeleteGarage() {
+
+            alert("Failured occured. Please try again!");
+            $('#DeleteStockDetailModal').modal('hide');
+        }
+        function SuccessDeleteGarage(data) {
+
+            var SuccessDiv = " <div class='col-lg-12'><div class='alert alert-info'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button><strong>Success!</strong> Deleted Successfully! <a href='' class='alert-link'></a></div></div>";
+            debugger
+            if (data.message == undefined) {
+
+                //alert("Saved Successfully!");
+                $('#DeleteStockDetailModal').modal('hide');
+                $('#StockDetailSection').html(data);
+                $('#SuccessErrorSection').html(SuccessDiv).show();
+
+
+                CalculateSumTotalOfStock();
+
+
+            } else {
+                alert(data.message);
+                $('#DeletePurchaseDetailModal').modal('hide');
+            }
+
+
+        }
+
+    </script>
+
+}
+
+
+
+

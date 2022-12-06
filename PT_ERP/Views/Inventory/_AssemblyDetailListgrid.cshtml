@@ -1,0 +1,58 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OInventory
+<table class="table table-responsive-md table-bordered mb-0">
+    <thead>
+        <tr>
+            <th>Edit/Delete</th>
+            <th>Item</th>
+            <th>Remarks</th>
+
+            <th>Quantity</th>
+            <th>Cost</th>
+
+
+
+
+
+
+
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.AssemblyDetailList != null)
+        {
+
+
+            foreach (Pa_Assembly_Dtl item in Model.AssemblyDetailList)
+            {
+
+
+
+<tr>
+
+
+    <td>
+
+       <a onclick="DeleteInventoryDetail('@item.Assembly_Dtl_ID');" data-toggle="modal" data-target="#DeleteInventoryDetailModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+    </td>
+    <td>
+        @item.ItemName
+        <br />
+        @item.ItemCode
+    </td>
+    <td>@Html.DisplayFor(modelItem => item.Remarks)</td>
+
+    <td>@Html.DisplayFor(modelItem => item.Quantity)</td>
+    <td>@Html.DisplayFor(modelItem => item.Cost)</td>
+
+
+
+
+
+</tr>}
+            }
+    </tbody>
+
+</table>

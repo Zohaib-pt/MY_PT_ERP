@@ -1,0 +1,697 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OAccounts
+
+@{
+    //ViewData["Title"] = "ReceiptVoucherGen";
+    Layout = "~/Views/Shared/_LayoutTablePages.cshtml";
+}
+
+
+@{
+
+
+
+    string Form_JVMaster_ActionMethod = "";
+    int? JVMaster_ID = ViewBag.JVMaster_ID;
+
+
+    if (Model.JournalVoucherMasterObject != null && Model.JournalVoucherMasterObject.JVMaster_ID > 0)
+    {
+
+        Form_JVMaster_ActionMethod = "UdpateJVMaster";
+
+
+    }
+    else
+    {
+        Form_JVMaster_ActionMethod = "InsertJVMaster";
+
+
+    }
+
+}
+
+
+
+
+
+
+<header class="page-header">
+    <h2>Accounts</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+            <li><a asp-area="" asp-controller="@ViewBag.BreadCumController" asp-action="@ViewBag.BreadCumAction"><span>Voucher</span></a></li>
+            <li><a asp-area="" asp-controller="" asp-action=""><span>New Voucher Journal</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+
+
+
+
+
+<div class="row" id="SuccessErrorSection">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+        <div class="col-lg-12">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-info">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Success!</strong> @TempData["Success"] <a href="" class="alert-link"></a>
+                </div>
+            }
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Error!</strong> @TempData["Error"] <a href="" class="alert-link"></a>
+                </div>
+            }
+        </div>
+    }
+
+
+</div>
+
+<!-- start: page -->
+<section class="card">
+    <div class="card-body">
+        <div class="invoice">
+            <header class="clearfix">
+                <div class="row">
+                    <div class="col-sm-6 mt-0">
+                        <h2 class="h4 mt-0 mb-2 text-dark font-weight-bold">New Voucher Journal</h2>
+
+                    </div>
+
+                   
+                    <div class="col-sm-6 mt-0 text-right">
+
+                        @*<button type="button" id="ButtonSaleMasterIssue" class="btn-sm btn btn-success">Issue &nbsp;<i class="fas fa-save"></i></button>
+
+            <button type="button" class="btn-sm btn btn-primary" disabled="disabled">Edit  &nbsp;<i class="fas fa-edit"></i></button>
+
+
+            <button type="button" class="btn-sm btn btn-warning" disabled="disabled">Cancel &nbsp;<i class="fas fa-cross"></i></button>
+            <button type="button" class="btn-sm btn btn-danger" disabled="disabled">Delete &nbsp;<i class="fas fa-trash-alt"></i></button>
+            <button type="button" class="btn-sm btn btn-info" disabled="disabled">Print &nbsp;<i class="fas fa-print"></i></button>
+            <button type="button" class="btn-sm btn btn btn-dark" disabled="disabled">Approve &nbsp;<i class="fa fa-check"></i></button>
+            <a asp-controller="Accounts" asp-action="JournalVoucherList" class="btn-sm btn btn-default">List &nbsp;<i class="fas fa-list"></i></a>*@
+
+                        @{
+
+
+
+                            if (JVMaster_ID != null && JVMaster_ID > 0)
+                            {
+
+                                <button type="button" id="ButtonEdit" class="mb-1 mt-1 mr-1 btn btn-sm btn-danger">Update &nbsp;<i class="fas fa-times"></i></button>
+
+
+                                <a class="mb-1 mt-1 mr-1 btn btn-sm btn-info" href="#">Print &nbsp;<i class="fas fa-print"></i></a>
+                                <a asp-controller="Accounts" asp-action="JournalVoucherList" class="mb-1 mt-1 mr-1 btn btn-sm btn-default">List &nbsp;<i class="fas fa-list"></i></a>
+
+                            }
+
+                            else
+                            {
+
+
+
+                                <button type="button" id="ButtonIssue" class="mb-1 mt-1 mr-1 btn btn-sm btn-success">Issue &nbsp;<i class="fas fa-save"></i></button>
+
+
+
+
+                                <a asp-controller="Accounts" asp-action="JournalVoucherList" class="mb-1 mt-1 mr-1 btn btn-sm btn-default">List &nbsp;<i class="fas fa-list"></i></a>
+
+
+
+
+                            }
+
+                        }
+                    </div>
+
+                </div>
+            </header>
+
+            <div class="row">
+               
+
+            </div>
+
+            <div class="row">
+
+                <div class="col">
+
+
+
+                    <form method="post" asp-area="" asp-controller="Accounts" asp-action="@Form_JVMaster_ActionMethod" id="formjvMaster">
+                        @Html.AntiForgeryToken()
+
+                        <section class="card">
+
+                            <div class="card-body">
+
+
+
+                                <div class="row form-group">
+                                    <div class="col-lg-5 ">
+                                        <div class="row MasterForm">
+
+                                            <label for="date" class="col-sm-3 col-form-label">Date</label>
+                                            <div class="col-sm-9">
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                        </span>
+                                                    </span>
+
+
+
+
+                                                    @if (Model.JournalVoucherMasterObject.Date != null)
+                                                    {
+                                                        <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="date" name="date" value="@Model.JournalVoucherMasterObject.Date" required>
+                                                        <input type="hidden" id="JVMaster_ID" name="JVMaster_ID" value="@JVMaster_ID" />
+
+                                                    }
+                                                    else
+                                                    {
+                                                        <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="date" name="date" value="@DateTime.Now.ToString("dd-MMM-yyyy")" required>
+
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-lg-2">
+
+                                    </div>
+
+                                    <div class="col-lg-5 ">
+
+                                        <div class="row MasterForm">
+                                            <label for="JVMaster_ref" class="col-sm-3 col-form-label">Ref No</label>
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" id="JVMaster_ref" name="JVMaster_ref" value="@Model.JournalVoucherMasterObject.JVMaster_ref" readonly>
+                                            </div>
+                                        </div>
+
+
+
+
+                                    </div>
+
+
+                                </div>
+
+                            </div>
+
+
+
+                        </section>
+                    </form>
+
+                </div>
+
+            </div>
+
+            <div class="row m-2">
+                <div class="col-lg-6">
+                    <h2 class="card-title" style="line-height:normal;">Voucher Journal Details </h2>
+                </div>
+                <div class="col-lg-6 text-right">
+                    <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#AddNewVoucherModal">Add New &nbsp;<i class="fas fa-plus"></i></button>
+
+
+                </div>
+            </div>
+
+            <div id="JVDetailSection">
+
+                <table class="table table-responsive-md table-bordered mb-0">
+                    <thead>
+                        <tr>
+                            <th>Edit/Delete</th>
+                            <th>Account</th>
+                            <th>Dr</th>
+                            <th>Cr</th>
+
+
+
+
+                        </tr>
+                    </thead>
+        
+                    <tbody>
+
+                        @if (Model.JournalVoucherDetailList != null)
+                        {
+
+
+                            foreach (JournalVoucher_DAL item in Model.JournalVoucherDetailList)
+                            {
+
+
+
+
+                                <tr>
+
+
+
+
+                                    <td>
+                                        <a onclick="UpdateJVDetailS('@item.JVDetails_ID'	,'@item.Account_ID', '@item.DR_Amount', '@item.CR_Amount', '@item.Description', '@item.Party_ID');" data-toggle="modal" data-target="#UdpateJVDetailByModal"><img style="width: 20px;" src="~/Img/Icons/edit.png" /></a>
+                                        <a onclick="DeletePurchaseDetail();" data-toggle="modal" data-target="#DeleteSalesDetailModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+                                    </td>
+
+                                    <td>@Html.DisplayFor(modelItem => item.AccountName)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.DR_Amount)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.CR_Amount)</td>
+                                  
+
+
+                                </tr>
+                            }
+                        }
+
+                    </tbody>
+                </table>
+
+
+
+             
+            </div>
+            <hr />
+            <div class="row">
+
+                <div class="col-sm-3"><span class="show-grid-block">Created at : <b>@Model.JournalVoucherMasterObject.Created_at </b></span></div>
+                <div class="col-sm-3"><span class="show-grid-block">Created by :</span><b>@Model.JournalVoucherMasterObject.Created_by</b></div>
+                <div class="col-sm-3"><span class="show-grid-block">Modified at :<b> @Model.JournalVoucherMasterObject.Modified_at</b></span></div>
+                <div class="col-sm-3"><span class="show-grid-block">Modified by : <b>@Model.JournalVoucherMasterObject.Modified_by </b></span></div>
+            </div>
+
+
+
+        </div>
+
+
+    </div>
+</section>
+
+
+
+
+<!-- Modal Insert Sale detail -->
+<div class="modal fade bs-modal-sm" id="AddNewVoucherModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Journal Voucher Details</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" data-ajax="true" data-ajax-success="mySuccessSalesDetail" data-ajax-failure="myFailureSalesDetail"
+                  asp-area="" asp-controller="Accounts" asp-action="InsertJVDetail" data-ajax-loading="" id="FormInsertJVDetail">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body">
+
+
+
+                            <div class="row form-group">
+
+
+                                <div class="col-lg-3 col-md-3">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="ServiceType">Account</label>
+                                        <select class="form-control" id="Account_ID" name="Account_ID"  asp-items="@(new SelectList( ViewBag.DR_AccountsList,"Account_ID","AccountName",1))" required>
+                                            <option>Select</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+
+
+                                <div class="col-lg-3 col-md-3">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Chassis">Dr</label>
+                                        <input type="number" id="DR_Amount" name="DR_Amount" class="form-control" placeholder="0"  />
+                                        <label id="ChassisValidationMessage"></label>
+                                    </div>
+                                </div>
+
+
+
+                                <div class="col-lg-3 col-md-3 hidden">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="ServiceType">Cr Account</label>
+                                        <select class="form-control" id="Party_ID" name="Party_ID">
+                                            <option value="AccountReceivable">Account Receivable</option>
+
+
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-3 col-md-3">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Chassis">Cr</label>
+                                        <input type="number" id="CR_Amount" name="CR_Amount" class="form-control" placeholder="0"  />
+
+                                    </div>
+                                </div>
+
+
+                                <div class="col-lg-12 col-md-12">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Description">Description</label>
+                                        <textarea type="text" id="Description" name="Description" class="form-control">  </textarea>
+
+                                    </div>
+                                </div>
+
+
+
+
+
+
+
+
+                            </div>
+
+
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-sm btn-primary">Add</button>
+                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modal Update Sale Invoice Detail By Chassis-->
+<div class="modal fade bs-modal-sm" id="UdpateJVDetailByModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Journal Voucher Details</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" data-ajax="true"  data-ajax-success="mySuccessUpdate" data-ajax-failure="myFailureUpdate" id="FormUpdateJVDetail"
+                  asp-area="" asp-controller="Accounts" asp-action="UpdateJVDetail" data-ajax-loading="">
+
+                <section class="card">
+
+                    <div class="card-body">
+
+
+
+
+                        <div class="row form-group">
+
+
+                            <div class="col-lg-3 col-md-3">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="ServiceType">Account</label>
+                                    <select class="form-control" id="Account_IDUpdate" name="Account_ID" asp-items="@(new SelectList( ViewBag.DR_AccountsList,"Account_ID","AccountName"))" required>
+                                        <option>Select</option>
+                                    </select>
+
+                                    <input type="hidden" id="JVDetails_IDUpdate" name="JVDetails_ID" />
+                                </div>
+                            </div>
+
+
+
+                            <div class="col-lg-3 col-md-3">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="Chassis">Dr</label>
+                                    <input type="number" id="DR_AmountUpdate" name="DR_Amount" class="form-control" placeholder="0" />
+                                    <label id="ChassisValidationMessage"></label>
+                                </div>
+                            </div>
+
+
+
+                            <div class="col-lg-3 col-md-3 hidden">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="ServiceType">Cr Account</label>
+                                    <select class="form-control" id="Party_IDUpdate" name="Party_ID">
+                                        <option value="AccountReceivable">Account Receivable</option>
+
+
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-3 col-md-3">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="Chassis">Cr</label>
+                                    <input type="number" id="CR_AmountUpdate" name="CR_Amount" class="form-control" placeholder="0" />
+
+                                </div>
+                            </div>
+
+
+                            <div class="col-lg-12 col-md-12">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="Description">Description</label>
+                                    <textarea type="text" id="DescriptionUpdate" name="Description" class="form-control">  </textarea>
+
+                                </div>
+                            </div>
+
+
+
+
+
+
+
+
+
+                        </div>
+
+
+
+
+                    </div>
+
+
+
+                </section>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modal Delete PurchaseDetail -->
+<div class="modal fade bs-modal-lg" id="DeleteSalesDetailModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Delete Journal Voucher Detail</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" data-ajax="true" data-ajax-complete="CompleteDelete" data-ajax-success="SuccessDelete" data-ajax-failure="FailureDelete"
+                  asp-area="" asp-controller="Purchases" asp-action="DeleteOtherPurchaseDetail" data-ajax-loading="">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <h3>Do you want to delete this record?</h3>
+
+                                        <input type="hidden" id="PurchaseDetails_ID_Delete" name="PurchaseDetails_ID" />
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+
+
+
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
+
+
+
+    <script>
+
+
+        //---this function will hit after success submission of insert
+     
+        function mySuccessSalesDetail(data) {
+            debugger
+            var SuccessDiv = " <div class='col-lg-12'><div class='alert alert-info'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button><strong>Success!</strong> Saved Successfully! <a href ='' class='alert-link'></a></div></div>";
+          
+            if (data.message == undefined) {
+
+                //$('#AddNewPurchaseModal').modal('hide');
+                $('#JVDetailSection').html(data);
+                $('#SuccessErrorSection').html(SuccessDiv).show();
+
+                //reset form after success
+                $('#FormInsertJVDetail').trigger("reset");
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        //---this function will hit when error occured in submission of sales detail
+        function myFailureSalesDetail() {
+
+            alert("Failured occured. Please try again!");
+        }
+
+
+
+        function mySuccessUpdate(data) {
+
+            var SuccessDiv = " <div class='col-lg-12'><div class='alert alert-info'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button><strong>Success!</strong> Saved Successfully! <a href ='' class='alert-link'></a></div></div>";
+            debugger
+            if (data.message == undefined) {
+
+         
+                $('#JVDetailSection').html(data);
+                $('#SuccessErrorSection').html(SuccessDiv).show();
+                $('#UdpateJVDetailByModal').modal('hide');
+                //reset form after success
+                $('#FormUpdateJVDetail').trigger("reset");
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+        //---this function will hit when error occured in submission of payment detail
+        function myFailureUpdate() {
+
+            alert("Failured occured. Please try again!");
+        }
+
+
+        $(document).ready(function () {
+            $("#ButtonIssue").click(function () {
+                $("#formjvMaster").submit();
+            });
+        });
+
+        $(document).ready(function () {
+            $("#ButtonEdit").click(function () {
+                $("#formjvMaster").submit();
+            });
+        });
+
+        function UpdateJVDetailS(JVDetails_ID, Account_ID, DR_Amount, CR_Amount, Description) {
+
+         
+
+            $("#JVDetails_IDUpdate").val(JVDetails_ID);
+            $("#Account_IDUpdate").val(Account_ID);
+            $("#DR_AmountUpdate").val(DR_Amount);
+            $("#CR_AmountUpdate").val(CR_Amount);
+            $("#DescriptionUpdate").val(Description);
+
+
+        }
+
+    </script>
+
+
+
+}

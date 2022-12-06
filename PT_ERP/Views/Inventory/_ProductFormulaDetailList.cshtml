@@ -1,0 +1,60 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OInventory
+<table class="table table-responsive-md table-bordered mb-0">
+    <thead>
+        <tr>
+            <th>Edit/Delete</th>
+            <th>Item</th>
+            <th>Quantity</th>
+            <th>UOM</th>
+
+
+
+
+
+
+        </tr>
+    </thead>
+    <tbody>
+
+        @if (Model.ProductFormulaDetailList != null)
+        {
+
+
+            foreach (pa_ProductFormulaDetails item in Model.ProductFormulaDetailList)
+            {
+
+
+
+<tr>
+
+
+    <td>
+
+        <a onclick="UpdateInventoryDetailByChassis('@item.ProductFormula_IN_ID', '@item.ItemID', '@item.UOM','@item.UnitPrice','@item.Amount', '@item.MajorQty', '@item.MinorQty');" data-toggle="modal" data-target="#UdpateSaleDetailByChassisModal"><img style="width: 20px;" src="~/Img/Icons/edit.png" /></a>
+        <a onclick="DeleteInventoryDetail('@item.ProductFormula_IN_ID');" data-toggle="modal" data-target="#DeleteInventoryDetailModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.ItemName)
+        <br />
+        <span class="small"> @Html.DisplayFor(modelItem => item.ItemCode)</span>
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.Quantity)
+      
+    </td>
+    <td>@Html.DisplayFor(modelItem => item.UOM)</td>
+
+
+
+
+
+</tr>}
+            }
+
+
+    </tbody>
+
+</table>

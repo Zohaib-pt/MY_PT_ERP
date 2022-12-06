@@ -1,0 +1,1195 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OSales
+@{ ViewData["Title"] = "SalesDeliveryOrder";
+    Layout = "~/Views/Shared/_Layout.cshtml"; }
+@{ string Form_SalesMaster_ActionMethod = "";
+    int? DOMaster_ID = ViewBag.DOMaster_ID;
+
+
+    if (Model.DOMasterObj != null && Model.DOMasterObj.DOMaster_ID > 0)
+    {
+
+        Form_SalesMaster_ActionMethod = "UpdateSalesDOInvoiceMaster";
+
+
+    }
+    else
+    {
+        Form_SalesMaster_ActionMethod = "InsertSalesDOInvoiceMaster";
+    } }
+<header class="page-header">
+    <h2>Sales</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+            <li><a asp-area="" asp-controller="Sales" asp-action="SalesDOInvoiceList"><span>Sale</span></a></li>
+            <li><a asp-area="" asp-controller="@ViewBag.BreadCumController" asp-action="@ViewBag.BreadCumAction"><span>New Sales Delivery Order</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+
+
+
+
+
+<div class="row" id="SuccessErrorSection">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+<div class="col-lg-12">
+    @if (TempData["Success"] != null)
+    {
+<div class="alert alert-info">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+    <strong>Success!</strong> @TempData["Success"] <a href="" class="alert-link"></a>
+</div>}
+
+    @if (TempData["Error"] != null)
+    {
+<div class="alert alert-danger">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+    <strong>Error!</strong> @TempData["Error"] <a href="" class="alert-link"></a>
+</div>}
+</div>}
+
+
+</div>
+
+<!-- start: page -->
+<section class="card">
+    <div class="card-body">
+        <div class="invoice">
+            <header class="clearfix">
+                <div class="row">
+                    <div class="col-sm-6 mt-0">
+                        <h2 class="h4 mt-0 mb-2 text-dark font-weight-bold">SalesDeliveryOrder</h2>
+
+                    </div>
+
+                    <div class="col-sm-6 mt-0 text-right">
+
+
+
+                    </div>
+
+
+                </div>
+            </header>
+
+            <div class="row">
+                <div class="col-lg-8">
+
+                    @if (Model.DOMasterObj.DOMaster_ID != null)
+                    {
+                        if (Model.DOMasterObj.DOMaster_ID > 0)
+                        {
+
+                            <button type="button" id="ButtonSaleMasterUpdate" class="btn-sm btn btn-success">Update &nbsp;<i class="fas fa-save"></i></button>
+
+
+
+
+
+
+
+
+                            <button type="button" class="btn-sm btn btn-info" id="print-btn"> Print &nbsp;<i class="fas fa-print"></i></button>
+                            <a asp-controller="Sales" asp-action="SalesDOInvoiceList" class="btn-sm btn btn-default">List &nbsp;<i class="fas fa-list"></i></a> }
+                    }
+                    else
+                    {
+                        <button type="button" id="ButtonSaleMasterIssue" class="btn-sm btn btn-success">Issue &nbsp;<i class="fas fa-save"></i></button>
+
+
+
+
+                        <button type="button" class="btn-sm btn btn-info" id="print-btn" disabled="disabled"> Print &nbsp;<i class="fas fa-print"></i></button>
+                        <a asp-controller="Sales" asp-action="SalesDOInvoiceList" class="btn-sm btn btn-default">List &nbsp;<i class="fas fa-list"></i></a>}
+
+
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div class="col">
+
+
+
+                    <form method="post" asp-area="" asp-controller="Sales" asp-action="@Form_SalesMaster_ActionMethod" id="formSaleMaster">
+                        @Html.AntiForgeryToken()
+
+                        <section class="card">
+
+                            <div class="card-body">
+
+
+
+                                <div class="row form-group">
+                                    <div class="col-lg-4">
+
+                                        <div class="row MasterForm">
+                                            <label for="To" class="col-sm-4 col-form-label">Customer</label>
+                                            <div class="col-sm-8">
+                                                <select class="form-control select2" id="Customer_ID" readonly name="Customer_ID"  asp-items="@(new SelectList( ViewBag.CustomerMaster,"Customer_ID","CustomerName", Model.DOMasterObj.Customer_ID))" required>
+                                                    <option value="0">Cash Customer</option>
+                                                </select>
+                                                <input type="hidden" id="DOMaster_ID" name="DOMaster_ID" value="@DOMaster_ID" />
+                                            </div>
+                                        </div>
+                                        <div class="row MasterForm">
+                                            <label for="To" class="col-sm-4 col-form-label">Name</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" id="Customer_Name" readonly name="Customer_Name" value="@Model.DOMasterObj.Customer_Name" placeholder="Name">
+                                            </div>
+                                        </div>
+                                        <div class="row MasterForm">
+                                            <label for="To" class="col-sm-4 col-form-label">Contact</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" id="Customer_Contact" readonly name="Customer_Contact" value="@Model.DOMasterObj.Customer_Contact" placeholder="Contact Number">
+                                            </div>
+                                        </div>
+
+                                        <div class="row MasterForm">
+                                            <label for="Address" class="col-sm-4 col-form-label">Address</label>
+                                            <div class="col-sm-8">
+                                                @*<textarea class="form-control" rows="1" id="Invoice_address" name="Invoice_address" placeholder="">@Model.DOMasterObj.Invoice_address</textarea>*@
+                                                <input type="text" class="form-control" id="Invoice_address"  name="Invoice_address" value="@Model.DOMasterObj.Invoice_address" placeholder="Customer Address">
+                                            </div>
+                                        </div>
+                                        <div class="row MasterForm">
+                                            <label for="To" class="col-sm-4 col-form-label">CustomerTRN</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" id="CustomerTRN" readonly name="CustomerTRN" value="@Model.DOMasterObj.CustomerTRN" placeholder="Customer TRN">
+                                            </div>
+                                        </div>
+
+                                        <div class="row MasterForm">
+                                            <label for="To" class="col-sm-4 col-form-label">Remarks</label>
+                                            <div class="col-sm-8">
+                                                <textarea type="text" class="form-control" readonly id="Remarks" name="Remarks" placeholder="Remarks">@Model.DOMasterObj.Remarks</textarea>
+                                            </div>
+                                        </div>
+                                        @*<div class="row MasterForm">
+                <label for="shipping_co_ID" class="col-sm-4 col-form-label">Shipping Co</label>
+                <div class="col-sm-8">
+                    <select class="form-control" id="shipping_co_ID" name="shipping_co_ID" asp-items="@(new SelectList( ViewBag.ShippingCompanies,"Partner_ID","PartnerName", Model.DOMasterObj.shipping_co_ID))">
+                        <option>Select Ship Co</option>
+
+                    </select>
+
+                </div>
+            </div>*@
+
+
+
+
+                                    </div>
+
+                                    <div class="col-lg-4">
+                                      
+           
+
+                                    </div>
+
+                                    <div class="col-lg-4 ">
+
+
+                                        <div class="row MasterForm">
+                                            <label for="PurchaseRef" class="col-sm-4 col-form-label">Ref No</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" id="DORef" name="DORef" value="@Model.DOMasterObj.DORef" readonly>
+                                            </div>
+                                        </div>
+
+                                        <div class="row MasterForm">
+                                            <label for="PurchaseDate" class="col-sm-4 col-form-label">Date</label>
+                                            <div class="col-sm-8">
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                        </span>
+                                                    </span>
+
+                                                    @if (!String.IsNullOrEmpty(Model.DOMasterObj.DODate))
+                                                    {
+                                        <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="DODate" name="DODate" value="@Model.DOMasterObj.DODate" required> }
+                                                    else
+                                                    {
+                                        <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="DODate" name="DODate" value="@DateTime.Now.ToString("dd-MMM-yyyy")" required>}
+
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+
+                                        <div class="row MasterForm">
+                                            <label for="To" class="col-sm-4 col-form-label">Ref</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" id="Manualbook_ref" readonly name="Manualbook_ref" value="@Model.DOMasterObj.Manualbook_ref" placeholder="Manualbook_Ref">
+                                            </div>
+                                        </div>
+
+                                        <div class="row MasterForm">
+                                            <label for="Seller_ID" class="col-sm-4 col-form-label">Seller</label>
+                                            <div class="col-sm-8">
+                                                <select class="form-control" id="Seller_ID" name="Seller_ID" READONLY asp-items="@(new SelectList( ViewBag.SellerList,"Partner_ID","PartnerName", Model.DOMasterObj.Seller_ID))">
+                                                    <option>Select Seller</option>
+
+                                                </select>
+                                     
+                                            </div>
+                                        </div>
+                                        <div class="row MasterForm">
+                                            <label class="col-sm-4 col-form-label" for="Chassis">Sale Ref</label>
+
+                                            @*<div class="col-sm-8">
+                                                <select class="form-control" id="SaleMaster_ID" name="SaleMaster_ID" onchange="GetSaleRefDetail()" asp-items="@(new SelectList( ViewBag.SaleRef,"SaleMaster_ID","SaleRef", Model.DOMasterObj.SaleMaster_ID))" required>
+                                                    <option value="0">Select Ref</option>
+
+                                                </select>
+                                            </div>*@
+                                            <div class="col-sm-4" style="padding-right:1px;">
+                                                <input type="text" class="form-control" id="SaleRef" name="SaleRef">
+                                                <input type="hidden" class="form-control" id="SaleMaster_ID" name="SaleMaster_ID" value="@Model.DOMasterObj.SaleMaster_ID">
+                                            </div>
+                                            <div class="col-sm-4" style="padding-left:1px; ">
+                                                <button type="button" onclick="GetSaleRefDetail()" class=" btn btn-primary" style="width:100%;">Get &nbsp; <i class="fa fa-search"></i></button>
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+
+
+
+                                </div>
+
+                            </div>
+
+
+
+                        </section>
+                    </form>
+
+                </div>
+
+            </div>
+
+            <div class="row m-2">
+                <div class="col-lg-3">
+                    <h2 class="card-title" style="line-height:normal;">Details </h2>
+                </div>
+                <div class="col-lg-6">
+                    &nbsp;
+                </div>
+                <div class="col-lg-3 text-right">
+                    @*<button class="btn btn-sm btn-primary" onclick="ShowDetails();">Add Details &nbsp;<i class="fas fa-plus"></i></button>*@
+
+
+                </div>
+            </div>
+
+            <div id="SalesDetailSection">
+
+                <table class="table table-responsive-md table-bordered mb-0">
+                    <thead>
+                        <tr>
+                            <th>Delete</th>
+                            <th>Item</th>
+                            <th>Description</th>
+                            <th>Unit Price</th>
+                            <th>Sale Qty</th>
+                            <th>Delivered Qty</th>
+          
+
+
+                            <th>Amount</th>
+
+
+
+
+
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.DODetailList != null)
+                        {
+
+                            ViewBag.SubTotal = 0;
+                            foreach (Pa_SalesDeliveryOrder_Dtl item in Model.DODetailList)
+                            {
+
+                                ViewBag.Grand_Amount = item.Grand_Amount;
+                                ViewBag.Grand_VATExp = item.Grand_VATExp;
+                                ViewBag.Grand_TotalAmount = item.Grand_TotalAmount;
+                                ViewBag.Total_Amt_inWords = item.Total_Amt_inWords;
+
+                        <tr>
+
+
+                            <td>
+
+                                <a onclick="DeleteSalesDetail('@item.DODetails_ID');" data-toggle="modal" data-target="#DeleteSalesDetailModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+                            </td>
+                            <td>
+                                <span class="small"> @Html.DisplayFor(modelItem => item.ItemCode)</span>
+
+                                <br />
+
+                                <span class="small">
+                                    @Html.DisplayFor(modelItem => item.ItemName)
+                                </span>
+                            </td>
+                            <td>@Html.DisplayFor(modelItem => item.ItemDesc)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Unit_Price)</td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.SaleQty) x
+                                @Html.DisplayFor(modelItem => item.UM_ID)
+                                <br />
+                                @Html.DisplayFor(modelItem => item.LocationName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Quantity) x
+                                @Html.DisplayFor(modelItem => item.UM_ID)
+                            </td>
+
+                            <td>@Html.DisplayFor(modelItem => item.Total_Amount)</td>
+
+
+
+
+
+                        </tr>
+}
+    }
+                    </tbody>
+
+                </table>
+
+                <div class="invoice-summary">
+
+                    <div class="row">
+
+                        <div class="col-lg-9 col-md-9">
+
+                        </div>
+
+                        <div class="col-lg-3 col-md-3 justify-content-end text-right">
+                            <table class="table h6 text-dark">
+                                <tbody>
+
+
+
+                                    <tr class="b-top-0">
+                                        <td colspan="2"> Sub Total:</td>
+                                        <td class="text-right" id="SubTotal">@ViewBag.Grand_Amount</td>
+                                    </tr>
+                                 
+
+
+                                    <tr class="h5">
+                                        <td colspan="2">Total:</td>
+                                        <td class="text-right" id="Total_Payable">@ViewBag.Grand_TotalAmount</td>
+                                    </tr>
+
+
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+
+
+
+
+
+            </div>
+
+
+
+
+
+            <hr />
+
+
+
+            <div class="row">
+
+                <div class="col-sm-3"><span class="show-grid-block">Created at : <b>@Model.DOMasterObj.Created_at </b></span></div>
+                <div class="col-sm-3"><span class="show-grid-block">Created by :</span><b>@Model.DOMasterObj.Created_by</b></div>
+                <div class="col-sm-3"><span class="show-grid-block">Modified at :<b>@Model.DOMasterObj.Modified_at </b></span></div>
+                <div class="col-sm-3"><span class="show-grid-block">Modified by : <b>@Model.DOMasterObj.Modified_by </b></span></div>
+            </div>
+
+
+
+        </div>
+
+
+    </div>
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Modal Delete SaleDetail -->
+<div class="modal fade bs-modal-lg" id="DeleteSalesDetailModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Delete SalesDeliveryOrder Detail</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" data-ajax="true" data-ajax-success="mySuccessAuctionDetail" data-ajax-failure="myFailureAuctionDetail" asp-area="" asp-controller="Sales" asp-action="DeleteDODetail">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <h3>Do you want to delete this record?</h3>
+
+                                        <input type="hidden" id="Material_OUT_ID_Delete" name="DODetails_ID" />
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modal Change Sales Master Status -->
+<div class="modal fade bs-modal-lg" id="ChangeStatusSalesModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Change Sales Master Status</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="Sales" asp-action="#" data-ajax-loading="">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <h3>Do you want to change status of this record?</h3>
+
+                                        <input type="hidden" id="DOMaster_IDStatus" name="DOMaster_ID" />
+                                        <input type="hidden" id="Sales_Status_ID" name="Status_ID" />
+                                        <input type="hidden" id="Trans_Type" name="Trans_Type" value="Sales_Invoice" />
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade bs-modal-lg" id="ShowDetailsModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <!-- Following fields is for making a central Stock master id for attachments -->
+
+
+        <div class="modal-content" id="LocDetailMaster">
+
+
+        </div>
+
+    </div>
+</div>
+
+
+
+@section Scripts {
+
+
+
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
+
+
+
+    <script>//---this function will hit after success submission of insert Sales detail form
+        function mySuccessSalesDetail(data) {
+
+            var SuccessDiv = " <div class='col-lg-12'><div class='alert alert-info'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button><strong>Success!</strong> Saved Successfully! <a href ='' class='alert-link'></a></div></div>";
+            debugger
+            if (data.message == undefined) {
+
+                //$('#AddNewSaleModal').modal('hide');
+                $('#SalesDetailSection').html(data);
+                $('#SuccessErrorSection').html(SuccessDiv).show();
+
+                //reset form after success
+                $('#FormInsertSalesDetail').trigger("reset");
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        //---this function will hit when error occured in submission of Sales detail
+        function myFailureSalesDetail() {
+
+            alert("Failured occured. Please try again!");
+        }
+
+        //---this function will hit after success submission of update Sale detail form
+        function mySuccessSalesDeliveryOrderUpate(data) {
+
+            var SuccessDiv = "<div class='col-lg-12'><div class='alert alert-info'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button><strong>Success!</strong> Updated Successfully! <a href ='' class='alert-link'></a></div></div>";
+            debugger
+            if (data.message == undefined) {
+
+                $('#UdpateSaleDetailByChassisModal').modal('hide');
+                $('#UdpateSaleDetailByServicesModal').modal('hide');
+                $('#SalesDetailSection').html(data);
+                $('#SuccessErrorSection').html(SuccessDiv).show();
+
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        function myFailureSalesDeliveryOrderUpdate() {
+
+            alert("Failured occured. Please try again!");
+        }
+
+
+        //---delete Sales invoice master
+        function DeleteSalesMaster(DOMaster_ID) {
+            debugger
+            $("#DOMaster_ID_Delete").val(DOMaster_ID);
+
+        }
+
+
+        //---Delete Sales detail
+        function DeleteSalesDetail(DODetails_ID) {
+            debugger
+            $("#Material_OUT_ID_Delete").val(DODetails_ID);
+
+        }
+
+
+
+        $(document).ready(function () {
+            $("#ButtonSaleMasterIssue").click(function () {
+                $("#formSaleMaster").submit();
+            });
+        });
+
+        $(document).ready(function () {
+            $("#ButtonSaleMasterUpdate").click(function () {
+                $("#formSaleMaster").submit();
+            });
+        });</script>
+
+    <script>function DisplayDescription(SelectBy) {
+            debugger
+            var SelectedValue = SelectBy.value;
+            if (SelectedValue == 'ByService') {
+                $(".ServiceDescription").show();
+                $(".ByChassisClass").hide();
+                $("#Chassis").prop('required', false);
+                $("#ItemDesc").prop('required', true);
+            } else {
+                $(".ServiceDescription").hide();
+                $(".ByChassisClass").show();
+                $("#Chassis").prop('required', true);
+                $("#ItemDesc").prop('required', false);
+            }
+
+        }
+
+
+
+
+        //This function is for validation of chassis no
+        function ValidateChassis() {
+
+            //debugger
+
+
+            var Chassis = document.getElementById("Chassis").value.toString();
+
+            $.ajax({
+
+                type: "Get",
+                url: "/Accounts/ValidateChassisNo_UNSOLD",
+                data: { //Passing data
+                    ChassisNo: Chassis
+
+
+                },
+                datatype: "json",
+                success: function (response) {
+                    debugger
+                    if (response.message == 'Chassis is valid') {
+                        //debugger
+                        $("#ChassisValidationMessage").text(response.message);
+                        $("#ChassisValidationMessage").css("color", "green");
+                        $("#Chassis").val(response.ItemId);
+                        $("#Make").val(response.make);
+                        $("#ModelDesc").val(response.modelDesciption);
+                        $("#ModelYear").val(response.modelYear);
+                        $("#Color").val(response.color);
+                    } else {
+                        $("#ChassisValidationMessage").text(response.message);
+                        $("#ChassisValidationMessage").css("color", "red");
+                        $("#Chassis").val("");
+                        $("#Make").val("");
+                        $("#ModelDesc").val("");
+                        $("#ModelYear").val("");
+                        $("#Color").val("");
+                    }
+
+                }
+            })
+        }
+        function GetCustomerDetail() {
+
+            //debugger
+
+
+            var Customer = document.getElementById("Customer_ID").value.toString();
+
+            if (Customer == -1) {
+                $('#AddCustomerModal').modal('show');
+            }
+            else {
+                $.ajax({
+
+                    type: "Get",
+                    url: "/Sales/GetCustomerDetail",
+                    data: { //Passing data
+                        Customer_ID: Customer
+                    },
+                    datatype: "json",
+                    success: function (response) {
+                        debugger
+
+
+                        $("#Customer_Contact").val(response.contactNumber);
+                        $("#Invoice_address").val(response.contactAddress);
+                        $("#CustomerTRN").val(response.trn);
+
+
+
+
+
+                    }
+                })
+            }
+
+        }
+
+        //---change Sales master status
+        function ChangeStatusSalesMaster(DOMaster_ID, Status) {
+            debugger
+            $("#DOMaster_IDStatus").val(DOMaster_ID);
+            $("#Sales_Status_ID").val(Status);
+
+        }
+
+
+
+
+        function DeleteReceiptsDetail(ReceiptDetail_ID) {
+
+            $("#ReceiptDetail_IDDelete").val(ReceiptDetail_ID);
+
+        }
+
+
+
+
+
+
+
+        //----method for opening customer popup
+        function AddNewCustomer(Customer) {
+
+
+
+            CustomerValue = Customer.value;
+            if (CustomerValue == 'NewCustomer') {
+                $('#AddCustomerModal').modal('show');
+            }
+        }</script>
+
+    <script>
+        function CalculateSumAmount_Check() {
+            debugger
+            var form = document.getElementById("FormInsertPaymentDetail"),
+                inputs = form.getElementsByTagName("input");
+            var Quanity = 0;
+            var Unit_Price = 0;
+
+            var Sale_Amount = 0;
+            var VATRate = 0;
+            var SalePrice = 0;
+            var VATExp = 0;
+
+            var Total_Amount = 0;
+            var BALQuanity = 0;
+
+            for (var i = 0, len = inputs.length; i < len; i++) {
+                if (inputs[i].type === "checkbox" && inputs[i].checked == true) {
+                    if (document.getElementById("txtDeliveredQty" + inputs[i].name).value == 0) {
+                        BALQuanity = document.getElementById("txtBalanceQty" + inputs[i].name).value;
+                        if (!BALQuanity) {
+                            BALQuanity = 0;
+                        }
+
+
+                        $("#txtDeliveredQty" + inputs[i].name).val(BALQuanity);
+                        Quanity = document.getElementById("txtDeliveredQty" + inputs[i].name).value;
+                        Unit_Price = document.getElementById("txtUnitPrice" + inputs[i].name).value;
+
+
+                        VATRate = document.getElementById("txtVAT_Rate" + inputs[i].name).value;
+
+
+
+                        Total_Amount = document.getElementById("txtTTLAmount" + inputs[i].name).value;
+
+
+                        if (!Quanity) {
+                            Quanity = 0;
+                        }
+                        if (!Unit_Price) {
+                            Unit_Price = 0;
+                        }
+
+                        if (!VATRate) {
+                            VATRate = 0;
+
+                        }
+                        if (!VATExp) {
+                            VATExp = 0;
+                        }
+                        if (!Total_Amount) {
+                            Total_Amount = 1;
+                        }
+
+
+
+
+
+
+
+
+
+                        Total_Amount = (Number(Unit_Price) * Number(Quanity));
+                        VATExp = 0;
+                        $("#txtVAT_Exp" + inputs[i].name).val(VATExp);
+                        $("#txtTTLAmount" + inputs[i].name).val(Number(Total_Amount) + Number(VATExp));
+
+
+
+                    }
+
+                }
+
+
+
+
+            }
+        }
+        function CalculateSumAmount() {
+            debugger
+            var form = document.getElementById("FormInsertPaymentDetail"),
+                inputs = form.getElementsByTagName("input");
+            var Quanity = 0;
+            var Unit_Price = 0;
+         
+            var Sale_Amount = 0;
+            var VATRate = 0;
+             var SalePrice = 0;
+            var VATExp = 0;
+        
+             var Total_Amount = 0;
+
+
+            for (var i = 0, len = inputs.length; i < len; i++) {
+                if (inputs[i].type === "checkbox" && inputs[i].checked == true) {
+  
+                    Quanity = document.getElementById("txtDeliveredQty" + inputs[i].name).value;
+                    Unit_Price = document.getElementById("txtUnitPrice" + inputs[i].name).value;
+       
+                 
+                    VATRate = document.getElementById("txtVAT_Rate" + inputs[i].name).value;
+
+                  
+                 
+                    Total_Amount = document.getElementById("txtTTLAmount" + inputs[i].name).value;
+         
+
+                    if (!Quanity) {
+                        Quanity = 0;
+                    }
+                    if (!Unit_Price) {
+                        Unit_Price = 0;
+                    }
+                
+                    if (!VATRate) {
+                        VATRate = 0;
+
+                    }
+                    if (!VATExp) {
+                        VATExp = 0;
+                    }
+                    if (!Total_Amount) {
+                        Total_Amount = 1;
+                    }
+            
+
+               
+
+
+
+                  
+
+
+                        Total_Amount = (Number(Unit_Price) * Number(Quanity));
+                        VATExp = 0;
+                        $("#txtVAT_Exp" + inputs[i].name).val(VATExp);
+                        $("#txtTTLAmount" + inputs[i].name).val(Number(Total_Amount) + Number(VATExp));
+                    
+
+
+                }
+
+
+
+
+
+
+            }
+        }
+    </script>
+    <script>//---show attachment popup
+        function ShowDetails() {
+            debugger
+            var TeamDetailPostBackURL = '/Sales/Get_SaleRefDetails';
+
+            //--assign value to ItemCode hidden field in the main. Dont remove this fields
+            
+            var SaleMaster_ID = document.getElementById("SaleRef").value;
+            SaleMaster_ID = SaleMaster_ID.slice(2);
+            if (SaleMaster_ID > 0) {
+               
+                $.ajax({
+                    type: "GET",
+                    url: TeamDetailPostBackURL,
+                    contentType: "application/json; charset=utf-8",
+                    data: { "SaleMaster_ID": SaleMaster_ID },
+                    datatype: "json",
+                    success: function (data) {
+
+
+                        if (data.message == undefined) {
+                            $('#LocDetailMaster').html(data);
+
+
+
+
+                            $('#ShowDetailsModal').modal('show');
+
+                        } else {
+                            alert(data.message);
+                            $('#ShowDetailsModal').modal('hide');
+                        }
+
+                    },
+                    error: function () {
+                        alert("Dynamic content load failed.");
+                    }
+                });
+            } else {
+                alert("Sale Ref Not Exist");
+            }
+
+
+
+        }</script>
+    <script type="text/javascript">
+function SaveForm() {
+            debugger
+
+            var form = document.getElementById("FormInsertPaymentDetail"),
+                inputs = form.getElementsByTagName("input"),
+
+                item_ID = [],
+                item_Description = [],
+                DeliveredQty = [],
+                UOM = [],
+                SalePrice = [],
+
+                Loc_ID = [],
+                VAT_Rate = [],
+                VAT_Exp = [],
+
+
+                TTLAmount = [],
+
+                SaleMaster_Id = [],
+                SaleDetails_ID = [];
+
+
+
+            for (var i = 0, len = inputs.length; i < len; i++) {
+                if (inputs[i].type === "checkbox" && inputs[i].checked == true) {
+                    SaleDetails_ID.push(inputs[i].name);
+                    item_ID.push(document.getElementById("txtItem_ID" + inputs[i].name).value);
+                    item_Description.push(document.getElementById("txtitem_Description" + inputs[i].name).value);
+                    DeliveredQty.push(document.getElementById("txtDeliveredQty" + inputs[i].name).value);
+                    UOM.push(document.getElementById("txtUOM" + inputs[i].name).value);
+                    SalePrice.push(document.getElementById("txtUnitPrice" + inputs[i].name).value);
+
+                    Loc_ID.push(document.getElementById("txtLoc_ID" + inputs[i].name).value);
+                    VAT_Rate.push(document.getElementById("txtVAT_Rate" + inputs[i].name).value);
+                    VAT_Exp.push(document.getElementById("txtVAT_Exp" + inputs[i].name).value);
+
+
+                    TTLAmount.push(document.getElementById("txtTTLAmount" + inputs[i].name).value);
+
+                    SaleMaster_Id.push(document.getElementById("txtSaleMaster_ID" + inputs[i].name).value);
+                }
+
+
+
+
+
+
+            }
+
+
+
+            return $.ajax({
+                type: 'POST',
+                url: "/Sales/InsertSalesDeliveryOrderDetail",
+                data: {
+
+                    hdDOMaster_ID: $('#DOMaster_ID').val(),
+
+                    Item_ID: item_ID,
+                    ItemDesc: item_Description,
+                    Quantity: DeliveredQty,
+                    UM_ID: UOM,
+
+                    Unit_Price: SalePrice,
+                    VATRate: VAT_Rate,
+                    VATExp: VAT_Exp,
+
+
+                    Total_Amount: TTLAmount,
+
+                    Location_ID: Loc_ID,
+                    SaleDetails_ID: SaleDetails_ID,
+                    SaleMaster_Id: SaleMaster_Id,
+
+                },
+                success: function (result, status, xhr) {
+                    mySuccessAuctionDetail(result);
+
+                }
+            });
+
+
+        }
+        function GetSaleRefDetail() {
+
+            debugger
+
+
+            var SaleMaster_ID = document.getElementById("SaleRef").value.toString();
+            SaleMaster_ID = SaleMaster_ID.slice(2);
+            $("#SaleMaster_ID").val(SaleMaster_ID);
+
+                $.ajax({
+
+                    type: "Get",
+                    url: "/Sales/GetSaleRefDetail",
+                    data: { //Passing data
+                        SaleMaster_ID: SaleMaster_ID
+                    },
+                    datatype: "json",
+                    success: function (response) {
+                        debugger
+
+
+                        $("#Customer_ID").val(response.customer_ID);
+                        $("#Customer_Contact").val(response.customer_Contact);
+                        $("#Invoice_address").val(response.invoice_address);
+                        $("#CustomerTRN").val(response.customerTRN);
+                        $("#Remarks").val(response.remarks);
+                        $("#Manualbook_ref").val(response.manualbook_ref);
+                        $("#Seller_ID").val(response.seller_ID);
+                        $("#Customer_Name").val(response.customer_Name);
+
+                        ShowDetails();
+
+
+
+
+
+                    }
+                })
+
+
+        }
+        //---this function will hit after success submission of insert Stock detail form
+        function mySuccessAuctionDetail(data) {
+
+            var SuccessDiv = " <div class='col-lg-12'><div class='alert alert-info'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button><strong>Success!</strong> Saved Successfully! <a href ='' class='alert-link'></a></div></div>";
+            debugger
+            if (data.message == undefined) {
+
+
+
+
+                //$('#AddNewSaleModal').modal('hide');
+                $('#SalesDetailSection').html(data);
+                $('#SuccessErrorSection').html(SuccessDiv).show();
+
+                //reset form after success
+                $('#FormInsertPaymentDetail').trigger("reset");
+
+                $('#DeleteSalesDetailModal').modal('hide');
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        //---this function will hit when error occured in submission of Stock detail
+        function myFailureStockDetail() {
+
+            alert("Failured occured. Please try again!");
+        }
+
+                $(document).ready(function () {
+
+
+
+            $("#print-btn").click(function(event){
+                event.preventDefault();
+                var win = window.open("@Url.Action("SalesDeliveryOrder_Print", "Report")" + "?DOMaster_ID=" + $("#DOMaster_ID").val() , "_blank");
+                win.focus();
+            });
+
+
+        })
+
+    </script>
+
+}
+
+
+
+
+

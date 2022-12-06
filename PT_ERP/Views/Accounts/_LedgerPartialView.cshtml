@@ -1,0 +1,143 @@
+﻿@using DAL
+@using DAL.Models
+@using X.PagedList.Mvc.Core; @*//import this so we get our HTML Helper*@
+@using X.PagedList;  @*//import this so we can cast our list to IPagedList*@
+
+
+@model DAL.oClasses.OAccounts
+
+
+
+<div class="invoice-summary mb-1">
+
+    <div class="row mb-1">
+
+        <div class="col-lg-6 col-md-6 mb-1">
+            <b>@ViewBag.RecordsPerPage</b> records per page
+        </div>
+
+        <div class="col-lg-6 col-md-6 mb-1 justify-content-end text-right">
+
+        </div>
+    </div>
+
+</div>
+
+
+<table class="table table-bordered table-striped mb-0 mt-1" @*id="datatable-default"*@>
+    @if (Model.LedgerMasterIPagedList_TTL != null)
+    {
+
+
+        foreach (Pa_Ledger_DAL item in Model.LedgerMasterIPagedList_TTL)
+        {
+<b>
+    <label class="col-form-label" style="float:right;font-family:sans-serif;font-size:15px;color:black"> Opening Balance:  @item.Opening_Balance</label>
+</b>
+}
+}
+    <thead>
+        <tr>
+
+            <th>Date</th>
+            <th>Description</th>
+
+            <th>Debit</th>
+            <th>Credit</th>
+            <th>Account</th>
+            <th>Ref</th>
+
+
+        </tr>
+    </thead>
+    <tbody>
+
+        @if (Model.LedgerMasterIPagedList != null)
+        {
+            foreach (Pa_Ledger_DAL item in Model.LedgerMasterIPagedList)
+            {
+<tr>
+
+    <td>
+        @Html.DisplayFor(modelItem => item.Date)
+    </td>
+    <td> @Html.DisplayFor(modelItem => item.Description)</td>
+    <td>
+        @Html.DisplayFor(modelItem => item.Debit)
+    </td>
+
+    <td>
+        @Html.DisplayFor(modelItem => item.Credit)
+    </td>
+
+    <td>
+        @Html.DisplayFor(modelItem => item.ACCOUNT)
+    </td>
+    <td>
+        <a href="@item.Link" onclick="btndisable();"> @Html.DisplayFor(modelItem => item.trans_ref)</a>
+    </td>
+
+
+    @*<td> @Html.DisplayFor(modelItem => item.PurchaseStatus)</td>
+        <td> <a asp-controller="Purchases" asp-action="NewPurchase" asp-route-PurchaseMaster_ID="@item.PurchaseMaster_ID">View</a></td>*@
+
+
+</tr>}
+            }
+
+
+
+
+    </tbody>
+    <tfoot>
+        @if (Model.LedgerMasterIPagedList_TTL != null)
+        {
+
+
+            foreach (Pa_Ledger_DAL item in Model.LedgerMasterIPagedList_TTL)
+            {
+<tr role="row">
+    <th>Total</th>
+
+
+    <th></th>
+    <th>@item.TotalDebit</th>
+    <th>@item.TotalCredit</th>
+    <th>Closing Balance</th>
+    <th>@item.Closing_Balance</th>
+
+
+
+</tr>}
+            }
+    </tfoot>
+</table>
+
+
+
+<div class="invoice-summary">
+
+    <div class="row">
+
+        <div class="col-lg-6 col-md-6">
+
+        </div>
+
+        <div class="col-lg-6 col-md-6 justify-content-end text-right">
+            @if (Model.LedgerMasterIPagedList.Count() != 0)
+            {
+
+@Html.PagedListPager(Model.LedgerMasterIPagedList, page => Url.Action("Search_Ledger", "Accounts", new { From_Date = ViewBag.From_Date_Ledger, To_Date = ViewBag.To_Date_Ledger, AccountID = ViewBag.AccountID_Ledger, Trans_Ref = ViewBag.Trans_Ref_Ledger, page })
+
+, X.PagedList.Mvc.Core.Common.PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new AjaxOptions()
+{
+HttpMethod = "get",
+UpdateTargetId = "TablePurchaseListSearch"
+})
+ )}
+        </div>
+    </div>
+
+</div>
+
+

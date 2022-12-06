@@ -1,0 +1,60 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OInventory
+<table class="table table-responsive-md table-bordered mb-0">
+    <thead>
+        <tr>
+            <th>Edit/Delete</th>
+            <th>Item</th>
+            <th>Quantity</th>
+            <th>From Location</th>
+            <th>New Location</th>
+
+
+
+
+
+
+        </tr>
+    </thead>
+    <tbody>
+
+        @if (Model.InventoryTransferDetailList != null)
+        {
+
+
+            foreach (InventoryTransferDetails item in Model.InventoryTransferDetailList)
+            {
+
+
+
+<tr>
+
+
+    <td>
+
+        <a onclick="UpdateInventoryDetailByChassis('@item.ID', '@item.ItemId', '@item.quantity','@item.ItemDesc','@item.OldLoc_ID', '@item.NewLoc_ID');" data-toggle="modal" data-target="#UdpateSaleDetailByChassisModal"><img style="width: 20px;" src="~/Img/Icons/edit.png" /></a>
+        <a onclick="DeleteInventoryDetail('@item.ID');" data-toggle="modal" data-target="#DeleteInventoryDetailModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.ItemName)
+        <br />
+        <span class="small"> @Html.DisplayFor(modelItem => item.ItemCode)</span>
+    </td>
+    <td>@Html.DisplayFor(modelItem => item.quantity)</td>
+    <td>@Html.DisplayFor(modelItem => item.OldItemLocationName)</td>
+    <td>@Html.DisplayFor(modelItem => item.NewItemLocationName)</td>
+
+
+
+
+
+</tr>
+}
+}
+
+
+    </tbody>
+
+</table>

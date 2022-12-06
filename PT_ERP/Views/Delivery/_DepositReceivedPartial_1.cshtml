@@ -1,0 +1,103 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.ODelivery
+
+@{
+    //--viewbag for showing total
+    ViewBag.Total_Amount = null;
+}
+
+
+<table class="table table-responsive-md table-bordered mb-0">
+    <thead>
+        <tr>
+            <th>Edit/Delete</th>
+            <th>Chassis</th>
+
+            <th>Deposit</th>
+            <th>Fix Charge</th>
+            <th>Paper</th>
+            <th>Security</th>
+            <th>Others</th>
+            <th>SubmitDate</th>
+            <th>Ref</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.DepositsDetailList.Any())
+        {
+            ViewBag.Total_Amount = 0;
+
+            foreach (Deposits_DAL item in Model.DepositsDetailList)
+            {
+
+
+                decimal Total_Amount = Convert.ToDecimal(item.Total_Amount);
+                ViewBag.Total_Amount = Convert.ToDecimal(ViewBag.Total_Amount) + Total_Amount;
+
+                <tr>
+                    <td>
+                        <a onclick="UpdateDepositVoucherDetail_Script('@item.DVdetails_ID ','@item.Chassis_No', '@item.Stock_ID', '@item.Car_Sale_Value', '@item.Deposit ', '@item.Fix_Deductable_Charges', '@item.PaperExpense_Changes', '@item.VAT_Security_Deposit','@item.Other_Charges','@item.Submission_Date', '@item.ShipDate', '@item.External_Trans_Ref');" data-toggle="modal" data-target="#UpdateDepositDetailModal"><img style="width: 20px;" src="~/Img/Icons/edit.png" /></a>
+                        <a onclick="DeleteDepositDetail('@item.DVdetails_ID');" data-toggle="modal" data-target="#DeleteDepositDetailModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+                    </td>
+                    <td>@Html.DisplayFor(modelItem => item.Chassis_No)</td>
+
+
+                    <td>@Html.DisplayFor(modelItem => item.Deposit)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Fix_Deductable_Charges)</td>
+                    <td>@Html.DisplayFor(modelItem => item.PaperExpense_Changes)</td>
+                    <td>@Html.DisplayFor(modelItem => item.VAT_Security_Deposit)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Other_Charges)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Submission_Date)</td>
+                    <td>@Html.DisplayFor(modelItem => item.External_Trans_Ref)</td>
+
+
+                </tr>
+
+
+            }
+        }
+
+
+    </tbody>
+
+</table>
+
+
+<div class="invoice-summary">
+
+    <div class="row">
+
+
+
+        <div class="col-lg-9 col-md-9">
+
+        </div>
+
+        <div class="col-lg-3 col-md-3 justify-content-end text-right">
+            <table class="table h6 text-dark">
+                <tbody>
+
+                    <tr class="b-top-0">
+                        <td colspan="2"> Total Amount:</td>
+                        @if (ViewBag.Total_Amount != null)
+                        {
+            <td class="text-right" id=""> @string.Format("{0:0,0.0,0}", ViewBag.Total_Amount)</td>
+ }
+        else
+        {
+            <td class="text-right" id=""> @ViewBag.Total_Amount</td>}
+
+                    </tr>
+
+
+
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+

@@ -1,0 +1,363 @@
+﻿
+@using DAL
+@using DAL.Models
+@model DAL.oClasses.oReports
+
+
+@{
+    ViewData["Title"] = "Inventory Report";
+    Layout = "~/Views/Shared/_LayoutTablePages.cshtml";
+}
+
+<header class="page-header">
+    <h2>Reports</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+
+            <li><a><span>@ViewBag.BreadCumController</span></a></li>
+            <li><a asp-area="" asp-controller="@ViewBag.BreadCumController" asp-action="@ViewBag.BreadCumAction"><span>@ViewBag.BreadCumTitle</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+
+<div class="row">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+        <div class="col-lg-12">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-info">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Success!</strong> @TempData["Success"] <a href="" class="alert-link"></a>
+                </div>
+            }
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Error!</strong> @TempData["Error"] <a href="" class="alert-link"></a>
+                </div>
+            }
+        </div>
+    }
+
+
+</div>
+
+
+
+<div class="row" style="padding-top:1px;">
+    <div class="col">
+        <section class="card">
+      
+                <header class="card-header">
+
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <section class="card">
+                                <div class="card-body">
+
+                                    <form method="get" data-ajax-complete="myCompleteSearch" data-ajax-success="mySuccessSearch" data-ajax-failure="myFailureSearch"
+                                          data-ajax-begin="myBeginSearch" asp-area="" asp-controller="Report" asp-action="InventoryReportItemCard" data-ajax-loading="">
+                                        @{
+                                            DateTime date = DateTime.Now;
+                                            var firstDayOfMonth = new DateTime(date.Year, date.Month, 1);
+                                            var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
+
+                                        }
+                                        <div class="row form-group">
+                                            <div class="col-lg-3">
+                                                <div class="form-group">
+
+                                                    <label>Start Date </label>
+
+                                                    <div class="input-group date form_date col-md-13" data-date="" data-date-format="yyyy-mm-dd" data-link-field="dtp_input2" data-link-format="yyyy-mm-dd">
+                                                        <input id='StartDate' name="StartDate" data-plugin-datepicker class="form-control" value="" autocomplete="off" size="16" type="text">
+                                                        <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-lg-3">
+                                                <div class="form-group">
+                                                    <label>End Date</label>
+
+                                                    <div class="input-group date form_date col-md-13" data-date="" data-date-format="yyyy-mm-dd" data-link-field="dtp_input2" data-link-format="yyyy-mm-dd">
+                                                        <input id='EndDate' name="EndDate" data-plugin-datepicker class="form-control" autocomplete="off" value="" size="16" type="text">
+                                                        <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+
+                                            <div class="col-lg-2">
+                                                <div class="form-group">
+                                                    <label>Items</label>
+
+
+
+
+                                                    <select class="form-control" id="ItemCode" name="ItemCode" asp-items="@(new SelectList( ViewBag.AllItems,"ItemCode","ItemCode"))">
+                                                        <option value="0">Select Items</option>
+
+                                                    </select>
+
+
+                                                </div>
+                                            </div>
+
+
+
+
+                                            <div class="col-lg-4">
+
+
+
+
+                                                <div class="form-group">
+                                                    <label class="col-form-label" for="Search"> &nbsp; </label>
+                                                    <br />
+                                                    <button type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-primary">Search&nbsp;<i class="fas fa-search"></i></button>
+                                                    @*<input type="button" class="mb-1 mt-1 mr-1 btn btn-sm btn-danger" onclick="ResetSearch();" value="Reset">*@
+                                                    <a type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-info" href="" id="print-btn">Print &nbsp;<i class="fas fa-print"></i></a>
+                                                    <a type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-success" href="" id="export-btn">Export &nbsp;<i class="fas fa-file-excel"></i></a>
+
+                                                </div>
+
+
+                                            </div>
+
+                                        </div>
+
+                                    </form>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+
+
+
+                </header>
+                <div class="card-body" id="VendorReportSearch">
+
+
+
+                    <table class="table table-bordered table-striped mb-0" id="datatable-default">
+                        <thead>
+                            <tr>
+
+
+
+                                <td>TransDate </td>
+                                <td>Ref</td>
+                                <td>Pur Desc</td>
+                                <td>Qty </td>
+                                <td>UnitPrice </td>
+
+                                <td>Amount </td>
+                                <td>VAT </td>
+                                <td>Total(Pur) </td>
+                                <td>ItemName </td>
+
+                
+                                <td>Qty(Sold) </td>
+                                <td>Unit </td>
+
+                                <td>Amount</td>
+                                <td>VAT</td>
+                                <td>Total</td>
+
+                                <td>Bal_Value</td>
+                                <td>Bal_Qty</td>
+
+
+
+
+
+
+                            </tr>
+                        </thead>
+
+
+                        <tbody >
+
+                            @if (Model.ItemCardReportList != null)
+                            {
+                                
+
+                                foreach (ItemCard_DAL item in Model.ItemCardReportList)
+                                {
+
+                                   
+
+
+
+
+                            <tr class="gradeX odd" role="row">
+
+
+
+
+                                <td>@Html.DisplayFor(modelItem => item.Trans_Date) </td>
+                                <td>@Html.DisplayFor(modelItem => item.Trans_Ref)</td>
+                                <td>@Html.DisplayFor(modelItem => item.ItemDescription) </td>
+                                <td>@Html.DisplayFor(modelItem => item.Qty) </td>
+                                <td>@Html.DisplayFor(modelItem => item.UnitPrice) </td>
+
+                                <td>@Html.DisplayFor(modelItem => item.Pur_Amount) </td>
+                                <td>@Html.DisplayFor(modelItem => item.VATEXP_Pur) </td>
+                                <td>@Html.DisplayFor(modelItem => item.Pur_Total_Amt) </td>
+
+                                <td>@Html.DisplayFor(modelItem => item.ItemName) </td>
+
+                              
+                                <td>@Html.DisplayFor(modelItem => item.QtySold) </td>
+                                <td>@Html.DisplayFor(modelItem => item.SaleUnitPrice) </td>
+
+                                <td>@Html.DisplayFor(modelItem => item.SaleAmount) </td>
+                                <td>@Html.DisplayFor(modelItem => item.VAT_Sale) </td>
+                                <td>@Html.DisplayFor(modelItem => item.Sale_Total_Amt) </td>
+
+                                <td>@Html.DisplayFor(modelItem => item.Value) </td>
+                                <td>@Html.DisplayFor(modelItem => item.Qty_Bal) </td>
+
+                            </tr>
+                                }
+                            }
+
+                        </tbody>
+
+                        <tfoot>
+                            @if (Model.ItemCardReportList_TTL != null)
+                            {
+
+
+                                foreach (ItemCard_DAL item in Model.ItemCardReportList_TTL)
+                                {
+
+                            <tr role="row">
+                                <th>Total</th>
+
+
+
+
+                                <td></td>
+                                <td></td>
+                                <td><b>@item.Qty </b></td>
+                                <td> </td>
+
+                                <td><b>@item.Pur_Amount</b> </td>
+                                <td></td>
+                                <td><b>@item.Pur_Total_Amt</b>  </td>
+
+                                <td> </td>
+                        
+                                <td><b>@item.QtySold </b> </td>
+                                <td></td>
+
+                                <td><b> @item.SaleAmount</b></td>
+                                <td></td>
+                                <td><b>@item.Sale_Total_Amt</b> </td>
+
+                                <td></td>
+                                <td></td>
+
+
+                            </tr>
+                                                    }
+                                                }
+                                </tfoot>
+
+
+                    </table>
+                </div>
+       
+        </section>
+    </div>
+</div>
+
+@section Scripts{
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
+
+
+    <script>
+
+        function myBeginSearch() {
+            $("#LoaderImage").css("visibility", "visible");
+        }
+
+        function mySuccessSearch(data) {
+
+            debugger
+            if (data.message == undefined) {
+
+                $('#VendorReportSearch').html(data);
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        function myFailureSearch() {
+
+            alert("Failured occured. Please try again!");
+            $("#LoaderImage").css("visibility", "hidden");
+        }
+
+        function myCompleteSearch() {
+            $("#LoaderImage").css("visibility", "hidden");
+
+        }
+
+
+    </script>
+
+    <script>
+
+
+        function ResetSearch() {
+
+            $("#StartDate").val('');
+            $("#EndDate").val('');
+            $("#AccountID").val('');
+            $("#TransRef").val('');
+        }
+
+        $(document).ready(function(){
+    $("#print-btn").click(function(event){
+    event.preventDefault();
+
+        var win = window.open("@Url.Action("#", "Report")" + "?StartDate=" + $("#StartDate").val() + "&EndDate=" + $("#EndDate").val() + "&VendorID=" + $("#VendorID").val(), "_blank");
+    win.focus();
+    });
+    })
+    $(document).ready(function(){
+    $("#export-btn").click(function(event){
+    event.preventDefault();
+        window.location.href = "@Url.Action("#", "Report")" + "?reportName=VendorReport&StartDate=" + $("#StartDate").val() + "&EndDate=" + $("#EndDate").val() + "&VendorID=" + $("#VendorID").val();
+    });
+    })
+    </script>
+
+   
+
+
+}

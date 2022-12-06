@@ -1,0 +1,546 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OPurchases
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+
+@{ string IsPurchaseCost_JP_Enabled = Configuration.GetSection("AppSettings").GetSection("IsPurchaseCost_JP_Enabled").Value; }
+
+<div class="modal-header" style="background: #f6f6f6;">
+
+
+    <h4 class="modal-title">Stock Details-Update</h4>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+
+</div>
+
+<form method="post" data-ajax="true" data-ajax-complete="myCompletePurchaseUpdate" data-ajax-success="mySuccessPurchaseUpdate" data-ajax-failure="myFailurePurchaseUpdate"
+      asp-area="" asp-controller="Purchases" asp-action="UpdatePurchaseDetail" data-ajax-loading="" id="FormUpdatePurchaseDetail">
+
+    <div class="modal-body">
+
+        <section class="card">
+
+            <div class="card-body">
+
+
+
+                <div class="row form-group">
+                    @if (Model.purchaseMasterObj.PurchaseMaster_ID != null)
+                    {
+        <input id="hdPurchaseMaster_ID" name="hdPurchaseMaster_ID" type="hidden" value="@Model.purchaseMasterObj.PurchaseMaster_ID" /> }
+    else
+
+    {
+
+<input id="hdPurchaseMaster_ID" name="hdPurchaseMaster_ID" type="hidden" value="0" />}
+
+
+
+                    @if (Configuration.GetSection("AppSettings").GetSection("IsDirectStockPurEnabled").Value == "true")
+                    {
+
+        <input type="hidden" name="StockID" value="@Model.purchaseObject.StockID" />}
+
+
+
+                    <div class="col-lg-3 col-md-3">
+
+                        <div class="form-group">
+                            <label class="col-form-label">Chassis No</label>
+                            <input type="text" id="Chassis" name="Chassis" onblur="GetMakeCodeEditDetail();" value="@Model.purchaseObject.Chassis_No" class="form-control chassis" placeholder="Enter Chassis">
+                            <label id="ChassisValidationMessage"></label>
+
+                        </div>
+                    </div>
+
+
+                    <div class="col-lg-3 col-md-3">
+                        <div class="form-group">
+                            <label class="col-form-label" for="Make_ID">Make*</label>
+
+
+
+                            <select class="form-control" id="Make_IDUdpate" name="Make_ID" autofocus asp-items="@(new SelectList( ViewBag.MakeList,"Make_ID","Make",Model.purchaseObject.Make_ID))" onchange="GetSubModelForUpdate(this);" required>
+                                <option>Select Make</option>
+                            </select>
+
+                            <input type="hidden" id="PurchaseDetails_IDUpdate" name="PurchaseDetails_ID" value="@Model.purchaseObject.PurchaseDetails_ID" />
+
+
+
+
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-3">
+                        <div class="form-group">
+                            <label class="col-form-label" for="Model_IDUpdate">Model*</label>
+
+                            <select class="form-control MakeModelClassUpdate" id="Model_IDUpdate" name="Model_ID" required>
+                                <option value="@Model.purchaseObject.Model_ID">@Model.purchaseObject.ModelDesciption</option>
+
+                            </select>
+
+                        </div>
+                    </div>
+
+
+
+
+                    @if (Configuration.GetSection("AppSettings").GetSection("IsDirectStockPurEnabled").Value == "true")
+                    {
+
+
+
+        <div class="col-lg-3 col-md-3">
+            <div class="form-group">
+                <label class="col-form-label" for="ModelYear">Year</label>
+                <input type="text" id="Year" name="Year" value="@Model.purchaseObject.ModelYear" class="form-control" placeholder="Year">
+
+            </div>
+        </div>
+
+                        <div class="col-lg-3 col-md-3">
+                            <div class="form-group">
+                                <label class="col-form-label" for="color_exterior_ID">Color(Int)</label>
+                                <select class="form-control" id="color_interior_ID" name="color_interior_ID" asp-items="@(new SelectList( ViewBag.ColorsList,"Color_ID","ColorName",Model.purchaseObject.Color_Interior_ID))">
+                                    <option value="0">Select Color(Int)</option>
+                                </select>
+                            </div>
+
+                        </div>}
+
+                    <div class="col-lg-3 col-md-3">
+                        <div class="form-group">
+                            <label class="col-form-label" for="Color">Color</label>
+
+
+                            <select class="form-control" id="Color_IDUpdate" name="Color_ID" asp-items="@(new SelectList( ViewBag.ColorsList,"Color_ID","ColorName", Model.purchaseObject.Color_ID))">
+                                <option>Select Color</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    @if (Configuration.GetSection("AppSettings").GetSection("IsDirectStockPurEnabled").Value == "true")
+                    {
+
+        <div class="col-lg-3 col-md-3">
+            <div class="form-group">
+                <label class="col-form-label" for="loc_ID">Location</label>
+
+                <select class="form-control" name="loc" id="loc"
+                        asp-items="@(new SelectList(ViewBag.CarLocations,"CarLocation_ID","CarLocation",Model.purchaseObject.locID))">
+                    <option value="0">Select Location</option>
+                </select>
+
+
+            </div>
+        </div> }
+    else
+    {
+
+
+<div class="col-lg-3 col-md-3">
+    <div class="form-group">
+        <label class="col-form-label" for="Quantity">Quantity*</label>
+
+
+        <input type="number" id="QuantityUpdate" name="Quantity" class="form-control" onblur="CalcSumAmountPurchaseUpdate()" value="@Model.purchaseObject.Quantity" placeholder="Quantity" required />
+    </div>
+</div>}
+
+                    @if (Configuration.GetSection("AppSettings").GetSection("IsDirectStockPurEnabled").Value == "false")
+                    {
+
+        <div class="col-lg-12 col-md-12">
+            <div class="form-group">
+                <label class="col-form-label" for="Others">Specs</label>
+                <textarea class="form-control" rows="3" id="OthersSpecsUpdate" name="OthersSpecs" placeholder="Specification">@Model.purchaseObject.OthersSpecs</textarea>
+            </div>
+        </div>}
+
+
+
+                    @if (Configuration.GetSection("AppSettings").GetSection("IsDirectStockPurEnabled").Value == "true")
+                    {
+
+        <div class="col-lg-3 col-md-3">
+            <div class="form-group">
+                <label class="col-form-label" for="Others">Mileage</label>
+                <input type="text" id="mileage" name="mileage" value="@Model.purchaseObject.mileage" readonly class="form-control" placeholder="Mileage" />
+            </div>
+        </div>
+                        <div class="col-lg-3 col-md-3">
+                            <div class="form-group">
+                                <label class="col-form-label" for="Make_category_ID">Category</label>
+
+
+
+                                <select class="form-control" id="Make_category_ID_Update" name="Make_category_ID" asp-items="@(new SelectList(ViewBag.VehicleCategory, "VehCategory_ID", "VehCategoryName", Model.purchaseObject.Make_category_ID))"
+                                        required>
+                                    <option>Select Category</option>
+                                </select>
+
+                            </div>
+                        </div>
+
+                                        <div class="col-lg-3 col-md-3">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="Drive">Drive</label>
+
+                                                <select class="form-control" name="Drive" id="DriveUpdate" asp-for="@Model.purchaseObject.Drive">
+                                                    <option value="">Select</option>
+                                                    <option value="Right">Right</option>
+                                                    <option value="Left">Left</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                                        <div class="col-lg-3 col-md-3">
+                                                            <div class="form-group">
+                                                                <label class="col-form-label" for="Used_New">New/Used</label>
+
+
+
+                                                                <select class="form-control" name="Used_New" id="Used_New" asp-for="@Model.purchaseObject.Used_New">
+                                                                    <option value="">Select</option>
+                                                                    <option value="N">New</option>
+                                                                    <option value="U">Used</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                                        <div class="col-lg-3 col-md-3">
+                                                                            <div class="form-group">
+                                                                                <label class="col-form-label" for="EngineType">Engine Type</label>
+                                                                                <select class="form-control" name="EngineType" id="EngineTypeUpdate"
+                                                                                        asp-items="@(new SelectList(ViewBag.EngineType, "EngineType_ID", "Engine_Power", Model.purchaseObject.Engine_Type))">
+                                                                                    <option value="">Select</option>
+                                                                                </select>
+                                                                            </div>
+                                                                        </div>
+
+                                                                                        <div class="col-lg-3 col-md-3">
+                                                                                            <div class="form-group">
+                                                                                                <label class="col-form-label" for="FUEL_TYPE">Fuel</label>
+
+                                                                                                <select class="form-control" name="FUEL_TYPE" id="FUEL_TYPE_Update" asp-for="@Model.purchaseObject.Fuel_Type">
+                                                                                                    
+                                                                                                    <option value="PETROL">PETROL</option>
+                                                                                                    <option value="DEISEL">DEISEL</option>
+
+                                                                                                </select>
+                                                                                            </div>
+                                                                                        </div>
+
+                                                                                                        <div class="col-lg-3 col-md-3">
+                                                                                                            <div class="form-group">
+                                                                                                                <label class="col-form-label" for="BL_NO">BL No</label>
+
+                                                                                                                <input type="text" class="form-control" id="BL_NO" name="BL_NO" value="@Model.purchaseObject.BL_NO">
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                                        <div class="col-lg-3 col-md-3">
+                                                                                                                            <div class="form-group">
+                                                                                                                                <label class="col-form-label" for="BL_NO">Container No</label>
+
+                                                                                                                                <input type="text" class="form-control" id="Cont_NO" name="Cont_NO" value="@Model.purchaseObject.ContainerNo">
+                                                                                                                            </div>
+                                                                                                                        </div>
+                                                                                                                                        <div class="col-lg-3 col-md-3">
+                                                                                                                                            <div class="form-group">
+                                                                                                                                                <label class="col-form-label" for="BL_NO">Auction Name</label>
+
+                                                                                                                                                <input type="text" class="form-control" id="AuctionName" name="AuctionName" value="@Model.purchaseObject.AuctionName">
+                                                                                                                                            </div>
+                                                                                                                                        </div>
+
+
+                                                                                                                                                        <div class="col-lg-3 col-md-3">
+                                                                                                                                                            <div class="form-group">
+                                                                                                                                                                <label class="col-form-label" for="StockType_ID">StockType</label>
+
+                                                                                                                                                                <select class="form-control" name="StockType_ID" id="StockType_ID"
+                                                                                                                                                                        asp-items="@(new SelectList(ViewBag.StockType, "StockType_ID", "StockTypeName", Model.purchaseObject.StockType_ID))">
+                                                                                                                                                                </select>
+
+                                                                                                                                                                @*<select class="form-control" id="color_exterior_ID" name="color_exterior_ID"
+                                                                                                                                                                            asp-items="@(new SelectList( ViewBag.ColorsList,"Color_ID","ColorName",Model.StockObject.Color_Exterior_ID))">
+                                                                                                                                                                        <option>Select Color</option>
+                                                                                                                                                                    </select>*@
+
+                                                                                                                                                            </div>
+                                                                                                                                                        </div>}
+
+                    @if (Configuration.GetSection("AppSettings").GetSection("IsDirectStockPurEnabled").Value == "true")
+                    {
+        <div class="col-lg-3 col-md-3">
+            <div class="form-group">
+                <label class="col-form-label" for="Door">Door</label>
+
+                <select class="form-control" name="Door" id="Door_Update" asp-for="@Model.purchaseObject.Door">
+                    <option value="">Select</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                </select>
+            </div>
+
+        </div>}
+
+                    @if (Configuration.GetSection("AppSettings").GetSection("IsDirectStockPurEnabled").Value == "true")
+                    {
+        <div class="col-lg-3 col-md-3">
+            <div class="form-group">
+                <label class="col-form-label" for="HS_CODE"> HS Code</label>
+
+                <input type="text" class="form-control" id="HS_CODE_Update" name="HS_CODE" value="@Model.purchaseObject.Hs_Code">
+            </div>
+        </div>}
+
+
+
+                </div>
+
+
+
+
+
+                <div class="row form-group">
+
+                    @*@if (Configuration.GetSection("AppSettings").GetSection("IsDirectStockPurEnabled").Value == "true")
+                            {
+
+                        <div class="col-lg-4 col-md-4">
+                            <div class="form-group">
+                                <label class="col-form-label" for="Others">Mileage</label>
+                                <input type="text" id="mileageUpdate" name="mileage" class="form-control" value="@Model.purchaseObject.mileage" placeholder="Mileage" />
+                            </div>
+                        </div>}*@
+
+                    <div class="col-lg-3 col-md-3">
+                        <div class="form-group">
+                            <label class="col-form-label" for="Unit Price">Unit Price*</label>
+
+                            <input type="number" id="Unit_PriceUpdate" name="Unit_Price" step="any" class="form-control" onblur="CalcSumAmountPurchaseUpdate()" value="@Model.purchaseObject.Unit_Price" placeholder="Unit Price" required />
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-3">
+                        <div class="form-group" style="margin-top:2px;">
+                            <label class="control-label">Currency </label>
+                            <div class="row">
+                                <div class="col-md-5 col-sm-5" style="padding:0;">
+                                    <select class="form-control" id="Currency_IDUpdate" name="Currency_ID" asp-items="@(new SelectList( ViewBag.CurrencyList,"Currency_ID","Currency_ShortName", Model.purchaseObject.Currency_ID))">
+                                        @*<option>SELECT</option>*@
+                                    </select>
+                                </div>
+                                <div class="col-md-7 col-sm-7" style="padding:0;">
+                                    <input type="number" id="Currency_RateUpdate" name="Currency_Rate" step="any" class="form-control" onblur="CalcSumAmountPurchaseUpdate()" value="@Model.purchaseObject.Currency_Rate" placeholder="Rate">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @if (Configuration.GetSection("AppSettings").GetSection("IsDirectStockPurEnabled").Value == "true")
+                    {
+
+        <div class="col-lg-3 col-md-3" @IsPurchaseCost_JP_Enabled>
+            <div class="form-group">
+                <label class="col-form-label" for="Unit Price">Tax(10%)</label>
+
+                <input type="number" id="PriceTaxUpdate" name="PriceTax" step="any" class="form-control" value="@Model.purchaseObject.PriceTax" onblur="CalcSumAmountPurchaseUpdate()" placeholder="Price Tax" readonly required />
+            </div>
+        </div>
+
+                        <div class="col-lg-3 col-md-3" @IsPurchaseCost_JP_Enabled>
+                            <div class="form-group">
+                                <label class="col-form-label" for="Unit Price">Auction Fee</label>
+
+                                <input type="number" id="AuctionFeeUpdate" name="AuctionFee" step="any" class="form-control" value="@Model.purchaseObject.AuctionFee" onblur="CalcSumAmountPurchaseUpdate()" placeholder="Auction Fee" />
+                            </div>
+                        </div>
+
+                                        <div class="col-lg-3 col-md-3" @IsPurchaseCost_JP_Enabled>
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="Unit Price">Rekso</label>
+
+                                                <input type="number" id="ReksoFeeUpdate" name="ReksoFee" step="any" class="form-control" value="@Model.purchaseObject.ReksoFee" onblur="CalcSumAmountPurchaseUpdate()" placeholder="Rekso" />
+                                            </div>
+                                        </div>
+
+                                                        <div class="col-lg-3 col-md-3" @IsPurchaseCost_JP_Enabled>
+                                                            <div class="form-group">
+                                                                <label class="col-form-label" for="Unit Price">Recycle Fee</label>
+
+                                                                <input type="number" id="RecycleFeeUpdate" name="RecycleFee" step="any" class="form-control" value="@Model.purchaseObject.RecycleFee" onblur="CalcSumAmountPurchaseUpdate()" placeholder="Recycle Fee" />
+                                                            </div>
+                                                        </div>
+
+                                                                        <div class="col-lg-3 col-md-3" @IsPurchaseCost_JP_Enabled>
+                                                                            <div class="form-group">
+                                                                                <label class="col-form-label" for="Unit Price">LA</label>
+
+                                                                                <input type="number" id="Vanning_ChargesUpdate" name="Vanning_Charges" step="any" class="form-control" value="@Model.purchaseObject.LoadingCharges" onblur="CalcSumAmountPurchaseUpdate()" placeholder="LA" />
+                                                                            </div>
+                                                                        </div>
+                                                                                        <div class="col-lg-3 col-md-3" @IsPurchaseCost_JP_Enabled>
+                                                                                            <div class="form-group">
+                                                                                                <label class="col-form-label" for="Unit Price">Other Charges</label>
+
+                                                                                                <input type="number" id="Other_Charges_Update" name="Other_Charges" step="any" class="form-control" value="@Model.purchaseObject.OtherCharges" onblur="CalcSumAmountPurchaseUpdate()" placeholder="OtherCharges" />
+                                                                                            </div>
+                                                                                        </div>
+                                                                                                        <div class="col-lg-3 col-md-3" @IsPurchaseCost_JP_Enabled>
+                                                                                                            <div class="form-group">
+                                                                                                                <label class="col-form-label" for="JP_Charges">JP Charges</label>
+
+                                                                                                                <input type="number" id="JP_Charges_Update" name="JP_Charges" step="any" class="form-control" value="@Model.purchaseObject.JP_Charges" onblur="CalcSumAmountPurchaseUpdate()" placeholder="JP Charges" />
+                                                                                                            </div>
+                                                                                                        </div>
+
+
+
+                                                                                                                        <div class="col-lg-3 col-md-3" @IsPurchaseCost_JP_Enabled>
+                                                                                                                            <div class="form-group" style="margin-top:2px;">
+                                                                                                                                <label class="control-label">Freight </label>
+                                                                                                                                <div class="row">
+                                                                                                                                    <div class="col-md-5 col-sm-5" style="padding:0;">
+                                                                                                                                        <input type="number" id="FreightChargesUpdate" name="FreightCharges" step="any" class="form-control" value="@Model.purchaseObject.FreightCharges" onblur="CalcSumAmountPurchaseUpdate()" placeholder="Freight Charges" />
+                                                                                                                                    </div>
+                                                                                                                                    <div class="col-md-7 col-sm-7" style="padding:0;">
+                                                                                                                                        <input type="number" id="FreightRateUpdate" name="FreightRate" step="any" value="@Model.purchaseObject.FreightRate" onblur="CalcSumAmountPurchaseUpdate()" class="form-control" placeholder="Rate">
+
+                                                                                                                                    </div>
+                                                                                                                                </div>
+                                                                                                                            </div>
+                                                                                                                        </div>}
+                    <div class="col-lg-3 col-md-3">
+                        <div class="form-group">
+                            <label class="col-form-label" for="Amount">Amount (@ViewBag.DefaultCurrencyDisplay)</label>
+
+                            <input type="number" id="AmountUpdate" name="Amount" class="form-control" step="any" value="@Model.purchaseObject.Amount" placeholder="Amount" readonly required />
+                        </div>
+                    </div>
+
+
+                    <div class="col-lg-3 col-md-3">
+                        <div class="form-group">
+                            <label class="col-form-label" for="Amount_Others">Amt (Others)</label>
+                            <input type="number" id="Amount_OthersUpdate" name="Amount_Others" step="any" class="form-control" value="@Model.purchaseObject.Amount_Others" readonly placeholder="Amt Other" />
+                        </div>
+                    </div>
+
+                    @if (Configuration.GetSection("AppSettings").GetSection("IsDirectStockPurEnabled").Value == "true")
+                    {
+
+        <div class="col-lg-3 col-md-3">
+            <div class="form-group">
+                <label class="col-form-label" for="Ref">LOT#</label>
+                <input type="text" id="RefUpdate" name="Ref" class="form-control" step="any" value="@Model.purchaseObject.Ref" placeholder="LOT#" />
+            </div>
+        </div>
+
+                        <div class="col-lg-3 col-md-3">
+                            <div class="form-group">
+                                <label class="col-form-label" for="SellingPrice">Selling Price</label>
+
+                                <input type="text" class="form-control" id="InsertPurchaseMaster_DALInsertPurchaseMaster_DAL" name="Selling_Price" step="any" value="@Model.purchaseObject.Selling_Price" />
+                            </div>
+                        </div>
+
+                                        <div class="col-lg-3 col-md-3">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="SellingPrice">Other Cost</label>
+
+                                                <input type="text" class="form-control" id="OtherCost" name="OtherCost" step="any" value="@Model.purchaseObject.OtherCost" />
+                                            </div>
+                                        </div>}
+
+
+
+                </div>
+
+
+
+
+            </div>
+
+
+
+        </section>
+    </div>
+
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-sm btn-primary">Update</button>
+        <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Close</button>
+    </div>
+</form>
+
+<script>
+    function GetMakeCodeEditDetail() {
+
+        debugger;
+
+        var Chassis = $(".chassis").val();
+        //var Chassis = document.getElementById("Chassis").value;
+        console.log(Chassis);
+        if (Chassis == -1) {
+
+        }
+        else {
+            $.ajax({
+
+                type: "Get",
+                url: "/Stock/GetDetailsByCode",
+                data: { //Passing data
+                    Code: Chassis
+                },
+                datatype: "json",
+                success: function (response) {
+                    debugger
+
+                    $("#Make_IDUdpate").val(response.make_ID);
+                    //$("#loc").val(response.VehicalCountry);
+                    $("#Make_category_ID_Update").val(response.vehicalCategory);
+                    $("#DriveUpdate").val(response.drive);
+                    $("#EngineTypeUpdate").val(response.engine_Type);
+                    $("#FUEL_TYPE_Update").val(response.fuel_Type);
+                    $("#Door_Update").val(response.door);
+                    $("#HS_CODE_Update").val(response.hs_Code);
+                    console.log(response);
+                    var ID = response.make_ID;
+                    var procemessage = "<option value='0'> Please wait...</option>";
+                    $(".MakeModelClassUpdate").html(procemessage).show();
+
+
+                    if (!ID) {
+                        ID = 0;
+                        var emptyAppend = "<option value=''>Select</option>";
+                        $(".MakeModelClassUpdate").html(emptyAppend).show();
+
+                    } else {
+                        $.getJSON("/Stock/GetModelDescListByID", { Make_ID: ID }, function (data) {
+                            //first empty the model
+                            //debugger
+                            $(".MakeModelClassUpdate").empty();
+                            //Then append select
+                            $(".MakeModelClassUpdate").append("<option value=''>Select</option>");
+                            $.each(data, function (index, row) {
+                                debugger
+                                //Now here appending all options in the sub classification list
+                                //$(".MakeModelClass").append("<option value='" + row.modelDesc_ID + "'>" + row.modelDesciption + "</option>")
+                                var optionText = row.modelDesciption;
+                                $('.MakeModelClassUpdate').append($("<option></option>").attr("value", row.modelDesc_ID).text(optionText));
+                            });
+                            if (response.modelDesc_ID > 0) {
+                                $("#Model_IDUpdate").val(response.modelDesc_ID);
+                            }
+                        });
+                    }
+                }
+            })
+        }
+
+    }
+</script>

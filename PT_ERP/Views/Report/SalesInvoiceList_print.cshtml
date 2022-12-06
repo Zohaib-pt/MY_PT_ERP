@@ -1,0 +1,253 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OSales
+@using Microsoft.Extensions.Configuration
+    @inject IConfiguration Configuration
+@{
+    Layout = null;
+}
+
+<!DOCTYPE HTML>
+<HTML>
+<head>
+
+    <!-- Basic -->
+    <meta charset="UTF-8">
+
+    <title>@ViewBag.PageTitle</title>
+    <meta name="keywords" content="DearlerSol | Dealers Management System " />
+    <meta name="description" content="Vehicle Management System | Dealer Management System | Dealer ERP ">
+    <meta name="author" content="DealerSol.com">
+
+    <!-- Mobile Metas -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <!-- Favicon  -->
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+
+
+    <!-- Vendor CSS -->
+    <link rel="stylesheet" href="~/vendor/bootstrap/css/bootstrap.css" />
+
+
+
+
+
+
+
+
+
+
+
+
+    <style>
+        .moneycol {
+            text-align: right;
+        }
+
+        .controlheight {
+            height: 1px;
+            border: 1px solid #d3d3d3;
+            margin: 0px;
+        }
+
+            .controlheight table th, .table td {
+                padding: 5px;
+            }
+
+        .SumHeading {
+            background-color: #d3d3d3;
+            text-align: left;
+            font-weight: bold;
+            font-size: 16px
+        }
+
+        .ColHeading {
+            background-color: #d3d3d3;
+            font-size: 18px;
+            text-align: center
+        }
+    </style>
+
+
+</head>
+
+<BODY>
+
+
+    <div class="row">
+        <div class="col">
+            <section>
+                <header>
+                    <div class="row form-inline">
+                        @* Farzaib *@
+                        <div class="col-md-6 ">
+                            <div class="text-center">
+                                <h4 class="text-left" style="position:absolute; top:15%; left: 1.5%;">@Configuration.GetSection("AppSettings").GetSection("CompanyName").Value.ToString()</h4>
+                                <h3>Sale Invoice List</h3>
+                            </div>
+                        </div>
+                        @*<div class="col-md-12">
+
+            <h5 style="color:black;">
+                @Configuration.GetSection("AppSettings").GetSection("CompanyName").Value
+
+            </h5>
+            <p style="color:black;">
+                Phone No:
+
+
+            </p>
+        </div>*@
+                        @*<div class="col-md-12" style="text-align:center">
+
+                            <h3 style="color:black;">
+                                Sale Invoice List
+
+                            </h3>*@
+
+                    
+
+
+                    </div>
+                    @*<div class="row form-group">
+                            <div class="col-xs-12">
+                                <h6 style="text-align:center">From   - To   </h6>
+                            </div>
+                        </div>*@
+                </header>
+                <div>
+                    <table class="table table-bordered" @*id="datatable-default"*@>
+                        <thead>
+                            <tr class="ColHeading">
+
+
+
+
+
+                                <th>Ref</P></th>
+                                <th>Date</P></th>
+                                <th>Customer Name</th>
+                                <th>Remarks</th>
+                                <th>Total</th>
+                                <th>Paid</th>
+                                <th>Balance</th>
+                                <th>Status</th>
+
+
+
+
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            @{ int CounterTotal = 0;
+                                            int CounterTotalPaid = 0;
+                                            int CounterTotalBalance = 0; }
+
+                            @if (Model.SalesMasterIPagedList1 != null)
+                            {
+
+
+                                foreach (pa_SalesMaster_DAL item in Model.SalesMasterIPagedList1)
+                                {
+
+                                    int Total = (int)Convert.ToDouble(item.Total_Amt);
+
+                                    int TotalPaid = (int)Convert.ToDouble(item.Paid_amt);
+
+                                    int TotalBalance = (int)Convert.ToDouble(item.Bal_due);
+
+
+                                    CounterTotal += Total;
+                                    CounterTotalPaid += TotalPaid;
+                                    CounterTotalBalance += TotalBalance;
+
+
+
+                                    //ViewBag.Total = Total;
+                                    //double TotalPaid = Convert.ToDouble(string.IsNullOrEmpty(item.Total_Paid) == true ? "0" : item.Total_Paid);
+                                    //ViewBag.TotalPaid = TotalPaid;
+                                    //double TotalBalance = Convert.ToDouble(string.IsNullOrEmpty(item.Total_Bal_Due) == true ? "0" : item.Total_Bal_Due);
+                                    //ViewBag.TotalBalance = TotalBalance;
+
+
+
+
+
+                    <tr>
+
+                        <TD class="controlheight">@item.SaleRef</TD>
+                        <TD class="controlheight text-nowrap">@item.SaleDate</TD>
+                        <TD class="controlheight">@item.Customer_Name</TD>
+                        <TD class="controlheight">@item.Remarks</TD>
+                        <TD class="controlheight moneycol">@item.Total_Amt</TD>
+                        <TD class="controlheight moneycol">@item.Paid_amt</TD>
+                        <TD class="controlheight moneycol">@item.Bal_due</TD>
+                        <TD class="controlheight">@item.Status</TD>
+
+
+
+                    </tr>}
+                                }
+
+
+
+
+
+
+
+                        </tbody>
+                        <tfoot>
+                            @if (Model.SalesMasterListTOTAL1 != null)
+                            {
+                                foreach (pa_SalesMaster_DAL item in Model.SalesMasterListTOTAL1)
+                                {
+                                    //double Total = Convert.ToDouble(string.IsNullOrEmpty(item.Total_Master_Amount) == true ? "0" : item.Total_Master_Amount);
+                                    //ViewBag.Total = Total;
+                                    //double TotalPaid = Convert.ToDouble(string.IsNullOrEmpty(item.Total_Paid) == true ? "0" : item.Total_Paid);
+                                    //ViewBag.TotalPaid = TotalPaid;
+                                    //double TotalBalance = Convert.ToDouble(string.IsNullOrEmpty(item.Total_Bal_Due) == true ? "0" : item.Total_Bal_Due);
+                                    //ViewBag.TotalBalance = TotalBalance;
+
+                                        <tr>
+
+                                <th class="SumHeading">Total</th>
+
+                                <th class="controlheight"></th>
+                                <th class="controlheight"></th>
+                                <th class="controlheight"></th>
+                                <th class="controlheight moneycol">@string.Format("{0:0,0.00,0}", item.Total_Master_Amount)</th>
+                                <th class="controlheight moneycol">@string.Format("{0:0,0.00,0}", item.Total_Paid)</th>
+                                <th class="controlheight moneycol">@string.Format("{0:0,0.00,0}", item.Total_Bal_Due)</th>
+                                <th class="controlheight"></th>
+                             
+
+
+                            </tr>
+
+                                }
+                            }
+                            @*<tr>
+
+                                <th class="SumHeading">Total</th>
+
+                                <th class="controlheight"></th>
+                                <th class="controlheight"></th>
+                                <th class="controlheight"></th>
+                                <th class="controlheight moneycol">@string.Format("{0:0,0.00,0}", ViewBag.Total)</th>
+                                <th class="controlheight moneycol">@string.Format("{0:0,0.00,0}", ViewBag.TotalPaid)</th>
+                                <th class="controlheight moneycol">@string.Format("{0:0,0.00,0}", ViewBag.TotalBalance)</th>
+                                <th class="controlheight"></th>
+                             
+
+
+                            </tr>*@
+                        </tfoot>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </div>
+</BODY>
+</HTML>

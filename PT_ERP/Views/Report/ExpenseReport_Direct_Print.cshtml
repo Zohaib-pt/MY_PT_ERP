@@ -1,0 +1,271 @@
+﻿
+
+@using DAL
+@using DAL.Models
+@model DAL.oClasses.oReports
+@using Microsoft.Extensions.Configuration
+    @inject IConfiguration Configuration
+@{
+    Layout = null;
+    ViewBag.CompanyName = Configuration.GetSection("AppSettings").GetSection("CompanyName").Value;
+
+}
+
+<!DOCTYPE HTML>
+<HTML>
+<head>
+
+    <!-- Basic -->
+    <meta charset="UTF-8">
+
+    <title>@ViewBag.PageTitle</title>
+    <meta name="keywords" content="DearlerSol | Dealers Management System " />
+    <meta name="description" content="Vehicle Management System | Dealer Management System | Dealer ERP ">
+    <meta name="author" content="DealerSol.com">
+
+    <!-- Mobile Metas -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <!-- Favicon  -->
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+
+
+    <!-- Vendor CSS -->
+    <link rel="stylesheet" href="~/vendor/bootstrap/css/bootstrap.css" />
+
+
+
+
+
+
+    <style>
+        .moneycol {
+            text-align: right;
+        }
+
+        .controlheight {
+            height: 1px;
+            border: 1px solid #d3d3d3;
+            margin: 0px;
+        }
+
+            .controlheight table th, .table td {
+                padding: 5px;
+            }
+
+        .SumHeading {
+            background-color: #d3d3d3;
+            text-align: left;
+            font-weight: bold;
+            font-size: 16px
+        }
+
+        .ColHeading {
+            background-color: #d3d3d3;
+            font-size: 18px;
+            text-align: center
+        }
+        .DirectExpenseReport {
+            font-size: 20px;
+            padding-bottom: 20px;
+        }
+        .CompanyTitle {
+            font-size: 21px;
+            padding-bottom: 20px;
+        }
+        .startEnd {
+            font-size: 14px;
+            padding-top: 30px;
+            padding-right:50px;
+        }
+
+        
+    </style>
+
+
+</head>
+
+<BODY>
+
+
+    <div class="row">
+        <div class="col">
+            <section>
+                <header>
+                    <div class="row form-inline">
+
+                        @*<div class="col-md-12">
+
+            <h5 style="color:black;">
+                @Configuration.GetSection("AppSettings").GetSection("CompanyName").Value
+
+            </h5>
+            <p style="color:black;">
+                Phone No:
+
+
+            </p>
+        </div>*@
+                        @*FARZAIB*@
+                        <div class="col-md-6 ">
+                            <div class="text-center">
+                                @if (@TempData["Start"] != null && @TempData["End"] != null)
+                                {
+                            <h5 class="startEnd text-right"> From:   @TempData["Start"]    till:   @TempData["End"]</h5>
+                            }
+                                <h4 class="text-left" style="position:absolute; top:10%; left: 1.5%;">@Configuration.GetSection("AppSettings").GetSection("CompanyName").Value.ToString()</h4>
+                                <h3>Direct Expense Report</h3>
+
+                            </div>
+                        </div>
+                        @*<div class="col-md-12" style="text-align:center">
+
+                            <h2 class="CompanyTitle" style="text-align:left"><b><u>@ViewBag.CompanyName</u></b></h2>
+                            <h4 class="DirectExpenseReport" style="float: right"><b>Direct Expense Report</b></h4>
+
+
+                            @if (@TempData["Start"] != null && @TempData["End"] != null)
+                            {
+                    <h5 class="startEnd" style="float: left"> From:   @TempData["Start"]    till:   @TempData["End"]</h5>}
+
+
+                        </div>*@
+
+
+                    </div>
+                    @*<div class="row form-group">
+                            <div class="col-xs-12">
+                                <h6 style="text-align:center">From   - To   </h6>
+                            </div>
+                        </div>*@
+                </header>
+                <div>
+                    <table class="table table-bordered" @*id="datatable-default"*@>
+                        <thead>
+                            <tr class="ColHeading">
+
+
+
+                           
+                                <th>PayVia</></th>
+                 
+                                <th>Chassis_No</th>
+                                <th>PaymentDate</th>
+                                <th>Currency_Rate</th>
+                                <th>Amount</th>
+                                <th>VAT_Exp</th>
+                                <th>Total_Amount</th>
+
+                            </tr>
+
+
+
+                
+                        </thead>
+                        <tbody>
+
+
+                            @if (Model.ExpenseReport_Direct != null)
+                            {
+
+
+                                foreach (var item in Model.ExpenseReport_Direct.GroupBy(item => new
+                                {
+                                    item.ExpenseAccount,
+
+
+
+                                }))
+
+                                {
+
+                        <tr class="gradeX odd" role="row">
+                            <th>@Html.DisplayFor(modelItem => item.Key.ExpenseAccount)</th>
+                        </tr>
+ ViewBag.Total = 0;
+                        foreach (var item1 in item)
+                        {
+
+                            double Total = Convert.ToDouble(string.IsNullOrEmpty(item1.Total_Amount) == true ? "0" : item1.Total_Amount);
+                            ViewBag.Total = Total + ViewBag.Total;
+
+
+                        <tr>
+
+                          
+                            <TD class="controlheight">@item1.PayVia</TD>
+
+                            <TD class="controlheight">@item1.Chassis_No</TD>
+                            <TD class="controlheight">@item1.PaymentDate</TD>
+                            <TD class="controlheight">@item1.Currency_Rate</TD>
+                            <TD class="controlheight moneycol">@item1.Amount</TD>
+                            <TD class="controlheight moneycol">@item1.VAT_Exp</TD>
+                            <TD class="controlheight moneycol">@item1.Total_Amount</TD>
+
+
+                        </tr> }
+
+
+                        <tr>
+
+                            <TD style="font-weight:bold" class="controlheight">SubTotal</TD>
+                            <TD class="controlheight"></TD>
+
+
+
+                         
+
+                            <TD class="controlheight"></TD>
+
+                            <TD class="controlheight"></TD>
+
+                            <TD class="controlheight"></TD>
+
+                            <TD class="controlheight"></TD>
+
+
+                            @if (ViewBag.Total != null)
+                            {
+                        <TD class="controlheight moneycol">@string.Format("{0:0,0.00,0}", ViewBag.Total)</TD> }
+                                            else
+                                            {
+                        <TD class="controlheight moneycol">@ViewBag.Total</TD>}
+
+
+
+                        </tr>}
+                                    }
+
+                            <tr>
+
+                                <TD class="SumHeading">Total</TD>
+                                <TD class="controlheight"></TD>
+
+                                <TD class="controlheight"></TD>
+
+
+
+                            
+
+                                <TD class="controlheight"></TD>
+
+                                <TD class="controlheight"></TD>
+
+                                <TD class="controlheight"></TD>
+
+                                <TD class="controlheight moneycol">@Model.ExpenseReport_TTL_Direct.Total_Amount</TD>
+
+
+
+
+                            </tr>
+
+
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </div>
+</BODY>
+</HTML>

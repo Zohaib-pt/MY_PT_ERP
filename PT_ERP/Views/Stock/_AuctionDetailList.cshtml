@@ -1,0 +1,61 @@
+﻿
+
+@using DAL
+@using DAL.Models
+@model DAL.oClasses.OStock
+
+
+<table class="table table-responsive-md table-bordered mb-0">
+    <thead>
+        <tr>
+            <th>Edit/Delete</th>
+            <th>Chassis</th>
+            <th>Make</th>
+            <th>Model</th>
+            <th>Year</th>
+
+
+
+
+
+
+        </tr>
+    </thead>
+    <tbody>
+
+        @if (Model.AuctionDetailList != null)
+        {
+
+
+            foreach (Pa_Auction_Detsils item in Model.AuctionDetailList)
+            {
+
+
+
+<tr>
+
+
+    <td>
+
+        <a onclick="DeleteStockDetail('@item.Detail_ID');" data-toggle="modal" data-target="#DeleteStockDetailModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+    </td>
+    <td>@Html.DisplayFor(modelItem => item.Chassis)</td>
+    <td>
+        @Html.DisplayFor(modelItem => item.Make)
+    </td>
+    <td>@Html.DisplayFor(modelItem => item.Model)</td>
+    <td>@Html.DisplayFor(modelItem => item.Year)</td>
+
+
+
+
+
+</tr>
+}
+}
+
+
+    </tbody>
+
+</table>

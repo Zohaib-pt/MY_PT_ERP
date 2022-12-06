@@ -1,0 +1,623 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup Label="Globals">
+    <SccProjectName>SAK</SccProjectName>
+    <SccProvider>SAK</SccProvider>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccLocalPath>SAK</SccLocalPath>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>29388ec0-a716-4a73-90d3-7c9cde0e2000</UserSecretsId>
+    <NoWin32Manifest>true</NoWin32Manifest>
+    <ApplicationIcon />
+    <OutputType>WinExe</OutputType>
+    <StartupObject />
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="Views\Purchases\NewPurchasejp.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AspNetCore.Reporting" Version="2.1.0" />
+    <PackageReference Include="Chart.js" Version="2.9.3" />
+    <PackageReference Include="ClosedXML" Version="0.95.4" />
+    <PackageReference Include="EPPlus" Version="5.7.4" />
+    <PackageReference Include="FreeSpire.Doc" Version="7.11.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="3.1.8" />
+    <PackageReference Include="Microsoft.AspNetCore.Session" Version="2.2.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer.Design" Version="1.1.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.5" />
+    <PackageReference Include="NumericWordsConversion" Version="2.0.0" />
+    <PackageReference Include="Rotativa.AspNetCore" Version="1.2.0-beta" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.3" />
+    <PackageReference Include="System.CodeDom" Version="5.0.0" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
+    <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="5.0.0" />
+    <PackageReference Include="X.PagedList.Mvc.Core" Version="8.0.7" />
+    <PackageReference Include="ZXing.Net.Bindings.Windows.Compatibility" Version="0.16.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DAL\DAL.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="RdlcReports\Demo\" />
+    <Folder Include="wwwroot\CommonImages\StockImages\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Views\Accounts\ApprovalList.cshtml" />
+    <None Include="Views\Accounts\BalanceSheet.cshtml" />
+    <None Include="Views\Accounts\chartofaccounts.cshtml" />
+    <None Include="Views\Accounts\IncomeStatement.cshtml" />
+    <None Include="Views\Accounts\JournalVoucherList.cshtml" />
+    <None Include="Views\Accounts\Ledger.cshtml" />
+    <None Include="Views\Accounts\NewJournalVoucher.cshtml" />
+    <None Include="Views\Accounts\NewPaymentVendor.cshtml" />
+    <None Include="Views\Accounts\NewPaymentVouchersGeneral.cshtml" />
+    <None Include="Views\Accounts\PaymentsList.cshtml" />
+    <None Include="Views\Accounts\ReceiptList.cshtml" />
+    <None Include="Views\Accounts\ReceiptVoucherGen.cshtml" />
+    <None Include="Views\Accounts\ReceiptVoucherSales.cshtml" />
+    <None Include="Views\Accounts\TrailBalance.cshtml" />
+    <None Include="Views\Accounts\_JournalVoucherPartialView.cshtml" />
+    <None Include="Views\Accounts\_PaymentAttachment.cshtml" />
+    <None Include="Views\Accounts\_PaymentBalance.cshtml" />
+    <None Include="Views\Accounts\_PaymentDetailGeneralList_Partial.cshtml" />
+    <None Include="Views\Accounts\_PaymentDetailVendorList_Partial.cshtml" />
+    <None Include="Views\Accounts\_ReceiptAttachment.cshtml" />
+    <None Include="Views\Accounts\_ReceiptBalance.cshtml" />
+    <None Include="Views\Accounts\_ReceiptDetailGenList_Partial.cshtml" />
+    <None Include="Views\Accounts\_ReceiptDetail_SaleList_Partial.cshtml" />
+    <None Include="Views\Accounts\_Search_PaymentsList_Partial.cshtml" />
+    <None Include="Views\Accounts\_Search_Receiptist_Partial.cshtml" />
+    <None Include="Views\Admin\AdminRolesList.cshtml" />
+    <None Include="Views\Admin\AllRoles.cshtml" />
+    <None Include="Views\Admin\GlobalSetting.cshtml" />
+    <None Include="Views\Admin\UserManagement.cshtml" />
+    <None Include="Views\Admin\ViewRolesRight.cshtml" />
+    <None Include="Views\BasicData\BasicBank.cshtml" />
+    <None Include="Views\BasicData\CarLocations.cshtml" />
+    <None Include="Views\BasicData\Category.cshtml" />
+    <None Include="Views\BasicData\Color.cshtml" />
+    <None Include="Views\BasicData\CurrencyMaster.cshtml" />
+    <None Include="Views\BasicData\CustomersMaster.cshtml" />
+    <None Include="Views\BasicData\Destinations.cshtml" />
+    <None Include="Views\BasicData\EngineType.cshtml" />
+    <None Include="Views\BasicData\Global_Location.cshtml" />
+    <None Include="Views\BasicData\Make.cshtml" />
+    <None Include="Views\BasicData\MakeCountry.cshtml" />
+    <None Include="Views\BasicData\Model.cshtml" />
+    <None Include="Views\BasicData\ModelYear.cshtml" />
+    <None Include="Views\BasicData\Partners.cshtml" />
+    <None Include="Views\BasicData\PartnersAgent.cshtml" />
+    <None Include="Views\BasicData\PartnersExport.cshtml" />
+    <None Include="Views\BasicData\PartnersGarage.cshtml" />
+    <None Include="Views\BasicData\PartnersSeller.cshtml" />
+    <None Include="Views\BasicData\PartnersShipping.cshtml" />
+    <None Include="Views\BasicData\PortOfExit.cshtml" />
+    <None Include="Views\BasicData\ShowRoom.cshtml" />
+    <None Include="Views\BasicData\_CustomerMasterAttachments.cshtml" />
+    <None Include="Views\BasicData\_ShowroomAttachments.cshtml" />
+    <None Include="Views\BasicData\_VendorMasterAttachments.cshtml" />
+    <None Include="Views\Delivery\DepositList.cshtml" />
+    <None Include="Views\Delivery\DepositRecieved.cshtml" />
+    <None Include="Views\Delivery\DepositReturn.cshtml" />
+    <None Include="Views\Delivery\NewDelivery.cshtml" />
+    <None Include="Views\Delivery\NewDeliveryList.cshtml" />
+    <None Include="Views\Delivery\NewPapers.cshtml" />
+    <None Include="Views\Delivery\PapersList.cshtml" />
+    <None Include="Views\Delivery\_DeliverySearchList.cshtml" />
+    <None Include="Views\Delivery\_DepositAttachment.cshtml" />
+    <None Include="Views\Delivery\_DepositReceivedPartial_1.cshtml" />
+    <None Include="Views\Delivery\_DepositReceived_ReceiptGen.cshtml" />
+    <None Include="Views\Delivery\_DepositRetunPaymentPartial.cshtml" />
+    <None Include="Views\Delivery\_PartialDeliveryDetail.cshtml" />
+    <None Include="Views\HR\GeneratePayroll.cshtml" />
+    <None Include="Views\HR\ListEmployee.cshtml" />
+    <None Include="Views\HR\NewEmployee.cshtml" />
+    <None Include="Views\HR\PaySlipVouchers.cshtml" />
+    <None Include="Views\HR\_EmployeeDocPartial.cshtml" />
+    <None Include="Views\Inventory\NewProductFormula.cshtml" />
+    <None Include="Views\Inventory\NewProduction.cshtml" />
+    <None Include="Views\Inventory\ProductFormulaList.cshtml" />
+    <None Include="Views\Inventory\ProductionList.cshtml" />
+    <None Include="Views\Inventory\_InventoryMasterInvoiceListSearch.cshtml" />
+    <None Include="Views\Inventory\_ProductFormulaDetailList.cshtml" />
+    <None Include="Views\Login\Index.cshtml" />
+    <None Include="Views\Purchases\NewPurchase.cshtml" />
+    <None Include="Views\Purchases\OtherPurchase.cshtml" />
+    <None Include="Views\Purchases\OtherPurchaseList.cshtml" />
+    <None Include="Views\Purchases\PurchaseList.cshtml" />
+    <None Include="Views\Purchases\PurchaseReturn.cshtml" />
+    <None Include="Views\Purchases\PurchaseReturnList.cshtml" />
+    <None Include="Views\Purchases\StockInPO.cshtml" />
+    <None Include="Views\Purchases\UploadStockBulk.cshtml" />
+    <None Include="Views\Purchases\_PurchaseDetailByIDPartial.cshtml" />
+    <None Include="Views\Purchases\_PurchaseDetailPartial.cshtml" />
+    <None Include="Views\Purchases\_PurchaseDetail_Other_Partial.cshtml" />
+    <None Include="Views\Purchases\_PurchaseDetail_Return_Partial.cshtml" />
+    <None Include="Views\Purchases\_PurchaseListAttachment.cshtml" />
+    <None Include="Views\Purchases\_PurchaseListOtherAttachment.cshtml" />
+    <None Include="Views\Purchases\_PurchaseListSearchPartial.cshtml" />
+    <None Include="Views\Purchases\_PurchaseOtherListSearchPartial.cshtml" />
+    <None Include="Views\Purchases\_PurchaseReturnListSearchPartial.cshtml" />
+    <None Include="Views\Purchases\_StockBulkUploadPartial.cshtml" />
+    <None Include="Views\Report\AM\FooterDeliveryNote.cshtml" />
+    <None Include="Views\Report\AM\FooterDepositReturnVoucher.cshtml" />
+    <None Include="Views\Report\AM\FooterDepositVoucher.cshtml" />
+    <None Include="Views\Report\AM\FooterHeaderInvoice.cshtml" />
+    <None Include="Views\Report\AM\FooterHeaderInvoicePerformaInv.cshtml" />
+    <None Include="Views\Report\AM\FooterHeaderInvoiceSalesInv.cshtml" />
+    <None Include="Views\Report\AM\FooterPaymentVoucher.cshtml" />
+    <None Include="Views\Report\AM\FooterReceiptVoucher.cshtml" />
+    <None Include="Views\Report\AM\HeaderDeliveryNote.cshtml" />
+    <None Include="Views\Report\AM\HeaderDepositReturn.cshtml" />
+    <None Include="Views\Report\AM\HeaderDepositVoucher.cshtml" />
+    <None Include="Views\Report\AM\HEADERPurchaseInvoice.cshtml" />
+    <None Include="Views\Report\AM\HeaderReceiptVoucher.cshtml" />
+    <None Include="Views\Report\AM\PrintFooter.cshtml" />
+    <None Include="Views\Report\AM\PrintHeader.cshtml" />
+    <None Include="Views\Report\AM\PrintHeaderInvoice.cshtml" />
+    <None Include="Views\Report\AM\PrintHeaderInvoicePerformaInv.cshtml" />
+    <None Include="Views\Report\AM\PrintHeaderInvoiceSalesInv.cshtml" />
+    <None Include="Views\Report\CP\FooterHeaderInvoice.cshtml" />
+    <None Include="Views\Report\CP\FooterHeaderInvoiceSalesInv.cshtml" />
+    <None Include="Views\Report\CP\FooterPaymentVoucher.cshtml" />
+    <None Include="Views\Report\CP\FooterReceiptVoucher.cshtml" />
+    <None Include="Views\Report\CP\HEADERPurchaseInvoice.cshtml" />
+    <None Include="Views\Report\CP\HeaderReceiptVoucher.cshtml" />
+    <None Include="Views\Report\CP\PrintFooter.cshtml" />
+    <None Include="Views\Report\CP\PrintHeader.cshtml" />
+    <None Include="Views\Report\CP\PrintHeaderInvoice.cshtml" />
+    <None Include="Views\Report\CP\PrintHeaderInvoiceSalesInv.cshtml" />
+    <None Include="Views\Report\GL\FooterDepositReturnVoucher.cshtml" />
+    <None Include="Views\Report\GL\FooterDepositVoucher.cshtml" />
+    <None Include="Views\Report\GL\FooterHeaderInvoice.cshtml" />
+    <None Include="Views\Report\GL\FooterHeaderInvoiceSalesInvGLM.cshtml" />
+    <None Include="Views\Report\GL\FooterPaymentVoucher.cshtml" />
+    <None Include="Views\Report\GL\FooterReceiptVoucherGLM.cshtml" />
+    <None Include="Views\Report\GL\HeaderDepositVoucher.cshtml" />
+    <None Include="Views\Report\GL\HEADERPurchaseInvoice.cshtml" />
+    <None Include="Views\Report\GL\HeaderReceiptVoucher.cshtml" />
+    <None Include="Views\Report\GL\PrintFooter.cshtml" />
+    <None Include="Views\Report\GL\PrintHeader.cshtml" />
+    <None Include="Views\Report\GL\PrintHeaderInvoice.cshtml" />
+    <None Include="Views\Report\GL\PrintHeaderInvoiceSalesInv.cshtml" />
+    <None Include="Views\Report\HS\FooterHeaderInvoice.cshtml" />
+    <None Include="Views\Report\HS\FooterHeaderInvoiceSalesInv.cshtml" />
+    <None Include="Views\Report\HS\FooterPaymentVoucher.cshtml" />
+    <None Include="Views\Report\HS\FooterReceiptVoucher.cshtml" />
+    <None Include="Views\Report\HS\HEADERPurchaseInvoice.cshtml" />
+    <None Include="Views\Report\HS\HeaderReceiptVoucher.cshtml" />
+    <None Include="Views\Report\HS\PrintFooter.cshtml" />
+    <None Include="Views\Report\HS\PrintHeader.cshtml" />
+    <None Include="Views\Report\HS\PrintHeaderInvoice.cshtml" />
+    <None Include="Views\Report\HS\PrintHeaderInvoiceSalesInv.cshtml" />
+    <None Include="Views\Report\IM\FooterDeliveryNote.cshtml" />
+    <None Include="Views\Report\IM\FooterDepositReturnVoucher.cshtml" />
+    <None Include="Views\Report\IM\FooterDepositVoucher.cshtml" />
+    <None Include="Views\Report\IM\FooterHeaderInvoice.cshtml" />
+    <None Include="Views\Report\IM\FooterHeaderInvoicePerformaInv.cshtml" />
+    <None Include="Views\Report\IM\FooterHeaderInvoiceSalesInv.cshtml" />
+    <None Include="Views\Report\IM\FooterPaymentVoucher.cshtml" />
+    <None Include="Views\Report\IM\FooterReceiptVoucher.cshtml" />
+    <None Include="Views\Report\IM\HeaderDeliveryNote.cshtml" />
+    <None Include="Views\Report\IM\HeaderDepositReturn.cshtml" />
+    <None Include="Views\Report\IM\HeaderDepositVoucher.cshtml" />
+    <None Include="Views\Report\IM\HEADERPurchaseInvoice.cshtml" />
+    <None Include="Views\Report\IM\HeaderReceiptVoucher.cshtml" />
+    <None Include="Views\Report\IM\PrintFooter.cshtml" />
+    <None Include="Views\Report\IM\PrintHeader.cshtml" />
+    <None Include="Views\Report\IM\PrintHeaderInvoice.cshtml" />
+    <None Include="Views\Report\IM\PrintHeaderInvoicePerformaInv.cshtml" />
+    <None Include="Views\Report\IM\PrintHeaderInvoiceSalesInv.cshtml" />
+    <None Include="Views\Report\QZ\FooterDeliveryNote.cshtml" />
+    <None Include="Views\Report\QZ\FooterDepositReturnVoucher.cshtml" />
+    <None Include="Views\Report\QZ\FooterDepositVoucher.cshtml" />
+    <None Include="Views\Report\QZ\FooterHeaderInvoice.cshtml" />
+    <None Include="Views\Report\QZ\FooterHeaderInvoicePerformaInv.cshtml" />
+    <None Include="Views\Report\QZ\FooterHeaderInvoiceSalesInv.cshtml" />
+    <None Include="Views\Report\QZ\FooterPaymentVoucher.cshtml" />
+    <None Include="Views\Report\QZ\FooterReceiptVoucher.cshtml" />
+    <None Include="Views\Report\QZ\HeaderDeliveryNote.cshtml" />
+    <None Include="Views\Report\QZ\HeaderDepositReturn.cshtml" />
+    <None Include="Views\Report\QZ\HeaderDepositVoucher.cshtml" />
+    <None Include="Views\Report\QZ\HEADERPurchaseInvoice.cshtml" />
+    <None Include="Views\Report\QZ\HEADERPurchaseInvoice_GRV.cshtml" />
+    <None Include="Views\Report\QZ\HEADERPurchaseInvoice_Return.cshtml" />
+    <None Include="Views\Report\QZ\HeaderReceiptVoucher.cshtml" />
+    <None Include="Views\Report\QZ\PrintFooter.cshtml" />
+    <None Include="Views\Report\QZ\PrintHeader.cshtml" />
+    <None Include="Views\Report\QZ\PrintHeaderInvoice.cshtml" />
+    <None Include="Views\Report\QZ\PrintHeaderInvoicePerformaInv.cshtml" />
+    <None Include="Views\Report\QZ\PrintHeaderInvoiceSalesInv.cshtml" />
+    <None Include="Views\Report\QZ\PrintHeaderInvoiceSalesInv_DO.cshtml" />
+    <None Include="Views\Report\QZ\PrintHeaderInvoiceSalesInv_Return.cshtml" />
+    <None Include="Views\Report\QZ\PrintHeaderInvoiceSalesInv_SP.cshtml" />
+    <None Include="Views\Report\QZ\PrintHeaderInvoiceSalesInv_SP_Booking.cshtml" />
+    <None Include="Views\Report\QZ\_InventoryReportItemLocationDetailsSearch.cshtml" />
+    <None Include="Views\Sales\NewPerformaInvoice.cshtml" />
+    <None Include="Views\Sales\NewSalesBooking.cshtml" />
+    <None Include="Views\Sales\NewSalesCancelReturn.cshtml" />
+    <None Include="Views\Sales\NewSalesInvoice.cshtml" />
+    <None Include="Views\Sales\PerformaInvoiceList.cshtml" />
+    <None Include="Views\Sales\SalesBookingList.cshtml" />
+    <None Include="Views\Sales\SalesCancelReturnList.cshtml" />
+    <None Include="Views\Sales\SalesInvoiceList.cshtml" />
+    <None Include="Views\Sales\VehicleDisplay.cshtml" />
+    <None Include="Views\Sales\VehicleDisplayList.cshtml" />
+    <None Include="Views\Sales\_SalesBookingDetailList.cshtml" />
+    <None Include="Views\Sales\_SalesCancelReturnDetailList.cshtml" />
+    <None Include="Views\Sales\_SalesInvoiceAttachment.cshtml" />
+    <None Include="Views\Sales\_SalesInvoiceDetailList.cshtml" />
+    <None Include="Views\Sales\_SalesMasterBookingListSearch.cshtml" />
+    <None Include="Views\Sales\_SalesMasterInvoiceListSearch.cshtml" />
+    <None Include="Views\Sales\_SalesMasterPerformaInvoiceListSearch.cshtml" />
+    <None Include="Views\Sales\_SalesMasterReturnInvoiceListSearch.cshtml" />
+    <None Include="Views\Sales\_SalesPerformaDetailList.cshtml" />
+    <None Include="Views\Sales\_VehDisplayPartial.cshtml" />
+    <None Include="Views\Shared\Error.cshtml" />
+    <None Include="Views\Shared\_CompanyWise.cshtml" />
+    <None Include="Views\Shared\_Footer.cshtml" />
+    <None Include="Views\Shared\_header.cshtml" />
+    <None Include="Views\Shared\_Layout.cshtml" />
+    <None Include="Views\Shared\_LayoutTablePages.cshtml" />
+    <None Include="Views\Shared\_Menu.cshtml" />
+    <None Include="Views\Shared\_ValidationScriptsPartial.cshtml" />
+    <None Include="Views\Stock\AddAuction.cshtml" />
+    <None Include="Views\Stock\AddNewStock.cshtml" />
+    <None Include="Views\Stock\AuctionList.cshtml" />
+    <None Include="Views\Stock\BulkUpdateStock.cshtml" />
+    <None Include="Views\Stock\NewPurchaseMasterJP.cshtml" />
+    <None Include="Views\Stock\NewVanning.cshtml" />
+    <None Include="Views\Stock\PaperList.cshtml" />
+    <None Include="Views\Stock\PaperManager.cshtml" />
+    <None Include="Views\Stock\PurchaseListJP.cshtml" />
+    <None Include="Views\Stock\reksolist.cshtml" />
+    <None Include="Views\Stock\reksolist_Print.cshtml" />
+    <None Include="Views\Stock\shippinginfo.cshtml" />
+    <None Include="Views\Stock\Shipping_infoList.cshtml" />
+    <None Include="Views\Stock\StockList.cshtml" />
+    <None Include="Views\Stock\StockListBySearchFilers_Sales.cshtml" />
+    <None Include="Views\Stock\StockList_im.cshtml" />
+    <None Include="Views\Stock\StockList_MM.cshtml" />
+    <None Include="Views\Stock\StockList_Sales.cshtml" />
+    <None Include="Views\Stock\VanningList.cshtml" />
+    <None Include="Views\Stock\VehicleListwithShaken.cshtml" />
+    <None Include="Views\Stock\_AuctionDetailList.cshtml" />
+    <None Include="Views\Stock\_AuctionListSearchPartial.cshtml" />
+    <None Include="Views\Stock\_PaperList.cshtml" />
+    <None Include="Views\Stock\_PurchaseListJP_SearchFilter.cshtml" />
+    <None Include="Views\Stock\_PurchaseMasterJPDetailList.cshtml" />
+    <None Include="Views\Stock\_reksolist_SearchFilter.cshtml" />
+    <None Include="Views\Stock\_Shipping_infoDetailByIDPartial.cshtml" />
+    <None Include="Views\Stock\_Shipping_infoDetailPartial.cshtml" />
+    <None Include="Views\Stock\_Shipping_infoList.cshtml" />
+    <None Include="Views\Stock\_StockListAttachment.cshtml" />
+    <None Include="Views\Stock\_StockListSearchPartial.cshtml" />
+    <None Include="Views\Stock\_StockListSearchPartial_im.cshtml" />
+    <None Include="Views\Stock\_StockListSearchPartial_MM.cshtml" />
+    <None Include="Views\Stock\_VanningDetailByIDPartial.cshtml" />
+    <None Include="Views\Stock\_VanningDetailPartial.cshtml" />
+    <None Include="Views\Stock\_VanningList.cshtml" />
+    <None Include="wwwroot\js\custom.js" />
+    <None Include="wwwroot\js\examples\examples.advanced.form.js" />
+    <None Include="wwwroot\js\examples\examples.ajax.made.easy.js" />
+    <None Include="wwwroot\js\examples\examples.calendar.js" />
+    <None Include="wwwroot\js\examples\examples.charts.js" />
+    <None Include="wwwroot\js\examples\examples.dashboard.js" />
+    <None Include="wwwroot\js\examples\examples.datatables.ajax.js" />
+    <None Include="wwwroot\js\examples\examples.datatables.default.js" />
+    <None Include="wwwroot\js\examples\examples.datatables.editable.js" />
+    <None Include="wwwroot\js\examples\examples.datatables.row.with.details.js" />
+    <None Include="wwwroot\js\examples\examples.datatables.tabletools.js" />
+    <None Include="wwwroot\js\examples\examples.ecommerce.dashboard.js" />
+    <None Include="wwwroot\js\examples\examples.ecommerce.datatables.list.js" />
+    <None Include="wwwroot\js\examples\examples.ecommerce.form.js" />
+    <None Include="wwwroot\js\examples\examples.ecommerce.orders.detail.js" />
+    <None Include="wwwroot\js\examples\examples.ecommerce.sidebar.overlay.js" />
+    <None Include="wwwroot\js\examples\examples.gmap.js" />
+    <None Include="wwwroot\js\examples\examples.header.menu.js" />
+    <None Include="wwwroot\js\examples\examples.landing.dashboard.js" />
+    <None Include="wwwroot\js\examples\examples.lightbox.js" />
+    <None Include="wwwroot\js\examples\examples.loading.overlay.js" />
+    <None Include="wwwroot\js\examples\examples.loading.progress.js" />
+    <None Include="wwwroot\js\examples\examples.lockscreen.js" />
+    <None Include="wwwroot\js\examples\examples.map.builder.js" />
+    <None Include="wwwroot\js\examples\examples.mediagallery.js" />
+    <None Include="wwwroot\js\examples\examples.modals.js" />
+    <None Include="wwwroot\js\examples\examples.nestable.js" />
+    <None Include="wwwroot\js\examples\examples.notifications.js" />
+    <None Include="wwwroot\js\examples\examples.portlets.js" />
+    <None Include="wwwroot\js\examples\examples.session.timeout.js" />
+    <None Include="wwwroot\js\examples\examples.timeline.js" />
+    <None Include="wwwroot\js\examples\examples.treeview.js" />
+    <None Include="wwwroot\js\examples\examples.validation.js" />
+    <None Include="wwwroot\js\examples\examples.vector.maps.js" />
+    <None Include="wwwroot\js\examples\examples.widgets.js" />
+    <None Include="wwwroot\js\examples\examples.wizard.js" />
+    <None Include="wwwroot\js\site.js" />
+    <None Include="wwwroot\js\theme.admin.extension.js" />
+    <None Include="wwwroot\js\theme.init.js" />
+    <None Include="wwwroot\js\theme.js" />
+    <None Include="wwwroot\lib\Chart.Js\dist\Chart.bundle.js" />
+    <None Include="wwwroot\lib\Chart.Js\dist\Chart.bundle.min.js" />
+    <None Include="wwwroot\lib\Chart.Js\dist\Chart.js" />
+    <None Include="wwwroot\lib\Chart.Js\dist\Chart.min.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="DataSet\AccountDataSet.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AccountDataSet.xsd</DependentUpon>
+    </Compile>
+    <Compile Update="DataSet\PurchaseDataSet.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>PurchaseDataSet.xsd</DependentUpon>
+    </Compile>
+    <Compile Update="DataSet\SaleDataSet.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>SaleDataSet.xsd</DependentUpon>
+    </Compile>
+    <Compile Update="DataSet\StockDataSet.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>StockDataSet.xsd</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Views\Report\SalesListJP_Print.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="DataSet\AccountDataSet.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>AccountDataSet.Designer.cs</LastGenOutput>
+    </None>
+    <None Update="DataSet\PurchaseDataSet.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>PurchaseDataSet.Designer.cs</LastGenOutput>
+    </None>
+    <None Update="DataSet\SaleDataSet.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>SaleDataSet.Designer.cs</LastGenOutput>
+    </None>
+    <None Update="DataSet\StockDataSet.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>StockDataSet.Designer.cs</LastGenOutput>
+    </None>
+    <None Update="RdlcReports\Gulfline\Balance_Sheet.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\Gulfline\CustomerReport.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\Balance_Sheet.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\CustomerReport.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\dvclaim_GL.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\dvclaim_GL_NewCompany.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\dv_new_GL.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\dv_new_GL_NewCompany.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\Income_Statement.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\LedgerList.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\MultipleSOandDO_GL.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\PayableSummary.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\Payments_Report.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\PerformaInvoice_Report.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\PurchaseInvoicePrint_GL.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\PurchaseOther_Report.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\PurchaseReturn_Report.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\Purchase_Report.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\PV_GL.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\PV_GL_NewCompany.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\Receipt_Report.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\Recievable_Summary.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\RV_GL.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\RV_GL_NewCompany.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\saleinvoiceprintproformanew_GL.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\SaleReport.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\SalesBooking_Report.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\SalesInvoicePrintAgreement_GL.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\SalesInvoicePrintAgreement_HC.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\SalesInvoicePrint_HC.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\SalesInvoice_Report.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\SalesReturn_Report.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\StockReport.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\Stock_Report.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\vehDisplayShowroomPrint_GL.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\VendorReport.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\Gulfline\dvclaim_GL.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\Gulfline\dvclaim_GL_NewCompany.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\Gulfline\dv_new_GL.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\Gulfline\dv_new_GL_NewCompany.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\Gulfline\Income_Statement.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\Gulfline\LedgerList.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\Gulfline\MultipleSOandDO_GL.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\Gulfline\PayableSummary.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\Gulfline\Payments_Report.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\Gulfline\PerformaInvoice_Report.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\Gulfline\PurchaseInvoicePrint_GL.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\Gulfline\PurchaseOther_Report.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\Gulfline\PurchaseReturn_Report.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\Gulfline\Purchase_Report.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\Gulfline\PV_GL.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\Gulfline\PV_GL_NewCompany.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\Gulfline\Receipt_Report.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\Gulfline\Recievable_Summary.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\Gulfline\RV_GL.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\Gulfline\RV_GL_NewCompany.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\Gulfline\saleinvoiceprintproformanew_GL.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\Gulfline\SaleReport.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\Gulfline\SalesBooking_Report.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\Gulfline\SalesInvoicePrintAgreement_GL.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\Gulfline\SalesInvoicePrint_HC.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\Gulfline\SalesInvoicePrintAgreement_HC.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\Gulfline\SalesInvoice_Report.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\Gulfline\SalesReturn_Report.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\Gulfline\StockReport.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\Gulfline\Stock_Report.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\Gulfline\vehDisplayShowroomPrint_GL.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="RdlcReports\Gulfline\VendorReport.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

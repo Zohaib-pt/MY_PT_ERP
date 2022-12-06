@@ -1,0 +1,319 @@
+﻿
+@using DAL
+@using DAL.Models
+@model DAL.oClasses.oReports
+@using X.PagedList.Mvc.Core; @*//import this so we get our HTML Helper*@
+@using X.PagedList;  @*//import this so we can cast our list to IPagedList*@
+
+
+@{ ViewData["Title"] = "ReceivedTaxReport";
+    Layout = "~/Views/Shared/_LayoutTablePages.cshtml"; }
+
+<header class="page-header">
+    <h2>@ViewBag.SectionHeaderTitle</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+
+            <li><a><span>@ViewBag.BreadCumController</span></a></li>
+            <li><a asp-area="" asp-controller="@ViewBag.BreadCumController" asp-action="@ViewBag.BreadCumAction"><span>@ViewBag.SectionSub_HeaderTitle</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+
+<div class="row">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+<div class="col-lg-12">
+    @if (TempData["Success"] != null)
+    {
+<div class="alert alert-info">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+    <strong>Success!</strong> @TempData["Success"] <a href="" class="alert-link"></a>
+</div>}
+
+    @if (TempData["Error"] != null)
+    {
+<div class="alert alert-danger">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+    <strong>Error!</strong> @TempData["Error"] <a href="" class="alert-link"></a>
+</div>}
+</div>}
+
+
+</div>
+
+
+
+<div class="row" style="padding-top:1px;">
+    <div class="col">
+        <section class="card">
+
+            <header class="card-header">
+
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <section class="card">
+                            <div class="card-body">
+
+                                <form method="get" data-ajax="true" data-ajax-complete="myCompleteSearch" data-ajax-success="mySuccessSearch" data-ajax-failure="myFailureSearch"
+                                      data-ajax-begin="myBeginSearch" asp-area="" asp-controller="Report" asp-action="ReceivedTaxReport_Search" data-ajax-loading="">
+                                    @*@{
+                                            DateTime date = DateTime.Now;
+                                            var firstDayOfMonth = new DateTime(date.Year, date.Month, 1);
+                                            var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
+
+                                        }*@
+                                    <div class="row form-group">
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+
+                                                <label>Start Date </label>
+                                                <div class="input-group date form_date col-md-13" data-date="" data-date-format="dd MM yyyy" data-link-field="dtp_input2" data-link-format="yyyy-mm-dd">
+                                                    <input id='StartDate' name="StartDate" data-plugin-datepicker class="form-control" autocomplete="off" value="" size="16" type="text">
+                                                    <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label>End Date</label>
+
+                                                <div class="input-group date form_date col-md-13" data-date="" data-date-format="dd MM yyyy" data-link-field="dtp_input2" data-link-format="yyyy-mm-dd">
+                                                    <input id='EndDate' name="EndDate" data-plugin-datepicker class="form-control" value="" autocomplete="off" size="16" type="text">
+                                                    <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+
+
+
+
+
+                                        <div class="col-lg-4">
+
+
+
+
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="Search"> &nbsp; </label>
+                                                <br />
+                                                <button type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-primary">Search&nbsp;<i class="fas fa-search"></i></button>
+                                                <a type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-info" href="" id="print-btn">Print &nbsp;<i class="fas fa-print"></i></a>
+                                                    <a type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-success" href="" id="export-btn">Export &nbsp;<i class="fas fa-file-excel"></i></a>
+
+                                            </div>
+
+
+                                        </div>
+
+                                    </div>
+
+                                </form>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
+
+
+            </header>
+            <div class="card-body" id="ReceivedTaxReportSearch">
+
+
+                <table class="table table-bordered table-striped mb-0">
+                    <thead>
+                        <tr>
+
+
+
+                            <th> Chassis</th>
+                            <th>Date </th>
+                            <th> Price Tax </th>
+                            <th> Auction Fee Tax </th>
+                            <th> Office Charges Tax </th>
+                      
+                            <th> Total</th>
+
+
+
+
+
+                        </tr>
+                    </thead>
+
+
+                    <tbody>
+
+                        @if (Model.ReceivedTax != null)
+                        {
+
+
+                            foreach (TaxReport item in Model.ReceivedTax)
+                            {
+
+
+
+
+
+
+            <tr class="gradeX odd" role="row">
+
+
+
+
+                <td>@Html.DisplayFor(modelItem => item.Chassis_No) </td>
+
+                <td>@Html.DisplayFor(modelItem => item.SaleDate) </td>
+
+                <td>@Html.DisplayFor(modelItem => item.PriceTax) </td>
+
+                <td>@Html.DisplayFor(modelItem => item.AuctionFeeTax) </td>
+
+                <td>@Html.DisplayFor(modelItem => item.OfficeChargesTax) </td>
+
+                <td>@Html.DisplayFor(modelItem => item.Total) </td>
+
+
+
+            </tr>}
+                        }
+
+                    </tbody>
+
+                    <tfoot>
+                        @if (Model.ReceivedTax_TTL != null)
+                        {
+
+
+                            foreach (TaxReport item in Model.ReceivedTax_TTL)
+                            {
+            <tr role="row">
+                <th>Total</th>
+                <th> </th>
+                <th>@item.PriceTax_ttl</th>
+                <th>@item.AuctionFeeTax_ttl</th>
+                <th>@item.OfficeChargesTax_ttl</th>
+         
+                <th>@item.Total_ttl</th>
+
+
+
+
+            </tr>}
+                        }
+                    </tfoot>
+
+
+                </table>
+
+                <div class="invoice-summary">
+
+                    <div class="row">
+
+                        <div class="col-lg-6 col-md-6">
+
+                        </div>
+
+                        <div class="col-lg-6 col-md-6 justify-content-end text-right">
+                            @if (Model.ReceivedTax.Count() != 0)
+                            {
+
+                @Html.PagedListPager(Model.ReceivedTax, page => Url.Action("ReceivedTaxReport_Search", "Report", new { StartDate = ViewBag.StartDate_ReceivedReport, EndDate = ViewBag.EndDate_ReceivedReport, page })
+
+     , X.PagedList.Mvc.Core.Common.PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new AjaxOptions()
+     {
+         HttpMethod = "get",
+         UpdateTargetId = "ReceivedTaxReportSearch"
+     })
+                           )}
+                        </div>
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </section>
+    </div>
+</div>
+
+@section Scripts{
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
+
+    <script>$(function () {
+            $(".select2").select2({
+                theme: "bootstrap",
+            });
+
+        });</script>
+    <script>
+
+        function myBeginSearch() {
+            $("#LoaderImage").css("visibility", "visible");
+        }
+
+        function mySuccessSearch(data) {
+
+            debugger
+            if (data.message == undefined) {
+
+                $('#ReceivedTaxReportSearch').html(data);
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        function myFailureSearch() {
+
+            alert("Failured occured. Please try again!");
+            $("#LoaderImage").css("visibility", "hidden");
+        }
+
+        function myCompleteSearch() {
+            $("#LoaderImage").css("visibility", "hidden");
+
+        }
+
+        $(document).ready(function(){
+    $("#print-btn").click(function(event){
+        event.preventDefault();
+
+        var win = window.open("@Url.Action("ReceivedTaxReport_Print", "Report")" + "?StartDate=" + $("#StartDate").val() + "&EndDate=" + $("#EndDate").val() , "_blank");
+        win.focus();
+    });
+        })
+
+                $(document).ready(function(){
+    $("#export-btn").click(function(event){
+       event.preventDefault();
+        window.location.href = "@Url.Action("ReceivedTaxReport_Excel", "Report")" + "?StartDate=" + $("#StartDate").val() + "&EndDate=" + $("#EndDate").val();
+    });
+})
+
+    </script>
+
+
+
+}

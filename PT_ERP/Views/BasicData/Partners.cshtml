@@ -1,0 +1,783 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OBasicData
+@{ ViewData["Title"] = "Vendor";
+    Layout = "~/Views/Shared/_LayoutTablePages.cshtml"; }
+<header class="page-header">
+    <h2>@ViewBag.SectionHeaderTitle</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+            <li><a asp-area="" asp-controller="BasicData" asp-action="Partners"><span>@ViewBag.SectionSub_HeaderTitle</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+
+<div class="row">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+<div class="col-lg-12">
+    @if (TempData["Success"] != null)
+    {
+<div class="alert alert-info">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+    <strong>Success!</strong> @TempData["Success"] <a href="" class="alert-link"></a>
+</div>}
+
+    @if (TempData["Error"] != null)
+    {
+<div class="alert alert-danger">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+    <strong>Error!</strong> @TempData["Error"] <a href="" class="alert-link"></a>
+</div>}
+</div>}
+
+
+</div>
+
+<div class="row">
+    <div class="col">
+        <section class="card">
+            <header class="card-header">
+
+                <div class="row">
+                    <div class="col-lg-6">
+                        <h2 class="card-title" style="line-height:normal;">List  Vendor</h2>
+                    </div>
+                    <div class="col-lg-6" style="text-align:right;">
+                        <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#AddPartnerModal">Add Vendor &nbsp;<i class="fas fa-plus"></i></button>
+
+                        <button type="button" class="mb-1 mt-1 mr-1 btn btn-sm btn-info">Print &nbsp;<i class="fas fa-print"></i></button>
+                    </div>
+                </div>
+
+            </header>
+            <div class="card-body">
+
+
+
+                <table class="table table-bordered table-striped mb-0" id="datatable-default">
+                    <thead>
+                        <tr>
+
+
+                            <th>Edit/Delete</th>
+                            <th>Vendor Ref</th>
+                            <th>Vendor Name</th>
+
+                            <th>Contact Name</th>
+                            <th>Mobile No</th>
+                            <th @ViewBag.AttachmentVisibility>Attachments</th>
+                            <th>Type </th>
+                            <th>Create At</th>
+                            <th>Create By</th>
+                            <th>Updated At</th>
+                            <th>Updated By</th>
+
+
+
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @if (Model.PartnersList != null)
+                        {
+                            foreach (Pa_Partners_DAL item in Model.PartnersList)
+                            {
+
+            <tr>
+
+                <td>
+                    <a onclick="UpdatePartner('@item.Partner_ID', '@item.Partner_Ref', '@item.PartnerName', '@item.ContactNo', '@item.MobileNo', '@item.ContactName',
+    '@item.ContactAddress', '@item.Email', '@item.Fax', '@item.EmiratesID', '@item.TradeLicenseNo', '@item.TRN', '@item.BalanceType', '@item.OpeningBalanceDate', '@item.OpeningBalance',
+    '@item.VendorCat_ID','@item.Remarks')" data-toggle="modal"
+                       data-target="#UpdatePartnerModal"><img style="width: 20px;" src="~/Img/Icons/edit.png" /></a>
+                    <a onclick="DeletePartner('@item.Partner_ID')" data-toggle="modal" data-target="#DeletePartnerModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+                   
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Partner_Ref)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PartnerName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ContactName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MobileNo)
+                </td>
+                <td @ViewBag.AttachmentVisibility><a href="#" onclick="ShowAttachmentMaster('@item.Partner_ID');">Manage Attachment</a> </td>
+                <td>@Html.DisplayFor(modelItem => item.VendorCatName)</td>
+                <td> @Html.DisplayFor(modelItem => item.Created_at)</td>
+                <td> @Html.DisplayFor(modelItem => item.Created_by)</td>
+                <td> @Html.DisplayFor(modelItem => item.Modified_at)</td>
+                <td> @Html.DisplayFor(modelItem => item.Modified_by)</td>
+
+
+            </tr>}
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</div>
+
+
+<!-- Modal Insert Partner -->
+<div class="modal fade bs-modal-sm" id="AddPartnerModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Add Vendor</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="BasicData" asp-action="AddPartnersVendor" enctype="multipart/form-data">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body">
+
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Vendor Ref</label>
+
+                                        <input type="text" class="form-control" id="Partner_Ref" disabled="disabled" name="Partner_Ref">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Vendor Name<span style="color: red; font-size: 15px; margin-left: 4px;">*</span></label>
+
+                                        <input type="text" class="form-control" id="PartnerName" name="PartnerName" required>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Contact Number</label>
+
+                                        <input type="text" class="form-control" id="ContactNumber" name="ContactNumber">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Mobile No</label>
+
+                                        <input type="text" class="form-control" id="MobileNo" name="MobileNo">
+                                    </div>
+                                </div>
+
+
+
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Contact Name</label>
+
+                                        <input type="text" class="form-control" id="ContactName" name="ContactName">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Contact Address</label>
+
+                                        <input type="text" class="form-control" id="ContactAddress" name="ContactAddress">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Email </label>
+
+                                        <input type="email" class="form-control" id="Email" name="Email">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Fax </label>
+
+                                        <input type="text" class="form-control" id="Fax" name="Fax">
+                                    </div>
+                                </div>
+
+
+
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">EmiratesID</label>
+
+                                        <input type="text" class="form-control" id="EmiratesID" name="EmiratesID">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">TradeLicenseNo</label>
+
+                                        <input type="text" class="form-control" id="TradeLicenseNo" name="TradeLicenseNo">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">TRN </label>
+
+                                        <input type="text" class="form-control" id="TRN" name="TRN">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Vendor Category</label>
+
+                                        <select class="form-control" id="VendorCat_ID" name="VendorCat_ID" asp-items="@(new SelectList( ViewBag.VendorCategoryList,"VendorCat_ID","VendorCatName"))">
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <hr />
+
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">BalanceType</label>
+
+                                        <select class="form-control" id="BalanceType" name="BalanceType">
+
+                                            <option value="Invoice" selected="selected">Invoice</option>
+                                            <option value="Advance">Advance</option>
+
+
+                                        </select>
+
+
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="OpeningBalanceDate">PostDate</label>
+                                        <div class="input-group">
+                                            <span class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <i class="fas fa-calendar-alt"></i>
+                                                </span>
+                                            </span>
+
+                                            <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="OpeningBalanceDate" name="OpeningBalanceDate">
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="OpeningBalance">Opening Balance</label>
+                                        <input type="text" class="form-control" id="OpeningBalance" name="OpeningBalance">
+
+                                    </div>
+                                </div>
+
+
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Remarks</label>
+
+                                        <textarea type="text" class="form-control" id="Remarks" name="Remarks"></textarea>
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-sm btn-primary">Save</button>
+                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal Delete Partner -->
+<div class="modal fade" id="DeletePartnerModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Delete Vendor</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="BasicData" asp-action="DeletePartners">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <h3>Do you want to delete this record?</h3>
+
+                                        <input type="hidden" id="PartnerID_Delete" name="Partner_ID" />
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modal udpate Partner -->
+<div class="modal fade bs-modal-sm" id="UpdatePartnerModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Update  Vendor</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="BasicData" asp-action="UpdatePartners" enctype="multipart/form-data">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body">
+
+
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Vendor Ref</label>
+
+                                        <input type="text" class="form-control" id="Partner_Updatea" readonly="readonly" name="Partner_Ref">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Vendor Name*<span style="color: red; font-size: 15px; margin-left: 4px;">*</span></label>
+
+                                        <input type="text" class="form-control" id="Partner_Updateb" name="PartnerName" required>
+                                        <input type="hidden" id="PartnerID_Update" name="Partner_ID" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Contact Number</label>
+
+                                        <input type="text" class="form-control" id="Partner_Updatec" name="ContactNumber">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Mobile No</label>
+
+                                        <input type="text" class="form-control" id="Partner_Updated" name="MobileNo">
+                                    </div>
+                                </div>
+
+
+
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Contact Name</label>
+
+                                        <input type="text" class="form-control" id="Partner_Updatee" name="ContactName">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Contact Address</label>
+
+                                        <input type="text" class="form-control" id="Partner_Updatef" name="ContactAddress">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Email </label>
+
+                                        <input type="email" class="form-control" id="Partner_Updateg" name="Email">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Fax </label>
+
+                                        <input type="text" class="form-control" id="Partner_Updateh" name="Fax">
+                                    </div>
+                                </div>
+
+
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">EmiratesID</label>
+
+                                        <input type="text" class="form-control" id="Partner_Updatei" name="EmiratesID">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">TradeLicenseNo</label>
+
+                                        <input type="text" class="form-control" id="Partner_Updatej" name="TradeLicenseNo">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">TRN </label>
+
+                                        <input type="text" class="form-control" id="Partner_Updatek" name="TRN">
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Vendor Category</label>
+                                        <select class="form-control" id="Partner_Updatel" name="VendorCat_ID" asp-items="@(new SelectList( ViewBag.VendorCategoryList,"VendorCat_ID","VendorCatName"))">
+                                        </select>
+
+                                    </div>
+                                </div>
+
+                                <hr />
+
+
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">BalanceType</label>
+
+                                        <select class="form-control" id="Update_BalanceType" name="BalanceType">
+
+                                            <option value="Invoice" selected="selected">Invoice</option>
+                                            <option value="Advance">Advance</option>
+
+                                        </select>
+
+
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="OpeningBalanceDate">PostDate</label>
+                                        <div class="input-group">
+                                            <span class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <i class="fas fa-calendar-alt"></i>
+                                                </span>
+                                            </span>
+
+                                            <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="Update_OpeningBalanceDate" name="OpeningBalanceDate">
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="OpeningBalance">Opening Balance</label>
+                                        <input type="text" class="form-control" id="Update_OpeningBalance" name="OpeningBalance">
+
+                                    </div>
+                                </div>
+
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="Project_ID">Remarks</label>
+
+                                        <input type="text" class="form-control" id="Partner_Updatem" name="Remarks">
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal show attachment -->
+<div class="modal fade bs-modal-lg" id="ShowAttachmentMasterModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <!-- Following fields is for making a central customer master id for attachments -->
+        <input type="hidden" id="PartnerMain" name="PartnerMain" />
+
+        <div class="modal-content" id="AttachmentsSaleMaster">
+
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
+
+    <script src="~/js/Swal/swal.js"></script>
+    <link href="~/css/Swal/Swal.css" rel="stylesheet" />
+
+
+
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $("#VendorCat_ID").val("2");
+        });
+
+        function DeletePartner(Partner_ID) {
+
+            $("#PartnerID_Delete").val(Partner_ID);
+
+        }
+
+
+        function UpdatePartner(Partner_ID, Partner_Ref, PartnerName, ContactNumber, MobileNo, ContactName, ContactAddress, Email, Fax,
+            EmiratesID, TradeLicenseNo, TRN, BalanceType, OpeningBalanceDate, OpeningBalance, VendorCat_ID, Remarks)
+
+           {
+                
+            $("#PartnerID_Update").val(Partner_ID);
+            $("#Partner_Updatea").val(Partner_Ref);
+            $("#Partner_Updateb").val(PartnerName);
+            $("#Partner_Updatec").val(ContactNumber);
+            $("#Partner_Updated").val(MobileNo);
+            $("#Partner_Updatee").val(ContactName);
+            $("#Partner_Updatef").val(ContactAddress);
+            $("#Partner_Updateg").val(Email);
+            $("#Partner_Updateh").val(Fax);
+            $("#Partner_Updatei").val(EmiratesID);
+            $("#Partner_Updatej").val(TradeLicenseNo);
+            $("#Partner_Updatek").val(TRN);
+            $("#Update_BalanceType").val(BalanceType);
+            $("#Update_OpeningBalanceDate").val(OpeningBalanceDate);
+            $("#Update_OpeningBalance").val(OpeningBalance);
+            $("#Partner_Updatel").val(VendorCat_ID);
+            $("#Partner_Updatem").val(Remarks);
+
+            }
+
+    //---show attachment popup
+    function ShowAttachmentMaster(Partner_ID) {
+        
+        var TeamDetailPostBackURL = '/BasicData/GetVendorMaster_Attachments';
+
+        //--assign value to Partner_ID hidden field in the main. Dont remove this fields
+        $("#PartnerMain").val(Partner_ID);
+
+
+        if (!Partner_ID) {
+            alert("ID is null. Please try again!");
+        } else {
+            $.ajax({
+                type: "GET",
+                url: TeamDetailPostBackURL,
+                contentType: "application/json; charset=utf-8",
+                data: { "Partner_ID": Partner_ID },
+                datatype: "json",
+                success: function (data) {
+
+
+                    if (data.message == undefined) {
+                        $('#AttachmentsSaleMaster').html(data);
+
+
+                        //--assign value to Partner_ID hidden field. this field is in partial view '_CustomerMasterAttachments'
+                        $("#Partner_ID_Attachment").val(Partner_ID);
+
+                        $('#ShowAttachmentMasterModal').modal('show');
+
+                    } else {
+                        alert(data.message);
+                        $('#ShowAttachmentMasterModal').modal('hide');
+                    }
+
+                },
+                error: function () {
+                    alert("Dynamic content load failed.");
+                }
+            });
+        }
+
+
+
+    }
+
+
+    //---after successfull submission of attachment
+    function mySuccessAttachment(data) {
+
+        debugger
+        if (data.message == undefined) {
+
+
+            $('#AttachmentsSaleMaster').html(data);
+
+            //---assign id of sales master to the hidden field SaleMaster_ID_Attachment after partial view refresh
+            var Partner_ID = document.getElementById("PartnerMain").value;
+            $("#Partner_ID_Attachment").val(Partner_ID);
+
+
+
+        } else {
+            alert(data.message);
+
+        }
+
+
+    }
+
+    //---if error occured in insertion of attachment
+    function myFailureAttachment() {
+
+        alert("Failured occured. Please try again!");
+
+    }
+
+    function DeleteAttachment(Attachment_ID, Master_ID, Type, File_Name) {
+
+        swal({
+            title: "Delete Vendor Attachment",
+
+            text: " Are you sure do you want to delete this Attachment? \n",
+
+            showCancelButton: true,
+            confirmButtonColor: "#0088CC",
+            confirmButtonText: "Confirm",
+
+            closeOnConfirm: true
+        },
+            function (isConfirm) {
+                if (isConfirm) {
+                    var TeamDetailPostBackURL = '/BasicData/DeleteAttachmentVendorMaster';
+
+                    //--in this function , the 'Type' is for the field in attachment table for specifying different voucher documents
+
+                    var Partner_ID = Master_ID;
+                    if (!Partner_ID) {
+                        alert("Attachment ID is null. Please try again!");
+                    } else {
+                        $.ajax({
+                            type: "GET",
+                            url: TeamDetailPostBackURL,
+                            contentType: "application/json; charset=utf-8",
+                            data: { "Partner_ID": Partner_ID, "Attachment_ID": Attachment_ID, "Type": Type, "File_Name": File_Name },
+                            datatype: "json",
+                            success: function (data) {
+
+
+                                if (data.message == undefined) {
+                                    $('#AttachmentsSaleMaster').html(data);
+
+
+                                    //--assign value to SaleMaster_ID hidden field. this field is in partial view '_SalesInvoiceAttachment'
+                                    $("#Partner_ID_Attachment").val(Partner_ID);
+
+
+
+                                } else {
+                                    alert(data.message);
+                                    //$('#ShowAttachmentMasterModal').modal('hide');
+                                }
+
+                            },
+                            error: function () {
+                                alert("Dynamic content load failed.");
+                            }
+                        });
+                    }
+                }
+            });
+    }
+
+
+
+
+
+    </script>
+}
+
+
+

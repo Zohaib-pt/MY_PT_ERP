@@ -1,0 +1,376 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OAccounts
+@{
+    ViewData["Title"] = "IncomeStatement";
+    Layout = "~/Views/Shared/_LayoutTablePages.cshtml";
+}
+
+
+<header class="page-header">
+    <h2>@ViewBag.SectionHeaderTitle</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+
+            <li><a><span>@ViewBag.BreadCumController</span></a></li>
+            <li><a asp-area="" asp-controller="@ViewBag.BreadCumController" asp-action="@ViewBag.BreadCumAction"><span>@ViewBag.SectionSub_HeaderTitle</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+
+<div class="row">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+        <div class="col-lg-12">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-info">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Success!</strong> @TempData["Success"] <a href="" class="alert-link"></a>
+                </div>
+            }
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Error!</strong> @TempData["Error"] <a href="" class="alert-link"></a>
+                </div>
+            }
+        </div>
+    }
+
+
+</div>
+
+
+<!--Following 'LoaderImage' div is for showing ajax loader before ajax call-->
+<div class="imageGIFLoader" id="LoaderImage">
+    <img src="~/img/projects/ajax-loader.gif" class="img-responsive" style="width:65px; height:65px;" />
+</div>
+
+
+
+
+
+<div class="row" style="padding-top:1px;">
+    <div class="col">
+        <section class="card">
+            <header class="card-header">
+
+                <div class="row">
+                    <div class="col-lg-6">
+                        <h2 class="card-title" style="line-height:normal;">Income Statement / Profit/Loss  </h2>
+                    </div>
+
+                    <hr />
+
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <section class="card">
+                            <div class="card-body">
+
+
+                                <form method="get"  data-ajax-complete="myCompleteSearch" data-ajax-success="mySuccessSearch" data-ajax-failure="myFailureSearch"
+                                      data-ajax-begin="myBeginSearch" asp-area="" asp-controller="Accounts" asp-action="IncomeStatement" data-ajax-loading="">
+
+                                    <div class="row form-group">
+
+                                        @{
+                                            DateTime date = DateTime.Now;
+                                            var firstDayOfMonth = new DateTime(date.Year, date.Month, 1);
+                                            var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
+
+                                        }
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="From_Date">Start Date</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                        </span>
+                                                    </span>
+
+                                                    <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="From_Date" value="@firstDayOfMonth.ToString("dd-MMM-yyyy")" name="From_Date">
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="To_Date">End Date</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                        </span>
+                                                    </span>
+
+                                                    <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="To_Date" value="@lastDayOfMonth.ToString("dd-MMM-yyyy")" name="To_Date">
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+
+
+
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <br />
+                                                <button type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-primary">Search&nbsp;<i class="fas fa-search"></i></button>
+                                                <a type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-info" href="" id="print-btn">Print &nbsp;<i class="fas fa-print"></i></a>
+
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+
+                                </form>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
+
+
+            </header>
+            <div class="card-body">
+                @if (Model.IncomeStateMent_obj != null)
+                {
+                    foreach (IncomeStatement item in Model.IncomeStateMent_obj)
+                    {
+
+                        ViewBag.Total_Income = item.Total_Income;
+                        ViewBag.Net_Sale_Service_Income = item.Net_Sale_Service_Income;
+                        ViewBag.cost_of_GoodSold = item.cost_of_GoodSold;
+                        ViewBag.Gross_Profit = item.Gross_Profit;
+                        ViewBag.total_Expense = item.total_Expense;
+                        ViewBag.Operating_Profit = item.Operating_Profit;
+                        ViewBag.Financial_Expense = item.Financial_Expense;
+                        ViewBag.Net_PL = item.Net_PL;
+
+                    }
+                }
+
+                <div class="row">
+                    <div class="col-sm-12">
+                        <table class="table table-bordered table-striped mb-0 mt-1">
+                            <thead>
+                             
+                                <tr>
+                                    <th width="70%">Income </th>
+                                    <th width="10%"></th>
+                                    <th width="10%"></th>
+                                    <th width="10%"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                @if (Model.IncomeStatment_INC_obj != null)
+                                {
+                                    foreach (IncomeStatement item in Model.IncomeStatment_INC_obj)
+                                    {
+
+
+                                <tr>
+                                    @*<td><a href="@item.Link" target="_blank">@Html.DisplayFor(modelItem => item.ACCOUNT)</a></td>*@
+                                    
+    <td><a  asp-controller="Accounts" asp-action="Ledger" asp-route-AccountID="@item.Acount_ID">@Html.DisplayFor(modelItem => item.ACCOUNT)</a></td>
+
+                                    <td class="text-right">@Html.DisplayFor(modelItem => item.Balance)</td>
+                                    <td class="text-right"></td>
+                                    <td class="text-right"></td>
+                                </tr>
+
+                                    }
+                                }
+
+
+                                <tr>
+                                    <td>Net Sale</td>
+
+                                    <td class="text-right"><b> @ViewBag.Net_Sale_Service_Income </b> </td>
+                                    <td class="text-right"></td>
+                                    <td class="text-right"></td>
+                                </tr>
+
+                                @if (Model.IncomeStatment_CGS_obj != null)
+                                {
+                                    foreach (IncomeStatement item in Model.IncomeStatment_CGS_obj)
+                                    {
+                            <tr>
+                                @*<td><b> Less: </b>  <a href="@item.Link">@Html.DisplayFor(modelItem => item.ACCOUNT)</a></td>*@
+                                
+                                <td><b> Less: </b><a asp-controller="Accounts" asp-action="Ledger" asp-route-AccountID="@item.Acount_ID">@Html.DisplayFor(modelItem => item.ACCOUNT)</a></td>
+
+                                <td class="text-right"></td>
+                                <td class="text-right">@Html.DisplayFor(modelItem => item.Balance)</td>
+                                <td class="text-right"></td>
+                            </tr>
+                                    }
+                                }
+
+                                <tr>
+                                    <td>Gross Profit</td>
+                                    <td class="text-right"></td>
+                                    <td class="text-right"><b> @ViewBag.Gross_Profit </b> </td>
+                                    <td class="text-right"></td>
+                                </tr>
+
+                                <tr>
+                                    <td style="font-weight:bold;">Expenses</td>
+                                    <td class="text-right"></td>
+                                    <td class="text-right"></td>
+                                    <td class="text-right"></td>
+                                </tr>
+
+                                @if (Model.IncomeStatment_Exp_obj != null)
+                                {
+                                    foreach (IncomeStatement item in Model.IncomeStatment_Exp_obj)
+                                    {
+                            <tr>
+                                <td><a asp-controller="Accounts" asp-action="Ledger" asp-route-AccountID="@item.Acount_ID">@Html.DisplayFor(modelItem => item.ACCOUNT)</a></td>
+
+
+                                @*<td><a href="@item.Link">@Html.DisplayFor(modelItem => item.ACCOUNT)</a></td>*@
+                               
+                                <td class="text-right">@Html.DisplayFor(modelItem => item.Balance)</td>
+                                <td class="text-right"></td>
+                                <td class="text-right"></td>
+                            </tr>
+                                    }
+                                }
+
+
+
+
+
+
+
+
+                                <tr>
+                                    <td style="font-weight:bold;">Total Expenses</td>
+                                    <td class="text-right"></td>
+                                    <td class="text-right font-weight-bold">@ViewBag.total_Expense</td>
+                                    <td class="text-right"></td>
+                                </tr>
+
+                                @if (Model.IncomeStatment_Exp_Fin_obj != null)
+                                {
+                                    foreach (IncomeStatement item in Model.IncomeStatment_Exp_Fin_obj)
+                                    {
+                                        <tr>
+                                            <td><a href="@item.Link">@Html.DisplayFor(modelItem => item.ACCOUNT)</a></td>
+                                            <td class="text-right"></td>
+                                            <td class="text-right">@Html.DisplayFor(modelItem => item.Balance)</td>
+                                            <td class="text-right"></td>
+                                        </tr>
+                                    }
+                                }
+
+
+                                <tr>
+                                    <td style="font-weight:bold;">Financial Expense</td>
+                                    <td class="text-right"></td>
+                                    <td class="text-right font-weight-bold">@ViewBag.Financial_Expense</td>
+                                    <td class="text-right"></td>
+                                </tr>
+
+
+                                <tr>
+                                    <td style="font-weight:bold;">Operation Profit</td>
+                                    <td class="text-right"></td>
+                                    <td class="text-right font-weight-bold">@ViewBag.Operating_Profit</td>
+                                    <td class="text-right"></td>
+                                </tr>
+
+
+                                <tr>
+                                    <td style="font-weight:bold;">Net P/L</td>
+                                    <td class="text-right"></td>
+                                    <td class="text-right"></td>
+                                    <td class="text-right font-weight-bold">@ViewBag.Operating_Profit</td>
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+    </div>
+</div>
+
+@section Scripts{
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
+
+
+    <script>
+
+        function myBeginSearch() {
+            $("#LoaderImage").css("visibility", "visible");
+        }
+
+        function mySuccessSearch(data) {
+
+            debugger
+            if (data.message == undefined) {
+
+                $('#TablePurchaseListSearch').html(data);
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        function myFailureSearch() {
+
+            alert("Failured occured. Please try again!");
+            $("#LoaderImage").css("visibility", "hidden");
+        }
+
+        function myCompleteSearch() {
+            $("#LoaderImage").css("visibility", "hidden");
+
+        }
+    </script>
+    <script>
+
+
+        $(document).ready(function(){
+    $("#print-btn").click(function(event){
+    event.preventDefault();
+
+        var win = window.open("@Url.Action("GetincomestatementPrint", "Report")" + "?reportName=Income_Statement&From_Date=" + $("#From_Date").val() + "&To_Date=" + $("#To_Date").val() , "_blank");
+    win.focus();
+    });
+    })
+
+    </script>
+}

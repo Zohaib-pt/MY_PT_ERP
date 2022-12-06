@@ -1,0 +1,113 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OPurchases
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+
+
+
+<table class="table table-responsive-md table-bordered mb-0">
+    <thead>
+        <tr>
+            <th>Edit/Delete</th>
+            <th>Item</th>
+           <th>Description</th>
+
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>VAT</th>
+            <th>Discount</th>
+            <th>Total Amount</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.purchaseDetailList != null)
+        {
+            ViewBag.SubTotal = 0;
+
+            foreach (Pa_PurchaseDetails_DAL item in Model.purchaseDetailList)
+            {
+
+                ViewBag.SubTotal = item.SubTotal;
+                ViewBag.Vat_ExpTotal = item.Vat_ExpTotal;
+                ViewBag.DiscountTotal = item.DiscountTotal;
+                ViewBag.Grand_Total = item.Grand_Total;
+
+
+                <tr>
+
+
+                    <td>
+
+                        <a onclick="UpdatePurchaseDetail('@item.PurchaseDetails_ID', '@item.item_ID', '@item.item_Description', '@item.Quantity', '@item.UOM','@item.Unit_Price', '@item.Currency_ID', '@item.Currency_Rate', '@item.Discount', '@item.VAT_Rate', '@item.VAT_Exp', '@item.Amount', '@item.TtlAmount', '@item.Amount_Others', '@item.location_ID', '@item.Serial', '@item.Barcode');" data-toggle="modal" data-target="#UdpateNewPurchaseModal"><img style="width: 20px;" src="~/Img/Icons/edit.png" /></a>
+                        <a onclick="DeletePurchaseDetail('@item.PurchaseDetails_ID');" data-toggle="modal" data-target="#DeletePurchaseDetailModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ItemName)
+                        <br />
+                        <span class="small"> @Html.DisplayFor(modelItem => item.ItemCode)</span>
+                        <br />
+                        <span class="small">Serial: @Html.DisplayFor(modelItem => item.Serial) / Barcode: @Html.DisplayFor(modelItem => item.Barcode)</span>
+                    </td>
+                    <td>@Html.DisplayFor(modelItem => item.item_Description)</td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Quantity)
+                        x
+                        @Html.DisplayFor(modelItem => item.UOM)
+                        <br />
+                        @Html.DisplayFor(modelItem => item.LocationName)
+                    </td>
+                    <td>@Html.DisplayFor(modelItem => item.Unit_Price)</td>
+                    <td>@Html.DisplayFor(modelItem => item.VAT_Exp)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Discount)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Amount)</td>
+
+                </tr>
+            }
+        }
+    </tbody>
+
+</table>
+
+<div class="invoice-summary">
+
+    <div class="row">
+
+        <div class="col-lg-9 col-md-9">
+
+        </div>
+
+        <div class="col-lg-3 col-md-3 justify-content-end text-right">
+            <table class="table h6 text-dark">
+                <tbody>
+
+
+
+                    <tr class="b-top-0">
+                        <td colspan="2"> Sub Total:</td>
+                        <td class="text-right" id="SubTotal">@ViewBag.SubTotal</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">VAT Charge:</td>
+                        <td class="text-right" id="VAT_ChargeTotal">@ViewBag.Vat_ExpTotal</td>
+                    </tr>
+
+                    <tr>
+                        <td colspan="2">Discount:</td>
+                        <td class="text-right" id="DiscountTotal">@ViewBag.DiscountTotal</td>
+                    </tr>
+                    <tr class="h5">
+                        <td colspan="2">Total Payable:</td>
+                        <td class="text-right" id="Total_Payable">@ViewBag.Grand_Total</td>
+                    </tr>
+
+
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>

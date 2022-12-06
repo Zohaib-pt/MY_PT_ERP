@@ -1,0 +1,276 @@
+﻿
+@using DAL
+@using DAL.Models
+@model DAL.oClasses.OHR
+
+@using X.PagedList.Mvc.Core; @*//import this so we get our HTML Helper*@
+@using X.PagedList;  @*//import this so we can cast our list to IPagedList *@
+@{ ViewData["Title"] = "NotificationList";
+    Layout = "~/Views/Shared/_LayoutTablePages.cshtml";
+
+}
+<header class="page-header">
+    @*<h2>System Conflict List</h2>*@
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+
+            <li><a><span>@ViewBag.BreadCumController</span></a></li>
+            <li><a asp-area="" asp-controller="@ViewBag.BreadCumController" asp-action="@ViewBag.BreadCumAction"><span></span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+<div class="row">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+        <div class="col-lg-12">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-info">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Success!</strong> @TempData["Success"] <a href="" class="alert-link"></a>
+                </div>}
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Error!</strong> @TempData["Error"] <a href="" class="alert-link"></a>
+                </div>}
+        </div>}
+
+
+</div>
+
+<!--Following 'LoaderImage' div is for showing ajax loader before ajax call-->
+<div class="imageGIFLoader" id="LoaderImage">
+    <img src="~/img/projects/ajax-loader.gif" class="img-responsive" style="width:65px; height:65px;" />
+</div>
+
+<div class="row" style="padding-top:1px;">
+    <div class="col">
+        <section class="card">
+            <header class="card-header">
+
+                <div class="row m-2">
+
+                    <div class="col-sm-6 mt-0">
+                        <h2 class="h4 mt-0 mb-2 text-dark font-weight-bold">System Conflict List</h2>
+
+                    </div>
+                    <div class="col-lg-6 text-right">
+
+                    </div>
+                </div>
+                @*<div class="row">
+                    <div class="col-lg-12">
+                        <section class="card">
+                            <div class="card-body">
+                                <form method="get" data-ajax="true" data-ajax-complete="myCompleteSearch" data-ajax-success="mySuccessSearch" data-ajax-failure="myFailureSearch"
+                                      data-ajax-begin="myBeginSearch" asp-area="" asp-controller="Stock" asp-action="BLList_Search" data-ajax-loading="">
+
+
+
+                                    <div class="row form-group">
+
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="From_Date">From Date</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                        </span>
+                                                    </span>
+
+                                                    <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="StartDate" name="StartDate">
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="To_Date">To Date</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                        </span>
+                                                    </span>
+
+                                                    <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="EndDate" name="EndDate">
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="BLNO">BLNO</label>
+                                                <input type="text" id="BLNO" name="BLNO" class="form-control" placeholder="BLNO" />
+                                            </div>
+                                        </div>
+
+
+
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="Search"> &nbsp; </label>
+                                                <button type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-info">Search&nbsp;<i class="fas fa-search"></i></button>
+                                                <a class="mb-1 mt-1 mr-1 btn btn-sm btn-primary" asp-area="" asp-controller="Stock" asp-action="AddBL">Add New&nbsp;<i class="fas fa-plus"></i></a>
+
+                                            </div>
+
+                                        </div>
+
+
+                                    </div>
+
+
+                                </form>
+                            </div>
+                        </section>
+                    </div>
+                </div>*@
+
+            </header>
+            <div class="card-body" id="StockInvoiceListSearch">
+
+                <div class="invoice-summary mb-1">
+
+                    <div class="row mb-1">
+
+                        <div class="col-lg-6 col-md-6 mb-1">
+                            <b>@ViewBag.RecordsPerPage</b>
+                        </div>
+
+                        <div class="col-lg-6 col-md-6 mb-1 justify-content-end text-right">
+
+                        </div>
+                    </div>
+
+                </div>
+
+                <table class="table table-bordered table-striped mb-0 mt-1">
+                    <thead>
+                        <tr>
+
+                            <th>Type</th>
+                            <th>Ref</th>
+                            <th>Description</th>
+                            <th>Voucher Amount</th>
+                            <th>Leager Amount</th>
+                            <th>Fix</th>
+                           
+                        </tr>
+                    </thead>
+                    <tbody>
+
+
+                        @if (Model.AlertNotificationList != null)
+                        {
+                            foreach (AlertNotification_DAL item in Model.AlertNotificationList)
+                            {
+
+                        <tr>
+
+
+                            <td>@Html.DisplayFor(modelItem => item.type)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Ref)</td>
+
+                            @*<td> <a asp-controller="Stock" asp-action="AddBL" asp-route-BLNO_ID="@item.BLNO_ID">@Html.DisplayFor(modelItem => item.Ref)</a></td>*@
+
+                            <td>@Html.DisplayFor(modelItem => item.Description)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Voucher_Amt)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Ledger_Amt)</td>
+
+
+                            <td><a href="@item.Link" onclick="btndisable();">@Html.DisplayFor(modelItem => item.Fix)</a></td>
+
+                    
+
+
+                        </tr>
+                            }
+                        }
+
+
+
+
+
+                    </tbody>
+
+                </table>
+
+               
+
+
+            </div>
+        </section>
+    </div>
+</div>
+
+
+
+
+@section Scripts{
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
+
+
+
+
+    <script>
+
+    function myBeginSearch() {
+        $("#LoaderImage").css("visibility", "visible");
+    }
+
+    function mySuccessSearch(data) {
+
+        debugger
+        if (data.message == undefined) {
+
+            $('#StockInvoiceListSearch').html(data);
+
+
+        } else {
+            alert(data.message);
+
+        }
+
+
+    }
+
+    function myFailureSearch() {
+
+        alert("Failured occured. Please try again!");
+        $("#LoaderImage").css("visibility", "hidden");
+    }
+
+    function myCompleteSearch() {
+        $("#LoaderImage").css("visibility", "hidden");
+
+    }
+
+    </script>
+
+
+
+
+}

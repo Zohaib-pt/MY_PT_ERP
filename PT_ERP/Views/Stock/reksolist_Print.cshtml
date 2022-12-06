@@ -1,0 +1,254 @@
+﻿
+@using DAL
+@using DAL.Models
+@model DAL.oClasses.OStock
+@using Microsoft.Extensions.Configuration
+    @inject IConfiguration Configuration
+@{ 
+    Layout = null;
+    double vTotalAmount = 0;
+    double vBalance = 0;
+    double vPaid = 0;
+
+    }
+
+<!DOCTYPE HTML>
+<HTML>
+<head>
+
+    <!-- Basic -->
+    <meta charset="UTF-8">
+
+    <title>@ViewBag.PageTitle</title>
+    <meta name="keywords" content="DearlerSol | Dealers Management System " />
+    <meta name="description" content="Vehicle Management System | Dealer Management System | Dealer ERP ">
+    <meta name="author" content="DealerSol.com">
+
+    <!-- Mobile Metas -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <!-- Favicon  -->
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+
+
+    <!-- Vendor CSS -->
+    <link rel="stylesheet" href="~/vendor/bootstrap/css/bootstrap.css" />
+
+
+
+
+
+
+
+
+
+
+
+
+    <style>
+        .moneycol {
+            text-align: right;
+        }
+
+        .controlheight {
+            height: 1px;
+            border: 1px solid #d3d3d3;
+            margin: 0px;
+        }
+
+            .controlheight table th, .table td {
+                padding: 5px;
+            }
+
+        .SumHeading {
+            background-color: #d3d3d3;
+            text-align: left;
+            font-weight: bold;
+            font-size: 16px
+        }
+
+        .ColHeading {
+            background-color: #d3d3d3;
+            font-size: 18px;
+            text-align: center
+        }
+    </style>
+
+
+</head>
+
+<BODY>
+
+
+    <div class="row">
+        <div class="col">
+            <section>
+                <header>
+
+                    <div class="row form-inline">
+                        @*<div class="col-md-12">
+
+            <h5 style="color:black;">
+                @Configuration.GetSection("AppSettings").GetSection("CompanyName").Value
+
+            </h5>
+            <p style="color:black;">
+                Phone No:
+
+
+            </p>
+        </div>*@
+
+                        @* Farzaib *@
+                        <div class="col-md-6 ">
+                            <div class="text-center">
+                                <h4 class="text-left" style="position:absolute; top:15%; left: 1.5%;">@Configuration.GetSection("AppSettings").GetSection("CompanyName").Value.ToString()</h4>
+                                <h3>Rekso List</h3>
+                            </div>
+                        </div>
+
+
+
+                    </div>
+                    @*<div class="row form-group">
+                            <div class="col-xs-12">
+                                <h6 style="text-align:center">From   - To   </h6>
+                            </div>
+                        </div>*@
+                </header>
+                <div>
+                    <table class="table table-bordered" @*id="datatable-default"*@>
+                        <thead>
+                            <tr class="ColHeading">
+
+
+
+
+
+                                @*<th>Chassis No</th>
+
+        <th>Make</th>
+        <th>Make Model</th>
+        <th>Color</th>
+        <th>Model Year</th>
+        <th>Stock Type</th>
+        <th>Vendor</th>
+        <th>Purchase Date</th>
+        <th>Total Cost</th>
+        <th>Status</th>*@
+
+
+                                <th>Ref</th>
+                                <th>Date</th>
+                                <th>Vendor Name</th>
+                                <th>Total</th>
+                                <th>Paid</th>
+                                <th>Balance</th>
+                                <th>Status</th>
+
+
+                            </tr>
+                        </thead>
+                        <tbody>
+
+
+                            @if (Model.ReksoList1 != null)
+                            {
+
+
+                                foreach (pa_select_StockParties_Result item in Model.ReksoList1)
+                                {
+
+                                    if (vTotalAmount != 0)
+                                    {
+                                        vTotalAmount += Convert.ToDouble(item.Total_Payable);
+                                        ViewBag.VpAmount = vTotalAmount;
+                                    }
+                                    else
+                                    {
+                                        vTotalAmount = Convert.ToDouble(item.Total_Payable);
+                                        ViewBag.VpAmount = vTotalAmount;
+                                    }
+
+
+
+                                    if (vPaid != 0)
+                                    {
+
+                                        vPaid += Convert.ToDouble(item.Paid);
+                                        ViewBag.VPaid = vPaid;
+                                    }
+                                    else
+                                    {
+                                        if (item.Paid != "")
+                                        {
+                                            vPaid = Convert.ToDouble(item.Paid);
+                                            ViewBag.VPaid = vPaid;
+                                        }
+                                        else
+                                        {
+                                            ViewBag.VPaid = "0";
+                                        }
+
+
+
+                                    }
+
+
+
+                                    if (vBalance != 0)
+                                    {
+                                        vBalance += Convert.ToDouble(item.Balance);
+                                        ViewBag.vBalance = vBalance;
+                                    }
+                                    else
+                                    {
+                                        vBalance = Convert.ToDouble(item.Balance);
+                                        ViewBag.vBalance = vBalance;
+                                    }
+
+                  
+                            <tr>
+
+                                <TD class="controlheight">@item.Ref</TD>
+                                <TD class="controlheight text-nowrap">@item.Date</TD>
+                                <TD class="controlheight">@item.Vendor_Name</TD>
+                                <TD class="controlheight  moneycol">@item.Total_Payable</TD>
+                                @if (item.Paid != "" && item.Paid != null)
+                                {
+                                    <TD class="controlheight  moneycol">@item.Paid</TD>}
+                                else { <TD class="controlheight  moneycol">0</TD>}
+                                    <TD class="controlheight  moneycol">@item.Balance</TD>
+                                    <TD class="controlheight">@item.PurchaseStatus</TD>
+
+                                </tr>
+                
+                
+                }
+                            }
+
+                        <tr>
+
+                            <TD class="SumHeading">Total</TD>
+                            <TD class="controlheight"></TD>
+                            <TD class="controlheight"></TD>
+                            <TD class="controlheight moneycol">@ViewBag.VpAmount</TD>
+                            <TD class="controlheight moneycol">@ViewBag.VPaid</TD>
+                            <TD class="controlheight moneycol">@ViewBag.vBalance</TD>
+
+                            <TD class="controlheight"></TD>
+                            
+
+
+                        </tr>
+
+
+
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </div>
+</BODY>
+</HTML>

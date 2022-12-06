@@ -1,0 +1,166 @@
+﻿@using DAL
+@using DAL.Models
+@using X.PagedList.Mvc.Core; @*//import this so we get our HTML Helper*@
+@using X.PagedList;  @*//import this so we can cast our list to IPagedList *@
+@model DAL.oClasses.OSales
+
+
+<div class="invoice-summary mb-1">
+
+    <div class="row mb-1">
+
+        <div class="col-lg-6 col-md-6 mb-1">
+            <b>@ViewBag.RecordsPerPage</b> records per page
+        </div>
+
+        <div class="col-lg-6 col-md-6 mb-1 justify-content-end text-right">
+
+        </div>
+    </div>
+
+</div>
+
+<table class="table table-bordered table-striped mb-0 mt-1" @*id="datatable-default"*@>
+    <thead>
+        <tr>
+
+
+
+            <th>Sale Ref</th>
+
+            <th>Sale Date</th>
+            <th>Customer Name</th>
+            <th>Total Amount</th>
+            <th>Paid</th>     
+            <th>Status</th>
+            <th @ViewBag.AttachmentVisibility>Attachments</th>
+            <th>View</th>
+
+
+
+
+
+        </tr>
+    </thead>
+    <tbody>
+
+
+        @if (Model.SalesReturnMasterList != null)
+        {
+            foreach (pa_SalesMaster_DAL item in Model.SalesReturnMasterList)
+            {
+
+
+    <tr>
+
+
+
+        @*<td> <a asp-controller="Sales" asp-action="SalesReturn" asp-route-SaleMaster_ID="@item.SaleMaster_ID">@Html.DisplayFor(modelItem => item.SaleRef)<br /><small>@item.ReturnRef</small></a></td>
+        <td>@Html.DisplayFor(modelItem => item.SaleDate)</td>
+
+        <td>@Html.DisplayFor(modelItem => item.Customer_Name)</td>
+        <td>@Html.DisplayFor(modelItem => item.Total_Amt)</td>
+
+
+        <td> <a asp-controller="Sales" asp-action="SalesReturn" asp-route-SaleMaster_ID="@item.SaleMaster_ID">View</a></td>*@
+
+        @*<td>@Html.DisplayFor(modelItem => item.Modified_at)</td>*@
+
+    <tr>
+
+
+
+        @*<td> <a asp-controller="Sales" asp-action="SalesReturn" asp-route-SaleMaster_ID="@item.SaleMaster_ID">@Html.DisplayFor(modelItem => item.SaleRef)<br /><small>@item.ReturnRef</small></a></td>
+        <td>@Html.DisplayFor(modelItem => item.SaleDate)</td>
+
+        <td>@Html.DisplayFor(modelItem => item.Customer_Name)</td>
+        <td>@Html.DisplayFor(modelItem => item.Total_Amt)</td>
+
+
+        <td> <a asp-controller="Sales" asp-action="SalesReturn" asp-route-SaleMaster_ID="@item.SaleMaster_ID">View</a></td>*@
+
+
+
+        @*<td>@Html.DisplayFor(modelItem => item.Modified_at)</td>*@
+
+
+        <td>
+            <a asp-controller="Sales" asp-action="NewSalesInvoice__Onl_TRD" asp-route-SaleMaster_ID="@item.SaleMaster_ID">
+                @item.ReturnRef
+                <br />
+                @Html.DisplayFor(modelItem => item.SaleRef)
+                <br />
+                <strong>
+                    <small>
+                        @Html.DisplayFor(modelItem => item.Manualbook_ref)
+                    </small>
+                </strong>
+            </a>
+
+        </td>
+        <td>@Html.DisplayFor(modelItem => item.SaleDate)</td>
+
+        <td>@Html.DisplayFor(modelItem => item.Customer_Name)</td>
+        <td>@Html.DisplayFor(modelItem => item.Total_Amt)</td>
+        <td>@Html.DisplayFor(modelItem => item.Paid_amt)</td>
+      
+        <td>
+            @Html.DisplayFor(modelItem => item.Other_Status)
+        </td>
+
+
+
+        @*@{ if (item.ApprovalStatus == "2")
+                            {
+        <td>@(item.SaleStatus) <br /> <span style="font-size:12px"> (Approved)</span></td> }
+                            else
+                            {
+        <td>
+            @(item.SaleStatus) <br /> <span style="font-size:12px"> (Pending) </span>
+        </td> } }*@
+        <td @ViewBag.AttachmentVisibility><a href="#" onclick="ShowAttachmentMaster('@item.SaleMaster_ID');">Manage Attachment</a> </td>
+        <td> <a asp-controller="Sales" asp-action="NewSalesInvoice__Onl_TRD" asp-route-SaleMaster_ID="@item.SaleMaster_ID">View</a></td>
+        @*<td>@Html.DisplayFor(modelItem => item.Modified_at)</td>*@
+
+
+
+    </tr>
+
+
+
+
+    </tr>}
+}
+
+
+
+
+
+    </tbody>
+
+</table>
+
+<div class="invoice-summary">
+
+    <div class="row">
+
+        <div class="col-lg-6 col-md-6">
+
+        </div>
+        <div class="col-lg-6 col-md-6 justify-content-end text-right">
+            @if (Model.SalesReturnMasterList.Count() != 0)
+            {
+
+@Html.PagedListPager(Model.SalesReturnMasterList, page => Url.Action("GetSalesDOMasterInvoiceListBySearchFilers", "Sales", new { SaleRef = ViewBag.SaleRef_SaleInvoice, StartDate = ViewBag.StartDate_SaleInvoice, EndDate = ViewBag.EndDate_SaleInvoice, Customer_Name = ViewBag.Customer_Name_SaleInvoice, cID = ViewBag.c_ID_SaleInvoice, page })
+
+    , X.PagedList.Mvc.Core.Common.PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new AjaxOptions()
+    {
+        HttpMethod = "get",
+        UpdateTargetId = "SalesInvoiceListSearch"
+    })
+                    )}
+
+        </div>
+    </div>
+
+</div>

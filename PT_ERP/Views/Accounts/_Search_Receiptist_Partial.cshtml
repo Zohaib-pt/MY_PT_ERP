@@ -1,0 +1,132 @@
+﻿@using DAL
+@using DAL.Models
+@using X.PagedList.Mvc.Core; @*//import this so we get our HTML Helper*@
+@using X.PagedList;  @*//import this so we can cast our list to IPagedList *@
+@model DAL.oClasses.OAccounts
+
+
+<div class="invoice-summary mb-1">
+
+    <div class="row mb-1">
+
+        <div class="col-lg-6 col-md-6 mb-1">
+            <b>@ViewBag.RecordsPerPage</b> records per page
+        </div>
+
+        <div class="col-lg-6 col-md-6 mb-1 justify-content-end text-right">
+
+        </div>
+    </div>
+
+</div>
+
+<table class="table table-bordered table-striped mb-0 mt-1" @*id="datatable-default"*@>
+    <thead>
+        <tr>
+
+
+
+
+            <th>Receipt Ref</th>
+
+            <th>Receipt Date</th>
+
+            <th>Paid To</th>
+            <th>Explanation</th>
+            <th>Total</th>
+            <th @ViewBag.AttachmentVisibility>Attachments</th>
+            <th>View</th>
+
+
+
+        </tr>
+    </thead>
+    <tbody>
+
+        @if (Model.receiptMasterIPagedList != null)
+        {
+            foreach (pa_ReceiptMaster_DAL item in Model.receiptMasterIPagedList)
+            {
+                string ActionMethod = "";
+                if (item.Receipttype == "RVG")
+                {
+                    ActionMethod = "ReceiptVoucherGen";
+                }
+                else
+                {
+                    ActionMethod = "ReceiptVoucherSales";
+                }
+                double Total = Convert.ToDouble(string.IsNullOrEmpty(item.AfterVATTotal) == true ? "0" : item.AfterVATTotal);
+                ViewBag.Total = Total;
+
+                <tr style='color: @(item.transaction_status == "5" ? "red" : "black");'>
+
+                    <td>
+                        <a asp-controller="Accounts" asp-action="@ActionMethod" asp-route-ReceiptMaster_ID="@item.ReceiptMaster_ID">
+                            @Html.DisplayFor(modelItem => item.ReceiptMaster_ref)
+                        </a>
+                    </td>
+                    <td>@Html.DisplayFor(modelItem => item.ReceiptDate)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Party_ID_Name)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Explanation)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Total_Amount)</td>
+                    <td @ViewBag.AttachmentVisibility><a href="#" onclick="ShowAttachmentMaster('@item.ReceiptMaster_ID');">Manage Attachment</a> </td>
+                    <td><a asp-controller="Accounts" asp-action="@ActionMethod" asp-route-ReceiptMaster_ID="@item.ReceiptMaster_ID"> View</a></td>
+
+                </tr>
+
+
+
+            }
+        }
+    </tbody>
+    <tfoot>
+        @if (Model.receiptMasterList_TTL != null)
+        {
+            foreach (pa_ReceiptMaster_DAL item in Model.receiptMasterList_TTL)
+            {
+                <tr role="row">
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th>@item.Total_Amount</th>
+                    <th @ViewBag.AttachmentVisibility></th>
+                    <th></th>
+                </tr>
+            }
+        }
+
+
+    </tfoot>
+</table>
+
+
+<div class="invoice-summary">
+
+    <div class="row">
+
+        <div class="col-lg-6 col-md-6">
+
+        </div>
+
+        <div class="col-lg-6 col-md-6 justify-content-end text-right">
+
+            @if (Model.receiptMasterIPagedList.Count() != 0)
+            {
+
+
+
+                @Html.PagedListPager(Model.receiptMasterIPagedList, page => Url.Action("GeReceiptList_BySearchFitlers", "Accounts", new { ReceiptRef = ViewBag.ReceiptRef_Receipt, Party_ID = ViewBag.Party_ID_Receipt, PartyNameText = ViewBag.PartyNameText, SaleRef = ViewBag.SaleRef, Chassis_no = ViewBag.Chassis_no, StartDate = ViewBag.StartDate_Receipt, EndDate = ViewBag.EndDate_Receipt, c_ID = ViewBag.c_ID_Receipt, Cheque_no = ViewBag.Cheque_no, page })
+
+, X.PagedList.Mvc.Core.Common.PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new AjaxOptions()
+{
+    HttpMethod = "get",
+    UpdateTargetId = "TableReceiptListSearch"
+})
+                )
+            }
+        </div>
+    </div>
+
+</div>

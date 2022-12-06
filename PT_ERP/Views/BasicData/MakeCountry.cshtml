@@ -1,0 +1,356 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OBasicData
+
+
+
+@{
+    ViewData["Title"] = "MakeCountry";
+    Layout = "~/Views/Shared/_LayoutTablePages.cshtml";
+}
+
+
+
+<header class="page-header">
+    <h2>@ViewBag.SectionHeaderTitle</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+            <li><a asp-area="" asp-controller="BasicData" asp-action="MakeCountry"><span>@ViewBag.SectionSub_HeaderTitley</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+
+<div class="row">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+        <div class="col-lg-12">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-info">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Success!</strong> @TempData["Success"] <a href="" class="alert-link"></a>
+                </div>
+            }
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Error!</strong> @TempData["Error"] <a href="" class="alert-link"></a>
+                </div>
+            }
+        </div>
+    }
+
+
+</div>
+
+<div class="row">
+    <div class="col">
+        <section class="card">
+            <header class="card-header">
+
+                <div class="row">
+                    <div class="col-lg-6">
+                        <h2 class="card-title" style="line-height:normal;">Make Country List </h2>
+                    </div>
+                    <div class="col-lg-6" style="text-align:right;">
+                        <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#AddMakeCountryModal">Add Make Country &nbsp;<i class="fas fa-plus"></i></button>
+
+                        <button type="button" class="mb-1 mt-1 mr-1 btn btn-sm btn-info">Print &nbsp;<i class="fas fa-print"></i></button>
+                    </div>
+                </div>
+
+            </header>
+            <div class="card-body">
+
+
+
+                <table class="table table-bordered table-striped mb-0" id="datatable-default">
+                    <thead>
+                        <tr>
+
+
+                            <th>Edit/Delete</th>
+
+                            <th>Make Country</th>
+
+                            <th>Country Code</th>
+
+                            <th>Create At</th>
+                            <th>Create By</th>
+                            <th>Updated At</th>
+                            <th>Updated By</th>
+
+
+
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @if (Model.Make_countriesList != null)
+                        {
+                            foreach (Pa_MakeCountries_DAL item in Model.Make_countriesList)
+                            {
+
+                                <tr>
+
+                                    <td>
+                                        <a onclick="UpdateMakeCountry('@item.MakeCountry_ID','@item.CountryName','@item.CountryCode' )" data-toggle="modal"
+                                           data-target="#UpdateMakeCountryModal"><img style="width: 20px;" src="~/Img/Icons/edit.png" /></a>
+                                        <a onclick="DeleteMakeCountry('@item.MakeCountry_ID', )" data-toggle="modal" data-target="#DeleteMakeCountryModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+                                    </td>
+
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.CountryName)
+                                    </td>
+                                    <td> @Html.DisplayFor(modelItem => item.CountryCode)</td>
+                                    <td> @Html.DisplayFor(modelItem => item.Created_at)</td>
+                           
+                                    <td> @Html.DisplayFor(modelItem => item.Created_by)</td>
+                                    <td> @Html.DisplayFor(modelItem => item.Modified_at)</td>
+                                    <td> @Html.DisplayFor(modelItem => item.Modified_by)</td>
+
+
+                                </tr>
+
+
+
+                            }
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</div>
+
+
+<!-- Modal Insert Make -->
+<div class="modal fade bs-modal-sm" id="AddMakeCountryModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Add Make Country</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="BasicData" asp-action="InsertMakeCountry" >
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body">
+
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="CountryCode_Update">Make Country*</label>
+
+                                        <input type="text" class="form-control" id="CountryName" name="CountryName" required>
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="CountryCode_Update"> Country Code</label>
+
+                                        <input type="text" class="form-control" id="CountryCode" name="CountryCode" required>
+                                        <input type="hidden" id="MakeCountry_ID_Uddate" name="MakeCountry_ID" />
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-sm btn-primary">Save</button>
+                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal Delete Make -->
+<div class="modal fade bs-modal-lg" id="DeleteMakeCountryModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Delete Make Country</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="BasicData" asp-action="DeleteMakeCountry">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <h3>Do you want to delete this record?</h3>
+
+                                        <input type="hidden" id="MakeCountry_ID_Delete" name="MakeCountry_ID" />
+                                      
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modal udpate Make -->
+<div class="modal fade bs-modal-sm" id="UpdateMakeCountryModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Update Make Country</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="BasicData" asp-action="UpdateMakeCountry" >
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body">
+
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="CountryCode_Update">Make Country*</label>
+
+                                        <input type="text" class="form-control" id="CountryName_Update" name="CountryName" required>
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label class="col-form-label" for="CountryCode_Update"> Country Code</label>
+
+                                        <input type="text" class="form-control" id="CountryCode_Update" name="CountryCode" required>
+                                        <input type="hidden" id="MakeCountry_ID_Update" name="MakeCountry_ID" />
+                                    </div>
+                                </div>
+
+                              
+
+                            </div>
+
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+
+@section Scripts {
+    <script type="text/javascript">
+
+        function DeleteMakeCountry(MakeCountry_ID) {
+            debugger
+            $("#MakeCountry_ID_Delete").val(MakeCountry_ID);
+
+        }
+
+        function UpdateMakeCountry(MakeCountry_ID, CountryName, CountryCode) {
+            debugger
+            $("#MakeCountry_ID_Update").val(MakeCountry_ID);
+            $("#CountryName_Update").val(CountryName);
+            $("#CountryCode_Update").val(CountryCode);
+        }
+
+
+
+
+    </script>
+}

@@ -1,0 +1,368 @@
+﻿
+@using DAL
+@using DAL.Models
+@model DAL.oClasses.oReports
+
+
+@{
+    ViewData["Title"] = "StockReport";
+    Layout = "~/Views/Shared/_LayoutTablePages.cshtml";
+}
+
+<header class="page-header">
+    <h2>@ViewBag.SectionHeaderTitle</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+
+            <li><a><span>@ViewBag.BreadCumController</span></a></li>
+            <li><a asp-area="" asp-controller="@ViewBag.BreadCumController" asp-action="@ViewBag.BreadCumAction"><span>@ViewBag.SectionSub_HeaderTitle</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+
+<div class="row">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+        <div class="col-lg-12">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-info">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Success!</strong> @TempData["Success"] <a href="" class="alert-link"></a>
+                </div>
+            }
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Error!</strong> @TempData["Error"] <a href="" class="alert-link"></a>
+                </div>
+            }
+        </div>
+    }
+
+
+</div>
+
+
+
+<div class="row" style="padding-top:1px;">
+    <div class="col">
+        <section class="card">
+            <header class="card-header">
+
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <section class="card">
+                            <div class="card-body">
+
+                                <form method="get" data-ajax-complete="myCompleteSearch" data-ajax-success="mySuccessSearch" data-ajax-failure="myFailureSearch"
+                                      data-ajax-begin="myBeginSearch" asp-area="" asp-controller="Report" asp-action="StockReport" data-ajax-loading="">
+                                    @{
+                                        DateTime date = DateTime.Now;
+                                        var firstDayOfMonth = new DateTime(date.Year, date.Month, 1);
+                                        var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
+
+                                    }
+                                    <div class="row form-group">
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+
+                                                <label>Start Date </label>
+                                                <div class="input-group date form_date col-md-13" data-date="" data-date-format="dd MM yyyy" data-link-field="dtp_input2" data-link-format="yyyy-mm-dd">
+                                                    <input id='StartPurchaseDate' name="StartPurchaseDate" data-plugin-datepicker class="form-control" autocomplete="off" value="@firstDayOfMonth.ToString("dd-MMM-yyyy")" size="16" type="text">
+                                                    <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label>End Date</label>
+
+                                                <div class="input-group date form_date col-md-13" data-date="" data-date-format="dd MM yyyy" data-link-field="dtp_input2" data-link-format="yyyy-mm-dd">
+                                                    <input id='EndPurchaseDate' name="EndPurchaseDate" data-plugin-datepicker class="form-control" autocomplete="off" value="@lastDayOfMonth.ToString("dd-MMM-yyyy")" size="16" type="text">
+                                                    <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+
+
+
+
+
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label>Chassis</label>
+                                                <input type="text" class="form-control" placeholder="" id="Chassis_No" name="Chassis_No">
+
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-3">
+                                            <div class="form-group">
+                                                <label>Purchase Ref</label>
+                                                <input type="text" class="form-control" placeholder="" id="PurchaseRef" name="PurchaseRef">
+
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-2">
+                                            <div class="form-group">
+                                                <label>Make</label>
+
+
+
+
+                                                <select class="form-control" id="Make_ID" name="Make_ID" asp-items="@(new SelectList( ViewBag.MakeList,"Make_ID","Make"))" onchange="GetSubModel(this);">
+                                                    <option>SELECT</option>
+                                                </select>
+
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-2">
+                                            <div class="form-group">
+                                                <label>Model Description</label>
+
+
+
+
+                                                <select class="form-control" id="MakeModel_description_ID" name="MakeModel_description_ID" asp-items="@(new SelectList( ViewBag.ModelList,"ModelDesc_ID","ModelDesciption"))">
+                                                    <option>Select</option>
+
+                                                </select>
+
+
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-2">
+                                            <div class="form-group">
+                                                <label>Color</label>
+
+
+
+
+                                                <select class="form-control" id="Color_ID" name="Color_ID" asp-items="@(new SelectList( ViewBag.ColorList,"Color_ID","ColorName"))">
+                                                    <option>Select</option>
+
+                                                </select>
+
+
+                                            </div>
+                                        </div>
+
+
+                                        <div class="col-lg-4">
+
+
+
+
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="Search"> &nbsp; </label>
+                                                <br />
+                                                <button type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-primary">Search&nbsp;<i class="fas fa-search"></i></button>
+                                                <a type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-info" href="" id="print-btn">Print &nbsp;<i class="fas fa-print"></i></a>
+                                                <a type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-success" href="" id="export-btn">Export &nbsp;<i class="fas fa-file-excel"></i></a>
+
+                                            </div>
+
+
+                                        </div>
+
+
+                                    </div>
+                                </form>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
+
+
+            </header>
+            <div class="card-body">
+
+
+
+                <table class="table table-bordered table-striped mb-0" id="datatable-default">
+                    <thead>
+                        <tr>
+
+
+                            <th>Stock_ID</th>
+                            <th>Chassis_No</th>
+                            <th>PurchaseDate</th>
+                            <th>Make</th>
+                            <th>ModelDesciption</th>
+                            <th>Color</th>
+                            <th>StockType</th>
+                            <th>Transmission</th>
+                            <th>CarLocation</th>
+
+                            <th>PurchaseRef</th>
+
+
+
+                            <th>Total_Cost</th>
+                            <th>Stock_Status</th>
+                            <th>Vendor_Name</th>
+                            <th>ModelYear</th>
+
+
+
+
+
+                        </tr>
+                    </thead>
+
+
+                    <tbody id="StockReportSearch">
+
+                        @if (Model.StockReportList != null)
+                        {
+                            ViewBag.DebitTotal = 0;
+                            ViewBag.CreditTotal = 0;
+
+                            foreach (StockReport item in Model.StockReportList)
+                            {
+
+              
+
+
+
+
+                        <tr class="gradeX odd" role="row">
+
+
+
+                            <td>@Html.DisplayFor(modelItem => item.Stock_ID) </td>
+                            <td>@Html.DisplayFor(modelItem => item.Chassis_No)</td>
+                            <td>@Html.DisplayFor(modelItem => item.PurchaseDate)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Make)</td>
+                            <td>@Html.DisplayFor(modelItem => item.ModelDesciption)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Color)</td>
+                            <td>@Html.DisplayFor(modelItem => item.StockType)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Transmission)</td>
+                            <td>@Html.DisplayFor(modelItem => item.CarLocation)</td>
+
+                            <td>@Html.DisplayFor(modelItem => item.PurchaseRef)</td>
+                     
+
+                          
+                          
+                            <td>@Html.DisplayFor(modelItem => item.Total_Cost)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Stock_Status)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Vendor_Name)</td>
+                            <td>@Html.DisplayFor(modelItem => item.ModelYear)</td>
+
+
+
+                        </tr>
+                            }
+                        }
+
+                    </tbody>
+
+                    <tfoot>
+                        <tr role="row">
+                          
+
+                            <th> </th>
+                            <th> </th>
+                            <th> </th>
+                            <th> </th>
+                            <th> </th>
+                            <th> </th>
+                            <th> </th>
+                            <th> </th>
+                            <th> </th>
+                            <th> </th>
+            
+                            <th> </th>
+                            <th> </th>
+                            <th> </th>
+                            <th> </th>
+
+
+                        </tr>
+                    </tfoot>
+
+
+                </table>
+            </div>
+        </section>
+    </div>
+</div>
+
+@section Scripts{
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
+
+
+    <script>
+
+        function myBeginSearch() {
+            $("#LoaderImage").css("visibility", "visible");
+        }
+
+        function mySuccessSearch(data) {
+
+            debugger
+            if (data.message == undefined) {
+
+                $('#StockReportSearch').html(data);
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        function myFailureSearch() {
+
+            alert("Failured occured. Please try again!");
+            $("#LoaderImage").css("visibility", "hidden");
+        }
+
+        function myCompleteSearch() {
+            $("#LoaderImage").css("visibility", "hidden");
+
+        }
+
+        $(document).ready(function(){
+    $("#print-btn").click(function(event){
+    event.preventDefault();
+
+        var win = window.open("@Url.Action("StockReport_Print", "Report")" + "?StartPurchaseDate=" + $("#StartPurchaseDate").val() + "&EndPurchaseDate=" + $("#EndPurchaseDate").val() + "&Chassis_No=" + $("#Chassis_No").val() + "&PurchaseRef=" + $("#PurchaseRef").val() + "&Make_ID=" + $("#Make_ID").val() + "&MakeModel_description_ID=" + $("#MakeModel_description_ID").val() + "&Color_ID=" + $("#Color_ID").val(), "_blank");
+    win.focus();
+    });
+    })
+     $(document).ready(function(){
+    $("#export-btn").click(function(event){
+    event.preventDefault();
+        window.location.href = "@Url.Action("StockReport_Excel", "Report")" + "?StartPurchaseDate=" + $("#StartPurchaseDate").val() + "&EndPurchaseDate=" + $("#EndPurchaseDate").val() + "&Chassis_No=" + $("#Chassis_No").val() + "&PurchaseRef=" + $("#PurchaseRef").val() + "&Make_ID=" + $("#Make_ID").val() + "&MakeModel_description_ID=" + $("#MakeModel_description_ID").val() + "&Color_ID=" + $("#Color_ID").val();
+    });
+    })
+    </script>
+
+
+
+}

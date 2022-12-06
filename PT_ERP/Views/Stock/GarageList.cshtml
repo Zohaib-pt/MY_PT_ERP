@@ -1,0 +1,161 @@
+﻿
+@using DAL
+@using DAL.Models
+@model DAL.oClasses.OStock
+
+@using X.PagedList.Mvc.Core; @*//import this so we get our HTML Helper*@
+@using X.PagedList;  @*//import this so we can cast our list to IPagedList *@
+@{ ViewData["Title"] = "GarageList";
+    Layout = "~/Views/Shared/_LayoutTablePages.cshtml";
+
+}
+<header class="page-header">
+    <h2>Stock</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+
+            <li><a><span>@ViewBag.BreadCumController</span></a></li>
+            <li><a asp-area="" asp-controller="@ViewBag.BreadCumController" asp-action="@ViewBag.BreadCumAction"><span></span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+<div class="row">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+        <div class="col-lg-12">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-info">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Success!</strong> @TempData["Success"] <a href="" class="alert-link"></a>
+                </div>}
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Error!</strong> @TempData["Error"] <a href="" class="alert-link"></a>
+                </div>}
+        </div>}
+
+
+</div>
+
+<!--Following 'LoaderImage' div is for showing ajax loader before ajax call-->
+<div class="imageGIFLoader" id="LoaderImage">
+    <img src="~/img/projects/ajax-loader.gif" class="img-responsive" style="width:65px; height:65px;" />
+</div>
+
+<div class="row" style="padding-top:1px;">
+    <div class="col">
+        <section class="card">
+            <header class="card-header">
+
+                <div class="row m-2">
+
+                    <div class="col-sm-6 mt-0">
+                        <h2 class="h4 mt-0 mb-2 text-dark font-weight-bold">Garage List</h2>
+
+                    </div>
+                    <div class="col-lg-6 text-right">
+                        <a class="mb-1 mt-1 mr-1 btn btn-sm btn-primary" asp-area="" asp-controller="Stock" asp-action="AddGarage">Add New&nbsp;<i class="fas fa-plus"></i></a>
+                    </div>
+                </div>
+
+            </header>
+            <div class="card-body" id="StockInvoiceListSearch">
+
+                <div class="invoice-summary mb-1">
+
+                    <div class="row mb-1">
+
+                        <div class="col-lg-6 col-md-6 mb-1">
+                            <b>@ViewBag.RecordsPerPage</b>
+                        </div>
+
+                        <div class="col-lg-6 col-md-6 mb-1 justify-content-end text-right">
+
+                        </div>
+                    </div>
+
+                </div>
+
+                <table class="table table-bordered table-striped mb-0 mt-1">
+                    <thead>
+                        <tr>
+
+
+                            <th>Ref</th>
+                            <th>Date Send</th>
+                            <th>Garage</th>
+                            <th>Total Amount</th>
+                            <th>Paid</th>
+                            <th>Balance</th>
+
+                            <th>View</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+
+
+                        @if (Model.GarageMasterList != null)
+                        {
+                            foreach (Pa_Garage_Master item in Model.GarageMasterList)
+                            {
+
+                                <tr>
+
+                                    <td> <a asp-controller="Stock" asp-action="AddGarage" asp-route-GarageMaster_ID="@item.GarageMaster_ID">@Html.DisplayFor(modelItem => item.RefInv)</a></td>
+                                    <td>@Html.DisplayFor(modelItem => item.Date_Send)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.GarageVendor_Name)</td>
+                                    
+                                    <td>@Html.DisplayFor(modelItem => item.Total_Amount)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Paid)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Balance)</td>
+
+                                    <td> <a asp-controller="Stock" asp-action="AddGarage" asp-route-GarageMaster_ID="@item.GarageMaster_ID">View</a></td>
+                                    @*<td>@Html.DisplayFor(modelItem => item.Modified_at)</td>*@
+
+
+
+
+
+                                </tr>
+                            }
+                        }
+
+
+
+
+
+                    </tbody>
+
+                </table>
+
+
+            </div>
+        </section>
+    </div>
+</div>
+
+
+
+
+@section Scripts{
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
+    
+
+}

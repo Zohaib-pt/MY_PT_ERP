@@ -1,0 +1,379 @@
+﻿@using DAL
+@using DAL.Models
+@using X.PagedList.Mvc.Core; @*//import this so we get our HTML Helper*@
+@using X.PagedList;  @*//import this so we can cast our list to IPagedList *@
+@model DAL.oClasses.OStock
+
+@{
+    ViewData["Title"] = "Vanning List";
+    Layout = "~/Views/Shared/_LayoutTablePages.cshtml";
+}
+
+<header class="page-header">
+    <h2>Vannings</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+
+            <li><a><span>@ViewBag.BreadCumController</span></a></li>
+            <li><a asp-area="" asp-controller="@ViewBag.BreadCumController" asp-action="@ViewBag.BreadCumAction"><span>Vanning List</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+
+<div class="row">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+        <div class="col-lg-12">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-info">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Success!</strong> @TempData["Success"] <a href="" class="alert-link"></a>
+                </div>
+            }
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Error!</strong> @TempData["Error"] <a href="" class="alert-link"></a>
+                </div>
+            }
+        </div>
+    }
+
+
+</div>
+
+
+<!--Following 'LoaderImage' div is for showing ajax loader before ajax call-->
+<div class="imageGIFLoader" id="LoaderImage">
+    <img src="~/img/projects/ajax-loader.gif" class="img-responsive" style="width:65px; height:65px;" />
+</div>
+
+
+<div class="row">
+    <div class="col">
+        <section class="card">
+            <header class="card-header">
+
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <section class="card">
+                            <div class="card-body">
+                                <form method="get" data-ajax="true" data-ajax-complete="myCompleteSearch" data-ajax-success="mySuccessSearch" data-ajax-failure="myFailureSearch"
+                                      data-ajax-begin="myBeginSearch" asp-area="" asp-controller="Stock" asp-action="VanningList_SearchFilter" data-ajax-loading="">
+
+
+                                    <div class="row form-group">
+
+                                        <div class="col-lg-2">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="StartDate">From Date</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                        </span>
+                                                    </span>
+
+                                                    <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="StartDate" name="StartDate">
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="col-lg-2">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="EndDate">To Date</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                        </span>
+                                                    </span>
+
+                                                    <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="EndDate" name="EndDate">
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                        <div class="col-lg-2">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="Project_ID">Ref</label>
+                                                <input type="text" id="txtVanningRef" name="txtVanningRef" class="form-control" placeholder="Ref" />
+
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-2">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="Vendor_ID">Vendor</label>
+                                             
+                                                    <select class="form-control" id="Party_ID_Name" name="Party_ID_Name" asp-items="@(new SelectList( ViewBag.VendorMaster,"Partner_ID","PartnerName"))">
+                                                        <option value=" ">Select Vendor</option>
+                                                    </select>
+                                                
+                                            </div>
+                                        </div>
+
+
+                                       
+
+                          
+
+                                    </div>
+
+                                    <div class="row ">
+                                        <div class="col-lg">
+
+
+
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="Search"> &nbsp; </label>
+
+                                                <button type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-info">Search&nbsp;<i class="fas fa-search"></i></button>
+                                                <a class="mb-1 mt-1 mr-1 btn btn-sm btn-primary" asp-area="" asp-controller="Stock" asp-action="NewVanning">Add New&nbsp;<i class="fas fa-plus"></i></a>
+
+                                                <a type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-info" href="" id="print-btn">Print &nbsp;<i class="fas fa-print"></i></a>
+                                                <a type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-success" href="" id="export-btn">Export &nbsp;<i class="fas fa-file-excel"></i></a>
+
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                </form>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
+            </header>
+            <div class="card-body" id="TableVanningListSearch">
+
+
+                <div class="invoice-summary mb-1">
+
+                    <div class="row mb-1">
+
+                        <div class="col-lg-6 col-md-6 mb-1">
+                            <b>@ViewBag.RecordsPerPage</b> records per page
+                        </div>
+
+                        <div class="col-lg-6 col-md-6 mb-1 justify-content-end text-right">
+
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <table class="table table-bordered table-striped mb-0 mt-1" @*id="datatable-default"*@>
+                    <thead>
+                        <tr>
+
+
+
+                            <th> Ref </th>
+                            <th> Date </th>
+                            <th> Vendor Name </th>
+                            <th> Comments </th>
+                            <th>Total Amount</th>
+
+                            <th>Paid</th>
+                            <th>Balance</th>
+                            <th>Status</th>
+                            <th>View</th>
+
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @*@{ double vTotalAmountTotal = 0;
+                                        double vBalanceTotal = 0;
+                                        double vpaidTotal = 0; }*@
+
+                        @if (Model.VanningListPagedObject != null)
+                        {
+                            foreach (pa_Vanning_Master item in Model.VanningListPagedObject)
+                            {
+
+                                //double vTotalAmount = Convert.ToDouble(string.IsNullOrEmpty(item.Total_Amount) == true ? "0" : item.Total_Amount);
+                                //vTotalAmountTotal = vTotalAmountTotal + vTotalAmount;
+                                //ViewBag.VTotalAmount = vTotalAmountTotal;
+
+                                //double vBalance = Convert.ToDouble(string.IsNullOrEmpty(item.Balance) == true ? "0" : item.Balance);
+                                //vBalanceTotal = vBalanceTotal + vBalance;
+                                //ViewBag.VBalance = vBalanceTotal;
+
+                                //double vpaid = Convert.ToDouble(string.IsNullOrEmpty(item.Paid) == true ? "0" : item.Paid);
+                                //vpaidTotal = vpaidTotal + vpaid;
+                                //ViewBag.VPaid = vpaidTotal;
+                <tr>
+
+
+                    <td> <a asp-controller="Stock" asp-action="NewVanning" asp-route-vanning_Master_ID="@item.vanning_Master_ID"> @Html.DisplayFor(modelItem => item.vanning_ref)</a></td>
+
+                    <td>@Html.DisplayFor(modelItem => item.Date)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Vendor_Name)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Comments)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Total_Amount)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Paid)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Balance)</td>
+
+                    <td>@Html.DisplayFor(modelItem => item.Purchased_Status)</td>
+                    <td> <a asp-controller="Stock" asp-action="NewVanning" asp-route-vanning_Master_ID="@item.vanning_Master_ID">View</a></td>
+
+
+                </tr>}
+                            }
+
+
+
+                    </tbody>
+
+                    <tfoot>
+                        <tr role="row">
+
+                             @if (Model.VanningListTotal != null)
+                             {
+                                 foreach (pa_Vanning_Master item in Model.VanningListTotal)
+                                 {
+
+                            <th> Total</th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th>@item.Total_Amount </th>
+                            <th>@item.Paid</th>
+                            <th>@item.Balance</th>
+
+                            <th> </th>
+                            <th> </th>
+                                 }
+                             }
+                        </tr>
+                    </tfoot>
+
+
+                </table>
+
+
+                <div class="invoice-summary">
+
+                    <div class="row">
+
+                        <div class="col-lg-6 col-md-6">
+
+                        </div>
+
+                        <div class="col-lg-6 col-md-6 justify-content-end text-right">
+
+                            @if (Model.VanningListPagedObject.Count() != 0)
+                            {
+
+                        @Html.PagedListPager(Model.VanningListPagedObject, page => Url.Action("VanningList_SearchFilter", "Stock", new { txtVanningRef = ViewBag.txtVanningRef_VanningList, StartDate = ViewBag.StartDate_VanningList, EndDate = ViewBag.EndDate_VanningList, Party_ID_Name = ViewBag.Party_ID_Name_VanningList, page })
+                        , X.PagedList.Mvc.Core.Common.PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new AjaxOptions()
+                        {
+                            HttpMethod = "get",
+                            UpdateTargetId = "TableVanningListSearch"
+                        })
+                                    )}
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+    </div>
+</div>
+
+
+
+<!-- Modal show attachment -->
+
+
+
+
+
+
+
+@section Scripts{
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
+
+
+    <script>
+
+        function myBeginSearch() {
+            $("#LoaderImage").css("visibility", "visible");
+        }
+
+        function mySuccessSearch(data) {
+
+            debugger
+            if (data.message == undefined) {
+
+                $('#TableVanningListSearch').html(data);
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        function myFailureSearch() {
+
+            alert("Failured occured. Please try again!");
+            $("#LoaderImage").css("visibility", "hidden");
+        }
+
+        function myCompleteSearch() {
+            $("#LoaderImage").css("visibility", "hidden");
+
+        }
+
+        $(document).ready(function(){
+    $("#print-btn").click(function(event){
+        event.preventDefault();
+
+        var win = window.open("@Url.Action("VanningList_Print", "Report")" + "?txtVanningRef=" + $("#txtVanningRef").val() + "&StartDate=" + $("#StartDate").val() + "&EndDate=" + $("#EndDate").val() + "&Party_ID_Name=" + $("#Party_ID_Name").val(), "_blank");
+        win.focus();
+    });
+        })
+
+         $(document).ready(function(){
+    $("#export-btn").click(function(event){
+        event.preventDefault();
+
+        var win = window.open("@Url.Action("VanningList_Excel", "Report")" + "?txtVanningRef=" + $("#txtVanningRef").val() + "&StartDate=" + $("#StartDate").val() + "&EndDate=" + $("#EndDate").val() + "&Party_ID_Name=" + $("#Party_ID_Name").val(), "_blank");
+        win.focus();
+    });
+        })
+
+
+    </script>
+
+
+
+}
+

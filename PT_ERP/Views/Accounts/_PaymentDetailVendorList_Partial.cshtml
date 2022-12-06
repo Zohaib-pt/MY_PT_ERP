@@ -1,0 +1,124 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OAccounts
+
+
+<table class="table table-responsive-md table-bordered mb-0">
+    <thead>
+        <tr>
+            <th>Edit/Delete</th>
+            <th>On Account</th>
+            <th>Amount</th>
+            <th width="30%">Description</th>
+            <th>Pay Via</th>
+
+
+            <th>VAT</th>
+            <th>Total </th>
+            <th>Ref</th>
+            <th>Cheque Details</th>
+
+        </tr>
+    </thead>
+    <tbody>
+
+        @if (Model.paymentDetailList != null)
+        {
+
+
+            foreach (Pa_PaymentDetails_DAL item in Model.paymentDetailList)
+            {
+
+
+                ViewBag.Vat_ExpTotal = item.VatExpTotal;
+                ViewBag.AmountTotal = item.AmountTotal;
+                ViewBag.Grand_Total = item.Grand_Total;
+
+
+    <tr style='color: @(item.transaction_status == 0 ? "green" : "black");'>
+
+
+
+
+        <td>
+            <a onclick="UpdatePaymentDetailGeneral('@item.PaymentDetails_ID','@item.DR_accountID', '@item.Amount', '@item.VAT_Rate', '@item.Currency_ID', '@item.Currency_Rate', '@item.Amount_Others',
+	                                    '@item.CR_accountID', '@item.Description', '@item.trans_ref','@item.cheque_bank_name','@item.cheque_date', '@item.cheque_no', '@item.VAT_Exp', '@item.Total_Amount', '@item.stock_ID','@item.ExtraChargesFee','@item.ExtraChargesFeeTax','@item.PDC_Payable_Acc_ID');" data-toggle="modal" data-target="#UpdateNewPaymentDetailModal"><img style="width: 20px;" src="~/Img/Icons/edit.png" /></a>
+            <a onclick="DeletePaymentDetail('@item.PaymentDetails_ID');" data-toggle="modal" data-target="#DeletePaymentDetailModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+        </td>
+
+
+        <td>
+            @Html.DisplayFor(modelItem => item.DR_AccountName)
+            <br />
+            <b>@Html.DisplayFor(modelItem => item.Chassis_No)</b>
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Amount)
+            <br />
+            @Html.DisplayFor(modelItem => item.curr_name) x @Html.DisplayFor(modelItem => item.Currency_Rate)
+
+        </td>
+        <td width="30%">@Html.DisplayFor(modelItem => item.Description)</td>
+        <td>@Html.DisplayFor(modelItem => item.CR_AcountName)</td>
+
+
+        <td>
+            @Html.DisplayFor(modelItem => item.VAT_Exp)
+        </td>
+        <td>@Html.DisplayFor(modelItem => item.Total_Amount)</td>
+        <td>@Html.DisplayFor(modelItem => item.trans_ref)</td>
+
+
+        <td>
+            <b> @Html.DisplayFor(modelItem => item.cheque_bank_name)</b>
+            <i>  @Html.DisplayFor(modelItem => item.cheque_no)</i>
+            <b>  @Html.DisplayFor(modelItem => item.cheque_date)</b>
+
+        </td>
+
+
+    </tr>}
+                }
+
+    </tbody>
+
+</table>
+
+
+<br />
+<div class="invoice-summary">
+
+    <div class="row">
+
+        <div class="col-lg-9 col-md-9">
+
+        </div>
+
+        <div class="col-lg-3 col-md-3 justify-content-end text-right">
+            <table class="table h6 text-dark">
+                <tbody>
+                    <tr class="b-top-0">
+                        <td colspan="2"> Sub Total:</td>
+                        <td class="text-right" id="SubTotal">@ViewBag.AmountTotal</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">VAT Charge</td>
+                        <td class="text-right" id="VAT_ChargeTotal">@ViewBag.Vat_ExpTotal</td>
+                    </tr>
+
+
+                    <tr class="h5">
+                        <td colspan="2">Total Paid:</td>
+                        <td class="text-right" id="Total_Payable">@ViewBag.Grand_Total</td>
+                    </tr>
+
+
+
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,1441 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OInventory
+@{ ViewData["Title"] = "NewAssembly";
+    Layout = "~/Views/Shared/_Layout.cshtml"; }
+@{ string Form_InventoryMaster_ActionMethod = "";
+    int Assembly_ID = ViewBag.Assembly_ID;
+
+
+    if (Model.AssemblyMasterObj != null && Model.AssemblyMasterObj.Assembly_ID > 0)
+    {
+
+        Form_InventoryMaster_ActionMethod = "UpdateAssemblyMaster";
+
+
+    }
+    else
+    {
+        Form_InventoryMaster_ActionMethod = "InsertAssemblyMaster";
+    } }
+<header class="page-header">
+    <h2>Inventory</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+            <li><a asp-area="" asp-controller="Inventory" asp-action="AssemblyList"><span>Inventory</span></a></li>
+            <li><a asp-area="" asp-controller="@ViewBag.BreadCumController" asp-action="@ViewBag.BreadCumAction"><span>New Inventory Invoice</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+
+
+
+
+
+<div class="row" id="SuccessErrorSection">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+<div class="col-lg-12">
+    @if (TempData["Success"] != null)
+    {
+<div class="alert alert-info">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+    <strong>Success!</strong> @TempData["Success"] <a href="" class="alert-link"></a>
+</div>}
+
+    @if (TempData["Error"] != null)
+    {
+<div class="alert alert-danger">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+    <strong>Error!</strong> @TempData["Error"] <a href="" class="alert-link"></a>
+</div>}
+</div>}
+
+
+</div>
+
+<!-- start: page -->
+<section class="card">
+    <div class="card-body">
+        <div class="invoice">
+            <header class="clearfix">
+                <div class="row">
+                    <div class="col-sm-6 mt-0">
+                        <h2 class="h4 mt-0 mb-2 text-dark font-weight-bold">Assembly</h2>
+
+                    </div>
+
+                    <div class="col-sm-6 mt-0 text-right">
+
+
+
+                    </div>
+
+
+                </div>
+            </header>
+
+            <div class="row">
+                <div class="col-lg-8">
+
+                    @if (Model.AssemblyMasterObj.Assembly_ID != 0)
+                    {
+                        if (Model.AssemblyMasterObj.Assembly_ID > 0)
+                        {
+
+                <button type="button" id="ButtonSaleMasterUpdate" class="btn-sm btn btn-success">Update &nbsp;<i class="fas fa-save"></i></button>
+
+                                    <button type="button" id="print-btn" class="btn-sm btn btn-info">Print &nbsp;<i class="fas fa-print"></i></button>
+
+
+
+
+
+
+
+
+
+
+                                                        <a asp-controller="Inventory" asp-action="AssemblyList" class="btn-sm btn btn-default">List &nbsp;<i class="fas fa-list"></i></a> }
+                                                }
+                                                else
+                                                {
+                                    <button type="button" id="ButtonSaleMasterIssue" class="btn-sm btn btn-success">Issue &nbsp;<i class="fas fa-save"></i></button>
+
+                                                    <button type="button" id="print-btn" disabled="disabled" class="btn-sm btn btn-info">Print &nbsp;<i class="fas fa-print"></i></button>
+
+
+
+
+
+
+                                                                    <a asp-controller="Inventory" asp-action="AssemblyList" class="btn-sm btn btn-default">List &nbsp;<i class="fas fa-list"></i></a>}
+
+
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div class="col">
+
+
+
+                    <form method="post" asp-area="" asp-controller="Inventory" asp-action="@Form_InventoryMaster_ActionMethod" id="formInventoryMaster">
+                        @Html.AntiForgeryToken()
+
+                        <section class="card">
+
+                            <div class="card-body">
+
+
+
+                                <div class="row form-group">
+                                    <div class="col-lg-4">
+
+
+                                        <div class="row MasterForm">
+                                            <label for="To" class="col-sm-4 col-form-label">Ref</label>
+                                            <div class="col-sm-8">
+
+                                                @if (!String.IsNullOrEmpty(Model.AssemblyMasterObj.Ref))
+                                                {
+                                    <input type="text" class="form-control" id="Ref" name="Ref" value="@Model.AssemblyMasterObj.Ref" placeholder="Ref" readonly> }
+                                else
+                                {
+                                    <input type="text" class="form-control" id="Ref" name="Ref" value="@Model.InventoryAssemblyRef.Ref" placeholder="Ref" readonly>}
+                                            </div>
+
+                                        </div>
+
+                                        <div class="row MasterForm">
+                                            <label for="PurchaseDate" class="col-sm-4 col-form-label">Date</label>
+                                            <div class="col-sm-8">
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                        </span>
+                                                    </span>
+
+
+
+                                                    @if (!String.IsNullOrEmpty(Model.AssemblyMasterObj.P_Date))
+                                                    {
+                                        <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="P_Date" name="P_Date" value="@Model.AssemblyMasterObj.P_Date" required>
+                                                        <input id="Assembly_ID" name="Assembly_ID" type="hidden" value="@Assembly_ID" /> }
+                                                    else
+                                                    {
+                                        <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="P_Date" name="P_Date" value="@DateTime.Now.ToString("dd-MMM-yyyy")" required>}
+
+
+
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+
+                                        <div class="row MasterForm">
+                                            <label for="Sale_trans_type" class="col-sm-4 col-form-label">Supervisor</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" id="Supervisor" name="Supervisor" value="@Model.AssemblyMasterObj.Supervisor" placeholder="Supervisor">
+
+                                            </div>
+                                        </div>
+
+                                        <div class="row MasterForm">
+                                            <label for="Sale_trans_type" class="col-sm-4 col-form-label">Assembly Type</label>
+                                            <div class="col-sm-8">
+                                                <select class="form-control" onchange="HiddenDetail(this);" name="Assembly_Type" id="Assembly_Type" asp-for="@Model.AssemblyMasterObj.Assembly_Type">
+                                                    <option value="0">Select</option>
+                                                    <option value="VEH">Car Vehicle</option>
+                                                    <option value="PARTS">Car Parts</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+
+                                    <div class="col-lg-4">
+                                        <div class="row MasterForm" id="divCHASSIS_NO">
+                                            <label class="col-sm-4 col-form-label" for="CHASSIS_NO">Chassis_No</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" id="CHASSIS_NO" name="CHASSIS_NO" value="@Model.AssemblyStockMasterObj.CHASSIS_NO" required>
+                                                </div>
+
+
+                                            </div>
+
+                                            <div class="row MasterForm" id="divmake_ID">
+                                                <label class="col-sm-4 col-form-label" for="make_ID">Make</label>
+
+
+                                                <div class="col-sm-8">
+                                                    <select class="form-control" id="make_ID" name="make_ID"
+                                                            asp-items="@(new SelectList(ViewBag.MakeList, "Make_ID", "Make", Model.AssemblyStockMasterObj.make_ID))"
+                                                            onchange="GetSubModel(this);">
+                                                        <option>Select Make</option>
+                                                    </select>
+                                                </div>
+
+
+
+                                            </div>
+                                            <div class="row MasterForm" id="divMakeModel_description_ID">
+                                                <label class="col-sm-4 col-form-label" for="MakeModel_description_ID">Model Desc</label>
+
+
+                                                <div class="col-sm-8">
+                                                    <select class="form-control MakeModelClass" id="MakeModel_description_ID"
+                                                            asp-items="@(new SelectList(ViewBag.ModelDesc, "ModelDesc_ID", "ModelDesciption", Model.AssemblyStockMasterObj.MakeModel_description_ID))"
+                                                            name="MakeModel_description_ID">
+                                                        <option value="">Select Model</option>
+
+                                                    </select>
+                                                </div>
+
+
+
+
+
+                                            </div>
+                                            <div class="row MasterForm" id="divModelYear">
+                                                <label class="col-sm-4 col-form-label" for="ModelYear">Year</label>
+                                                <div class="col-sm-8">
+                                                    <input type="text" class="form-control" id="ModelYear" name="ModelYear" value="@Model.AssemblyStockMasterObj.ModelYear">
+                                                </div>
+                                            </div>
+
+                                          
+
+                                        </div>
+
+                                    <div class="col-lg-4 ">
+                                        <div class="row MasterForm" id="divItemID">
+
+                                            <label for="To" class="col-sm-4 col-form-label">Item Code</label>
+
+                                            <div class="col-sm-8">
+                                                <select class="form-control select2" id="ItemID" name="ItemID" asp-items="@(new SelectList( ViewBag.ItemMaster,"Item_ID","ItemCode",Model.AssemblyMasterObj.ItemID))" required>
+                                                    <option value="0">Select Item</option>
+
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="row MasterForm" id="divcolor_exterior_ID">
+                                            <label class="col-sm-4 col-form-label" for="color_exterior_ID">Color</label>
+
+                                            <div class="col-sm-8">
+                                                <select class="form-control" id="color_exterior_ID" name="color_exterior_ID" asp-items="@(new SelectList(ViewBag.ColorsList, "Color_ID", "ColorName", Model.AssemblyStockMasterObj.color_exterior_ID))">
+                                                    <option>Select Color</option>
+                                                </select>
+
+                                            </div>
+
+                                        </div>
+
+
+                                        <div class="row MasterForm" id="divcolor_interior_ID">
+                                            <label class="col-sm-4 col-form-label" for="color_exterior_ID">Color(Int)</label>
+
+                                            <div class="col-sm-8">
+                                                <select class="form-control" id="color_interior_ID" name="color_interior_ID" asp-items="@(new SelectList(ViewBag.ColorsList, "Color_ID", "ColorName", Model.AssemblyStockMasterObj.color_interior_ID))">
+                                                    <option value="0">Select Color(Int)</option>
+                                                </select>
+
+                                            </div>
+                                        </div>
+                                        <div class="row MasterForm">
+                                            <label for="PurchaseRef" class="col-sm-4 col-form-label">Customer Ref</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" id="CustomerRef" name="CustomerRef" value="@Model.AssemblyMasterObj.CustomerRef" placeholder="CustomerRef">
+                                            </div>
+                                        </div>
+
+
+
+
+
+                                        <div class="row MasterForm">
+                                            <label class="col-sm-4 col-form-label" for="Chassis">Formula</label>
+
+                                            <div class="col-sm-8">
+                                                <select class="form-control" id="Formula" name="formula_ID" asp-items="@(new SelectList( ViewBag.FormulaMaster,"Formula_ID","FormulaName"))" required>
+                                                    <option value="0">Select Formula</option>
+
+                                                </select>
+                                            </div>
+                                        </div>
+
+
+
+
+                                    </div>
+
+
+
+                                </div>
+                            </div>
+
+
+                        </section>
+                    </form>
+
+                </div>
+
+            </div>
+
+            <div class="row m-2">
+                <div class="col-lg-3">
+                    <h2 class="card-title" style="line-height:normal;">Details </h2>
+                </div>
+                <div class="col-lg-6">
+                    &nbsp;
+                </div>
+                <div class="col-lg-3 text-right">
+                    <button class="btn btn-sm btn-primary" onclick="ShowDetails();">Show Specs To Add &nbsp;<i class="fas fa-plus"></i></button>
+
+
+                </div>
+            </div>
+
+            <div id="InventoryDetailSection">
+
+                <table class="table table-responsive-md table-bordered mb-0">
+                    <thead>
+                        <tr>
+                            <th>Delete</th>
+                            <th>Item</th>
+                            <th>Remarks</th>
+
+                            <th>Quantity</th>
+                            <th>Cost</th>
+
+
+
+
+
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.AssemblyDetailList != null)
+                        {
+
+
+                            foreach (Pa_Assembly_Dtl item in Model.AssemblyDetailList)
+                            {
+
+
+
+            <tr>
+
+
+                <td>
+
+                    <a onclick="DeleteInventoryDetail('@item.Assembly_Dtl_ID');" data-toggle="modal" data-target="#DeleteInventoryDetailModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+                </td>
+                <td>
+                    @item.ItemName
+                    <br />
+                    @item.ItemCode
+                </td>
+                <td>@Html.DisplayFor(modelItem => item.Remarks)</td>
+
+                <td>@Html.DisplayFor(modelItem => item.Quantity)</td>
+                <td>@Html.DisplayFor(modelItem => item.Cost)</td>
+
+
+
+
+
+            </tr>}
+                        }
+                    </tbody>
+
+                </table>
+
+
+
+
+
+
+
+            </div>
+
+
+
+
+
+            <hr />
+
+
+
+            <div class="row">
+
+                <div class="col-sm-3"><span class="show-grid-block">Created at : <b>@Model.AssemblyMasterObj.Created_At </b></span></div>
+                <div class="col-sm-3"><span class="show-grid-block">Created by :</span><b>@Model.AssemblyMasterObj.Created_By</b></div>
+                <div class="col-sm-3"><span class="show-grid-block">Modified at :<b>@Model.AssemblyMasterObj.Last_Updated_At </b></span></div>
+                <div class="col-sm-3"><span class="show-grid-block">Modified by : <b>@Model.AssemblyMasterObj.Last_Updated_By </b></span></div>
+            </div>
+
+
+
+        </div>
+
+
+    </div>
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Modal Delete PurchaseDetail -->
+<div class="modal fade bs-modal-lg" id="DeleteInventoryDetailModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Delete Assembly Detail</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="Inventory" asp-action="DeleteAssemblyDetail">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <h3>Do you want to delete this record?</h3>
+
+                                        <input type="hidden" id="Material_OUT_ID_Delete" name="Material_OUT_ID" />
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modal Change Inventory Master Status -->
+<div class="modal fade bs-modal-lg" id="ChangeStatusInventoryModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Change Inventory Master Status</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="Inventory" asp-action="#" data-ajax-loading="">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <h3>Do you want to change status of this record?</h3>
+
+                                        <input type="hidden" id="Assembly_IDStatus" name="Assembly_ID" />
+                                        <input type="hidden" id="Inventory_Status_ID" name="Status_ID" />
+                                        <input type="hidden" id="Trans_Type" name="Trans_Type" value="Inventory_Invoice" />
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade bs-modal-lg" id="ShowDetailsModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <!-- Following fields is for making a central Stock master id for attachments -->
+
+
+        <div class="modal-content" id="LocDetailMaster">
+
+
+        </div>
+
+    </div>
+</div>
+
+
+
+@section Scripts {
+
+
+
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
+
+
+
+    <script>//---this function will hit after success submission of insert Inventory detail form
+        function GetSubModel(Make_ID) {
+            //debugger
+            var ID = Make_ID.value;
+            var procemessage = "<option value='0'> Please wait...</option>";
+            $(".MakeModelClass").html(procemessage).show();
+
+
+            if (!ID) {
+                ID = 0;
+                var emptyAppend = "<option value=''>Select</option>";
+                $(".MakeModelClass").html(emptyAppend).show();
+
+            } else {
+                $.getJSON("/Purchases/GetModelDescListByID", { Make_ID: ID }, function (data) {
+                    //first empty the model
+                    //debugger
+                    $(".MakeModelClass").empty();
+                    //Then append select
+                    $(".MakeModelClass").append("<option value=''>Select</option>");
+                    $.each(data, function (index, row) {
+
+                        //Now here appending all options in the sub classification list
+                        //$(".MakeModelClass").append("<option value='" + row.modelDesc_ID + "'>" + row.modelDesciption + "</option>")
+                        var optionText = row.modelDesciption;
+                        $('.MakeModelClass').append($("<option></option>").attr("value", row.modelDesc_ID).text(optionText));
+                    });
+                });
+            }
+
+
+
+        }
+        function mySuccessInventoryDetail(data) {
+
+            var SuccessDiv = " <div class='col-lg-12'><div class='alert alert-info'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button><strong>Success!</strong> Saved Successfully! <a href ='' class='alert-link'></a></div></div>";
+            debugger
+            if (data.message == undefined) {
+
+                //$('#AddNewPurchaseModal').modal('hide');
+                $('#InventoryDetailSection').html(data);
+                $('#SuccessErrorSection').html(SuccessDiv).show();
+
+                //reset form after success
+                $('#FormInsertInventoryDetail').trigger("reset");
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        //---this function will hit when error occured in submission of Inventory detail
+        function myFailureInventoryDetail() {
+
+            alert("Failured occured. Please try again!");
+        }
+
+        //---this function will hit after success submission of update purchase detail form
+        function mySuccessAssemblyUpate(data) {
+
+            var SuccessDiv = "<div class='col-lg-12'><div class='alert alert-info'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button><strong>Success!</strong> Updated Successfully! <a href ='' class='alert-link'></a></div></div>";
+            debugger
+            if (data.message == undefined) {
+
+                $('#UdpateSaleDetailByChassisModal').modal('hide');
+                $('#UdpateSaleDetailByServicesModal').modal('hide');
+                $('#InventoryDetailSection').html(data);
+                $('#SuccessErrorSection').html(SuccessDiv).show();
+
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        function myFailureAssemblyUpdate() {
+
+            alert("Failured occured. Please try again!");
+        }
+
+
+        //---delete Inventory invoice master
+        function DeleteInventoryMaster(Assembly_ID) {
+            debugger
+            $("#Assembly_ID_Delete").val(Assembly_ID);
+
+        }
+
+
+        //---Delete Inventory detail
+        function DeleteInventoryDetail(Material_OUT_ID) {
+            debugger
+            $("#Material_OUT_ID_Delete").val(Material_OUT_ID);
+
+        }
+
+        function HiddenDetail(sel) {
+            debugger
+            if (sel.value == "VEH") {
+                $('#divItemID').attr('hidden', 'hidden');
+
+     
+
+                $('#divmake_ID').removeAttr('hidden', 'hidden');
+                $('#divCHASSIS_NO').removeAttr('hidden', 'hidden');
+                $('#divMakeModel_description_ID').removeAttr('hidden', 'hidden');
+                $('#divModelYear').removeAttr('hidden', 'hidden');
+                $('#divcolor_exterior_ID').removeAttr('hidden', 'hidden');
+                $('#divcolor_interior_ID').removeAttr('hidden', 'hidden');
+
+            }
+            else if (sel.value == "PARTS"){
+                $('#divItemID').removeAttr('hidden', 'hidden');
+
+             
+                $('#divCHASSIS_NO').attr('hidden', 'hidden');
+                $('#divmake_ID').attr('hidden', 'hidden');
+                $('#divMakeModel_description_ID').attr('hidden', 'hidden');
+                $('#divModelYear').attr('hidden', 'hidden');
+                $('#divcolor_exterior_ID').attr('hidden', 'hidden');
+                $('#divcolor_interior_ID').attr('hidden', 'hidden');
+            }
+            else if (sel.value == "0") {
+                $('#divItemID').attr('hidden', 'hidden');
+                $('#divmake_ID').attr('hidden', 'hidden');
+                $('#divCHASSIS_NO').attr('hidden', 'hidden');
+                $('#divMakeModel_description_ID').attr('hidden', 'hidden');
+                $('#divModelYear').attr('hidden', 'hidden');
+                $('#divcolor_exterior_ID').attr('hidden', 'hidden');
+                $('#divcolor_interior_ID').attr('hidden', 'hidden');
+            }
+        
+        }
+
+        $(document).ready(function () {
+          
+            if ($("#Assembly_Type").val() == "VEH") {
+                $('#divItemID').attr('hidden', 'hidden');
+
+
+
+                $('#divmake_ID').removeAttr('hidden', 'hidden');
+                $('#divCHASSIS_NO').removeAttr('hidden', 'hidden');
+                $('#divMakeModel_description_ID').removeAttr('hidden', 'hidden');
+                $('#divModelYear').removeAttr('hidden', 'hidden');
+                $('#divcolor_exterior_ID').removeAttr('hidden', 'hidden');
+                $('#divcolor_interior_ID').removeAttr('hidden', 'hidden');
+
+            }
+            else if ($("#Assembly_Type").val() == "PARTS") {
+                $('#divItemID').removeAttr('hidden', 'hidden');
+
+
+                $('#divCHASSIS_NO').attr('hidden', 'hidden');
+                $('#divmake_ID').attr('hidden', 'hidden');
+                $('#divMakeModel_description_ID').attr('hidden', 'hidden');
+                $('#divModelYear').attr('hidden', 'hidden');
+                $('#divcolor_exterior_ID').attr('hidden', 'hidden');
+                $('#divcolor_interior_ID').attr('hidden', 'hidden');
+            }
+            else if ($("#Assembly_Type").val() == "0") {
+                $('#divItemID').attr('hidden', 'hidden');
+                $('#divmake_ID').attr('hidden', 'hidden');
+                $('#divCHASSIS_NO').attr('hidden', 'hidden');
+                $('#divMakeModel_description_ID').attr('hidden', 'hidden');
+                $('#divModelYear').attr('hidden', 'hidden');
+                $('#divcolor_exterior_ID').attr('hidden', 'hidden');
+                $('#divcolor_interior_ID').attr('hidden', 'hidden');
+            }
+
+            $("#ButtonSaleMasterIssue").click(function () {
+                debugger
+                if ($("#Assembly_Type").val() == 0) {
+                    alert('Assembly Type Required')
+                    return false;
+                }
+                else if ($("#Assembly_Type").val() == "VEH") {
+                    if ($("#CHASSIS_NO").val() == ''){
+                        alert('Chassis Required')
+                        return false;
+                    }
+                    else {
+
+                        $("#formInventoryMaster").submit();
+                    }
+                }
+                else if ($("#Assembly_Type").val() == "PARTS") {
+                    if ($("#ItemID").val() == '') {
+                        alert('Item Code Required')
+                        return false;
+                    }
+                    else {
+
+                        $("#formInventoryMaster").submit();
+                    }
+                }
+                else {
+
+                    $("#formInventoryMaster").submit();
+                }
+
+
+            });
+        });
+
+        $(document).ready(function () {
+            $("#ButtonSaleMasterUpdate").click(function () {
+                if ($("#Assembly_Type").val() == 0) {
+                    alert('Assembly Type Required')
+                    return false;
+                }
+                else if ($("#Assembly_Type").val() == "VEH") {
+                    if ($("#CHASSIS_NO").val() == '') {
+                        alert('Chassis Required')
+                        return false;
+                    }
+                    else {
+
+                        $("#formInventoryMaster").submit();
+                    }
+                }
+                else if ($("#Assembly_Type").val() == "PARTS") {
+                    if ($("#ItemID").val() == '') {
+                        alert('Item Code Required')
+                        return false;
+                    }
+                    else {
+
+                        $("#formInventoryMaster").submit();
+                    }
+                }
+                else {
+                    $("#formInventoryMaster").submit();
+                }
+
+            });
+        });</script>
+
+    <script>
+        function DisplayDescription(SelectBy) {
+            debugger
+            var SelectedValue = SelectBy.value;
+            if (SelectedValue == 'ByService') {
+                $(".ServiceDescription").show();
+                $(".ByChassisClass").hide();
+                $("#Chassis").prop('required', false);
+                $("#ItemDesc").prop('required', true);
+            } else {
+                $(".ServiceDescription").hide();
+                $(".ByChassisClass").show();
+                $("#Chassis").prop('required', true);
+                $("#ItemDesc").prop('required', false);
+            }
+
+        }
+
+
+
+
+        //This function is for validation of chassis no
+        function ValidateChassis() {
+
+            //debugger
+
+
+            var Chassis = document.getElementById("Chassis").value.toString();
+
+            $.ajax({
+
+                type: "Get",
+                url: "/Accounts/ValidateChassisNo_UNSOLD",
+                data: { //Passing data
+                    ChassisNo: Chassis
+
+
+                },
+                datatype: "json",
+                success: function (response) {
+                    debugger
+                    if (response.message == 'Chassis is valid') {
+                        //debugger
+                        $("#ChassisValidationMessage").text(response.message);
+                        $("#ChassisValidationMessage").css("color", "green");
+                        $("#Chassis").val(response.ItemId);
+                        $("#Make").val(response.make);
+                        $("#ModelDesc").val(response.modelDesciption);
+                        $("#ModelYear").val(response.modelYear);
+                        $("#Color").val(response.color);
+                    } else {
+                        $("#ChassisValidationMessage").text(response.message);
+                        $("#ChassisValidationMessage").css("color", "red");
+                        $("#Chassis").val("");
+                        $("#Make").val("");
+                        $("#ModelDesc").val("");
+                        $("#ModelYear").val("");
+                        $("#Color").val("");
+                    }
+
+                }
+            })
+        }
+        function GetCustomerDetail() {
+
+            //debugger
+
+
+            var Customer = document.getElementById("Customer_ID").value.toString();
+
+            if (Customer == -1) {
+                $('#AddCustomerModal').modal('show');
+            }
+            else {
+            $.ajax({
+
+                type: "Get",
+                url: "/Inventory/GetCustomerDetail",
+                data: { //Passing data
+                    Customer_ID: Customer
+                },
+                datatype: "json",
+                success: function (response){
+                    debugger
+
+
+                        $("#Customer_Contact").val(response.contactNumber);
+                        $("#Invoice_address").val(response.contactAddress);
+                        $("#CustomerTRN").val(response.trn);
+
+
+
+
+
+                }
+            })
+            }
+
+        }
+
+        //---change Inventory master status
+        function ChangeStatusInventoryMaster(Assembly_ID, Status) {
+            debugger
+            $("#Assembly_IDStatus").val(Assembly_ID);
+            $("#Inventory_Status_ID").val(Status);
+
+        }
+
+
+        //----Assigning values to Inventory invoice detail form of chassis type
+        function UpdateInventoryDetailByChassis(Material_OUT_ID, ItemID, DirectCost, InDirectCost, UOM, Quantity, formula_ID, UnitPrice, Amount) {
+
+            debugger
+
+            $("#ItemID_Udpate").val(ItemID);
+            $("#Material_OUT_ID_Udpate").val(Material_OUT_ID);
+            $("#Quantity_Udpate").val(Quantity);
+            $("#UOM_Udpate").val(UOM);
+            $("#Formula_Udpate").val(formula_ID);
+            $("#DirectCost_Udpate").val(DirectCost);
+            $("#InDirectCost_Udpate").val(InDirectCost);
+
+
+
+
+
+        }
+
+
+        //----Assigning values to Update receipt detail form
+        function UpdateReceiptDetailGeneral(ReceiptDetail_ID, DR_accountID, Amount, Currency_ID, Currency_Rate,
+            other_curr_amount, CR_accountID, Description, trans_ref, Cheque_Bank_Name,
+            cheque_Date, Cheque_no, VAT_Rate, VAT_Exp, Total_Amount) {
+
+
+            debugger
+
+            $("#ReceiptDetail_IDUpdate").val(ReceiptDetail_ID);
+            $("#DR_accountIDUpdate").val(DR_accountID);
+            $("#AmountUpdate").val(Amount);
+
+            $("#Currency_IDUpdate").val(Currency_ID);
+            $("#Currency_RateUpdate").val(Currency_Rate);
+            $("#other_curr_amountUpdate").val(other_curr_amount);
+            $("#CR_accountIDUpdate").val(CR_accountID);
+            $("#DescriptionUpdate").val(Description);
+            $("#trans_refUpdate").val(trans_ref);
+            $("#Cheque_Bank_NameUpdate").val(Cheque_Bank_Name);
+            $("#cheque_DateUpdate").val(cheque_Date);
+            $("#Cheque_noUpdate").val(Cheque_no);
+            $("#VAT_RateUpdate").val(VAT_Rate);
+            $("#VAT_ExpUpdate").val(VAT_Exp);
+            $("#Total_AmountsUpdate").val(Total_Amount);
+
+
+        }
+        function DeleteReceiptsDetail(ReceiptDetail_ID) {
+
+            $("#ReceiptDetail_IDDelete").val(ReceiptDetail_ID);
+
+        }
+        //---function for calculating amounts in the puchase detail pop up form insert
+
+        function CalculateSumAmount() {
+            debugger
+
+            var Unit_Price = 0;
+
+            var VATRate = 5;
+
+            var VATExp = 0;
+
+            var Total_Amount = 0;
+
+
+
+            Unit_Price = document.getElementById("Unit_Price").value;
+
+            VATRate = document.getElementById("VATRate").value;
+
+            VATExp = document.getElementById("VATExp").value;
+
+            Total_Amount = document.getElementById("Total_Amount").value;
+
+
+            if (!Unit_Price) {
+                Unit_Price = 0;
+            }
+
+            if (!VATRate) {
+                VATRate = 5;
+
+            }
+            if (!VATExp) {
+                VATExp = 0;
+            }
+            if (!Total_Amount) {
+                Total_Amount = 1;
+            }
+
+
+
+            //---calculate sum vat exp
+            VATExp = VATRate * Unit_Price / 100;
+            $("#VATExp").val(VATExp);
+
+            Total_Amount = (Number(Unit_Price) + Number(VATExp));
+            $("#Total_Amount").val(Total_Amount);
+
+
+
+        }
+
+        //---function for calculating amounts in the puchase detail pop up form insert
+        function CalculateSumAmountUpdate() {
+            debugger
+
+            var Unit_PriceUpdate_chassis = 0;
+
+            var VATRateUpdate_chassis = 5;
+
+            var VATExpUpdate_chassis = 0;
+
+            var Total_AmountUpdate_chassis = 0;
+
+
+
+            Unit_PriceUpdate_chassis = document.getElementById("Unit_PriceUpdate_chassis").value;
+
+            VATRateUpdate_chassis = document.getElementById("VATRateUpdate_chassis").value;
+
+            VATExpUpdate_chassis = document.getElementById("VATExpUpdate_chassis").value;
+
+            Total_AmountUpdate_chassis = document.getElementById("Total_AmountUpdate_chassis").value;
+
+
+            if (!Unit_PriceUpdate_chassis) {
+                Unit_PriceUpdate = 0;
+            }
+
+            if (!VATRateUpdate_chassis) {
+                VATRateUpdate_chassis = 5;
+
+            }
+            if (!VATExpUpdate_chassis) {
+                VATExpUpdate_chassis = 0;
+            }
+            if (!Total_AmountUpdate_chassis) {
+                Total_AmountUpdate_chassis = 1;
+            }
+
+
+
+            //---calculate sum vat exp
+            VATExpUpdate_chassis = VATRateUpdate_chassis * Unit_PriceUpdate_chassis / 100;
+            $("#VATExpUpdate_chassis").val(VATExpUpdate_chassis);
+
+            Total_AmountUpdate_chassis = (Number(Unit_PriceUpdate_chassis) + Number(VATExpUpdate_chassis));
+            $("#Total_AmountUpdate_chassis").val(Total_AmountUpdate_chassis);
+
+
+
+        }
+
+        //---function for calculating amounts in the puchase detail pop up form insert
+        function CalculateSumAmountUpdateService() {
+            debugger
+
+            var Unit_PriceUpdate_service = 0;
+
+            var VATRateUpdate_service = 5;
+
+            var VATExpUpdate_service = 0;
+
+            var Total_AmountUpdate_service = 0;
+
+
+
+            Unit_PriceUpdate_service = document.getElementById("Unit_PriceUpdate_service").value;
+
+            VATRateUpdate_service = document.getElementById("VATRateUpdate_service").value;
+
+            VATExpUpdate_service = document.getElementById("VATExpUpdate_service").value;
+
+            Total_AmountUpdate_service = document.getElementById("Total_AmountUpdate_service").value;
+
+
+            if (!Unit_PriceUpdate_service) {
+                Unit_PriceUpdate = 0;
+            }
+
+            if (!VATRateUpdate_service) {
+                VATRateUpdate_service = 5;
+
+            }
+            if (!VATExpUpdate_service) {
+                VATExpUpdate_service = 0;
+            }
+            if (!Total_AmountUpdate_service) {
+                Total_AmountUpdate_service = 1;
+            }
+
+
+
+            //---calculate sum vat exp
+            VATExpUpdate_service = VATRateUpdate_service * Unit_PriceUpdate_service / 100;
+            $("#VATExpUpdate_service").val(VATExpUpdate_service);
+
+            Total_AmountUpdate_service = (Number(Unit_PriceUpdate_service) + Number(VATExpUpdate_service));
+            $("#Total_AmountUpdate_service").val(Total_AmountUpdate_service);
+
+
+
+        }
+
+
+        //----method for opening customer popup
+        function AddNewCustomer(Customer) {
+
+
+
+            CustomerValue = Customer.value;
+            if (CustomerValue == 'NewCustomer') {
+                $('#AddCustomerModal').modal('show');
+            }
+        }
+
+        //---function for calculating amounts in the payment detail pop up form insert
+        function CalculateSumAmountReceipt() {
+            debugger
+            var Amount = 0;
+            var VAT_Rate = 0;
+            var Currency_Rate = 1;
+
+
+            var other_curr_amount = 0;
+            var VAT_Exp = 0;
+            var Total_Amount = 0;
+
+
+            Amount = document.getElementById("Amount").value;
+            VAT_Rate = document.getElementById("VAT_Rate").value;
+            Currency_Rate = document.getElementById("Currency_Rate").value;
+
+            other_curr_amount = document.getElementById("other_curr_amount").value;
+            VAT_Exp = document.getElementById("VAT_Exp").value;
+            Total_Amount = document.getElementById("Total_Amount").value;
+
+
+            if (!Amount) {
+                Amount = 0;
+            }
+            if (!VAT_Rate) {
+                VAT_Rate = 0;
+            }
+            if (!Currency_Rate) {
+                Currency_Rate = 1;
+            }
+            if (!other_curr_amount) {
+                other_curr_amount = 0;
+
+            }
+            if (!VAT_Exp) {
+                VAT_Exp = 0;
+            }
+            if (!Total_Amount) {
+                Total_Amount = 0;
+            }
+
+
+
+            //---calculate sum vat exp
+            VAT_Exp = VAT_Rate * Amount / 100;
+            $("#VAT_Exp").val(VAT_Exp);
+
+            Total_Amount = (Number(Amount) + Number(VAT_Exp));
+            $("#Total_Amounts").val(Total_Amount);
+
+            //---calculate Amount_Others
+            other_curr_amount = Amount * Currency_Rate;
+            $("#other_curr_amount").val(other_curr_amount);
+
+
+
+
+        }
+
+        //---function for calculating amounts in the payment detail pop up form Update
+        function CalculateSumAmountUpdateReceipt() {
+            debugger
+            var Amount = 0;
+            var VAT_Rate = 0;
+            var Currency_Rate = 1;
+
+
+            var other_curr_amount = 0;
+            var VAT_Exp = 0;
+            var Total_Amount = 0;
+
+
+            Amount = document.getElementById("AmountUpdate").value;
+            VAT_Rate = document.getElementById("VAT_RateUpdate").value;
+            Currency_Rate = document.getElementById("Currency_RateUpdate").value;
+
+            other_curr_amount = document.getElementById("other_curr_amountUpdate").value;
+            VAT_Exp = document.getElementById("VAT_ExpUpdate").value;
+            Total_Amount = document.getElementById("Total_AmountUpdate").value;
+
+
+            if (!Amount) {
+                Amount = 0;
+            }
+            if (!VAT_Rate) {
+                VAT_Rate = 0;
+            }
+            if (!Currency_Rate) {
+                Currency_Rate = 1;
+            }
+            if (!other_curr_amount) {
+                other_curr_amount = 0;
+
+            }
+            if (!VAT_Exp) {
+                VAT_Exp = 0;
+            }
+            if (!Total_Amount) {
+                Total_Amount = 0;
+            }
+
+
+
+            //---calculate sum vat exp
+            VAT_Exp = VAT_Rate * Amount / 100;
+            $("#VAT_ExpUpdate").val(VAT_Exp);
+
+            Total_Amount = (Number(Amount) + Number(VAT_Exp));
+            $("#Total_AmountsUpdate").val(Total_Amount);
+
+            //---calculate Amount_Others
+            other_curr_amount = Amount * Currency_Rate;
+            $("#other_curr_amountUpdate").val(other_curr_amount);
+
+
+
+
+        }
+
+        $(document).ready(function () {
+            $("#print-btn").click(function(event){
+                event.preventDefault();
+                var win = window.open("@Url.Action("Assembly_Print", "Report")" + "?Assembly_ID=" + $("#Assembly_ID").val() , "_blank");
+                win.focus();
+            });
+
+
+
+        })
+
+    </script>
+    <script>//---show attachment popup
+        function ShowDetails() {
+            debugger
+            var TeamDetailPostBackURL = '/Inventory/GetFormulaDetailsAssembly';
+
+            //--assign value to ItemCode hidden field in the main. Dont remove this fields
+            var FormulaId = 0;
+            FormulaId = document.getElementById("Formula").value;
+
+            if (FormulaId==0) {
+                alert("Please Select Formula");
+            } else {
+                $.ajax({
+                    type: "GET",
+                    url: TeamDetailPostBackURL,
+                    contentType: "application/json; charset=utf-8",
+                    data: { "FormulaId": FormulaId },
+                    datatype: "json",
+                    success: function (data) {
+
+
+                        if (data.message == undefined) {
+                            $('#LocDetailMaster').html(data);
+
+
+
+
+                            $('#ShowDetailsModal').modal('show');
+
+                        } else {
+                            alert(data.message);
+                            $('#ShowDetailsModal').modal('hide');
+                        }
+
+                    },
+                    error: function () {
+                        alert("Dynamic content load failed.");
+                    }
+                });
+            }
+
+
+
+        }</script>
+    <script type="text/javascript">
+        function SaveForm() {
+            debugger
+
+            var form = document.getElementById("FormInsertPaymentDetail"),
+                inputs = form.getElementsByTagName("input"),
+                arr = [],
+                qty = [],
+                Remarks = [],
+                cost = [];
+
+            for (var i = 0, len = inputs.length; i < len; i++) {
+                if (inputs[i].type === "checkbox" && inputs[i].checked == true) {
+                    arr.push(inputs[i].name);
+                    qty.push(document.getElementById("txtQuantity" + inputs[i].name).value);
+                    cost.push(document.getElementById("txtCost" + inputs[i].name).value);
+                    Remarks.push(document.getElementById("txtRemarks" + inputs[i].name).value);
+                }
+
+
+
+
+
+
+            }
+
+
+
+            return $.ajax({
+                type: 'POST',
+                url: "/Inventory/InsertAssemblyDetail",
+                data: {
+
+                    HdAssembly_ID: $("#Assembly_ID").val(),
+
+                    Item_ID: arr,
+                    Quantity: qty,
+                    Cost: cost,
+                    Remarks: Remarks,
+
+                },
+                success: function (result, status, xhr) {
+                    mySuccessAuctionDetail(result);
+
+                }
+            });
+
+
+        }
+        //---this function will hit after success submission of insert Stock detail form
+        function mySuccessAuctionDetail(data) {
+
+            var SuccessDiv = " <div class='col-lg-12'><div class='alert alert-info'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button><strong>Success!</strong> Saved Successfully! <a href ='' class='alert-link'></a></div></div>";
+            debugger
+            if (data.message == undefined) {
+
+
+
+
+                //$('#AddNewPurchaseModal').modal('hide');
+                $('#InventoryDetailSection').html(data);
+                $('#SuccessErrorSection').html(SuccessDiv).show();
+
+                //reset form after success
+                $('#FormInsertPaymentDetail').trigger("reset");
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        //---this function will hit when error occured in submission of Stock detail
+        function myFailureStockDetail() {
+
+            alert("Failured occured. Please try again!");
+        }
+                            $(document).ready(function(){
+            $("#print-btn").click(function(event){
+                event.preventDefault();
+
+                var win = window.open("@Url.Action("Assembly_Print", "Report")" + "?Assembly_ID=" + $("#Assembly_ID").val() , "_blank");
+                win.focus();
+            });
+        })
+    </script>
+
+}
+
+
+
+
+

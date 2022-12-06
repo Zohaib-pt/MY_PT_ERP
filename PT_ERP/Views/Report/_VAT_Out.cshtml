@@ -1,0 +1,103 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.oReports
+@using X.PagedList.Mvc.Core; @*//import this so we get our HTML Helper*@
+@using X.PagedList;  @*//import this so we can cast our list to IPagedList*@
+
+<table class="table table-bordered table-striped mb-0">
+    <thead>
+        <tr>
+
+
+
+            <th>Date</></th>
+            <th>Ref</th>
+            <th>Amount</th>
+            <th>PartyName</th>
+            <th>TransType</th>
+            <th>VATRate</th>
+            <th>Paid</th>
+            <th>Return</th>
+
+
+
+
+
+        </tr>
+    </thead>
+
+
+    <tbody>
+
+
+        @if (Model.VAT_OUTReportReport != null)
+        {
+
+
+            foreach (pa_VAT item in Model.VAT_OUTReportReport)
+            {
+
+
+
+
+
+
+<tr class="gradeX odd" role="row">
+
+
+
+
+
+
+    <td>@Html.DisplayFor(modelItem => item.Date) </td>
+    <td>@Html.DisplayFor(modelItem => item.Ref)</td>
+    <td>@Html.DisplayFor(modelItem => item.Value) </td>
+    <td>@Html.DisplayFor(modelItem => item.Party_Name) </td>
+
+    <td>@Html.DisplayFor(modelItem => item.TransType) </td>
+
+    <td>@Html.DisplayFor(modelItem => item.VAT_Rate) </td>
+    <td>@Html.DisplayFor(modelItem => item.Paid) </td>
+    <td>@Html.DisplayFor(modelItem => item.Return) </td>
+
+
+
+</tr>
+}
+}
+    </tbody>
+
+    <tfoot>
+
+    </tfoot>
+
+
+</table>
+
+<div class="invoice-summary">
+
+    <div class="row">
+
+        <div class="col-lg-6 col-md-6">
+
+        </div>
+
+
+
+        <div class="col-lg-6 col-md-6 justify-content-end text-right">
+            @if (Model.VAT_OUTReportReport.Count() != 0)
+            {
+
+@Html.PagedListPager(Model.VAT_OUTReportReport, page => Url.Action("VAT_OUT_Search", "Report", new { StartDate = ViewBag.StartDate_VAT_INReport, EndDate = ViewBag.EndDate_VAT_INReport, page })
+
+, X.PagedList.Mvc.Core.Common.PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new AjaxOptions()
+{
+HttpMethod = "get",
+UpdateTargetId = "VAT_OUTReportSearch"
+})
+      )            }
+        </div>
+    </div>
+
+</div>
+

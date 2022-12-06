@@ -1,0 +1,57 @@
+﻿@{
+
+    string UserName_ValiDate = ViewBag.UserNameValidate;
+    int? CompanyId_ValiDate = ViewBag.CompanyValidate;
+    int? CompanyOne = ViewBag.CompanyOne;
+    int? CompanyTwo = ViewBag.CompanyTwo;
+    string User = ViewBag.User;
+}
+@if (UserName_ValiDate == User)
+{
+    <div class="col-sm-2" @ViewBag.IsMultiCompanyVisible>
+        <div class="form-group">
+            <label class="col-form-label" for="c_ID">Company</label>
+
+
+
+            <select class="form-control" id="c_ID" name="c_ID">
+                <option value="1">Company1</option>
+                <option value="2">Company2</option>
+
+            </select>
+
+        </div>
+    </div>
+}
+@if (CompanyId_ValiDate == CompanyOne && UserName_ValiDate != User)
+{
+    <div class="col-sm-2" @ViewBag.IsMultiCompanyVisible>
+        <div class="form-group">
+            <label class="col-form-label" for="c_ID">Company</label>
+
+
+
+            <select class="form-control" id="c_ID" name="c_ID">
+                <option value="1" selected>Company1</option>
+            </select>
+
+        </div>
+    </div>
+}
+@if (CompanyId_ValiDate == CompanyTwo && UserName_ValiDate != User)
+{
+    <div class="col-sm-2" @ViewBag.IsMultiCompanyVisible>
+        <div class="form-group">
+            <label class="col-form-label" for="c_ID">Company</label>
+
+
+
+            <select class="form-control" id="c_ID" name="c_ID">
+
+                <option value="2" selected>Company2</option>
+
+            </select>
+
+        </div>
+    </div>
+}

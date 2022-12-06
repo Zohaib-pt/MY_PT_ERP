@@ -1,0 +1,113 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@using DAL
+@using DAL.Models
+@using X.PagedList.Mvc.Core; @*//import this so we get our HTML Helper*@
+@using X.PagedList;  @*//import this so we can cast our list to IPagedList *@
+@model DAL.oClasses.OStock
+
+
+<table class="table table-bordered table-striped mb-0 mt-1" @*id="datatable-default"*@>
+    <thead>
+        <tr>
+
+
+            <th>Trans Ref </th>
+            <th>Shipper Name </th>
+            <th>Invoice_Date </th>
+            <th>Total </th>
+            <th>Paid </th>
+            <th>Balance </th>
+            <th>Status </th>
+            <th>View</th>
+
+
+
+
+        </tr>
+    </thead>
+    <tbody>
+
+        @if (Model.Shipping_infoListPagedObject != null)
+        {
+            foreach (pa_Shipping_Info item in Model.Shipping_infoListPagedObject)
+            {
+
+                double vTotalAmount = Convert.ToDouble(item.Total_Amount);
+                ViewBag.VpAmount = vTotalAmount;
+
+                double vPaid = Convert.ToDouble(item.Paid);
+                ViewBag.VPaid = vPaid;
+
+                double vBalance = Convert.ToDouble(item.Balance);
+                ViewBag.vBalance = vBalance;
+                <tr>
+
+
+                    <td> <a asp-controller="Stock" asp-action="shippinginfo" asp-route-Shipping_info_ID="@item.Shipping_info_ID"> @Html.DisplayFor(modelItem => item.Shipping_Info_Ref)</a></td>
+
+
+                    <td>@Html.DisplayFor(modelItem => item.Shipper_Name)</td>
+                    <td>@Html.DisplayFor(modelItem => item.trans_Date)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Total_Amount)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Paid)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Balance)</td>
+                    <td>@Html.DisplayFor(modelItem => item.PaymentStatus)</td>
+                    <td> <a asp-controller="Stock" asp-action="shippinginfo" asp-route-Shipping_info_ID="@item.Shipping_info_ID">View</a></td>
+
+
+
+                </tr>
+}
+        }
+
+
+
+
+    </tbody>
+
+    <tfoot>
+        <tr role="row">
+
+            <th>Total</th>
+            <th></th>
+            <th></th>
+            <th>@ViewBag.VpAmount</th>
+            <th>@ViewBag.VPaid</th>
+            <th>@ViewBag.vBalance</th>
+
+            <th></th>
+            <th></th>
+
+        </tr>
+    </tfoot>
+
+
+</table>
+
+
+<div class="invoice-summary">
+
+    <div class="row">
+
+        <div class="col-lg-6 col-md-6">
+
+        </div>
+
+        <div class="col-lg-6 col-md-6 justify-content-end text-right">
+
+            @if (Model.Shipping_infoListPagedObject.Count() != 0)
+            {
+
+                @Html.PagedListPager(Model.Shipping_infoListPagedObject, page => Url.Action("Shipping_infoList_SearchFilter", "Stock", new { trans_ref = ViewBag.trans_ref_Shipping_infoList, StartDate = ViewBag.StartDate_infoList, EndDate = ViewBag.EndDate_infoList, Shipper_Name = ViewBag.Shipper_Name_Shipping_infoList, page })
+                , X.PagedList.Mvc.Core.Common.PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new AjaxOptions()
+                {
+                    HttpMethod = "get",
+                    UpdateTargetId = "TableShipping_infoListSearch"
+                })
+                )}
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,201 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.oReports
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+@{
+    Layout = null;
+
+}
+
+<!DOCTYPE HTML>
+<HTML>
+<head>
+
+    <!-- Basic -->
+    <meta charset="UTF-8">
+
+    <title>@ViewBag.PageTitle</title>
+    <meta name="keywords" content="DearlerSol | Dealers Management System " />
+    <meta name="description" content="Vehicle Management System | Dealer Management System | Dealer ERP ">
+    <meta name="author" content="DealerSol.com">
+
+    <!-- Mobile Metas -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <!-- Favicon  -->
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+
+
+    <!-- Vendor CSS -->
+    <link rel="stylesheet" href="~/vendor/bootstrap/css/bootstrap.css" />
+
+
+
+
+
+
+    <style>
+        .moneycol {
+            text-align: right;
+        }
+
+        .controlheight {
+            height: 1px;
+            border: 1px solid #d3d3d3;
+            margin: 0px;
+        }
+
+            .controlheight table th, .table td {
+                padding: 5px;
+            }
+
+        .SumHeading {
+            background-color: #d3d3d3;
+            text-align: left;
+            font-weight: bold;
+            font-size: 16px
+        }
+
+        .ColHeading {
+            background-color: #d3d3d3;
+            font-size: 18px;
+            text-align: center
+        }
+
+        .CompanyTitle {
+            font-size: 21px;
+            padding-bottom: 20px;
+        }
+
+        .RecievableSummeryReport {
+            font-size: 20px;
+            padding-bottom: 20px;
+        }
+    </style>
+
+
+</head>
+
+<BODY>
+
+
+    <div class="row">
+        <div class="col">
+            <section>
+                <header>
+                    <div class="row form-inline">
+                        @* Farzaib *@
+                        <div class="col-md-6 ">
+                            <div class="text-center">
+                                <h4 class="text-left" style="position:absolute; top:10%; left: 1.5%;">@Configuration.GetSection("AppSettings").GetSection("CompanyName").Value.ToString()</h4>
+                                <h3>Receivable Summery Report</h3>
+                            </div>
+                        </div>
+                        @*<div class="col-md-12">
+
+                                <h5 style="color:black;">
+                                    @Configuration.GetSection("AppSettings").GetSection("CompanyName").Value
+
+                                </h5>
+                                <p style="color:black;">
+                                    Phone No:
+
+
+                                </p>
+                            </div>*@
+                        <!--<div class="col-md-12" style="text-align:center">
+                        <h2 class="CompanyTitle" style="text-align:left"><b><u>GULFLINE MOTORS</u></b></h2>
+                        <h4 class="RecievableSummeryReport" style="float: right"><b>Recievable Summery Report</b></h4>-->
+                        @*<h3 style="color:black;">
+                                Recievable Summery Report
+                                <br />
+                            </h3>*@
+
+                        <!--</div>-->
+
+
+                    </div>
+                    @*<div class="row form-group">
+                            <div class="col-xs-12">
+                                <h6 style="text-align:center">From   - To   </h6>
+                            </div>
+                        </div>*@
+                </header>
+                <div>
+                    <table class="table table-bordered" @*id="datatable-default"*@>
+                        <thead>
+                            <tr class="ColHeading">
+
+
+
+                                <th>Party ID</th>
+                                <th>Party Name</th>
+                                <th>Debit</></th>
+                                <th>Credit</></th>
+                                <th>Balance</></th>
+                            </tr>
+
+
+
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            @if (Model.ReceiveAbleSummary != null)
+                            {
+
+                                ViewBag.TotalDebit = 0;
+                                ViewBag.TotalCredit = 0;
+                                ViewBag.TotalBalance = 0;
+                                foreach (pa_tblLedgers item in Model.ReceiveAbleSummary)
+                                {
+                                    decimal Debit = Convert.ToDecimal(item.Debit);
+                                    ViewBag.TotalDebit = Convert.ToDecimal(ViewBag.TotalDebit) + Debit;
+                                    decimal Credit = Convert.ToDecimal(item.Credit);
+                                    ViewBag.TotalCredit = Convert.ToDecimal(ViewBag.TotalCredit) + Credit;
+                                    decimal Balance = Convert.ToDecimal(item.Balance);
+                                    ViewBag.TotalBalance = Convert.ToDecimal(ViewBag.TotalBalance) + Balance;
+                                    <tr>
+
+                                        <TD class="controlheight">@item.Party_ID</TD>
+                                        <TD class="controlheight">@item.PartyName</TD>
+                                        <TD class="controlheight moneycol">@item.Debit</TD>
+                                        <TD class="controlheight moneycol">@item.Credit</TD>
+                                        <TD class="controlheight moneycol">@item.Balance</TD>
+
+
+
+                                    </tr>
+                                }
+                            }
+
+                            <tr>
+
+
+
+
+                            <tr>
+
+                                <TD class="SumHeading">Total</TD>
+                                @*<TD class="controlheight"></TD>
+                                    <TD class="controlheight"></TD>*@
+                                <TD class="controlheight"></TD>
+                                <TD class="controlheight moneycol">@ViewBag.TotalDebit</TD>
+                                <TD class="controlheight moneycol">@ViewBag.TotalCredit</TD>
+                                <TD class="controlheight moneycol">@ViewBag.TotalBalance</TD>
+
+                            </tr>
+
+                            </tr>
+
+
+
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </div>
+</BODY>
+</HTML>

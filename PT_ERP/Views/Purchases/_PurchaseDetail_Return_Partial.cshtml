@@ -1,0 +1,162 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OPurchases
+
+@{
+
+    ViewBag.SubTotal = null;
+    ViewBag.Vat_ExpTotal = null;
+    ViewBag.DiscountTotal = null;
+    ViewBag.Grand_Total = null;
+
+}
+
+
+<table class="table table-responsive-md table-bordered mb-0">
+    <thead>
+        <tr>
+            <th>Edit/Delete</th>
+            <th>Make</th>
+            <th>Make Model</th>
+            <th>Color</th>
+            <th>Qty</th>
+            @*<th>ItemDesc</th>*@
+            <th>Curr</th>
+            <th>Unit Price</th>
+            <th>Amount</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.purchaseDetailList != null)
+        {
+
+
+
+            foreach (Pa_PurchaseDetails_DAL item in Model.purchaseDetailList.Where(m => m.Make != "" && m.Make != " " && String.IsNullOrEmpty(m.item_Description)))
+            {
+                ViewBag.SubTotal = item.SubTotal;
+                ViewBag.Vat_ExpTotal = item.Vat_ExpTotal;
+                ViewBag.DiscountTotal = item.DiscountTotal;
+                ViewBag.Grand_Total = item.Grand_Total;
+
+                <tr>
+                    <td>
+                        <a onclick="UpdatePurchaseDetail('@item.PurchaseDetails_ID');"><img style="width: 20px;" src="~/Img/Icons/edit.png" /></a>
+                        <a onclick="DeletePurchaseDetail('@item.PurchaseDetails_ID');" data-toggle="modal" data-target="#DeletePurchaseDetailModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+                    </td>
+                    <td>@Html.DisplayFor(modelItem => item.Make)</td>
+                    <td>@Html.DisplayFor(modelItem => item.ModelDesciption)</td>
+                    <td>@Html.DisplayFor(modelItem => item.ColorName)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Quantity)</td>
+                    @*<td></td>*@
+                    <td>@Html.DisplayFor(modelItem => item.Currency_Name)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Unit_Price)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Amount)</td>
+                </tr>
+            }
+        }
+
+
+
+
+    </tbody>
+
+</table>
+
+
+
+<table class="table table-responsive-md table-bordered mb-0 mt-3">
+    <thead>
+        <tr>
+            <th>Delete</th>
+            <th>Item</th>
+            @*<th>Description</th>*@
+
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>VAT</th>
+            <th>Discount</th>
+            <th>Total Amount</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.purchaseDetailList != null)
+        {
+
+
+            foreach (Pa_PurchaseDetails_DAL item in Model.purchaseDetailList.Where(m => m.Make == "" && !String.IsNullOrEmpty(m.item_Description)))
+            {
+
+
+
+
+
+                <tr>
+
+
+                    <td>
+
+                        <a onclick="DeletePurchaseDetail('@item.PurchaseDetails_ID');" data-toggle="modal" data-target="#DeletePurchaseDetailModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+                    </td>
+                    <td>@Html.DisplayFor(modelItem => item.item_ID)</td>
+                    @*<td>@Html.DisplayFor(modelItem => item.item_Description)</td>*@
+                    <td>@Html.DisplayFor(modelItem => item.Quantity)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Unit_Price)</td>
+                    <td>@Html.DisplayFor(modelItem => item.VAT_Exp)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Discount)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Amount)</td>
+
+                </tr>
+            }
+        }
+    </tbody>
+
+</table>
+
+
+
+<div class="invoice-summary">
+
+    <div class="row">
+
+        <div class="col-lg-9 col-md-9">
+
+        </div>
+
+        <div class="col-lg-3 col-md-3 justify-content-end text-right">
+            <table class="table h6 text-dark">
+                <tbody>
+
+
+
+                    <tr class="b-top-0">
+                        <td colspan="2"> Sub Total:</td>
+                        <td class="text-right" id="SubTotal">@ViewBag.SubTotal</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">VAT Charge:</td>
+                        <td class="text-right" id="VAT_ChargeTotal">@ViewBag.Vat_ExpTotal</td>
+                    </tr>
+
+                    <tr>
+                        <td colspan="2">Discount:</td>
+                        <td class="text-right" id="DiscountTotal">@ViewBag.DiscountTotal</td>
+                    </tr>
+                    <tr class="h5">
+                        <td colspan="2">Total Payable:</td>
+                        <td class="text-right" id="Total_Payable">@ViewBag.Grand_Total</td>
+                    </tr>
+
+
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+

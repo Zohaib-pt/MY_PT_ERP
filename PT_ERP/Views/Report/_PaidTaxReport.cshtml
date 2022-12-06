@@ -1,0 +1,134 @@
+﻿
+@using DAL
+@using DAL.Models
+@model DAL.oClasses.oReports
+@using X.PagedList.Mvc.Core; @*//import this so we get our HTML Helper*@
+@using X.PagedList;  @*//import this so we can cast our list to IPagedList*@
+<table class="table table-bordered table-striped mb-0">
+    <thead>
+        <tr>
+
+
+
+            <th> Chassis</th>
+            <th>Date </th>
+            <th> Price Tax </th>
+            <th> Auction Fee Tax </th>
+            <th> Rekso Fee Tax </th>
+            <th>Vanning Tax Amount </th>
+            <th> Inspection Charges Tax</th>
+            <th> Berth Carry ChargesTax</th>
+            <th> Payment Ref Tax</th>
+            <th> Payment Tax Amount</th>
+            <th> Payment Others Charges Tax</th>
+            <th> Total</th>
+
+
+
+
+
+        </tr>
+    </thead>
+
+
+    <tbody>
+
+        @if (Model.PaidTax != null)
+        {
+
+
+            foreach (TaxReport item in Model.PaidTax)
+            {
+
+
+
+
+
+
+                <tr class="gradeX odd" role="row">
+
+
+
+
+                    <td>@Html.DisplayFor(modelItem => item.Chassis_No) </td>
+
+                    <td>@Html.DisplayFor(modelItem => item.PurchaseDate) </td>
+
+                    <td>@Html.DisplayFor(modelItem => item.PriceTax) </td>
+
+                    <td>@Html.DisplayFor(modelItem => item.AuctionFeeTax) </td>
+
+                    <td>@Html.DisplayFor(modelItem => item.ReksoFeeTax) </td>
+
+                    <td>@Html.DisplayFor(modelItem => item.Tax_Amount) </td>
+                    <td>@Html.DisplayFor(modelItem => item.Inspection_ChargesTax) </td>
+                    <td>@Html.DisplayFor(modelItem => item.Berth_Carry_ChargesTax) </td>
+                    <td>@Html.DisplayFor(modelItem => item.ExtraChargesFeeTax) </td>
+                    <td>@Html.DisplayFor(modelItem => item.TaxAmount) </td>
+                    <td>@Html.DisplayFor(modelItem => item.TaxAmountOthers) </td>
+                    <td>@Html.DisplayFor(modelItem => item.Total) </td>
+
+
+
+                </tr>
+}
+        }
+
+    </tbody>
+
+    <tfoot>
+        @if (Model.PaidTax_TTL != null)
+        {
+
+
+            foreach (TaxReport item in Model.PaidTax_TTL)
+            {
+                <tr role="row">
+                    <th>Total</th>
+                    <th> </th>
+                    <th>@item.PriceTax_ttl</th>
+                    <th>@item.AuctionFeeTax_ttl</th>
+                    <th>@item.ReksoFeeTax_ttl</th>
+                    <th>@item.Tax_Amount_ttl</th>
+                    <th>@item.Inspection_ChargesTax_ttl</th>
+                    <th>@item.Berth_Carry_ChargesTax_ttl</th>
+                    <th>@item.ExtraChargesFeeTax_ttl</th>
+                    <th>@item.TaxAmount_ttl</th>
+                    <th>@item.TaxAmountOthers_ttl</th>
+                    <th>@item.Total_ttl</th>
+
+
+
+
+                </tr>
+}
+        }
+    </tfoot>
+
+
+</table>
+
+<div class="invoice-summary">
+
+    <div class="row">
+
+        <div class="col-lg-6 col-md-6">
+
+        </div>
+
+        <div class="col-lg-6 col-md-6 justify-content-end text-right">
+            @if (Model.PaidTax.Count() != 0)
+            {
+
+                @Html.PagedListPager(Model.PaidTax, page => Url.Action("PaidTaxReport_Search", "Report", new { StartDate = ViewBag.StartDate_PaidReport, EndDate = ViewBag.EndDate_PaidReport, page })
+
+                , X.PagedList.Mvc.Core.Common.PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new AjaxOptions()
+                {
+                HttpMethod = "get",
+                UpdateTargetId = "PaidTaxReportSearch"
+                })
+                      )}
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,117 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+
+<div class="modal fade" id="PasswordModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #f6f6f6;">
+
+
+                <h4 class="modal-title">Change Password</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <form method="post" asp-area="" asp-controller="" asp-action="">
+
+                <div class="modal-body">
+
+                    <section class="card">
+
+                        <div class="card-body" style="box-shadow:none;">
+
+
+                            <div class="row form-group">
+
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+
+
+                                        <label class="control-label">Old Password</label>
+
+                                        <input type="text" class="form-control" id="Oldpass" name="Oldpass" placeholder="" required>
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+
+
+                                        <label class="control-label">New Password</label>
+
+                                        <input type="text" class="form-control" id="Newpass" name="Newpass" placeholder="" required>
+
+                                    </div>
+                                </div>
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+
+
+                                        <label class="control-label">Confirm Password</label>
+
+                                        <input type="text" class="form-control" id="Confirmpass" name="Confirmpass" placeholder="" required>
+
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+
+
+
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" onclick="btnLogin()" class="btn btn-primary">Confirm</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<!-- end: page -->
+
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script type="text/javascript">
+    function btnLogin() {
+        console.log("hello")
+        var oldPass = document.getElementById("Oldpass");
+        var Newpass = document.getElementById("Newpass");
+        var Confirmpass = document.getElementById("Confirmpass");
+
+        if (oldPass.value != "" && Newpass.value != "" && Confirmpass.value != "") {
+
+            $.ajax({
+                type: 'POST',
+                url: "/Login/ChangePassword",
+                data: {
+                    oldPassword: $("#Oldpass").val(),
+                    newPassword: $("#Newpass").val(),
+                    confirmPassword: $("#Confirmpass").val()
+                },
+                success: function (result, status, xhr) {
+                    console.log(result);
+
+                    if (result == true) {
+                        alert("Your password has been changed");
+                    } else {
+                        alert("Password cannot be changed");
+                    }
+
+                }
+            });
+
+        } else {
+            alert("Please fill all the form fields")
+        }
+    }
+</script>

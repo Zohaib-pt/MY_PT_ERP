@@ -1,0 +1,378 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OPurchases
+
+@{
+    ViewData["Title"] = "UploadStockBulk";
+    Layout = "~/Views/Shared/_LayoutTablePages.cshtml";
+}
+
+<header class="page-header">
+    <h2>@ViewBag.SectionHeaderTitle</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+            <li><a asp-area="" asp-controller="Stock" asp-action="UploadStockBulk"><span>@ViewBag.SectionSub_HeaderTitle</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+
+<div class="row" id="SuccessErrorSection">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+        <div class="col-lg-12">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-info">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Success!</strong> @TempData["Success"] <a Stockef="" class="alert-link"></a>
+                </div>
+            }
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Error!</strong> @TempData["Error"] <a Stockef="" class="alert-link"></a>
+                </div>
+            }
+        </div>
+    }
+
+</div>
+
+
+<!--Following 'LoaderImage' div is for showing ajax loader before ajax call-->
+<div class="imageGIFLoader" id="LoaderImage">
+    <img src="~/img/projects/ajax-loader.gif" class="img-responsive" style="width:65px; height:65px;" />
+</div>
+
+
+<section class="card">
+    <div class="card-body">
+        <div class="invoice">
+            <header class="clearfix">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <h2 class="card-title" style="line-height:normal;">Upload Stock (Bulk)</h2>
+                    </div>
+
+                </div>
+            </header>
+            <section class="card">
+
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data" data-ajax="true" data-ajax-begin="myBeginBulkExcelImport" data-ajax-complete="myCompleteBulkExcelImport" data-ajax-success="mySuccessBulkExcelImport" data-ajax-failure="myFailureBulkExcelImport" asp-area="" asp-controller="Purchases" asp-action="ImportExcelBulkUpdate" id="formbulk">
+
+                        <div class="row form-group">
+
+
+                            <div class="col-md-5">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="TaskAttachment">Attach Correct Excel File Format</label>
+                                    <input type="file" class="form-control" id="postedFile" name="postedFile" required>
+
+                                </div>
+                            </div>
+
+                            <div class="col-md-2" style="margin-top:30px">
+                                <label class="col-form-label" for="TaskAttachment">&nbsp;</label>
+                                <button type="submit" @*id="ButtonAdd"*@ class="mb-1 mt-1 mr-1 btn btn-primary">Upload To Add</button>
+
+                            </div>
+
+                            <div class="col-md-2" style="margin-top:30px">
+                                <label class="col-form-label" for="TaskAttachment">&nbsp;</label>
+                              
+                                <a href="/Purchases/InsertBulkFromImportHolder" class="mb-1 mt-1 mr-1 btn btn-success"> Add Bulk</a>
+
+                            
+
+
+
+                            </div>
+
+
+
+                        </div>
+                    </form>
+                </div>
+                <div class="card-body">
+                    <h3 style="border-bottom:1px solid #e2e2e2; border-right:5px solid #333" class="box-title">
+                        Download Import Excel File Format
+                    </h3>
+                    <div class="row form-group">
+                        <div class="col-lg-5">
+                            <div class="form-group">
+
+                                <a href="~/template/ImportDataFormat.xlsx" download>
+                                 
+                                    <img src="~/img/excel logo.png" alt="peace" width="70" height="70">
+                                </a>
+                            </div>
+                        </div>
+
+
+
+                    </div>
+                </div>
+
+            </section>
+        </div>
+
+        <div id="BulkUploadSection">
+
+
+            <div style="overflow-x:auto;">
+
+
+                <table class="table table-bordered table-striped mb-0 mt-1" id="tblBulkLoad">
+                    <thead>
+                        <tr>
+
+                            <th>MAKENAME </th>
+                            <th>MAKEMODELNAME </th>
+                            <th>CHASSIS_NO </th>
+                            <th> MODEL</th>
+                            <th>COLORNAME </th>
+                            <th>COLOR_INT </th>
+                            <th> PRICE</th>
+                            <th>PRICE_RATE</th>
+                            <th>FREIGHT</th>
+                            <th>FR_RATE</th>
+                            <th> SELLING_PRICE</th>
+                            <th> TRANSMISSION </th>
+                            <th>DOOR  </th>
+                            <th> DRIVE </th>
+                            <th> ENGINE_NO </th>
+                            <th> WEIGHT </th>
+                            <th> HS_CODE </th>
+                            <th>ENGINE_POWER  </th>
+                            <th> MILEAGE </th>
+                            <th> VEHICLE_CC    </th>
+                            <th> USED_NEW    </th>
+                            <th> OPTIONS    </th>
+                            <th> FUEL_TYPE    </th>
+                            <th>MAKECATEGORYNAME</th>
+                            <th> VENDORNAME    </th>
+                            <th> PURCHASEDATE    </th>
+                            <th>  PURCHASE_REF   </th>
+                            <th>BL_NO</th>
+                            <th>SHIP_NAME</th>
+                            <th>SHIPDATE</th>
+                            <th>LEAVE_DATE</th>
+                            <th>ENTRY_DATE</th>
+                            <th>BOE</th>
+                            <th>LOCATION</th>
+                            <th>MAKECOUNTRYNAME</th>
+                            <th>AVAILABILITY</th>
+                            <th>STOCK_TYPE</th>
+                            <th>SHOWROOM</th>
+                            <th>COMMENTS</th>
+                            <th>OPTION_CODE</th>
+                            <th>KEYNO</th>
+
+                            <th>PRODUCTION_DATE</th>
+                            <th>EXP_TRANSPORT</th>
+                            <th>EXP_AGENT_COMMISSION</th>
+                            <th>EXP_CUSTOM_DUTY</th>
+                            <th>EXP_OTHERS</th>
+                            <th>EXP_CC</th>
+                            <th>EXP_MAINT</th>
+                            <th>EXP_COMM_OTHERS</th>
+                            <th>EXP_PAPER</th>
+                            <th>OTHER_REF</th>
+                            <th>TAX10</th>
+                            <th>AUCTIONFEE</th>
+                            <th>REKSO</th>
+                            <th>RECYCLE</th>
+                            <th>LOADING</th>
+
+                            <th>AUCTIONNAME</th>
+                            <th>CONT_NO</th>
+                            <th>OTHERS_JP</th>
+                            <th>JP_CHARGES</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @if (Model.ImportHolderList != null)
+                        {
+
+
+                            foreach (importHolder item in Model.ImportHolderList)
+                            {
+                        <tr>
+
+                            <td>@Html.DisplayFor(modelItem => item.MAKENAME)</td>
+                            <td>@Html.DisplayFor(modelItem => item.MAKEMODELNAME)</td>
+                            <td>@Html.DisplayFor(modelItem => item.CHASSIS_NO)</td>
+                            <td>@Html.DisplayFor(modelItem => item.MODEL)</td>
+                            <td>@Html.DisplayFor(modelItem => item.COLORNAME)</td>
+                            <td>@Html.DisplayFor(modelItem => item.COLOR_INT)</td>
+                            <td>@Html.DisplayFor(modelItem => item.PRICE)</td>
+                            <td>@Html.DisplayFor(modelItem => item.PRICE_RATE)</td>
+                            <td>@Html.DisplayFor(modelItem => item.FREIGHT)</td>
+                            <td>@Html.DisplayFor(modelItem => item.FR_RATE)</td>
+                            <td>@Html.DisplayFor(modelItem => item.SELLING_PRICE)</td>
+                            <td>@Html.DisplayFor(modelItem => item.TRANSMISSION)</td>
+                            <td>@Html.DisplayFor(modelItem => item.DOOR)</td>
+                            <td>@Html.DisplayFor(modelItem => item.DRIVE)</td>
+                            <td>@Html.DisplayFor(modelItem => item.ENGINE_NO)</td>
+                            <td>@Html.DisplayFor(modelItem => item.WEIGHT)</td>
+                            <td>@Html.DisplayFor(modelItem => item.HS_CODE)</td>
+                            <td>@Html.DisplayFor(modelItem => item.ENGINE_POWER)</td>
+                            <td>@Html.DisplayFor(modelItem => item.MILEAGE)</td>
+                            <td>@Html.DisplayFor(modelItem => item.VEHICLE_CC)</td>
+                            <td>@Html.DisplayFor(modelItem => item.USED_NEW)</td>
+                            <td>@Html.DisplayFor(modelItem => item.OPTIONS)</td>
+                            <td>@Html.DisplayFor(modelItem => item.FUEL_TYPE)</td>
+                            <td>@Html.DisplayFor(modelItem => item.MAKECATEGORYNAME)</td>
+                            <td>@Html.DisplayFor(modelItem => item.VENDORNAME)</td>
+                            <td>@Html.DisplayFor(modelItem => item.PURCHASEDATE)</td>
+                            <td>@Html.DisplayFor(modelItem => item.PURCHASE_REF)</td>
+                            <td>@Html.DisplayFor(modelItem => item.BL_NO)</td>
+                            <td>@Html.DisplayFor(modelItem => item.SHIP_NAME)</td>
+                            <td>@Html.DisplayFor(modelItem => item.SHIPDATE)</td>
+                            <td>@Html.DisplayFor(modelItem => item.LEAVE_DATE)</td>
+                            <td>@Html.DisplayFor(modelItem => item.ENTRY_DATE)</td>
+                            <td>@Html.DisplayFor(modelItem => item.BOE)</td>
+                            <td>@Html.DisplayFor(modelItem => item.LOCATION)</td>
+                            <td>@Html.DisplayFor(modelItem => item.MAKECOUNTRYNAME)</td>
+                            <td>@Html.DisplayFor(modelItem => item.AVAILABILITY)</td>
+                            <td>@Html.DisplayFor(modelItem => item.STOCK_TYPE)</td>
+                            <td>@Html.DisplayFor(modelItem => item.SHOWROOM)</td>
+                            <td>@Html.DisplayFor(modelItem => item.COMMENTS)</td>
+                            <td>@Html.DisplayFor(modelItem => item.OPTION_CODE)</td>
+                            <td>@Html.DisplayFor(modelItem => item.KEYNO)</td>
+                            <th>@Html.DisplayFor(modelItem => item.PRODUCTION_DATE)</th>
+                            <td>@Html.DisplayFor(modelItem => item.EXP_TRANSPORT)</td>
+                            <td>@Html.DisplayFor(modelItem => item.EXP_AGENT_COMMISSION)</td>
+                            <td>@Html.DisplayFor(modelItem => item.EXP_CUSTOM_DUTY)</td>
+                            <td>@Html.DisplayFor(modelItem => item.EXP_OTHERS)</td>
+                            <td>@Html.DisplayFor(modelItem => item.EXP_CC)</td>
+                            <td>@Html.DisplayFor(modelItem => item.EXP_MAINT)</td>
+                            <td>@Html.DisplayFor(modelItem => item.EXP_COMM_OTHERS)</td>
+                            <td>@Html.DisplayFor(modelItem => item.EXP_PAPER)</td>
+                            <td>@Html.DisplayFor(modelItem => item.OTHER_REF)</td>
+                            <td>@Html.DisplayFor(modelItem => item.TAX10)</td>
+                            <td>@Html.DisplayFor(modelItem => item.AUCTIONFEE)</td>
+                            <td>@Html.DisplayFor(modelItem => item.REKSO)</td>
+                            <td>@Html.DisplayFor(modelItem => item.RECYCLE)</td>
+                            <td>@Html.DisplayFor(modelItem => item.LOADING)</td>
+                            <td>@Html.DisplayFor(modelItem => item.RECYCLE)</td>
+                            <td>@Html.DisplayFor(modelItem => item.LOADING)</td>
+
+                            <td>@Html.DisplayFor(modelItem => item.AUCTIONNAME)</td>
+                            <td>@Html.DisplayFor(modelItem => item.CONT_NO)</td>
+
+                            <td>@Html.DisplayFor(modelItem => item.OTHERS_JP)</td>
+                            <td>@Html.DisplayFor(modelItem => item.JP_CHARGES)</td>
+
+
+                        </tr>
+                            }
+                        }
+
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+       
+    </div>
+
+</section>
+
+
+
+@section Scripts {
+
+
+
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
+
+
+
+    <script>
+
+        function myBeginBulkExcelImport() {
+            $("#LoaderImage").css("visibility", "visible");
+        }
+
+        function mySuccessBulkExcelImport(data) {
+
+            var SuccessDiv = " <div class='col-lg-12'><div class='alert alert-info'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'>×</button><strong>Success!</strong> Saved Successfully! <a href ='' class='alert-link'></a></div></div>";
+            debugger
+            if (data.message == undefined) {
+
+                //$('#AddNewPurchaseModal').modal('hide');
+                $('#BulkUploadSection').html(data);
+                $('#SuccessErrorSection').html(SuccessDiv).show();
+
+                //reset form after success
+                $('#formbulk').trigger("reset");
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+
+        function myFailureBulkExcelImport() {
+
+            alert("Failured occured. Please try again!");
+        }
+
+
+
+
+        function myCompleteBulkExcelImport() {
+            $("#LoaderImage").css("visibility", "hidden");
+
+        }
+
+
+        function AddBulk() {
+            var totalRowCount = $("#tblBulkLoad tr").length;
+            var rowCount = $("#tblBulkLoad td").closest("tr").length;
+
+            if (!rowCount || rowCount < 1) {
+                alert("Please add some records before Add Bulk");
+            } else {
+                 window.location.href = "@Url.Action("InsertBulkFromImportHolder", "Purchases")";
+            }
+
+         
+
+
+        }
+
+
+
+        function Add_Uploaded_Data() {
+           
+                 window.location.href = "@Url.Action("InsertBulkFromImportHolder", "Purchases")";
+           
+         
+        }
+    </script>
+
+
+}

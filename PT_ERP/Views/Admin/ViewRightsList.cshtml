@@ -1,0 +1,504 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OAdmin
+@{ ViewData["Title"] = "AdminRightssList";
+                Layout = "~/Views/Shared/_LayoutTablePages.cshtml"; }
+@{ int? Role_ID = ViewBag.RoleCategory_ID; }
+
+
+
+
+<header class="page-header">
+    <h2>Admin</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+            <li><a asp-area="" asp-controller="Admin" asp-action="AdminRightssList"><span>AdminRightss</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+
+<div class="row">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+<div class="col-lg-12">
+    @if (TempData["Success"] != null)
+    {
+<div class="alert alert-info">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+    <strong>Success!</strong> @TempData["Success"] <a href="" class="alert-link"></a>
+</div>}
+
+    @if (TempData["Error"] != null)
+    {
+<div class="alert alert-danger">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+    <strong>Error!</strong> @TempData["Error"] <a href="" class="alert-link"></a>
+</div>}
+</div>}
+
+
+</div>
+
+
+
+
+
+<!-- END PAGE TITLE-->
+<!-- END PAGE HEADER-->
+
+<div class="row">
+    <div class="col">
+        <section class="card">
+            <header class="card-header">
+
+                <div class="row">
+                    <div class="col-lg-6">
+                        <h2 class="card-title" style="line-height:normal;">Rights List</h2>
+                    </div>
+                    <div class="col-lg-6" style="text-align:right;">
+                        <button class="btn btn-default btn-success btn-sm" data-toggle="modal" data-target="#addRightsModal">Add Rights&nbsp;<i class="fas fa-plus"></i></button>
+
+
+                    </div>
+                </div>
+
+            </header>
+            <div class="card-body">
+
+
+                <div class="table-scrollable">
+                    <table class="table table-bordered table-striped mb-0" id="datatable-default" Rights="grid" aria-describedby="sample_3_info">
+                        <thead>
+                            <tr Rights="row">
+                                <th> Edit/Delete </th>
+
+                                <th> Menu </th>
+                                <th> Role</th>
+                                <th> Add</th>
+                                <th> View</th>
+                                <th> Edit</th>
+                                <th> Delete</th>
+                                <th> Print</th>
+                                <th> Excel</th>
+                                <th> IsAdmin</th>
+
+
+
+
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model != null)
+                            {
+                                foreach (AdminRights item in Model.adminrights)
+                                {
+                <tr class="gradeX odd" Rights="row">
+                    <td>
+
+
+                        <a onclick="UpdateRights('@item.ID', '@item.Add', '@item.View', '@item.Edit', '@item.Delete', '@item.Print', '@item.Excel', '@item.IsAdmin','@item.Menu')" data-toggle="modal"
+                           data-target="#UpdateRights"><img style="width: 20px;" src="~/Img/Icons/edit.png" /></a>
+                        <a onclick="del(@item.ID)" data-toggle="modal" data-target="#deleteRightsModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+                    </td>
+
+                    <td>@Html.DisplayFor(modelItem => item.Menu)</td>
+                    <td>@Html.DisplayFor(modelItem => item.RoleName)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Add)</td>
+
+                    <td>@Html.DisplayFor(modelItem => item.View)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Edit)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Delete)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Print)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Excel)</td>
+                    <td>@Html.DisplayFor(modelItem => item.IsAdmin)</td>
+
+
+
+                </tr>}
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+
+
+            </div>
+        </section>
+    </div>
+</div>
+
+
+
+
+
+
+<!-- Add Rights to Admin Modal -->
+<div class="modal fade bs-modal-sm in" id="addRightsModal"  Rights="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-xl" Rights="document">
+
+        <form method="post" asp-area="" asp-controller="Admin" asp-action="AddAdminRights" enctype="multipart/form-data">
+            <div class="modal-content">
+                <div class="modal-header" style="background: #f6f6f6;">
+                    <h4 class="modal-title">Add Rights</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="col-form-label" for="ddlPortofDisc">Menu Type</label>
+                                <select class="form-control" id="MenuType" name="MenuType" required>
+                                    <option selected="selected" value="0">--Select--</option>
+                                    <option value="1">Main Menu</option>
+                                    <option value="2">Menu Level 1</option>
+                                    <option value="3">Menu Level 2</option>
+
+                                </select>
+
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="col-form-label" for="ddlPortofDisc">Main Menu</label>
+                                <select class="form-control select2" name="MenuID" id="MenuID" required>
+                                </select>
+                                <input type="hidden" id="Role_ID" name="Role_ID" value="@Role_ID" />
+
+                            </div>
+                        </div>
+
+                        <div class="col-md-4"></div>
+                        <div class="col-md-12"></div>
+                        <div class="col-md-12"><h3>Check Rights</h3></div>
+                        <div class="col-lg-1" style="margin-top:30px">
+                            <div class="form-group">
+                                <label class="col-form-label" for="Project_ID">View</label>
+
+                                <input type="checkbox" id="View" name="View">
+                            </div>
+                        </div>
+                        <div class="col-lg-1" style="margin-top:30px">
+                            <div class="form-group">
+                                <label class="col-form-label" for="Project_ID">Add</label>
+
+                                <input type="checkbox" id="Add" name="Add">
+                            </div>
+                        </div>
+                        <div class="col-lg-1" style="margin-top:30px">
+                            <div class="form-group">
+                                <label class="col-form-label" for="Project_ID">Edit</label>
+
+                                <input type="checkbox" id="Edit" name="Edit">
+                            </div>
+                        </div>
+                        <div class="col-lg-1" style="margin-top:30px">
+                            <div class="form-group">
+                                <label class="col-form-label" for="Project_ID">Delete</label>
+
+                                <input type="checkbox" id="Delete" name="Delete">
+                            </div>
+                        </div>
+                        <div class="col-lg-1" style="margin-top:30px">
+                            <div class="form-group">
+                                <label class="col-form-label" for="Project_ID">Print</label>
+
+                                <input type="checkbox" id="Print" name="Print">
+                            </div>
+                        </div>
+                        <div class="col-lg-1" style="margin-top:30px">
+                            <div class="form-group">
+                                <label class="col-form-label" for="Project_ID">Excel</label>
+
+                                <input type="checkbox" id="Excel" name="Excel">
+                            </div>
+                        </div>
+                        <div class="col-lg-2" style="margin-top:30px">
+                            <div class="form-group">
+                                <label class="col-form-label" for="Project_ID">Is Admin</label>
+
+                                <input type="checkbox" id="IsAdmin" name="IsAdmin">
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+
+                    <input type="submit" value="Add" class="btn btn-primary" id="submit" />
+                    @*<input type="submit" value="Register" class="font-weight-bold text-Primary text-2 btn btn-primary btn-modern float-left " />*@
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+
+
+                </div>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+<div class="modal fade bs-modal-sm in" id="UpdateRights" Rights="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-xl" Rights="document">
+
+        <form method="post" asp-area="" asp-controller="Admin" asp-action="UpdateAdminRights" enctype="multipart/form-data">
+            <div class="modal-content">
+                <div class="modal-header" style="background: #f6f6f6;">
+                    <h4 class="modal-title">Update Rights</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    </div>
+                    <div class="modal-body">
+
+
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="Project_ID">Menu Name</label>
+
+                                    <input type="text" class="form-control" id="UpdateMenu" name="Menu" readonly>
+                                </div>
+                            </div>
+                         
+
+                            <div class="col-md-12"><h3>Check Rights</h3></div>
+                            <div class="col-lg-1" style="margin-top:30px">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="Project_ID">View</label>
+
+                                    <input type="checkbox" id="UpdateView" name="View">
+                                    <input type="hidden" id="UpdateID" name="ID" />
+                                    <input type="hidden" id="Role_ID" name="Role_ID" value="@Role_ID" />
+                                </div>
+                            </div>
+                            <div class="col-lg-1" style="margin-top:30px">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="Project_ID">Add</label>
+
+                                    <input type="checkbox" id="UpdateAdd" name="Add">
+                                </div>
+                            </div>
+                            <div class="col-lg-1" style="margin-top:30px">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="Project_ID">Edit</label>
+
+                                    <input type="checkbox" id="UpdateEdit" name="Edit">
+                                </div>
+                            </div>
+                            <div class="col-lg-1" style="margin-top:30px">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="Project_ID">Delete</label>
+
+                                    <input type="checkbox" id="UpdateDelete" name="Delete">
+                                </div>
+                            </div>
+                            <div class="col-lg-1" style="margin-top:30px">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="Project_ID">Print</label>
+
+                                    <input type="checkbox" id="UpdatePrint" name="Print">
+                                </div>
+                            </div>
+                            <div class="col-lg-1" style="margin-top:30px">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="Project_ID">Excel</label>
+
+                                    <input type="checkbox" id="UpdateExcel" name="Excel">
+                                </div>
+                            </div>
+                            <div class="col-lg-2" style="margin-top:30px">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="Project_ID">Is Admin</label>
+
+                                    <input type="checkbox" id="UpdateIsAdmin" name="IsAdmin">
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+
+                        <input type="submit" value="Update" class="btn btn-primary" id="submit" />
+                        @*<input type="submit" value="Register" class="font-weight-bold text-Primary text-2 btn btn-primary btn-modern float-left " />*@
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+
+
+                    </div>
+                </div>
+</form>
+
+    </div>
+</div>
+
+<!-- Delete Color Modal -->
+<div class="modal fade" id="deleteRightsModal" tabindex="-1" Rights="dialog" aria-labelledby="deleteRightsModal">
+    <div class="modal-dialog" Rights="document">
+
+
+
+        <form method="post" asp-area="" asp-controller="Admin" asp-action="DeleteAdminRights">
+            <div class="modal-content">
+                <div class="modal-header" style="background: #f6f6f6;">
+                    <h4 class="modal-title">Delete</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+
+                        <div class="col-lg-12">
+                            <div class="form-group">
+                                <h5> Do you want to delete this Rights? </h5>
+
+                            </div>
+
+                            <div class="form-group">
+
+
+                                <input type="hidden" id="RightsIDDelete" name="RightsIDDelete" />
+                                <input type="hidden" id="Role_ID" name="Role_ID" value="@Role_ID" />
+
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="submit" value="Delete" class="btn btn-primary" id="submit" />
+                    @*<button type="button" class="btn btn-primary" onclick="dele()" id="delete">Delete</button>*@
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+
+
+
+
+
+@section Scripts {
+    <script>
+
+        $(function () {
+            $(".select2").select2({
+                theme: "bootstrap",
+
+            });
+        });
+
+
+    </script>
+    <script>
+        var id, make;
+
+        function del(a) {
+
+            $("#RightsIDDelete").val(a);
+
+        }
+
+        $(document).ready(function () {
+            $("#MenuType").change(function () {
+                $.get("/Admin/Get_MenyName_By_Type", { MenuType: $("#MenuType").val() }, function (data) {
+                    $("#MenuID").empty();
+                    if (data["menu"].length == 0)
+                        $("#MenuID").append('<option value="">--No Record--</option>');
+
+
+                    $.each(data["menu"], function (index, row) {
+                        $("#MenuID").append("<option value='" + row.menuID + "'>" + row.menu + "</option>")
+                    });
+                });
+
+            });
+        });
+        function UpdateRights(ID, Add, View, Edit, Delete, Print, Excel, IsAdmin,Menu) {
+             debugger
+            $("#UpdateID").val(ID);      
+            $("#UpdateMenu").val(Menu);      
+       
+            
+             
+
+             
+    
+    
+            if(View == "True")
+             {
+         $("#UpdateView").prop('checked', true);
+
+             }
+        else{
+         $("#UpdateView").prop('checked', false);
+                 
+        }
+             if(Add == "True")
+             {
+               $("#UpdateAdd").prop('checked', true);
+             }
+         else{
+            $("#UpdateAdd").prop('checked', false);
+        }
+             if(Edit == "True")
+             {
+             $("#UpdateEdit").prop('checked', true);
+             }
+        else{
+            $("#UpdateEdit").prop('checked', false);
+        }
+             if(Delete == "True")
+             {
+                          $("#UpdateDelete").prop('checked', true);
+             }
+        else{
+                         $("#UpdateDelete").prop('checked', false);
+        }
+             if(Print == "True")
+             {
+             $("#UpdatePrint").prop('checked', true);
+             }
+        else{
+            $("#UpdatePrint").prop('checked', false);
+        }
+             if(Excel == "True")
+             {
+                      $("#UpdateExcel").prop('checked', true);
+             }
+                else{
+                    $("#UpdateExcel").prop('checked', false);
+        }
+             if(IsAdmin == "True")
+             {
+                      $("#UpdateIsAdmin").prop('checked', true);
+             }
+                else{
+                    $("#UpdateIsAdmin").prop('checked', false);
+        }
+            
+
+          
+        }
+    </script>
+
+
+    }

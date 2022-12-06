@@ -1,0 +1,66 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OSales
+<table class="table table-responsive-sm table-bordered m-sm-0">
+    <thead>
+
+
+        <tr>
+            <th>Edit/Delete</th>
+            <th>On Account</th>
+            <th>Amount</th>
+            <th width="30%">Description</th>
+
+            <th>Recieved Mode</th>
+            <th>Ref</th>
+            <th>Type</th>
+            <th>Cheque Details</th>
+
+        </tr>
+    </thead>
+    <tbody>
+
+        @if (Model.SalesReceiptDetailsList != null)
+        {
+
+
+            foreach (pa_ReceiptDetails_DAL item in Model.SalesReceiptDetailsList)
+            {
+        <tr style='color: @(item.transaction_status == "0" ? "green" : "black");'>
+            <td>
+                <a @(item.Receipttype == "RVS" ? "hidden" : "") onclick="UpdateReceiptDetailGeneral('@item.ReceiptDetail_ID', '@item.DR_accountID', '@item.Amount', '@item.Currency_ID', '@item.Currency_Rate', '@item.other_curr_amount', '@item.CR_accountID', '@item.Description', '@item.trans_ref', '@item.Cheque_Bank_Name',
+        '@item.cheque_Date', '@item.Cheque_no', '@item.VAT_Rate', '@item.VAT_Exp', '@item.Total_Amount', '@item.ReceiptMaster_ID', '@item.ReceiptDate');" data-toggle="modal" data-target="#UpdateReceiptDetailModal" id="btnUpdatePopUp"><img style="width: 20px;" src="~/Img/Icons/edit.png" /></a>
+                <a @(item.Receipttype == "RVS" ? "hidden" : "") onclick="DeleteReceiptsDetail('@item.ReceiptDetail_ID');" data-toggle="modal" data-target="#DeleteSalesDetailModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CR_AccountName)
+
+                <br /> <span class="small">ReceiptDate  @Html.DisplayFor(modelItem => item.ReceiptDate)</span>
+
+            </td>
+            <td>@Html.DisplayFor(modelItem => item.Amount)</td>
+            <td width="30%"> @Html.DisplayFor(modelItem => item.Description) </td>
+            <td>@Html.DisplayFor(modelItem => item.DR_AcountName)</td>
+
+            <td>
+                @Html.DisplayFor(modelItem => item.trans_ref)
+
+            <input type="hidden" id="hdReceiptMaster_ID" name="hdReceiptMaster_ID" value="@item.ReceiptMaster_ID" />
+        </td>
+        <td>@Html.DisplayFor(modelItem => item.Receipttype)</td>
+        <td class="text-wrap">
+            <b>@Html.DisplayFor(modelItem => item.Cheque_Bank_Name)</b>
+            <i>@Html.DisplayFor(modelItem => item.Cheque_no) </i>
+            <b>@Html.DisplayFor(modelItem => item.cheque_Date)</b>
+
+        </td>
+        </tr>
+
+
+            }
+        }
+
+
+    </tbody>
+
+</table>

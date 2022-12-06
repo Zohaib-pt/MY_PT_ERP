@@ -1,0 +1,57 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OAccounts
+
+<table class="table table-responsive-md table-bordered mb-0">
+    <thead>
+        <tr>
+            <th>Edit/Delete</th>
+            <th>Account</th>
+            <th>Dr</th>
+            <th>Cr</th>
+
+
+
+
+        </tr>
+    </thead>
+
+    <tbody>
+
+        @if (Model.JournalVoucherDetailList != null)
+        {
+
+
+            foreach (JournalVoucher_DAL item in Model.JournalVoucherDetailList)
+            {
+
+
+
+
+                <tr>
+
+
+
+
+                    <td>
+                        <a onclick="UpdateJVDetailS('@item.JVDetails_ID'	,'@item.Account_ID', '@item.DR_Amount', '@item.CR_Amount', '@item.Description', '@item.Party_ID');" data-toggle="modal" data-target="#UdpateJVDetailByModal"><img style="width: 20px;" src="~/Img/Icons/edit.png" /></a>
+                        <a onclick="DeletePurchaseDetail();" data-toggle="modal" data-target="#DeleteSalesDetailModal"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+
+                    </td>
+
+                    <td>@Html.DisplayFor(modelItem => item.AccountName)</td>
+                    <td>@Html.DisplayFor(modelItem => item.DR_Amount)</td>
+                    <td>@Html.DisplayFor(modelItem => item.CR_Amount)</td>
+
+
+
+                </tr>
+            }
+        }
+
+    </tbody>
+</table>
+
+
+
+

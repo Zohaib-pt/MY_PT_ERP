@@ -1,0 +1,248 @@
+﻿
+@using DAL
+@using DAL.Models
+@model DAL.oClasses.oReports
+
+
+@{
+    ViewData["Title"] = "ReceivableSummary";
+    Layout = "~/Views/Shared/_LayoutTablePages.cshtml";
+}
+
+<header class="page-header">
+    <h2>@ViewBag.SectionHeaderTitle</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+
+            <li><a><span>@ViewBag.BreadCumController</span></a></li>
+            <li><a asp-area="" asp-controller="@ViewBag.BreadCumController" asp-action="@ViewBag.BreadCumAction"><span>@ViewBag.SectionSub_HeaderTitle</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+
+<div class="row">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+        <div class="col-lg-12">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-info">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Success!</strong> @TempData["Success"] <a href="" class="alert-link"></a>
+                </div>
+            }
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Error!</strong> @TempData["Error"] <a href="" class="alert-link"></a>
+                </div>
+            }
+        </div>
+    }
+
+
+</div>
+
+
+
+<div class="row">
+    <div class="col">
+        <section class="card">
+            <header class="card-header">
+
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <section class="card">
+                            <div class="card-body">
+
+
+
+                                <div class="row form-group">
+
+
+
+
+
+                                    <div class="col-lg">
+
+
+
+
+                                        <div class="form-group" style="float:right">
+                                            <label class="col-form-label" for="Search"> &nbsp; </label>
+                                            <br />
+
+                                            <a type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-info" href="/Report/ReceivableReport_Print" target="blank">Print &nbsp;<i class="fas fa-print"></i></a>
+                                            <a type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-success" href="/Report/ReceivableReport_Excel">Export &nbsp;<i class="fas fa-file-excel"></i></a>
+
+                                        </div>
+
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
+
+
+            </header>
+            <div class="card-body">
+
+
+
+                <table class="table table-bordered table-striped mb-0" id="datatable-default">
+                    <thead>
+                        <tr>
+
+
+                            <th>Party ID </th>
+                            <th> Pary Name </th>
+                            <th> Debit </th>
+                            <th> Credit </th>
+                            <th> Balance </th>
+
+
+
+
+
+                        </tr>
+                    </thead>
+
+
+                    <tbody id="ReceivableSummarySearch">
+
+                        @if (Model.ReceiveAbleSummary != null)
+                        {
+                            ViewBag.DebitTotal = 0.00;
+                            ViewBag.CreditTotal = 0.00;
+                            ViewBag.TotalBal = 0.00;
+                            foreach (pa_tblLedgers item in Model.ReceiveAbleSummary)
+                            {
+
+                                double DebitTotal = Convert.ToDouble(string.IsNullOrEmpty(item.Debit) == true ? "0" : item.Debit);
+                                ViewBag.DebitTotal = (Convert.ToDouble(ViewBag.DebitTotal) + DebitTotal).ToString("###,###,###,###,###,##0.00");
+
+
+
+                                double CreditTotal = Convert.ToDouble(string.IsNullOrEmpty(item.Credit) == true ? "0" : item.Credit);
+                                ViewBag.CreditTotal = (Convert.ToDouble(ViewBag.CreditTotal) + CreditTotal).ToString("###,###,###,###,###,##0.00"); ;
+
+
+                                ViewBag.TotalBal = ((Convert.ToDouble(ViewBag.DebitTotal) - Convert.ToDouble(ViewBag.CreditTotal))).ToString("###,###,###,###,###,##0.00"); 
+
+
+
+                        <tr class="gradeX odd" role="row">
+
+
+
+
+                            <td>@Html.DisplayFor(modelItem => item.Party_ID)</td>
+                            <td> <a asp-controller="Report" asp-action="CustomerReport" asp-route-Customer_ID="@item.Party_ID"> @Html.DisplayFor(modelItem => item.PartyName)</a></td>
+
+                            @*<td>@Html.DisplayFor(modelItem => item.PartyName) </td>*@
+                            <td>@Html.DisplayFor(modelItem => item.Debit) </td>
+
+                            <td>@Html.DisplayFor(modelItem => item.Credit) </td>
+
+                            <td>@Html.DisplayFor(modelItem => item.Balance) </td>
+
+
+                        </tr>}
+                                                    }
+
+                    </tbody>
+
+                    <tfoot>
+                        <tr role="row">
+
+                            <th>Total</th>
+                            <th></th>
+                            <th>@ViewBag.DebitTotal</th>
+
+
+                            <th>@ViewBag.CreditTotal </th>
+                  
+            
+                        <th>
+                            
+                            @ViewBag.TotalBal
+                        </th> 
+                
+                             
+
+
+
+
+                        </tr>
+                    </tfoot>
+
+
+                </table>
+            </div>
+        </section>
+    </div>
+</div>
+
+@section Scripts{
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
+
+
+    <script>
+
+        function myBeginSearch() {
+            $("#LoaderImage").css("visibility", "visible");
+        }
+
+        function mySuccessSearch(data) {
+
+            debugger
+            if (data.message == undefined) {
+
+                $('#ReceivableSummarySearch').html(data);
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        function myFailureSearch() {
+
+            alert("Failured occured. Please try again!");
+            $("#LoaderImage").css("visibility", "hidden");
+        }
+
+        function myCompleteSearch() {
+            $("#LoaderImage").css("visibility", "hidden");
+
+        }
+
+
+    </script>
+
+
+
+}

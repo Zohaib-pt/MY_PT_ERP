@@ -1,0 +1,510 @@
+﻿
+@using DAL
+@using DAL.Models
+@using X.PagedList.Mvc.Core; @*//import this so we get our HTML Helper*@
+@using X.PagedList;  @*//import this so we can cast our list to IPagedList *@
+
+@model DAL.oClasses.OStock
+
+
+@{
+    ViewData["Title"] = "Shakeen List";
+    Layout = "~/Views/Shared/_LayoutTablePages.cshtml";
+}
+
+
+<header class="page-header">
+    <h2>Shaken List</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+
+            <li><a><span>@ViewBag.BreadCumController</span></a></li>
+            <li><a asp-area="" asp-controller="@ViewBag.BreadCumController" asp-action="@ViewBag.BreadCumAction"><span>Shaken List</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+<div class="row">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+        <div class="col-lg-12">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-info">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Success!</strong> @TempData["Success"] <a href="" class="alert-link"></a>
+                </div>
+            }
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Error!</strong> @TempData["Error"] <a href="" class="alert-link"></a>
+                </div>
+            }
+        </div>
+    }
+
+
+</div>
+
+
+<!--Following 'LoaderImage' div is for showing ajax loader before ajax call-->
+<div class="imageGIFLoader" id="LoaderImage">
+    <img src="~/img/projects/ajax-loader.gif" class="img-responsive" style="width:65px; height:65px;" />
+</div>
+
+
+
+<div class="row">
+    <div class="col">
+        <section class="card">
+            <header class="card-header">
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <section class="card">
+                            <div class="card-body">
+
+
+                            
+                                <form method="get"    
+                                      asp-area="" asp-controller="Stock" asp-action="VehicleListwithShaken">
+
+
+
+                                    <div class="row form-group">
+
+                                        <div class="col-sm-3">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="txtChassis">Chassis</label>
+                                                <input type="text" id="txtChassis" name="txtChassis" class="form-control" value="@ViewBag.chassis_No" placeholder="Chassis" />
+
+                                            </div>
+                                        </div>
+
+                                        <div class="col-sm-3">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="StartDate">Start Date</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                        </span>
+                                                    </span>
+                                                    <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" value="@ViewBag.StartDate" id="StartDate" name="StartDate">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-sm-3">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="EndDate">End Date</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="fas fa-calendar-alt"></i>
+                                                        </span>
+                                                    </span>
+                                                    <input type="text" data-plugin-datepicker class="form-control" value="@ViewBag.EndDate" autocomplete="off" id="EndDate" name="EndDate">
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+
+                                    </div>
+                                    <div class="form-group">
+                                        <br />
+
+                                        <button type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-info">Search&nbsp;<i class="fas fa-search"></i></button>
+
+
+                                    </div>
+                                    </form>
+                                    
+
+
+
+
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
+            </header>
+
+
+            <div class="card-body" id="stockListtable">
+
+
+                <table class="table table-bordered table-striped mb-0">
+                    <thead>
+                        <tr>
+                            <th>Ref</th>
+                            <th>Purchase Ref</th>
+                            <th>Purchase Date</th>
+                            <th>Chassis</th>
+                            <th>Cancel Date</th>
+                            <th>RefundRequest Date</th>
+                            <th>RefundAmount</th>
+                            <th>Status</th>
+                            <th>Plate Number Fee</th>
+                            <th>View</th>
+
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.ShakeenList != null)
+                        {
+                            foreach (pa_Select_PaperList_Result item in Model.ShakeenList)
+                            {
+                        <tr>
+                            <td>@item.Ref</td>
+                            <td>@item.Purchase_Ref</td>
+                            <td>@item.PurchaseDate</td>
+                            <td>@item.Chassis</td>
+                            <td>@item.Cancel_Submit_Date</td>
+                            <td>@item.Refund_Request_Date</td>
+                            <td>@item.RefundAMount</td>
+                            <td>@item.Status</td>
+                            <td>@item.PlatNumberFee</td>
+                            <td>
+
+
+                                <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#modelShakenDetails"
+                                        id='@item.Stock_ID'
+                                        onclick="saveValues('@item.Stock_ID','@item.Purchase_Ref','@item.PlatNumberFee','@item.Chassis','@item.Cancel_Submit_Date','@item.Recieved_Date','@item.Refund_Request_Date','@item.RefundAMount','@item.Status','@item.PlatNumberFee','@item.accountId','@item.AdjustedRef','@item.Make','@item.ModelDesciption','@item.ModelYear')">
+                                    Update
+                                </button>
+
+
+                            </td>
+
+                        </tr>
+
+                            }
+                        }
+
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+
+
+        </section>
+    </div>
+</div>
+
+
+<div class="modal fade bs-modal-lg" id="modelShakenDetails" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+                <h4 class="modal-title">Shaken Details</h4>
+            </div>
+            <div class="modal-body">
+
+
+
+
+
+                <!-- BEGIN FORM-->
+                <form action="#" class="horizontal-form">
+
+
+                    <div class="form-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="control-label">Chassis No</label>
+                                    <input type="text" id="txtChassis_NoUpdate" name="txtChassis_NoUpdate" class="form-control" placeholder="Enter Chassis" disabled>
+                                 
+                                    <!--i added following hidden field to save "pa_Vanning_Details" ID(primary key) so that we can update this table with this id-->
+                                    @Html.Hidden("VanningDetail_ID_ForUpdate")
+                                </div>
+                            </div>
+                            <!--/span-->
+
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="control-label">Make</label>
+                                    <input type="text" id="ddlMakeUpdate" name="ddlMakeUpdate" class="form-control" placeholder="Select Make" disabled>
+                              
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="control-label">Model</label>
+                                    <input type="text" id="ddlModelUpdate" name="ddlModelUpdate" class="form-control" placeholder="Select Model" disabled>
+                                     
+                                
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="control-label">Year</label>
+                                    <input type="text" id="txtYear" name="txtYear" class="form-control" placeholder="Year" disabled>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="control-label">Paid Amount </label>
+                                    <input type="text" id="txtPaidAmount" name="txtPaidAmount" class="form-control" placeholder="Paid Amount" disabled>
+
+                                </div>
+                            </div>
+
+                            <div class="col-md-3"> 
+
+ 
+                                    <label class="control-label">Cancel Date</label> 
+                                    <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="txtCancelDate" name="txtCancelDate" value="@DateTime.Now.ToString("dd-MMM-yyyy")">
+
+ 
+                               
+                            </div>
+
+
+
+                            <div class="col-md-3">
+
+                                <label class="control-label">Refund Request Date</label> 
+                                <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="txtRefundDate" name="txtRefundDate" value="@DateTime.Now.ToString("dd-MMM-yyyy")">
+
+
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="control-label">Status</label>
+                                    <select class="form-control" id="ddlStatus" name="ddlMakeUpdate" data-placeholder="Select Status" tabindex="1">
+
+
+                                        <option value="">Select Status</option>
+                                        <option value="Not Submitted">Not Submitted</option>
+                                        <option value="Pending">Pending</option>
+                                        <option value="Recieved">Recieved</option>
+                                        <option value="Expired">Expired</option>
+
+
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+
+                                <label class="control-label">Recieved Date</label> 
+                                <input type="text" data-plugin-datepicker class="form-control" autocomplete="off" id="txtRecievedDate" name="txtRecievedDate" value="@DateTime.Now.ToString("dd-MMM-yyyy")">
+
+
+
+                            </div>
+
+
+                            <div class="col-md-3">
+                   
+                                    <label class="control-label">Refund Amount </label>
+           
+                                    <input type="text" id="txtRefundAmount" name="txtRefundAmount" class="form-control" placeholder="Refund Amount">
+
+                       
+                            </div>
+
+                            <div class="col-md-3">
+                            
+                                    <label class="control-label">A/C Recieved</label>
+                                    <select class="form-control" id="ddlaccrecieved" name="ddlaccrecieved" onchange="changetextbox()" asp-items="@(new SelectList( ViewBag.DR_AccountsList,"Account_ID","AccountName"))" required>
+                                        <option>Select</option>
+                                    </select>
+ 
+                        
+                            </div>
+
+                            <div class="col-md-3">
+                           
+                                    <label class="control-label">Adjusted Purchased Ref </label>
+                                    <input type="text" id="txtAdjPurcRef" name="txtAdjPurcRef" class="form-control" placeholder="Adjusted Purchased Ref ">
+
+                      
+                            </div>
+
+                        </div>
+                    </div>
+                </form>
+                <!-- END FORM-->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="UpdateVehicleShakenList();">Save changes</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+
+
+
+
+
+<script>
+    function toggle_visibility(id) {
+        var e = document.getElementById(id);
+        if (e.style.display == 'block' || e.style.display == '') {
+            e.style.display = 'none';
+        }
+        else {
+            e.style.display = 'block';
+        }
+    }
+
+    var Sid;
+    var ref;
+    var fee;
+    function saveValues(Stock_ID, purchase_Ref, NumberPlate_Fee, chassis, Cancel_Submit_Date, Recieved_Date, Refund_Request_Date, RefundAMount, Status, PlatNumberFee, account, adjref, Make, ModelDesciption, ModelYear)
+    {
+        debugger
+         Sid = Stock_ID;
+        ref = purchase_Ref;
+        fee = NumberPlate_Fee;
+        document.getElementById("txtChassis_NoUpdate").value = chassis;
+
+        debugger;
+        if (Cancel_Submit_Date != "01-01-1990") {
+
+        document.getElementById("txtCancelDate").value = Cancel_Submit_Date;
+        }
+        if (Refund_Request_Date != "01-01-1990") {
+
+        document.getElementById("txtRefundDate").value = Refund_Request_Date;
+        }
+        if (Recieved_Date != "01-01-1990") {
+
+        document.getElementById("txtRecievedDate").value = Recieved_Date;
+        }
+        document.getElementById("txtRefundAmount").value = RefundAMount;
+
+        document.getElementById("ddlStatus").value = Status;
+        document.getElementById("txtAdjPurcRef").value = purchase_Ref;
+        document.getElementById("ddlaccrecieved").value = "";
+        document.getElementById("txtYear").value = "";
+        document.getElementById("txtPaidAmount").value = PlatNumberFee;
+        document.getElementById("ddlaccrecieved").value = account;
+        document.getElementById("ddlMakeUpdate").value = Make;
+        document.getElementById("ddlModelUpdate").value = ModelDesciption;
+        document.getElementById("txtYear").value = ModelYear;
+
+
+    }
+
+    function UpdateVehicleShakenList()
+    {
+
+        var RecievedDate = document.getElementById("txtRecievedDate").value;
+        var CancelDate = document.getElementById("txtCancelDate").value;
+        var RefundDate = document.getElementById("txtRefundDate").value;
+        var status = document.getElementById("ddlStatus").value;
+        var RefundAmount = document.getElementById("txtRefundAmount").value;
+        var accrecieved = document.getElementById("ddlaccrecieved").value;
+        var purchaseRef = document.getElementById("txtAdjPurcRef").value;
+
+        var StockID = Sid;
+        var Defaultdate = new Date();
+  
+        var PlateNumber_Fee = fee;
+
+        if (RecievedDate == "") {
+            RecievedDate = ''
+        }
+        if (CancelDate == "") {
+            CancelDate = ''
+        }
+        if (RefundDate == "") {
+            RefundDate = ''
+        }
+    
+        return $.ajax({
+            type: 'POST',
+            url: "/Stock/Insert_PlateNumberDetail",
+            data: {
+
+                cancel_Date: CancelDate,
+                refund_date: RefundDate,
+                Status: status,
+                recieved_Date: RecievedDate,
+                refundAmount: RefundAmount,
+                Account_Debit_ID: accrecieved,
+                stock_ID: StockID,
+                PlateNumberfee: PlateNumber_Fee,
+                AdjustedPurchase_ref: purchaseRef,
+            },
+            
+            success: function (result, status, xhr) {
+                debugger
+                $('#modelShakenDetails').modal('hide');
+                window.location.href = "@Url.Action("VehicleListwithShaken", "Stock")";
+                alert(result.message);
+
+            }
+        });
+
+    }
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+
+
+        $('#StartDate').datepicker({
+            dateFormat: 'd-M-yy',
+            inline: true,
+            showButtonPanel: true,
+            changeMonth: true,
+            changeYear: true,
+            minDate: -3000,
+            maxDate: 3000
+        });
+
+        $('#EndDate').datepicker({
+            dateFormat: 'd-M-yy',
+            inline: true,
+            showButtonPanel: true,
+            changeMonth: true,
+            changeYear: true,
+            minDate: -3000,
+            maxDate: 3000
+        });
+
+
+
+
+    })
+
+
+
+    
+</script>
+
+
+

@@ -1,0 +1,230 @@
+﻿@using DAL.Models
+@model DAL.oClasses.OHR
+
+@{ ViewData["Title"] = "GeneratePayroll";
+    Layout = "~/Views/Shared/_LayoutTablePages.cshtml"; }
+
+<header class="page-header">
+    <h2>HR</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+            <li><a asp-area="" asp-controller="HR" asp-action="GeneratePayroll"><span>PayRoll</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+<div class="row" id="SuccessErrorSection">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+<div class="col-lg-12">
+    @if (TempData["Success"] != null)
+    {
+<div class="alert alert-info">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+    <strong>Success!</strong> @TempData["Success"] <a HRef="" class="alert-link"></a>
+</div>}
+
+    @if (TempData["Error"] != null)
+    {
+<div class="alert alert-danger">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+    <strong>Error!</strong> @TempData["Error"] <a HRef="" class="alert-link"></a>
+</div>}
+</div>}
+
+</div>
+
+<section class="card">
+    <div class="card-body">
+        <div class="invoice">
+            <header class="clearfix">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <h2 class="card-title" style="line-height:normal;">Generate PayRoll</h2>
+                    </div>
+
+                </div>
+            </header>
+            <section class="card">
+
+                <div class="card-body">
+                    <form method="post" asp-controller="HR" asp-action="InsertPayRoll" enctype="multipart/form-data">
+                        <div class="row form-group">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="TaskAttachment">
+                                        Date
+                                    </label>
+                                    <input type="date" class="form-control" id="Attachment" name="pDate" placeholder="">
+
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="Acc_Period_ID">
+                                        Period Desc
+                                    </label>
+                                    <select class="form-control" id="Acc_Period_ID" name="Acc_Period_ID" placeholder="" asp-items="@(new SelectList(ViewBag.PeriodList,"Accounting_Period_ID","Period_Des"))">
+                                        <option value="0">Select</option>
+                                        @* <option value="1">31-JAN</option>*@
+
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4" style="margin-top:33px;">
+                                <button type="submit" id="ButtonAdd" class="mb-1 mt-1 mr-1 btn btn-sm btn-success">Insert</button>
+                                <button type="button" id="ButtonCancel" class="mb-1 mt-1 mr-1 btn btn-sm btn-danger">Cancel</button>
+                            </div>
+                        </div>
+                    </form>
+
+
+
+                    <!--<div class="col-md-2">-->
+                    @* <label class="col-form-label" for="TaskAttachment">&nbsp;</label>*@
+
+
+                    <!--</div>
+
+                    <div class="col-md-2" style="margin-top:30px;">-->
+                    @* <label class="col-form-label" for="TaskAttachment">&nbsp;</label>*@
+
+
+                    <!--</div>-->
+
+
+                </div>
+                <div class="card-body">
+                    <form method="post" asp-controller="HR" asp-action="GeneratePayrollBySearchFilers" enctype="multipart/form-data">
+                        <div class="row form-group">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="col-form-label" for="Acc_Period_ID">
+                                        Period Desc
+                                    </label>
+                                    <select class="form-control" id="Attachment" name="Acc_Period_ID" placeholder="" asp-items="@(new SelectList(ViewBag.PeriodList,"Accounting_Period_ID","Period_Des"))">
+                                        <option value="0">Select</option>
+
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-2" style="margin-top:30px">
+                                <label class="col-form-label" for="TaskAttachment">&nbsp;</label>
+                                <button type="submit" id="ButtonAdd" class="mb-1 mt-1 mr-1 btn btn-sm btn-success">Search</button>
+
+                            </div>
+
+
+
+                        </div>
+                        <div class="card-body">
+
+
+
+                            <table class="table table-responsive-md table-bordered mb-0">
+                                <thead>
+                                    <tr>
+
+
+                                        <th>Edit/Delete</th>
+                                        <th>Date</th>
+                                        <th>Period_Desc</th>
+                                        <th>C_Code</th>
+                                        <th>Created By</th>
+                                        <th>View</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model.PayMasterList != null)
+                                    {
+                                        foreach (PayRoll_DAL item in Model.PayMasterList)
+                                        {
+
+                        <tr>
+
+                            <td>
+
+                                <a href="#"><img style="width: 20px;" src="~/Img/Icons/edit.png" /></a>
+                                <a href="#"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>
+                                @*<a onclick="UpdateVehicleDetail()"><img style="width: 20px;" src="~/Img/Icons/edit.png" /></a>*@
+                                @*<a onclick="DeleteEmployee('@item.emp_ID')" data-toggle="modal" data-target="#DeleteModel"><img style="width: 20px;" src="~/Img/Icons/delete.png" /></a>*@
+
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.pDate)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.pariod_Des)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.c_CODE)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.User_id)
+                            </td>
+                            <td>
+                                <a asp-controller="HR" asp-action="StafPayRoll_Print"   asp-route-payRoll_Master_ID="@item.PayRol_Id"  class="mb-1 mt-1 mr-1 btn btn-sm btn-info" id="print-btn">Print&nbsp;<i class="fas fa-print"></i></a>|
+
+                                @*<a type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-info" onclick="printPayRoll(this)" id="@item.PayRol_Id" href="">Print&nbsp;<i class="fas fa-print"></i></a>*@
+                               
+                                
+                                <a asp-controller="HR" asp-action="PaySlipVouchers" asp-route-payRoll_Master_ID="@item.PayRol_Id">PaySlipVouchar</a>
+
+
+                            </td>
+
+
+                        </tr>}
+                                    }
+
+                                </tbody>
+                            </table>
+                        </div>
+
+
+                    </form>
+
+                    <h3 style="border-bottom:1px solid #e2e2e2; border-right:5px solid #333" class="box-title">
+                    </h3>
+
+
+
+                </div>
+
+            </section>
+        </div>
+
+    </div>
+
+</section>
+
+@section Scripts{
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
+    <script src="~/js/Swal/swal.js"></script>
+    <link href="~/css/Swal/Swal.css" rel="stylesheet" />
+    <script>
+
+        function printPayRoll(payid) {
+
+        var win = window.open("@Url.Action("StafPayRoll_Print", "HR")" + "?payRoll_Master_ID=" + "$("payid").val()");
+        win.focus();
+    }
+
+
+    </script>
+
+
+ }

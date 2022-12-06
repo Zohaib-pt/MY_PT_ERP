@@ -1,0 +1,499 @@
+﻿
+@using DAL
+@using DAL.Models
+@model DAL.oClasses.oReports
+@using X.PagedList.Mvc.Core; @*//import this so we get our HTML Helper*@
+@using X.PagedList;  @*//import this so we can cast our list to IPagedList*@
+
+@{ ViewData["Title"] = "Inventory Report";
+    Layout = "~/Views/Shared/_LayoutTablePages.cshtml"; }
+
+<header class="page-header">
+    <h2>Reports</h2>
+
+    <div class="right-wrapper text-right">
+        <ol class="breadcrumbs">
+            <li>
+                <a href="@ViewBag.Home_Dashboard">
+                    <i class="fas fa-home"></i>
+                </a>
+            </li>
+
+            <li><a><span>@ViewBag.BreadCumController</span></a></li>
+            <li><a asp-area="" asp-controller="@ViewBag.BreadCumController" asp-action="@ViewBag.BreadCumAction"><span>@ViewBag.BreadCumTitle</span></a></li>
+
+        </ol>
+
+        <a class="sidebar-right-toggle"></a>
+    </div>
+</header>
+
+
+<div class="row">
+    @if (TempData["Success"] != null || TempData["Error"] != null)
+    {
+        <div class="col-lg-12">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-info">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Success!</strong> @TempData["Success"] <a href="" class="alert-link"></a>
+                </div>}
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <strong>Error!</strong> @TempData["Error"] <a href="" class="alert-link"></a>
+                </div>}
+        </div>}
+
+
+</div>
+
+
+
+<div class="row" style="padding-top:1px;">
+    <div class="col">
+        <section class="card">
+
+            <header class="card-header">
+
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <section class="card">
+                            <div class="card-body">
+
+                                <form method="get" data-ajax="true" data-ajax-complete="myCompleteSearch" data-ajax-success="mySuccessSearch" data-ajax-failure="myFailureSearch"
+                                      data-ajax-begin="myBeginSearch" asp-area="" asp-controller="Report" asp-action="InventoryReportItemLocationDetailsSearch" data-ajax-loading="">
+
+                                    <div class="row form-group">
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+
+                                                <label>Start Date </label>
+
+                                                <div class="input-group date form_date col-md-13" data-date="" data-date-format="yyyy-mm-dd" data-link-field="dtp_input2" data-link-format="yyyy-mm-dd">
+                                                    <input id='StartDate' name="StartDate" data-plugin-datepicker class="form-control" value="" autocomplete="off" size="16" type="text">
+                                                    <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label>End Date</label>
+
+                                                <div class="input-group date form_date col-md-13" data-date="" data-date-format="yyyy-mm-dd" data-link-field="dtp_input2" data-link-format="yyyy-mm-dd">
+                                                    <input id='EndDate' name="EndDate" data-plugin-datepicker class="form-control" autocomplete="off" value="" size="16" type="text">
+                                                    <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+
+                                                <label class="col-form-label" for="ItemCode">Item Code</label>
+                                                <input type="text" id="ItemCode" name="ItemCode" class="form-control" placeholder="" />
+
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label>Item Name</label>
+
+
+
+
+                                                <select class="form-control" id="Item_ID" name="Item_ID" asp-items="@(new SelectList( ViewBag.AllItems,"Item_ID","ItemCode"))">
+                                                    <option value="0">Select Items</option>
+
+                                                </select>
+
+
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-1">
+                                            <div class="form-group">
+
+
+
+
+                                                <label class="col-form-label" for="Traditional">Traditional</label>
+                                                <input type="text" id="traditional" name="traditional" class="form-control" placeholder="" />
+
+
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-1">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="Fuel">Fuel</label>
+
+                                                <select class="form-control" name="Fuel" id="Fuel">
+                                                    <option value=""></option>
+                                                    <option value="PETROL">PETROL</option>
+                                                    <option value="DEISEL">DEISEL</option>
+
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-1">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="Transmission">Trans.</label>
+
+                                                <select class="form-control" name="Transmission" id="Transmission">
+                                                    <option value=""></option>
+                                                    <option value="A/T">A/T</option>
+                                                    <option value="M/T">M/T</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-1">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="Drive">Drive</label>
+
+                                                <select class="form-control" name="Drive" id="Drive">
+                                                    <option value=""></option>
+                                                    <option value="2WD">2WD</option>
+                                                    <option value="4WD">4WD</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="Group">Item Group</label>
+
+                                                <select class="form-control" id="ItemGroup_ID" name="ItemGroup_ID" asp-items="@(new SelectList( ViewBag.ItemGroupList,"Group_ID","Group_Name"))">
+                                                    <option value="0"></option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="Category">Item Category</label>
+
+                                                <select class="form-control" id="ItemCategory_ID" name="ItemCategory_ID" asp-items="@(new SelectList( ViewBag.ItemCategoryList,"Category_ID","Category_Name"))">
+
+                                                    <option value="0"></option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="make_ID">Make Model</label>
+
+
+                                                <select class="form-control" id="Make" name="Make" data-placeholder="Select"
+                                                        asp-items="@(new SelectList(ViewBag.MakeList, "Make_ID", "Make"))">
+                                                    <option value=""></option>
+                                                </select>
+
+
+
+
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="Year">Year</label>
+
+
+
+
+                                                <select class="form-control" id="Year" name="Year" data-placeholder="Select">
+                                                    <option value=""></option>
+                                                    <option value="2020">2020</option>
+                                                    <option value="2019">2019</option>
+                                                    <option value="2018">2018</option>
+                                                    <option value="2017">2017</option>
+                                                    <option value="2016">2016</option>
+                                                    <option value="2015">2015</option>
+                                                    <option value="2014">2014</option>
+                                                    <option value="2013">2013</option>
+                                                    <option value="2012">2012</option>
+                                                    <option value="2011">2011</option>
+                                                    <option value="2010">2010</option>
+                                                    <option value="2009">2009</option>
+
+                                                    <option value="2008">2008</option>
+                                                    <option value="2007">2007</option>
+                                                    <option value="2006">2006</option>
+                                                    <option value="2005">2005</option>
+                                                    <option value="2004">2004</option>
+
+
+                                                </select>
+
+
+
+                                            </div>
+                                        </div>
+
+
+                                        <div class="col-md-3">
+
+
+
+
+                                            <div class="form-group">
+                                                <label class="col-form-label" for="Search"> &nbsp; </label>
+                                                <br />
+                                                <button type="submit" class="mb-1 mt-1 mr-1 btn btn-sm btn-primary">Search&nbsp;<i class="fas fa-search"></i></button>
+
+
+                                            </div>
+
+
+                                        </div>
+
+                                    </div>
+
+                                </form>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
+
+
+            </header>
+            <div class="card-body" id="VendorReportSearch">
+
+
+
+                <table class="table table-bordered table-striped mb-0">
+                    <thead>
+                        <tr>
+
+
+
+                            <td>TransDate </td>
+                            <td>Ref</td>
+                            <td>Name</td>
+
+                            <td>Quantity </td>
+                    
+           
+                            <td>Location</td>
+                            <td>ItemCode </td>
+
+
+    
+
+           
+
+
+ 
+
+
+
+
+
+
+                        </tr>
+                    </thead>
+
+
+                    <tbody>
+
+                        @if (Model.ItemCardReportListParts != null)
+                        {
+
+
+                            foreach (ItemCard_DAL item in Model.ItemCardReportListParts)
+                            {
+
+
+                                <tr class="gradeX odd" role="row">
+
+                                    <td>@Html.DisplayFor(modelItem => item.Trans_Date) </td>
+                                    <td>@Html.DisplayFor(modelItem => item.Trans_Ref)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.ItemName) </td>
+
+
+                                    <td>@Html.DisplayFor(modelItem => item.Qty) </td>
+                               
+
+                                  
+
+                                    <td>@Html.DisplayFor(modelItem => item.ItemLocationName) </td>
+                                    <td>@Html.DisplayFor(modelItem => item.ItemCode) </td>
+
+
+                          
+                       
+
+                                
+
+               
+
+
+
+                                </tr>
+                            }
+                        }
+
+                    </tbody>
+
+                    <tfoot>
+                        @if (Model.ItemCardReportList_TTL != null)
+                        {
+
+
+                            foreach (ItemCard_DAL item in Model.ItemCardReportList_TTL)
+                            {
+
+                        <tr role="row">
+                            <th>Total</th>
+
+
+
+
+                            <td></td>
+                            <td></td>
+                            <td><b>@item.Qty </b></td>
+                            <td></td>
+                            <td></td>
+
+
+
+
+
+
+                        </tr>
+
+             
+                            }
+                        }
+                    </tfoot>
+
+
+                </table>
+                <div class="invoice-summary">
+
+                    <div class="row">
+
+                        <div class="col-lg-6 col-md-6">
+
+                        </div>
+
+                        <div class="col-lg-6 col-md-6 justify-content-end text-right">
+                            @if (Model.ItemCardReportListParts.Count() != 0)
+                            {
+
+                                @Html.PagedListPager(Model.ItemCardReportListParts, page => Url.Action("InventoryReportItemLocationDetailsSearch", "Report", new
+                                {
+                               ItemCode = ViewBag.ItemCode,
+                               Item_ID = ViewBag.Item_ID,
+                               traditional = ViewBag.traditional,
+                               Make = ViewBag.Make,
+                               Fuel = ViewBag.Fuel,
+                               Transmission = ViewBag.Transmission,
+                               Drive = ViewBag.Drive,
+                               ItemGroup_ID = ViewBag.ItemGroup_ID,
+                               ItemCategory_ID = ViewBag.ItemCategory_ID,
+                               Year = ViewBag.Year,
+                               ItemSerialNO = ViewBag.ItemSerialNO,
+                               StartDate = ViewBag.StartDate,
+                               EndDate = ViewBag.EndDate,
+                               Loc_ID = ViewBag.Loc_ID,
+                               page
+                                })
+
+                 , X.PagedList.Mvc.Core.Common.PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new AjaxOptions()
+                 {
+                     HttpMethod = "get",
+                     UpdateTargetId = "VendorReportSearch"
+                 })
+                                      )}
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </section>
+    </div>
+</div>
+
+@section Scripts{
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
+
+
+    <script>
+
+        function myBeginSearch() {
+            $("#LoaderImage").css("visibility", "visible");
+        }
+
+        function mySuccessSearch(data) {
+
+            debugger
+            if (data.message == undefined) {
+
+                $('#VendorReportSearch').html(data);
+
+
+            } else {
+                alert(data.message);
+
+            }
+
+
+        }
+
+        function myFailureSearch() {
+
+            alert("Failured occured. Please try again!");
+            $("#LoaderImage").css("visibility", "hidden");
+        }
+
+        function myCompleteSearch() {
+            $("#LoaderImage").css("visibility", "hidden");
+
+        }
+
+
+    </script>
+
+    <script>
+
+
+        function ResetSearch() {
+
+            $("#StartDate").val('');
+            $("#EndDate").val('');
+            $("#AccountID").val('');
+            $("#TransRef").val('');
+        }
+
+        $(document).ready(function(){
+    $("#print-btn").click(function(event){
+    event.preventDefault();
+
+        var win = window.open("@Url.Action("InventoryItemCardParts_Report", "Report")" + "? ItemCode=" + $("#ItemCode").val() + "&Item_ID=" + $("#Item_ID").val() + "&traditional=" + $("#traditional").val() + "&Make=" + $("#Make").val() + "&Fuel=" + $("#Fuel").val() + "&Transmission=" + $("#Transmission").val() + "&Drive=" + $("#Drive").val() + "&ItemGroup_ID=" + $("#ItemGroup_ID").val() + "&ItemCategory_ID=" + $("#ItemCategory_ID").val() + "&Year=" + $("#Year").val()  + "&StartDate=" + $("#StartDate").val() + "&EndDate=" + $("#EndDate").val() + "&Loc_ID=" + $("#Loc_ID").val(), "_blank");
+    win.focus();
+    });
+    })
+    $(document).ready(function(){
+    $("#export-btn").click(function(event){
+    event.preventDefault();
+        window.location.href = "@Url.Action("InventoryItemCardParts_Excel", "Report")" + "? ItemCode=" + $("#ItemCode").val() + "&Item_ID=" + $("#Item_ID").val() + "&traditional=" + $("#traditional").val() + "&Make=" + $("#Make").val() + "&Fuel=" + $("#Fuel").val() + "&Transmission=" + $("#Transmission").val() + "&Drive=" + $("#Drive").val() + "&ItemGroup_ID=" + $("#ItemGroup_ID").val() + "&ItemCategory_ID=" + $("#ItemCategory_ID").val() + "&Year=" + $("#Year").val() + "&StartDate=" + $("#StartDate").val() + "&EndDate=" + $("#EndDate").val() + "&Loc_ID=" + $("#Loc_ID").val();
+    });
+    })
+    </script>
+
+
+
+
+}

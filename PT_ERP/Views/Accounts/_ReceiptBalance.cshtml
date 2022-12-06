@@ -1,0 +1,90 @@
+﻿@using DAL
+@using DAL.Models
+@model DAL.oClasses.OAccounts
+@{ int? ReceiptMaster_ID = ViewBag.ReceiptMaster_ID; }
+@if (Model.ReceiptMasterObject != null && Model.ReceiptMasterObject.ReceiptMaster_ID > 0)
+{
+
+    string value = "txtPayNow";
+    string value1 = "txtBalance";
+
+
+@if (Model.receiptmasterlist != null)
+{
+
+
+
+
+    foreach (var item in Model.receiptmasterlist)
+    {
+<tr class="gradeX odd" role="row">
+    @if (item.Paid != null && item.Paid != "0.0000" && item.ReceiptMaster_ID == ReceiptMaster_ID)
+    {
+<td><input type="checkbox" id="@item.Ref" name="@item.Ref" value="@item.Total_Amount" checked onChange="UpdateAmount(this.checked, '@item.Ref'  ,@Convert.ToDecimal((String.IsNullOrEmpty(item.Total_Amount) ? "0" : item.Total_Amount)))"></td>
+ }
+else
+{
+<td>
+    <input type="checkbox" id="@item.Ref" name="@item.Ref" value="@item.Total_Amount"
+           onChange="UpdateAmount(this,this.checked, '@item.Ref'  ,@Convert.ToDecimal((String.IsNullOrEmpty(item.Total_Amount) ? "0" : item.Total_Amount)))">
+</td>
+}
+    @*<input type="hidden" id="@item.Enquiry_ID" value="@item.Enquiry_ID" />*@
+    <td>@item.Ref</td>
+    <td>@item.Sale_Date</td>
+    <td>@item.Type</td>
+    <td>@item.Total_Amount</td>
+    <td>@item.Paid</td>
+    @if (item.Paid != null && item.Paid != "0.0000" && item.ReceiptMaster_ID == ReceiptMaster_ID)
+    {
+<td><input name="userSelectID" type="number" onblur="InsertToAmount('@item.Ref')" class="form-control element-row" id="@value@item.Ref" value="@item.Paid" /></td>
+ }
+else
+{
+<td>
+    <input name="userSelectID" type="number" onblur="InsertToAmount('@item.Ref','User')" class="form-control element-row" id="@value@item.Ref" value="0" disabled />
+</td>
+}
+
+    <td id="@value1@item.Ref">@item.Balance</td>
+
+</tr>}
+} }
+
+            else
+            {
+
+                string value = "txtPayNow";
+                string value1 = "txtBalance";
+
+@if (Model.receiptmasterlist != null)
+{
+
+
+
+
+    foreach (var item in Model.receiptmasterlist)
+    {
+<tr class="gradeX odd" role="row">
+
+    <td>
+        <input type="checkbox" id="@item.Ref" name="@item.Ref" value="@item.Total_Amount"
+               onChange="UpdateAmount(this,this.checked, '@item.Ref'  ,@Convert.ToDecimal((String.IsNullOrEmpty(item.Total_Amount) ? "0" : item.Total_Amount)))">
+    </td>
+
+    @*<input type="hidden" id="@item.Enquiry_ID" value="@item.Enquiry_ID" />*@
+    <td>@item.Ref</td>
+    <td>@item.Sale_Date</td>
+    <td>@item.Type</td>
+    <td>@item.Total_Amount</td>
+    <td>@item.Paid</td>
+
+    <td>
+        <input name="userSelectID" type="number" onblur="InsertToAmount('@item.Ref','User')" class="form-control element-row" id="@value@item.Ref" value="0" disabled />
+    </td>
+
+
+    <td id="@value1@item.Ref">@item.Balance</td>
+
+</tr>               }
+}}
